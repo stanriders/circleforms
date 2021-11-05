@@ -1,5 +1,4 @@
-﻿
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CircleForms.Models.Configurations;
 using CircleForms.Services.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -10,9 +9,9 @@ namespace CircleForms.Services
 {
     public class OsuApiService : IOsuApiService
     {
-        private readonly IRestClient _restClient;
         private readonly OsuApiConfig _config;
         private readonly ILogger<OsuApiService> _logger;
+        private readonly IRestClient _restClient;
 
         public OsuApiService(IRestClient restClient, IOptions<OsuApiConfig> config, ILogger<OsuApiService> logger)
         {

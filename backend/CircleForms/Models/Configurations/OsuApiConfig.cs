@@ -1,5 +1,4 @@
-﻿
-namespace CircleForms.Models.Configurations
+﻿namespace CircleForms.Models.Configurations
 {
     public class OsuApiConfig
     {

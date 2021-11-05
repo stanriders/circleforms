@@ -1,7 +1,9 @@
+using System;
 using CircleForms.Database;
 using CircleForms.Models.Configurations;
 using CircleForms.Services;
 using CircleForms.Services.Interfaces;
+using CircleForms.Services.Request;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using RestSharp;
+using StackExchange.Redis;
 
 namespace CircleForms
 {
@@ -30,15 +33,27 @@ namespace CircleForms
                 builder.UseNpgsql(Configuration.GetConnectionString("Database"));
             });
 
-            services.Configure<OsuApiConfig>(Configuration.GetSection("Global"));
+            services.Configure<OsuApiConfig>(Configuration.GetSection("osuApi"));
 
             services.AddTransient<IRestClient, RestClient>();
             services.AddTransient<IOsuApiService, OsuApiService>();
+            services.AddTransient<ITokenService, TokenService>();
+            services.AddTransient<IOsuUserProvider, OsuUserProvider>();
 
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(10);
+                options.Cookie.Name = ".CRINGE";
+            });
+
+            services.AddSingleton<ISessionService, SessionService>();
+            var multiplexer = ConnectionMultiplexer.Connect("localhost:6379");
+            services.AddSingleton<IConnectionMultiplexer>(multiplexer);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CircleForms", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "CircleForms", Version = "v1"});
             });
         }
 
@@ -52,16 +67,15 @@ namespace CircleForms
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CircleForms v1"));
             }
 
+            app.UseSession();
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

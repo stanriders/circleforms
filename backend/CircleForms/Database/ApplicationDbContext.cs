@@ -1,5 +1,4 @@
-﻿
-using CircleForms.Models;
+﻿using CircleForms.Models.OAuth;
 using Microsoft.EntityFrameworkCore;
 
 namespace CircleForms.Database
@@ -14,6 +13,6 @@ namespace CircleForms.Database
 #endif
         }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<OAuthToken> Tokens { get; set; }
     }
 }
