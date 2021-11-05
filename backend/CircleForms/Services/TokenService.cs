@@ -11,10 +11,10 @@ namespace CircleForms.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly IRestClient _client;
-        private readonly ILogger<TokenService> _logger;
-        private readonly OsuApiConfig _config;
         private const string TokenRequest = "https://osu.ppy.sh/oauth/token";
+        private readonly IRestClient _client;
+        private readonly OsuApiConfig _config;
+        private readonly ILogger<TokenService> _logger;
 
         public TokenService(IRestClient client, ILogger<TokenService> logger, IOptions<OsuApiConfig> config)
         {
@@ -35,7 +35,7 @@ namespace CircleForms.Services
                 grant_type = "authorization_code",
                 redirect_uri = _config.CallbackUrl
             });
-            
+
             return await _client.PostAsync<OAuthToken>(request);
         }
     }

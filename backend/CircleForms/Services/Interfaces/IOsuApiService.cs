@@ -1,5 +1,4 @@
-﻿
-namespace CircleForms.Services.Interfaces
+﻿namespace CircleForms.Services.Interfaces
 {
     public interface IOsuApiService
     {

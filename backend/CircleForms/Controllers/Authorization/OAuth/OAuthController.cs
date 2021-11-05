@@ -1,5 +1,4 @@
-﻿using System.Text.Json;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CircleForms.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -10,9 +9,9 @@ namespace CircleForms.Controllers.Authorization.OAuth
     [Route("[controller]")]
     public class OAuthController : ControllerBase
     {
-        private readonly ITokenService _tokenService;
         private readonly ILogger<OAuthController> _logger;
         private readonly IMeService _meService;
+        private readonly ITokenService _tokenService;
 
         public OAuthController(ITokenService tokenService, ILogger<OAuthController> logger, IMeService meService)
         {
@@ -33,8 +32,9 @@ namespace CircleForms.Controllers.Authorization.OAuth
 
             token.Id = user.Id;
             //TODO: do something with it
-            
+
             _logger.LogInformation("{@User}", user);
+
             return Ok();
         }
     }

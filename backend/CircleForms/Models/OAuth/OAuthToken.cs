@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace CircleForms.Models.OAuth
 {
@@ -7,16 +6,16 @@ namespace CircleForms.Models.OAuth
     {
         public long Id { get; set; }
 
-        [JsonPropertyName("access_token")] 
+        [JsonPropertyName("access_token")]
         public string AccessToken { get; init; }
 
-        [JsonPropertyName("expires_in")] 
+        [JsonPropertyName("expires_in")]
         public int ExpiresIn { get; init; }
-        
-        [JsonPropertyName("refresh_token")] 
+
+        [JsonPropertyName("refresh_token")]
         public string RefreshToken { get; init; }
 
-        [JsonPropertyName("token_type")] 
+        [JsonPropertyName("token_type")]
         public string TokenType { get; init; }
     }
 }

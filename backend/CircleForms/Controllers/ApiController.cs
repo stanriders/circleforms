@@ -11,8 +11,8 @@ namespace CircleForms.Controllers
     [Route("[controller]")]
     public class ApiController : ControllerBase
     {
-        private readonly ILogger<ApiController> _logger;
         private readonly ApplicationDbContext _dbContext;
+        private readonly ILogger<ApiController> _logger;
 
         public ApiController(ILogger<ApiController> logger, ApplicationDbContext dbContext)
         {
@@ -23,7 +23,7 @@ namespace CircleForms.Controllers
         [HttpGet]
         public async Task<string> Get()
         {
-            return string.Join(',', await _dbContext.Tokens.Select(x=> x.Id).ToArrayAsync());
+            return string.Join(',', await _dbContext.Tokens.Select(x => x.Id).ToArrayAsync());
         }
     }
 }
