@@ -15,12 +15,12 @@ namespace CircleForms.Controllers.Authorization.OAuth
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<OAuthController> _logger;
-        private readonly IMeService _osuApiDataService;
+        private readonly IOsuUserProvider _osuApiDataService;
         private readonly ISessionService _sessions;
         private readonly ITokenService _tokenService;
 
         public OAuthController(ITokenService tokenService, ISessionService sessions, ILogger<OAuthController> logger,
-            IMeService osuApiDataService, ApplicationDbContext context)
+            IOsuUserProvider osuApiDataService, ApplicationDbContext context)
         {
             _tokenService = tokenService;
             _sessions = sessions;
@@ -36,8 +36,6 @@ namespace CircleForms.Controllers.Authorization.OAuth
             var token = await _tokenService.NewCode(code);
             var user = await _osuApiDataService.GetUser(token);
 
-            _sessions.Remove(x => x.Id == user.Id);
-
             if (user.IsRestricted)
             {
                 return Forbid();
@@ -45,7 +43,7 @@ namespace CircleForms.Controllers.Authorization.OAuth
 
             token.Id = user.Id;
             var session = new Session(token.Id);
-            _sessions.Add(session);
+            await _sessions.Add(session);
 
             HttpContext.Session.SetString("uid", session.Guid.ToString());
 

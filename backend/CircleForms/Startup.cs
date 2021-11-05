@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using RestSharp;
+using StackExchange.Redis;
 
 namespace CircleForms
 {
@@ -37,7 +38,7 @@ namespace CircleForms
             services.AddTransient<IRestClient, RestClient>();
             services.AddTransient<IOsuApiService, OsuApiService>();
             services.AddTransient<ITokenService, TokenService>();
-            services.AddTransient<IMeService, OsuApiDataService>();
+            services.AddTransient<IOsuUserProvider, OsuUserProvider>();
 
             services.AddDistributedMemoryCache();
             services.AddSession(options =>
@@ -47,7 +48,8 @@ namespace CircleForms
             });
 
             services.AddSingleton<ISessionService, SessionService>();
-
+            var multiplexer = ConnectionMultiplexer.Connect("localhost:6379");
+            services.AddSingleton<IConnectionMultiplexer>(multiplexer);
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {

@@ -7,12 +7,12 @@ using RestSharp;
 
 namespace CircleForms.Services.Request
 {
-    public class OsuApiDataService : IMeService
+    public class OsuUserProvider : IOsuUserProvider
     {
         private const string _apiLink = "https://osu.ppy.sh/api/v2/me";
         private readonly IRestClient _client;
 
-        public OsuApiDataService(IRestClient client)
+        public OsuUserProvider(IRestClient client)
         {
             client.BaseUrl = new Uri(_apiLink);
             _client = client;

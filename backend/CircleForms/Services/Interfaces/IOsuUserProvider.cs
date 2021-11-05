@@ -4,7 +4,7 @@ using CircleForms.Models.OAuth;
 
 namespace CircleForms.Services.Interfaces
 {
-    public interface IMeService
+    public interface IOsuUserProvider
     {
         public Task<User> GetUser(OAuthToken token);
     }
