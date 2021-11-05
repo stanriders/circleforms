@@ -5,6 +5,8 @@ namespace CircleForms.Models.OAuth
 {
     public record OAuthToken
     {
+        public long Id { get; set; }
+
         [JsonPropertyName("access_token")] 
         public string AccessToken { get; init; }
 

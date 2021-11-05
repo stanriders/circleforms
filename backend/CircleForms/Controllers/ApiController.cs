@@ -23,7 +23,7 @@ namespace CircleForms.Controllers
         [HttpGet]
         public async Task<string> Get()
         {
-            return string.Join(',', await _dbContext.Users.Select(x=> x.Id).ToArrayAsync());
+            return string.Join(',', await _dbContext.Tokens.Select(x=> x.Id).ToArrayAsync());
         }
     }
 }

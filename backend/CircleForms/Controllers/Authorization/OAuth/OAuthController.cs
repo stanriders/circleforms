@@ -30,6 +30,8 @@ namespace CircleForms.Controllers.Authorization.OAuth
             {
                 return Forbid();
             }
+
+            token.Id = user.Id;
             //TODO: do something with it
             
             _logger.LogInformation("{@User}", user);
