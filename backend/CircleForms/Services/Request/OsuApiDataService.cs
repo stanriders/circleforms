@@ -5,16 +5,16 @@ using CircleForms.Models.OAuth;
 using CircleForms.Services.Interfaces;
 using RestSharp;
 
-namespace CircleForms.Services
+namespace CircleForms.Services.Request
 {
-    public class MeService : IMeService
+    public class OsuApiDataService : IMeService
     {
-        private const string ApiLink = "https://osu.ppy.sh/api/v2/me";
+        private const string _apiLink = "https://osu.ppy.sh/api/v2/me";
         private readonly IRestClient _client;
 
-        public MeService(IRestClient client)
+        public OsuApiDataService(IRestClient client)
         {
-            client.BaseUrl = new Uri(ApiLink);
+            client.BaseUrl = new Uri(_apiLink);
             _client = client;
         }
 

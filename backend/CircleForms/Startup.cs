@@ -1,7 +1,9 @@
+using System;
 using CircleForms.Database;
 using CircleForms.Models.Configurations;
 using CircleForms.Services;
 using CircleForms.Services.Interfaces;
+using CircleForms.Services.Request;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -35,7 +37,16 @@ namespace CircleForms
             services.AddTransient<IRestClient, RestClient>();
             services.AddTransient<IOsuApiService, OsuApiService>();
             services.AddTransient<ITokenService, TokenService>();
-            services.AddTransient<IMeService, MeService>();
+            services.AddTransient<IMeService, OsuApiDataService>();
+
+            services.AddDistributedMemoryCache();
+            services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromDays(10);
+                options.Cookie.Name = ".CRINGE";
+            });
+
+            services.AddSingleton<ISessionService, SessionService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -53,6 +64,8 @@ namespace CircleForms
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CircleForms v1"));
             }
+
+            app.UseSession();
 
             app.UseHttpsRedirection();
 

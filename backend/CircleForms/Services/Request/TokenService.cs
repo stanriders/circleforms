@@ -7,18 +7,18 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RestSharp;
 
-namespace CircleForms.Services
+namespace CircleForms.Services.Request
 {
     public class TokenService : ITokenService
     {
-        private const string TokenRequest = "https://osu.ppy.sh/oauth/token";
+        private const string _tokenRequest = "https://osu.ppy.sh/oauth/token";
         private readonly IRestClient _client;
         private readonly OsuApiConfig _config;
         private readonly ILogger<TokenService> _logger;
 
         public TokenService(IRestClient client, ILogger<TokenService> logger, IOptions<OsuApiConfig> config)
         {
-            client.BaseUrl = new Uri(TokenRequest);
+            client.BaseUrl = new Uri(_tokenRequest);
             _client = client;
             _logger = logger;
             _config = config.Value;
