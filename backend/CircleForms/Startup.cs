@@ -30,10 +30,12 @@ namespace CircleForms
                 builder.UseNpgsql(Configuration.GetConnectionString("Database"));
             });
 
-            services.Configure<OsuApiConfig>(Configuration.GetSection("Global"));
+            services.Configure<OsuApiConfig>(Configuration.GetSection("osuApi"));
 
             services.AddTransient<IRestClient, RestClient>();
             services.AddTransient<IOsuApiService, OsuApiService>();
+            services.AddTransient<ITokenService, TokenService>();
+            services.AddTransient<IMeService, MeService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
