@@ -1,33 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using CircleForms.Models;
 using CircleForms.Services.Interfaces;
+using StackExchange.Redis;
 
 namespace CircleForms.Services
 {
     public class SessionService : ISessionService
     {
-        private readonly HashSet<Session> _sessions;
+        private readonly IConnectionMultiplexer _multiplexer;
 
-        public SessionService(HashSet<Session> sessions)
+        public SessionService(IConnectionMultiplexer multiplexer)
         {
-            _sessions = sessions;
+            _multiplexer = multiplexer;
         }
 
-        public Session Get(Guid guid)
+        private IDatabase _db => _multiplexer.GetDatabase();
+
+        public async Task<long> Get(Guid guid)
         {
-            return _sessions.FirstOrDefault(x => x.Guid == guid);
+            var vac = await _db.StringGetAsync(guid.ToString());
+            if (vac.TryParse(out long val))
+            {
+                return val;
+            }
+
+            return -1;
         }
 
-        public void Add(Session session)
+        public async Task<bool> Add(Session session)
         {
-            _sessions.Add(session);
+            return await _db.StringSetAsync(session.Guid.ToString(), session.Id);
         }
 
-        public void Remove(Predicate<Session> predicate)
+        public async Task<long> Remove(IEnumerable<Guid> guids)
         {
-            _sessions.RemoveWhere(predicate);
+            var strs = guids.Select(x => x.ToString()).Cast<RedisKey>().ToArray();
+
+            return await _db.KeyDeleteAsync(strs);
         }
     }
 }

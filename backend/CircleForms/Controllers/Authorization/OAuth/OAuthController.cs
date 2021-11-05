@@ -36,8 +36,6 @@ namespace CircleForms.Controllers.Authorization.OAuth
             var token = await _tokenService.NewCode(code);
             var user = await _osuApiDataService.GetUser(token);
 
-            _sessions.Remove(x => x.Id == user.Id);
-
             if (user.IsRestricted)
             {
                 return Forbid();
@@ -45,7 +43,7 @@ namespace CircleForms.Controllers.Authorization.OAuth
 
             token.Id = user.Id;
             var session = new Session(token.Id);
-            _sessions.Add(session);
+            await _sessions.Add(session);
 
             HttpContext.Session.SetString("uid", session.Guid.ToString());
 
