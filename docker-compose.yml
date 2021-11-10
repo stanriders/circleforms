@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend/.
+    depends_on:
+      - redis
+      - postgres
+    links:
+      - redis
+      - postgres
+    ports:
+     - "8080:3001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:3001
+      - ConnectionStrings__Database=Host=postgres;Database=circleforms;Username=postgres;Password=postgres
+      - ConnectionStrings__Redis=redis:6379
+
+  frontend:
+    build: ./frontend/.
+    ports:
+     - "80:3000"
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=circleforms
+    volumes:
+      - ./db/:/var/lib/postgresql/data/
+    ports:
+    - "5432:5432"

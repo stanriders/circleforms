@@ -48,7 +48,7 @@ namespace CircleForms
             });
 
             services.AddSingleton<ISessionService, SessionService>();
-            var multiplexer = ConnectionMultiplexer.Connect("localhost:6379");
+            var multiplexer = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("Redis"));
             services.AddSingleton<IConnectionMultiplexer>(multiplexer);
             services.AddControllers();
             services.AddSwaggerGen(c =>
