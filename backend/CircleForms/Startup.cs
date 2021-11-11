@@ -1,12 +1,12 @@
 using System;
-using CircleForms.Database;
 using CircleForms.Models.Configurations;
 using CircleForms.Services;
+using CircleForms.Services.Database;
+using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using CircleForms.Services.Request;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -28,17 +28,13 @@ namespace CircleForms
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContextPool<ApplicationDbContext>(builder =>
-            {
-                builder.UseNpgsql(Configuration.GetConnectionString("Database"));
-            });
-
             services.Configure<OsuApiConfig>(Configuration.GetSection("osuApi"));
 
             services.AddTransient<IRestClient, RestClient>();
             services.AddTransient<IOsuApiService, OsuApiService>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IOsuUserProvider, OsuUserProvider>();
+            services.AddTransient<IUserDatabaseService, UserDatabaseService>();
 
             services.AddDistributedMemoryCache();
             services.AddSession(options =>

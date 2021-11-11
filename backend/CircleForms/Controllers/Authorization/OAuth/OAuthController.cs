@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using CircleForms.Database;
 using CircleForms.Models;
+using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,20 +13,20 @@ namespace CircleForms.Controllers.Authorization.OAuth
     [Route("[controller]")]
     public class OAuthController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
         private readonly ILogger<OAuthController> _logger;
         private readonly IOsuUserProvider _osuApiDataService;
         private readonly ISessionService _sessions;
         private readonly ITokenService _tokenService;
+        private readonly IUserDatabaseService _usersService;
 
         public OAuthController(ITokenService tokenService, ISessionService sessions, ILogger<OAuthController> logger,
-            IOsuUserProvider osuApiDataService, ApplicationDbContext context)
+            IOsuUserProvider osuApiDataService, IUserDatabaseService usersService)
         {
             _tokenService = tokenService;
             _sessions = sessions;
             _logger = logger;
             _osuApiDataService = osuApiDataService;
-            _context = context;
+            _usersService = usersService;
         }
 
         [HttpGet]
@@ -35,21 +35,23 @@ namespace CircleForms.Controllers.Authorization.OAuth
             HttpContext.Session.Clear();
             var token = await _tokenService.NewCode(code);
             var user = await _osuApiDataService.GetUser(token);
+            user.Token = token;
 
             if (user.IsRestricted)
             {
                 return Forbid();
             }
 
-            token.Id = user.Id;
-            var session = new Session(token.Id);
+            var session = new Session(user.Id);
             await _sessions.Add(session);
 
             HttpContext.Session.SetString("uid", session.Guid.ToString());
 
             //TODO: do something with it
-            await _context.Tokens.AddAsync(token, cancellation);
-            await _context.SaveChangesAsync(cancellation);
+            if (await _usersService.Get(user.Id) == null)
+            {
+                await _usersService.Create(user);
+            }
 
             return Ok();
         }
