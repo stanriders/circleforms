@@ -5,17 +5,20 @@ services:
     build: ./backend/.
     depends_on:
       - redis
-      - postgres
+      - mongodb
     links:
       - redis
-      - postgres
+      - mongodb
     ports:
      - "8080:3001"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:3001
-      - ConnectionStrings__Database=Host=postgres;Database=circleforms;Username=postgres;Password=postgres
+      - ConnectionStrings__Database=mongodb://mongodb:mongodb@mongodb
       - ConnectionStrings__Redis=redis:6379
+      - osuApi__ClientId=
+      - osuApi__ClientSecret=
+      - osuApi__CallbackUrl=http://localhost:8080/OAuth
 
   frontend:
     build: ./frontend/.
@@ -27,13 +30,13 @@ services:
     ports:
       - "6379:6379"
 
-  postgres:
-    image: postgres
+  mongodb:
+    image: mongo:latest
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=circleforms
-    volumes:
-      - ./db/:/var/lib/postgresql/data/
+      - MONGO_INITDB_ROOT_USERNAME=mongodb
+      - MONGO_INITDB_ROOT_PASSWORD=mongodb
+      - MONGO_INITDB_DATABASE=circleforms
     ports:
-    - "5432:5432"
+      - "27017:27017"
+    volumes:
+      - ./db:/data/db

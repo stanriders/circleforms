@@ -1,17 +1,19 @@
 ﻿using System.Text.Json.Serialization;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace CircleForms.Models.OAuth
 {
     public record OAuthToken
     {
-        public long Id { get; set; }
-
+        [BsonElement("Token")]
         [JsonPropertyName("access_token")]
         public string AccessToken { get; init; }
 
+        [BsonElement("ExpiresIn")]
         [JsonPropertyName("expires_in")]
         public int ExpiresIn { get; init; }
 
+        [BsonElement("RefreshToken")]
         [JsonPropertyName("refresh_token")]
         public string RefreshToken { get; init; }
 
