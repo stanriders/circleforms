@@ -20,14 +20,14 @@ namespace CircleForms.Services.Database
             _users = database.GetCollection<User>("Users");
         }
 
-        public Task<List<User>> Get()
+        public async Task<List<User>> Get()
         {
-            return _users.Find(x => true).ToListAsync();
+            return await _users.Find(x => true).ToListAsync();
         }
 
-        public Task<User> Get(long id)
+        public async Task<User> Get(long id)
         {
-            return _users.Find(x => x.Id == id).FirstOrDefaultAsync();
+            return await _users.Find(x => x.Id == id).FirstOrDefaultAsync();
         }
 
         public async Task<User> Create(User user)
@@ -36,19 +36,19 @@ namespace CircleForms.Services.Database
             return user;
         }
 
-        public Task Update(long id, User user)
+        public async Task Update(long id, User user)
         {
-            return _users.ReplaceOneAsync(x => x.Id == id, user);
+            await _users.ReplaceOneAsync(x => x.Id == id, user);
         }
 
-        public Task Remove(User user)
+        public async Task Remove(User user)
         {
-            return _users.DeleteOneAsync(x => x.Id == user.Id);
+            await _users.DeleteOneAsync(x => x.Id == user.Id);
         }
 
-        public Task Remove(long id)
+        public async Task Remove(long id)
         {
-            return _users.DeleteOneAsync(x => x.Id == id);
+            await _users.DeleteOneAsync(x => x.Id == id);
         }
     }
 }
