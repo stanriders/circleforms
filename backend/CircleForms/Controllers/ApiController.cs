@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 namespace CircleForms.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/")]
     public class ApiController : ControllerBase
     {
         private readonly ILogger<ApiController> _logger;
@@ -22,7 +22,7 @@ namespace CircleForms.Controllers
         [HttpGet]
         public async Task<string> Get()
         {
-            return string.Join(',', await _usersService.Get());
+            return string.Join(',', (await _usersService.Get()).Select(x=> x.Id));
         }
     }
 }

@@ -12,6 +12,7 @@ services:
     ports:
      - "3001:3001"
     environment:
+      - PathBase=/api
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:3001
       - ConnectionStrings__Database=mongodb://mongodb:mongodb@mongodb
@@ -19,6 +20,8 @@ services:
       - osuApi__ClientId=
       - osuApi__ClientSecret=
       - osuApi__CallbackUrl=http://localhost:8080/OAuth
+    volumes:
+      - ./logs:/app/logs
 
   frontend:
     build: ./frontend/.
