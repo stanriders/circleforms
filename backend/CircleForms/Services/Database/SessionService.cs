@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CircleForms.Models;
-using CircleForms.Services.Interfaces;
+using CircleForms.Services.Database.Interfaces;
 using StackExchange.Redis;
 
-namespace CircleForms.Services
+namespace CircleForms.Services.Database
 {
     public class SessionService : ISessionService
     {

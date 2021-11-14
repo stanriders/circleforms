@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CircleForms.Models;
 
-namespace CircleForms.Services.Interfaces
+namespace CircleForms.Services.Database.Interfaces
 {
     public interface ISessionService
     {
