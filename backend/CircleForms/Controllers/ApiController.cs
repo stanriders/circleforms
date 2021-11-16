@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -11,9 +10,9 @@ namespace CircleForms.Controllers
     public class ApiController : ControllerBase
     {
         private readonly ILogger<ApiController> _logger;
-        private readonly IUserDatabaseService _usersService;
+        private readonly IUserRepository _usersService;
 
-        public ApiController(ILogger<ApiController> logger, IUserDatabaseService usersService)
+        public ApiController(ILogger<ApiController> logger, IUserRepository usersService)
         {
             _logger = logger;
             _usersService = usersService;

@@ -34,7 +34,8 @@ namespace CircleForms
             services.AddTransient<IOsuApiService, OsuApiService>();
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IOsuUserProvider, OsuUserProvider>();
-            services.AddTransient<IUserDatabaseService, UserDatabaseService>();
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IPostRepository, PostRepository>();
 
             services.AddDistributedMemoryCache();
             services.AddSession(options =>

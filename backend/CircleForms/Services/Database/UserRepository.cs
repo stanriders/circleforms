@@ -1,5 +1,4 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
@@ -8,31 +7,32 @@ using MongoDB.Driver;
 
 namespace CircleForms.Services.Database
 {
-    public class UserDatabaseService : IUserDatabaseService
+    public class UserRepository : IUserRepository
     {
         private readonly IMongoCollection<User> _users;
 
-        public UserDatabaseService(IConfiguration config)
+        public UserRepository(IConfiguration config)
         {
             var client = new MongoClient(config.GetConnectionString("Database"));
             var database = client.GetDatabase("circleforms");
 
-            _users = database.GetCollection<User>("Users");
+            _users = database.GetCollection<User>("users");
         }
 
         public async Task<List<User>> Get()
         {
-            return await _users.Find(x => true).ToListAsync();
+            return await (await _users.FindAsync(x => true)).ToListAsync();
         }
 
         public async Task<User> Get(long id)
         {
-            return await _users.Find(x => x.Id == id).FirstOrDefaultAsync();
+            return await (await _users.FindAsync(x => x.Id == id)).FirstOrDefaultAsync();
         }
 
         public async Task<User> Create(User user)
         {
             await _users.InsertOneAsync(user);
+
             return user;
         }
 
