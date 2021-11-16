@@ -1,19 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CircleForms.Models.Enums;
 using CircleForms.Models.PostFields;
-using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace CircleForms.Models
 {
     public class Post
     {
-        [BsonId]
-        [JsonProperty("id")]
-        public long Id { get; set; }
-
-        [JsonProperty("creator_id")]
-        public long CreatorId { get; set; }
+        [JsonProperty("author_id")]
+        public long AuthorId { get; set; }
 
         [JsonProperty("title")]
         public string Title { get; set; }
@@ -32,5 +28,8 @@ namespace CircleForms.Models
 
         [JsonProperty("fields")]
         public List<PostField> Fields { get; set; }
+
+        [JsonProperty("publish_time")]
+        public DateTime PublishTime { get; set; }
     }
 }

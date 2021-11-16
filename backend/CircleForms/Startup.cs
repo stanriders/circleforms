@@ -35,7 +35,6 @@ namespace CircleForms
             services.AddTransient<ITokenService, TokenService>();
             services.AddTransient<IOsuUserProvider, OsuUserProvider>();
             services.AddTransient<IUserRepository, UserRepository>();
-            services.AddTransient<IPostRepository, PostRepository>();
 
             services.AddDistributedMemoryCache();
             services.AddSession(options =>

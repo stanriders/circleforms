@@ -36,6 +36,14 @@ namespace CircleForms.Services.Database
             return user;
         }
 
+        public async Task<User> AddPost(long id, Post post)
+        {
+            var update = Builders<User>.Update.AddToSet(x => x.Posts, post);
+            var user = await _users.FindOneAndUpdateAsync(x => x.Id == id, update);
+
+            return user;
+        }
+
         public async Task Update(long id, User user)
         {
             await _users.ReplaceOneAsync(x => x.Id == id, user);
