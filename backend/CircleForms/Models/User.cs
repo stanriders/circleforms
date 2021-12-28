@@ -8,9 +8,12 @@ namespace CircleForms.Models
 {
     public class User
     {
-        [BsonElement("OAuthToken")]
-        [JsonProperty("id")]
+        [BsonElement("token")]
+        [JsonProperty("token")]
         public OAuthToken Token { get; set; }
+
+        [JsonProperty("posts")]
+        public IList<Post> Posts { get; set; }
 
         [BsonIgnore]
         [JsonProperty("avatar_url")]

@@ -17,10 +17,10 @@ namespace CircleForms.Controllers.Authorization.OAuth
         private readonly IOsuUserProvider _osuApiDataService;
         private readonly ISessionService _sessions;
         private readonly ITokenService _tokenService;
-        private readonly IUserDatabaseService _usersService;
+        private readonly IUserRepository _usersService;
 
         public OAuthController(ITokenService tokenService, ISessionService sessions, ILogger<OAuthController> logger,
-            IOsuUserProvider osuApiDataService, IUserDatabaseService usersService)
+            IOsuUserProvider osuApiDataService, IUserRepository usersService)
         {
             _tokenService = tokenService;
             _sessions = sessions;
