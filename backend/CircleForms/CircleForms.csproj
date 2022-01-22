@@ -1,10 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
+        <TargetFramework>net6.0</TargetFramework>
         <UserSecretsId>dceba1f4-5b57-42a6-8781-163388fd36a7</UserSecretsId>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
         <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+        <LangVersion>10</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
