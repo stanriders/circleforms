@@ -1,13 +1,13 @@
-using System;
 using System.Collections.Generic;
 using CircleForms.Models.Configurations;
-using CircleForms.Services;
 using CircleForms.Services.Database;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using CircleForms.Services.Request;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -32,19 +32,16 @@ public class Startup
     {
         services.Configure<OsuApiConfig>(Configuration.GetSection("osuApi"));
 
+        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+            .AddCookie();
+
         services.AddTransient<IRestClient, RestClient>();
         services.AddTransient<ITokenService, TokenService>();
         services.AddTransient<IOsuUserProvider, OsuUserProvider>();
         services.AddTransient<IUserRepository, UserRepository>();
 
         services.AddDistributedMemoryCache();
-        services.AddSession(options =>
-        {
-            options.IdleTimeout = TimeSpan.FromDays(10);
-            options.Cookie.Name = ".CRINGE";
-        });
 
-        services.AddSingleton<ISessionService, SessionService>();
         var multiplexer = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("Redis"));
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);
         services.AddControllers();
@@ -73,14 +70,18 @@ public class Startup
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CircleForms v1"));
         }
 
-        app.UseSession();
-
         app.UseForwardedHeaders(new ForwardedHeadersOptions {ForwardedHeaders = ForwardedHeaders.All});
         app.UsePathBase(basePath);
 
         app.UseRouting();
 
         app.UseAuthorization();
+        app.UseAuthentication();
+        app.UseCookiePolicy(new CookiePolicyOptions
+        {
+            Secure = CookieSecurePolicy.SameAsRequest,
+            MinimumSameSitePolicy = SameSiteMode.Strict
+        });
 
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
