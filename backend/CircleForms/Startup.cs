@@ -16,72 +16,72 @@ using Microsoft.OpenApi.Models;
 using RestSharp;
 using StackExchange.Redis;
 
-namespace CircleForms
+namespace CircleForms;
+
+public class Startup
 {
-    public class Startup
+    public Startup(IConfiguration configuration)
     {
-        public Startup(IConfiguration configuration)
+        Configuration = configuration;
+    }
+
+    public IConfiguration Configuration { get; }
+
+    // This method gets called by the runtime. Use this method to add services to the container.
+    public void ConfigureServices(IServiceCollection services)
+    {
+        services.Configure<OsuApiConfig>(Configuration.GetSection("osuApi"));
+
+        services.AddTransient<IRestClient, RestClient>();
+        services.AddTransient<ITokenService, TokenService>();
+        services.AddTransient<IOsuUserProvider, OsuUserProvider>();
+        services.AddTransient<IUserRepository, UserRepository>();
+
+        services.AddDistributedMemoryCache();
+        services.AddSession(options =>
         {
-            Configuration = configuration;
-        }
+            options.IdleTimeout = TimeSpan.FromDays(10);
+            options.Cookie.Name = ".CRINGE";
+        });
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        services.AddSingleton<ISessionService, SessionService>();
+        var multiplexer = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("Redis"));
+        services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+        services.AddControllers();
+        services.AddSwaggerGen(c =>
         {
-            services.Configure<OsuApiConfig>(Configuration.GetSection("osuApi"));
+            c.SwaggerDoc("v1", new OpenApiInfo {Title = "CircleForms", Version = "v1"});
+        });
+    }
 
-            services.AddTransient<IRestClient, RestClient>();
-            services.AddTransient<ITokenService, TokenService>();
-            services.AddTransient<IOsuUserProvider, OsuUserProvider>();
-            services.AddTransient<IUserRepository, UserRepository>();
-
-            services.AddDistributedMemoryCache();
-            services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromDays(10);
-                options.Cookie.Name = ".CRINGE";
-            });
-
-            services.AddSingleton<ISessionService, SessionService>();
-            var multiplexer = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("Redis"));
-            services.AddSingleton<IConnectionMultiplexer>(multiplexer);
-            services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "CircleForms", Version = "v1"});
-            });
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        var basePath = Configuration.GetValue<string>("PathBase");
+        if (env.IsDevelopment())
         {
-            var basePath = Configuration.GetValue<string>("PathBase");
-            if (env.IsDevelopment())
+            app.UseDeveloperExceptionPage();
+            app.UseSwagger(c =>
             {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger(c =>
+                c.RouteTemplate = "swagger/{documentName}/swagger.json";
+                c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
                 {
-                    c.RouteTemplate = "swagger/{documentName}/swagger.json";
-                    c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
-                    {
-                        swaggerDoc.Servers = new List<OpenApiServer> { new() { Url = $"{httpReq.Scheme}://{httpReq.Host.Value}{basePath}" } };
-                    });
+                    swaggerDoc.Servers = new List<OpenApiServer>
+                        {new() {Url = $"{httpReq.Scheme}://{httpReq.Host.Value}{basePath}"}};
                 });
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CircleForms v1"));
-            }
-
-            app.UseSession();
-
-            app.UseForwardedHeaders(new ForwardedHeadersOptions {ForwardedHeaders = ForwardedHeaders.All});
-            app.UsePathBase(basePath);
-
-            app.UseRouting();
-
-            app.UseAuthorization();
-
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            });
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CircleForms v1"));
         }
+
+        app.UseSession();
+
+        app.UseForwardedHeaders(new ForwardedHeadersOptions {ForwardedHeaders = ForwardedHeaders.All});
+        app.UsePathBase(basePath);
+
+        app.UseRouting();
+
+        app.UseAuthorization();
+
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }

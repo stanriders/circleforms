@@ -1,12 +1,11 @@
 ﻿using CircleForms.Models.Enums;
 
-namespace CircleForms.Models.PostFields
-{
-    public class PostField
-    {
-        protected PostField() { }
-        public virtual FieldType Type { get; set; }
+namespace CircleForms.Models.PostFields;
 
-        public string Title { get; set; }
-    }
+public class PostField
+{
+    protected PostField() { }
+    public virtual FieldType Type { get; set; }
+
+    public string Title { get; set; }
 }

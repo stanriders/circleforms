@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿namespace CircleForms.Models.Enums;
 
-namespace CircleForms.Models.Enums
+public enum Gamemode
 {
-    public enum Gamemode
-    {
-        Standard,
-        Taiko,
-        Catch,
-        Mania
-    }
+    Standard,
+    Taiko,
+    Catch,
+    Mania
 }

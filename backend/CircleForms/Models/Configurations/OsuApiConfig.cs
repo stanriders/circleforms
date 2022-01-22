@@ -1,9 +1,8 @@
-﻿namespace CircleForms.Models.Configurations
+﻿namespace CircleForms.Models.Configurations;
+
+public class OsuApiConfig
 {
-    public class OsuApiConfig
-    {
-        public int ClientId { get; set; }
-        public string ClientSecret { get; set; }
-        public string CallbackUrl { get; set; }
-    }
+    public int ClientId { get; set; }
+    public string ClientSecret { get; set; }
+    public string CallbackUrl { get; set; }
 }

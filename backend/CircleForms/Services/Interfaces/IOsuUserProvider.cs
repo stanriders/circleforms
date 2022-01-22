@@ -2,10 +2,9 @@
 using CircleForms.Models;
 using CircleForms.Models.OAuth;
 
-namespace CircleForms.Services.Interfaces
+namespace CircleForms.Services.Interfaces;
+
+public interface IOsuUserProvider
 {
-    public interface IOsuUserProvider
-    {
-        public Task<User> GetUser(OAuthToken token);
-    }
+    public Task<User> GetUser(OAuthToken token);
 }

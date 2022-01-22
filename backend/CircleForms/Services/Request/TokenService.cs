@@ -7,36 +7,35 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RestSharp;
 
-namespace CircleForms.Services.Request
+namespace CircleForms.Services.Request;
+
+public class TokenService : ITokenService
 {
-    public class TokenService : ITokenService
+    private const string _tokenRequest = "https://osu.ppy.sh/oauth/token";
+    private readonly IRestClient _client;
+    private readonly OsuApiConfig _config;
+    private readonly ILogger<TokenService> _logger;
+
+    public TokenService(IRestClient client, ILogger<TokenService> logger, IOptions<OsuApiConfig> config)
     {
-        private const string _tokenRequest = "https://osu.ppy.sh/oauth/token";
-        private readonly IRestClient _client;
-        private readonly OsuApiConfig _config;
-        private readonly ILogger<TokenService> _logger;
+        client.BaseUrl = new Uri(_tokenRequest);
+        _client = client;
+        _logger = logger;
+        _config = config.Value;
+    }
 
-        public TokenService(IRestClient client, ILogger<TokenService> logger, IOptions<OsuApiConfig> config)
+    public async Task<OAuthToken> NewCode(string code)
+    {
+        var request = new RestRequest();
+        request.AddJsonBody(new
         {
-            client.BaseUrl = new Uri(_tokenRequest);
-            _client = client;
-            _logger = logger;
-            _config = config.Value;
-        }
+            client_id = _config.ClientId,
+            client_secret = _config.ClientSecret,
+            code,
+            grant_type = "authorization_code",
+            redirect_uri = _config.CallbackUrl
+        });
 
-        public async Task<OAuthToken> NewCode(string code)
-        {
-            var request = new RestRequest();
-            request.AddJsonBody(new
-            {
-                client_id = _config.ClientId,
-                client_secret = _config.ClientSecret,
-                code,
-                grant_type = "authorization_code",
-                redirect_uri = _config.CallbackUrl
-            });
-
-            return await _client.PostAsync<OAuthToken>(request);
-        }
+        return await _client.PostAsync<OAuthToken>(request);
     }
 }
