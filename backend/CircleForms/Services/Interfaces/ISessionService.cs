@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CircleForms.Models;
 
-namespace CircleForms.Services.Interfaces
+namespace CircleForms.Services.Interfaces;
+
+public interface ISessionService
 {
-    public interface ISessionService
-    {
-        Task<long> Get(Guid guid);
-        Task<bool> Add(Session session);
-        Task<long> Remove(IEnumerable<Guid> guids);
-    }
+    Task<long> Get(Guid guid);
+    Task<bool> Add(Session session);
+    Task<long> Remove(IEnumerable<Guid> guids);
 }
