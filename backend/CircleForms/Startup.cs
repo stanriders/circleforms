@@ -115,7 +115,7 @@ public class Startup
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 Secure = CookieSecurePolicy.SameAsRequest,
-                MinimumSameSitePolicy = SameSiteMode.Strict
+                MinimumSameSitePolicy = SameSiteMode.Lax
             });
         }
 
