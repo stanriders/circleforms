@@ -42,6 +42,7 @@ public class Startup
                 options.Events.OnRedirectToLogin = context =>
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+
                     return Task.CompletedTask;
                 };
             })
@@ -65,6 +66,7 @@ public class Startup
         services.AddTransient<IRestClient, RestClient>();
         services.AddTransient<IOsuUserProvider, OsuUserProvider>();
         services.AddTransient<IUserRepository, UserRepository>();
+        services.AddTransient<IPostRepository, PostRepository>();
 
         services.AddDistributedMemoryCache();
 
@@ -74,14 +76,14 @@ public class Startup
         services.AddControllers().AddNewtonsoftJson();
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo { Title = "CircleForms", Version = "v1" });
+            c.SwaggerDoc("v1", new OpenApiInfo {Title = "CircleForms", Version = "v1"});
         });
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All });
+        app.UseForwardedHeaders(new ForwardedHeadersOptions {ForwardedHeaders = ForwardedHeaders.All});
 
         var basePath = Configuration.GetValue<string>("PathBase");
         if (env.IsDevelopment())
@@ -109,6 +111,7 @@ public class Startup
             app.Use((context, next) =>
             {
                 context.Request.Scheme = "https";
+
                 return next(context);
             });
 

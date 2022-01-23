@@ -1,5 +1,4 @@
-﻿
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -13,18 +12,24 @@ namespace CircleForms.Controllers;
 public class PostsController : ControllerBase
 {
     private readonly ILogger<PostsController> _logger;
-    private readonly IUserRepository _usersRepository;
+    private readonly IPostRepository _postRepository;
 
-    public PostsController(ILogger<PostsController> logger, IUserRepository usersRepository)
+    public PostsController(ILogger<PostsController> logger, IPostRepository postRepository)
     {
         _logger = logger;
-        _usersRepository = usersRepository;
+        _postRepository = postRepository;
     }
 
     [HttpGet]
     public async Task<IActionResult> Get(string id)
     {
-        return Ok(await _usersRepository.GetPost(id));
+        return Ok(await _postRepository.GetPost(id));
+    }
+
+    [HttpGet("/page/{page:int}")]
+    public async Task<Post[]> GetPage(int page)
+    {
+        return await _postRepository.GetPostsPaged(page);
     }
 
     [Authorize]
@@ -35,14 +40,12 @@ public class PostsController : ControllerBase
         if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out var userId))
         {
             post.AuthorId = userId;
-            var result = await _usersRepository.AddPost(userId, post);
+            var result = await _postRepository.AddPost(userId, post);
 
             return Ok(result);
         }
-        else
-        {
-            _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
-        }
+
+        _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
 
         return BadRequest();
     }
