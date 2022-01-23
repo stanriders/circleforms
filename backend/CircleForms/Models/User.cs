@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CircleForms.Models.OAuth;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
@@ -8,10 +7,6 @@ namespace CircleForms.Models;
 
 public class User
 {
-    [BsonElement("token")]
-    [JsonProperty("token")]
-    public OAuthToken Token { get; set; }
-
     [JsonProperty("posts")]
     public IList<Post> Posts { get; set; }
 

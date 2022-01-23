@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
-using System.Threading;
 using System.Threading.Tasks;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 
 namespace CircleForms.Controllers.Authorization.OAuth;
 
@@ -17,49 +16,83 @@ public class OAuthController : ControllerBase
 {
     private readonly ILogger<OAuthController> _logger;
     private readonly IOsuUserProvider _osuApiDataService;
-    private readonly ITokenService _tokenService;
-    private readonly IUserRepository _usersService;
+    private readonly IConnectionMultiplexer _redis;
+    private readonly IUserRepository _usersRepository;
 
-    public OAuthController(ITokenService tokenService, ILogger<OAuthController> logger,
-        IOsuUserProvider osuApiDataService, IUserRepository usersService)
+    public OAuthController(ILogger<OAuthController> logger, IOsuUserProvider osuApiDataService,
+        IUserRepository usersRepository, IConnectionMultiplexer redis)
     {
-        _tokenService = tokenService;
         _logger = logger;
         _osuApiDataService = osuApiDataService;
-        _usersService = usersService;
+        _usersRepository = usersRepository;
+        _redis = redis;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> NewCode([FromQuery(Name = "code")] string code, CancellationToken cancellation)
-    {
-        var token = await _tokenService.NewCode(code);
-        var user = await _osuApiDataService.GetUser(token);
-        user.Token = token;
 
+    [HttpGet("auth")]
+    public IActionResult Authenticate()
+    {
+        var authenticationProperties = new AuthenticationProperties
+        {
+            RedirectUri = Url.Action("CompleteAuthentication", "OAuth")
+        };
+
+        return Challenge(authenticationProperties, "osu");
+    }
+
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [HttpGet("complete")]
+    public async Task<IActionResult> CompleteAuthentication()
+    {
+        var authResult = await HttpContext.AuthenticateAsync("ExternalCookies");
+        if (!authResult.Succeeded)
+        {
+            return Forbid();
+        }
+
+        var user = await _osuApiDataService.GetUser(await HttpContext.GetTokenAsync("ExternalCookies", "access_token"));
         if (user.IsRestricted)
         {
+            _logger.LogInformation("User {User} tried logging in, but they are restricted!", user.Id);
+
             return Forbid();
         }
 
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Name, user.Id.ToString())
+            new(ClaimTypes.Name, user.Id.ToString()),
+            new(ClaimTypes.Role, "User")
         };
-        var id = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var id = new ClaimsIdentity(claims, "InternalCookies");
         var authProperties = new AuthenticationProperties
         {
-            IsPersistent = true
+            IsPersistent = true,
+            ExpiresUtc = authResult.Properties?.ExpiresUtc
         };
 
-        //TODO: do something with it
-        if (await _usersService.Get(user.Id) == null)
+        var redisDb = _redis.GetDatabase();
+        if (!redisDb.SetContains("user_ids", user.Id))
         {
-            await _usersService.Create(user);
+            _logger.LogInformation("Adding user {Id} - {Username} to the database", user.Id, user.Username);
+            await _usersRepository.Create(user);
+            await redisDb.SetAddAsync("user_ids", user.Id);
         }
 
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(id),
-            authProperties);
+        await HttpContext.SignInAsync("InternalCookies", new ClaimsPrincipal(id), authProperties);
+        await HttpContext.SignOutAsync("ExternalCookies");
 
-        return Ok();
+        _logger.LogDebug("User {Username} logged in", user.Username);
+
+        // FIXME: better redirects
+        return Redirect("https://circleforms.net/");
+    }
+
+    [HttpGet("signout")]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync("InternalCookies");
+
+        // FIXME: better redirects
+        return Redirect("https://circleforms.net/");
     }
 }
