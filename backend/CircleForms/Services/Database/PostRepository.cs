@@ -13,9 +13,9 @@ namespace CircleForms.Services.Database;
 
 public class PostRepository : IPostRepository
 {
+    private readonly MongoClient _client;
     private readonly ILogger<PostRepository> _logger;
     private readonly IConnectionMultiplexer _redis;
-    private readonly MongoClient _client;
 
     public PostRepository(IConfiguration config, ILogger<PostRepository> logger, IConnectionMultiplexer redis)
     {
@@ -24,6 +24,7 @@ public class PostRepository : IPostRepository
 
         _client = new MongoClient(config.GetConnectionString("Database"));
     }
+
     public async Task<User> AddPost(long id, Post post)
     {
         var database = _client.GetDatabase("circleforms");
@@ -31,13 +32,16 @@ public class PostRepository : IPostRepository
 
         var update = Builders<User>.Update.AddToSet(x => x.Posts, post);
         var user = await users.FindOneAndUpdateAsync(x => x.Id == id, update);
-
         var postId = $"post:{post.Id}";
         var redisDb = _redis.GetDatabase();
+
+        var offsetUnixTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
         var transaction = redisDb.CreateTransaction();
+        _ = transaction.HashSetAsync(postId, "id", post.Id.ToString());
         _ = transaction.HashSetAsync(postId, "author", post.AuthorId);
         _ = transaction.HashSetAsync(postId, "title", post.Title);
         _ = transaction.HashSetAsync(postId, "description", post.Description);
+        _ = transaction.HashSetAsync(postId, "publish_time", offsetUnixTime);
         if (!await transaction.ExecuteAsync())
         {
             _logger.LogError("Could not post {PostId} to the redis cache", post.Id.ToString());
@@ -45,7 +49,7 @@ public class PostRepository : IPostRepository
             return user;
         }
 
-        await redisDb.SortedSetAddAsync("posts", postId, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+        await redisDb.SortedSetAddAsync("posts", postId, offsetUnixTime);
 
         return user;
     }
@@ -65,7 +69,8 @@ public class PostRepository : IPostRepository
     public async Task<Post[]> GetPostsPaged(int page, int pageSize = 50)
     {
         var redisDb = _redis.GetDatabase();
-        var ids = await redisDb.SortedSetRangeByScoreAsync("posts", take: pageSize, skip: page * pageSize);
+        var ids = redisDb.SortedSetRangeByScore("posts", order: Order.Descending, skip: (page - 1) * pageSize,
+            take: pageSize);
 
         if (ids.Length == 0)
         {
@@ -84,11 +89,12 @@ public class PostRepository : IPostRepository
         for (var i = 0; i < ids.Length; i++)
         {
             var redisValue = tasks[i].Result;
-            posts[i] = new Post
+            posts[i] = new Post(redisValue[0])
             {
-                AuthorId = (long) redisValue[0],
-                Title = redisValue[1],
-                Description = redisValue[2]
+                AuthorId = (long) redisValue[1],
+                Title = redisValue[2],
+                Description = redisValue[3],
+                PublishTime = DateTimeOffset.FromUnixTimeMilliseconds((long) redisValue[4]).UtcDateTime
             };
         }
 
