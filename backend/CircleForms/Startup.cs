@@ -71,7 +71,7 @@ public class Startup
         var multiplexer = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("Redis"));
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);
 
-        services.AddControllers();
+        services.AddControllers().AddNewtonsoftJson();
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "CircleForms", Version = "v1" });
