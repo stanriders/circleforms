@@ -74,7 +74,8 @@ public class OAuthController : ControllerBase
         if (!redisDb.SetContains("user_ids", user.Id))
         {
             _logger.LogInformation("Adding user {Id} - {Username} to the database", user.Id, user.Username);
-            await Task.WhenAll(_usersRepository.Create(user), redisDb.SetAddAsync("user_ids", user.Id));
+            await _usersRepository.Create(user);
+            await redisDb.SetAddAsync("user_ids", user.Id);
         }
 
         await HttpContext.SignInAsync("InternalCookies", new ClaimsPrincipal(id), authProperties);
