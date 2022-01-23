@@ -31,18 +31,12 @@ public class UserRepository : IUserRepository
 
     public async Task<User> Create(User user)
     {
+        user.Posts = new List<Post>();
         await _users.InsertOneAsync(user);
 
         return user;
     }
 
-    public async Task<User> AddPost(long id, Post post)
-    {
-        var update = Builders<User>.Update.AddToSet(x => x.Posts, post);
-        var user = await _users.FindOneAndUpdateAsync(x => x.Id == id, update);
-
-        return user;
-    }
 
     public async Task Update(long id, User user)
     {
