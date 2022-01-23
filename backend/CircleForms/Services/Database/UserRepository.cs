@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.Extensions.Configuration;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace CircleForms.Services.Database;
@@ -42,6 +44,15 @@ public class UserRepository : IUserRepository
         var user = await _users.FindOneAndUpdateAsync(x => x.Id == id, update);
 
         return user;
+    }
+
+    public async Task<Post> GetPost(string postId)
+    {
+        var objId = ObjectId.Parse(postId);
+        var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, x => x.Id == objId);
+        var post = await _users.Find(filter).Project(x=> x.Posts.First(x => x.Id == objId)).FirstOrDefaultAsync();
+
+        return post;
     }
 
     public async Task Update(long id, User user)
