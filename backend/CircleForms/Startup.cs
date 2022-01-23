@@ -106,14 +106,6 @@ public class Startup
         }
         else
         {
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                Secure = CookieSecurePolicy.SameAsRequest,
-                MinimumSameSitePolicy = SameSiteMode.Strict
-            });
-        }
-        else
-        {
             app.Use((context, next) =>
             {
                 context.Request.Scheme = "https";
