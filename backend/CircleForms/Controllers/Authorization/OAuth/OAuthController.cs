@@ -73,8 +73,17 @@ public class OAuthController : ControllerBase
         var redisDb = _redis.GetDatabase();
         if (!redisDb.SetContains("user_ids", user.Id))
         {
-            _logger.LogInformation("Adding user {Id} - {Username} to the database", user.Id, user.Username);
-            await _usersRepository.Create(user);
+            if (_usersRepository.Get(user.Id) == null)
+            {
+                _logger.LogInformation("Adding user {Id} - {Username} to the database", user.Id, user.Username);
+                await _usersRepository.Create(user);
+            }
+            else
+            {
+                _logger.LogWarning("User {Id} - {Username} found in the database but was not cached", user.Id,
+                    user.Username);
+            }
+
             await redisDb.SetAddAsync("user_ids", user.Id);
         }
 
