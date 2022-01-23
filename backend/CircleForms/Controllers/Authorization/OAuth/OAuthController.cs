@@ -6,6 +6,7 @@ using CircleForms.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 
 namespace CircleForms.Controllers.Authorization.OAuth;
 
@@ -15,14 +16,16 @@ public class OAuthController : ControllerBase
 {
     private readonly ILogger<OAuthController> _logger;
     private readonly IOsuUserProvider _osuApiDataService;
+    private readonly IConnectionMultiplexer _redis;
     private readonly IUserRepository _usersRepository;
 
     public OAuthController(ILogger<OAuthController> logger, IOsuUserProvider osuApiDataService,
-        IUserRepository usersRepository)
+        IUserRepository usersRepository, IConnectionMultiplexer redis)
     {
         _logger = logger;
         _osuApiDataService = osuApiDataService;
         _usersRepository = usersRepository;
+        _redis = redis;
     }
 
 
@@ -51,6 +54,7 @@ public class OAuthController : ControllerBase
         if (user.IsRestricted)
         {
             _logger.LogInformation("User {User} tried logging in, but they are restricted!", user.Id);
+
             return Forbid();
         }
 
@@ -66,16 +70,17 @@ public class OAuthController : ControllerBase
             ExpiresUtc = authResult.Properties?.ExpiresUtc
         };
 
-        if (await _usersRepository.Get(user.Id) == null)
+        var redisDb = _redis.GetDatabase();
+        if (!redisDb.SetContains("user_ids", user.Id))
         {
             _logger.LogInformation("Adding user {Id} - {Username} to the database", user.Id, user.Username);
-            await _usersRepository.Create(user);
+            await Task.WhenAll(_usersRepository.Create(user), redisDb.SetAddAsync("user_ids", user.Id));
         }
 
         await HttpContext.SignInAsync("InternalCookies", new ClaimsPrincipal(id), authProperties);
         await HttpContext.SignOutAsync("ExternalCookies");
 
-        _logger.LogInformation("User {Username} logged in.", user.Username);
+        _logger.LogDebug("User {Username} logged in", user.Username);
 
         // FIXME: better redirects
         return Redirect("https://circleforms.net/");
