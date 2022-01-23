@@ -1,10 +1,10 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using CircleForms.Models.Configurations;
 using CircleForms.Services.Database;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using CircleForms.Services.Request;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -30,13 +30,39 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
-        services.Configure<OsuApiConfig>(Configuration.GetSection("osuApi"));
+        var config = Configuration.GetSection("osuApi");
+        services.Configure<OsuApiConfig>(config);
 
-        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie();
+        services.AddAuthentication("InternalCookies")
+            .AddCookie("InternalCookies", options =>
+            {
+                // set some paths to empty to make auth not redirect API calls
+                options.LoginPath = string.Empty;
+                options.AccessDeniedPath = string.Empty;
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.CompletedTask;
+                };
+            })
+            .AddCookie("ExternalCookies")
+            .AddOAuth("osu", options =>
+            {
+                options.SignInScheme = "ExternalCookies";
+
+                options.TokenEndpoint = "https://osu.ppy.sh/oauth/token";
+                options.AuthorizationEndpoint = "https://osu.ppy.sh/oauth/authorize";
+                options.ClientId = config["ClientID"];
+                options.ClientSecret = config["ClientSecret"];
+                options.CallbackPath = config["CallbackUrl"];
+                options.Scope.Add("public");
+
+                options.SaveTokens = true;
+
+                options.Validate();
+            });
 
         services.AddTransient<IRestClient, RestClient>();
-        services.AddTransient<ITokenService, TokenService>();
         services.AddTransient<IOsuUserProvider, OsuUserProvider>();
         services.AddTransient<IUserRepository, UserRepository>();
 
@@ -44,10 +70,11 @@ public class Startup
 
         var multiplexer = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("Redis"));
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+
         services.AddControllers();
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo {Title = "CircleForms", Version = "v1"});
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "CircleForms", Version = "v1" });
         });
     }
 
@@ -68,6 +95,20 @@ public class Startup
                 });
             });
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CircleForms v1"));
+
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                Secure = CookieSecurePolicy.None,
+                MinimumSameSitePolicy = SameSiteMode.None
+            });
+        }
+        else
+        {
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                Secure = CookieSecurePolicy.SameAsRequest,
+                MinimumSameSitePolicy = SameSiteMode.Strict
+            });
         }
 
         app.UseForwardedHeaders(new ForwardedHeadersOptions {ForwardedHeaders = ForwardedHeaders.All});
@@ -75,13 +116,8 @@ public class Startup
 
         app.UseRouting();
 
-        app.UseAuthorization();
         app.UseAuthentication();
-        app.UseCookiePolicy(new CookiePolicyOptions
-        {
-            Secure = CookieSecurePolicy.SameAsRequest,
-            MinimumSameSitePolicy = SameSiteMode.Strict
-        });
+        app.UseAuthorization();
 
         app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
