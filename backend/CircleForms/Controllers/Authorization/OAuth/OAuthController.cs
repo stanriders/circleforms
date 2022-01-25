@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CircleForms.Models;
@@ -6,6 +7,7 @@ using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using StackExchange.Redis;
 
@@ -15,14 +17,17 @@ namespace CircleForms.Controllers.Authorization.OAuth;
 [Route("[controller]")]
 public class OAuthController : ControllerBase
 {
+    private readonly IConfiguration _configuration;
     private readonly ILogger<OAuthController> _logger;
     private readonly IOsuUserProvider _osuApiDataService;
     private readonly IConnectionMultiplexer _redis;
     private readonly IUserRepository _usersRepository;
 
-    public OAuthController(ILogger<OAuthController> logger, IOsuUserProvider osuApiDataService,
+    public OAuthController(IConfiguration configuration, ILogger<OAuthController> logger,
+        IOsuUserProvider osuApiDataService,
         IUserRepository usersRepository, IConnectionMultiplexer redis)
     {
+        _configuration = configuration;
         _logger = logger;
         _osuApiDataService = osuApiDataService;
         _usersRepository = usersRepository;
@@ -64,6 +69,12 @@ public class OAuthController : ControllerBase
         {
             if (await _usersRepository.Get(user.Id) == null)
             {
+                var superAdminId = _configuration["SuperAdminsId"].Split(",");
+                if (superAdminId.Contains(user.Id.ToString()))
+                {
+                    user.Roles = Roles.SuperAdmin | Roles.Admin | Roles.Moderator;
+                }
+
                 _logger.LogInformation("Adding user {Id} - {Username} to the database", user.Id, user.Username);
                 await _usersRepository.Create(user);
             }
@@ -93,6 +104,11 @@ public class OAuthController : ControllerBase
             new(ClaimTypes.Name, user.Id.ToString()),
             new(ClaimTypes.Role, "User")
         };
+
+        if (user.Roles.HasFlag(Roles.SuperAdmin))
+        {
+            claims.Add(new Claim(ClaimTypes.Role, "SuperAdmin"));
+        }
 
         if (user.Roles.HasFlag(Roles.Admin))
         {

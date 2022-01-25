@@ -41,6 +41,17 @@ public class UsersController : ControllerBase
         return await _usersService.Get();
     }
 
+    [Authorize(Roles = "SuperAdmin")]
+    [HttpPatch]
+    public async Task<User> EscalatePrivileges(long id, int role)
+    {
+        var user = await _usersService.Get(id);
+        user.Roles = (Roles) role;
+        await _usersService.Update(id, user);
+
+        return user;
+    }
+
     [Authorize]
     [HttpGet("/Self")]
     public async Task<IActionResult> GetSelf()

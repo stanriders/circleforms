@@ -98,11 +98,13 @@ public class User
     public Roles Roles { get; set; }
 }
 
+[Flags]
 public enum Roles
 {
     User,
     Admin,
-    Moderator
+    Moderator,
+    SuperAdmin
 }
 
 public class Badge
