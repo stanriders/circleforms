@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -13,25 +12,21 @@ namespace CircleForms.Services.Database;
 
 public class PostRepository : IPostRepository
 {
-    private readonly MongoClient _client;
     private readonly ILogger<PostRepository> _logger;
     private readonly IConnectionMultiplexer _redis;
+    private readonly IMongoCollection<User> _users;
 
-    public PostRepository(IConfiguration config, ILogger<PostRepository> logger, IConnectionMultiplexer redis)
+    public PostRepository(ILogger<PostRepository> logger, IConnectionMultiplexer redis, IMongoDatabase database)
     {
         _logger = logger;
         _redis = redis;
-
-        _client = new MongoClient(config.GetConnectionString("Database"));
+        _users = database.GetCollection<User>("users");
     }
 
     public async Task<User> AddPost(long id, Post post)
     {
-        var database = _client.GetDatabase("circleforms");
-        var users = database.GetCollection<User>("users");
-
         var update = Builders<User>.Update.AddToSet(x => x.Posts, post);
-        var user = await users.FindOneAndUpdateAsync(x => x.Id == id, update);
+        var user = await _users.FindOneAndUpdateAsync(x => x.Id == id, update);
         var postId = $"post:{post.Id}";
         var redisDb = _redis.GetDatabase();
 
@@ -56,12 +51,10 @@ public class PostRepository : IPostRepository
 
     public async Task<Post> GetPost(string postId)
     {
-        var database = _client.GetDatabase("circleforms");
-        var users = database.GetCollection<User>("users");
-
         var objId = ObjectId.Parse(postId);
         var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, x => x.Id == objId);
-        var post = await users.Find(filter).Project(x => x.Posts.First(post => post.Id == objId)).FirstOrDefaultAsync();
+        var post = await _users.Find(filter).Project(x => x.Posts.First(post => post.Id == objId))
+            .FirstOrDefaultAsync();
 
         return post;
     }

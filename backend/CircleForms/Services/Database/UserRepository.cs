@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
-using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 
 namespace CircleForms.Services.Database;
@@ -11,11 +10,8 @@ public class UserRepository : IUserRepository
 {
     private readonly IMongoCollection<User> _users;
 
-    public UserRepository(IConfiguration config)
+    public UserRepository(IMongoDatabase database)
     {
-        var client = new MongoClient(config.GetConnectionString("Database"));
-        var database = client.GetDatabase("circleforms");
-
         _users = database.GetCollection<User>("users");
     }
 
