@@ -11,15 +11,12 @@ public class User
     [JsonProperty("posts")]
     public List<Post> Posts { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("avatar_url")]
     public Uri AvatarUrl { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("country_code")]
     public string CountryCode { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("default_group")]
     public string DefaultGroup { get; set; }
 
@@ -27,70 +24,54 @@ public class User
     [JsonProperty("id")]
     public long Id { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("is_active")]
     public bool IsActive { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("is_bot")]
     public bool IsBot { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("is_supporter")]
     public bool IsSupporter { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("pm_friends_only")]
     public bool PmFriendsOnly { get; set; }
 
     [JsonProperty("username")]
     public string Username { get; set; }
 
-    [BsonElement("Discord")]
     [JsonProperty("discord")]
     public string Discord { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("join_date")]
-    public DateTimeOffset JoinDate { get; set; }
+    public DateTime JoinDate { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("playmode")]
     public string Playmode { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("country")]
     public Country Country { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("is_restricted")]
     public bool IsRestricted { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("account_history")]
     public List<object> AccountHistory { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("badges")]
     public List<Badge> Badges { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("monthly_playcounts")]
     public List<Count> MonthlyPlaycounts { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("previous_usernames")]
     public List<string> PreviousUsernames { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("statistics")]
     public Statistics Statistics { get; set; }
 
-    [BsonIgnore]
-    [JsonProperty("user_achievements")]
-    public List<UserAchievement> UserAchievements { get; set; }
+    // [JsonProperty("user_achievements")]
+    // public List<UserAchievement> UserAchievements { get; set; }
 
-    [BsonIgnore]
     [JsonProperty("rank_history")]
     public RankHistory RankHistory { get; set; }
 
@@ -110,7 +91,7 @@ public enum Roles
 public class Badge
 {
     [JsonProperty("awarded_at")]
-    public DateTimeOffset AwardedAt { get; set; }
+    public DateTime AwardedAt { get; set; }
 
     [JsonProperty("description")]
     public string Description { get; set; }
@@ -134,7 +115,7 @@ public class Country
 public class Count
 {
     [JsonProperty("start_date")]
-    public DateTimeOffset StartDate { get; set; }
+    public DateTime StartDate { get; set; }
 
     [JsonProperty("count")]
     public long CountCount { get; set; }
@@ -233,7 +214,7 @@ public class Rank
 public class UserAchievement
 {
     [JsonProperty("achieved_at")]
-    public DateTimeOffset AchievedAt { get; set; }
+    public DateTime AchievedAt { get; set; }
 
     [JsonProperty("achievement_id")]
     public long AchievementId { get; set; }

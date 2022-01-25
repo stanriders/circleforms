@@ -97,8 +97,9 @@ public class OAuthController : ControllerBase
             return StatusCode(500);
         }
 
-        user = dbUser;
+        user = TransferMutableData(dbUser, user);
 
+        var updateTask = _usersRepository.Update(user.Id, user);
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, user.Id.ToString()),
@@ -127,6 +128,8 @@ public class OAuthController : ControllerBase
             ExpiresUtc = authResult.Properties?.ExpiresUtc
         };
 
+        await updateTask;
+
         await HttpContext.SignInAsync("InternalCookies", new ClaimsPrincipal(id), authProperties);
         await HttpContext.SignOutAsync("ExternalCookies");
 
@@ -143,5 +146,14 @@ public class OAuthController : ControllerBase
 
         // FIXME: better redirects
         return Redirect("https://circleforms.net/");
+    }
+
+    private static User TransferMutableData(User dbUser, User osuUser)
+    {
+        osuUser.Discord = dbUser.Discord;
+        osuUser.Posts = dbUser.Posts;
+        osuUser.Roles = dbUser.Roles;
+
+        return osuUser;
     }
 }
