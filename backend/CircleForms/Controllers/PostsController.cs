@@ -41,12 +41,14 @@ public class PostsController : ControllerBase
     }
 
     #region Mongo
+    [Authorize(Roles = "Admin")]
     [HttpGet("/posts/mongo/{id}")]
     public async Task<Post> Get(string id)
     {
         return await _postRepository.Get(id);
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpGet("/posts/mongo")]
     public async Task<List<Post>> Get()
     {
@@ -55,6 +57,7 @@ public class PostsController : ControllerBase
     #endregion
 
     #region Cache
+    [Authorize(Roles = "Admin,Moderator")]
     [HttpGet("/posts")]
     public async Task<PostRedis[]> GetCached()
     {

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -58,22 +59,10 @@ public class OAuthController : ControllerBase
             return Forbid();
         }
 
-        var claims = new List<Claim>
-        {
-            new(ClaimTypes.Name, user.Id.ToString()),
-            new(ClaimTypes.Role, "User")
-        };
-        var id = new ClaimsIdentity(claims, "InternalCookies");
-        var authProperties = new AuthenticationProperties
-        {
-            IsPersistent = true,
-            ExpiresUtc = authResult.Properties?.ExpiresUtc
-        };
-
         var redisDb = _redis.GetDatabase();
         if (!redisDb.SetContains("user_ids", user.Id))
         {
-            if (_usersRepository.Get(user.Id) == null)
+            if (await _usersRepository.Get(user.Id) == null)
             {
                 _logger.LogInformation("Adding user {Id} - {Username} to the database", user.Id, user.Username);
                 await _usersRepository.Create(user);
@@ -86,6 +75,41 @@ public class OAuthController : ControllerBase
 
             await redisDb.SetAddAsync("user_ids", user.Id);
         }
+
+        var dbUser = await _usersRepository.Get(user.Id);
+        if (dbUser is null)
+        {
+            _logger.LogCritical("Something went horribly wrong. User is not in the database. User: {@User}", user);
+            await HttpContext.SignOutAsync("InternalCookies");
+            await HttpContext.SignOutAsync("ExternalCookies");
+
+            return StatusCode(500);
+        }
+
+        user = dbUser;
+
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, user.Id.ToString()),
+            new(ClaimTypes.Role, "User")
+        };
+
+        if (user.Roles.HasFlag(Roles.Admin))
+        {
+            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+        }
+
+        if (user.Roles.HasFlag(Roles.Moderator))
+        {
+            claims.Add(new Claim(ClaimTypes.Role, "Moderator"));
+        }
+
+        var id = new ClaimsIdentity(claims, "InternalCookies");
+        var authProperties = new AuthenticationProperties
+        {
+            IsPersistent = true,
+            ExpiresUtc = authResult.Properties?.ExpiresUtc
+        };
 
         await HttpContext.SignInAsync("InternalCookies", new ClaimsPrincipal(id), authProperties);
         await HttpContext.SignOutAsync("ExternalCookies");

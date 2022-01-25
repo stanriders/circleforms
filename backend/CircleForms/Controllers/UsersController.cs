@@ -1,5 +1,6 @@
-﻿
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,16 +12,17 @@ namespace CircleForms.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-    private readonly ILogger<PostsController> _logger;
+    private readonly ILogger<UsersController> _logger;
     private readonly IUserRepository _usersService;
 
-    public UsersController(ILogger<PostsController> logger, IUserRepository usersService)
+    public UsersController(ILogger<UsersController> logger, IUserRepository usersService)
     {
         _logger = logger;
         _usersService = usersService;
     }
 
-    [HttpGet("{id}")]
+    [Authorize(Roles = "Admin")]
+    [HttpGet("{id:long}")]
     public async Task<IActionResult> Get(long id)
     {
         var user = await _usersService.Get(id);
@@ -32,8 +34,15 @@ public class UsersController : ControllerBase
         return NotFound();
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     [HttpGet]
+    public async Task<List<User>> GetAll()
+    {
+        return await _usersService.Get();
+    }
+
+    [Authorize]
+    [HttpGet("/Self")]
     public async Task<IActionResult> GetSelf()
     {
         var claim = HttpContext.User.Identity?.Name;
@@ -44,6 +53,7 @@ public class UsersController : ControllerBase
             {
                 return Ok(user);
             }
+
             _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", claim);
         }
         else
