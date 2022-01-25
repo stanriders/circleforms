@@ -13,6 +13,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using MongoDB.Driver;
 using RestSharp;
 using StackExchange.Redis;
 
@@ -68,7 +69,9 @@ public class Startup
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IPostRepository, PostRepository>();
 
-        services.AddDistributedMemoryCache();
+        var database = new MongoClient(Configuration.GetConnectionString("Database"))
+            .GetDatabase("circleforms");
+        services.AddSingleton(database);
 
         var multiplexer = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("Redis"));
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);
