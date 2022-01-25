@@ -37,7 +37,7 @@ public class PostsController : ControllerBase
                 return StatusCode(500);
             }
 
-            return CreatedAtAction("Get", new {id = post.Id.ToString()}, result);
+            return CreatedAtAction("GetCachedPost", new {id = post.Id.ToString()}, result);
         }
 
         _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
