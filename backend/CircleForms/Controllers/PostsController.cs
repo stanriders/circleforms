@@ -108,6 +108,12 @@ public class PostsController : ControllerBase
         try
         {
             var post = await _postRepository.Get(id);
+
+            if (post.Questions.Any(x => x.Answers.Any(v => v.UserId == userId)))
+            {
+                return BadRequest("You already voted");
+            }
+
             var questions = post.Questions.ToDictionary(x => x.Id);
             var answersDictionary = answers.ToDictionary(x => x.QuestionId);
             foreach (var (key, value) in questions)
