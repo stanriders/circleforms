@@ -32,6 +32,11 @@ public class PostsController : ControllerBase
             post.AuthorId = userId;
             var result = await _postRepository.Add(userId, post);
 
+            if (result is null)
+            {
+                return StatusCode(500);
+            }
+
             return CreatedAtAction("Get", new {id = post.Id.ToString()}, result);
         }
 

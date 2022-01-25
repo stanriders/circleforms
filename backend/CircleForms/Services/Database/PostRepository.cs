@@ -33,7 +33,14 @@ public class PostRepository : IPostRepository
         var publishUnixTime = ((DateTimeOffset) post.PublishTime).ToUnixTimeMilliseconds();
 
         var update = Builders<User>.Update.AddToSet(x => x.Posts, post);
-        await _users.FindOneAndUpdateAsync(x => x.Id == id, update);
+        var updatedUser = await _users.FindOneAndUpdateAsync(x => x.Id == id, update);
+        if (updatedUser.Posts.All(x => x.Id != post.Id))
+        {
+            _logger.LogCritical("Post was not created in the database. Post: {@Post}, User: {@User}", post,
+                updatedUser);
+
+            return null;
+        }
 
         var postId = $"post:{post.Id}";
         var redisDb = _redis.GetDatabase();
