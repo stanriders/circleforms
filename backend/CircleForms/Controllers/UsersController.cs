@@ -53,8 +53,8 @@ public class UsersController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("/Self")]
-    public async Task<IActionResult> GetSelf()
+    [HttpGet("/me")]
+    public async Task<IActionResult> GetMe()
     {
         var claim = HttpContext.User.Identity?.Name;
         if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out var userId))
