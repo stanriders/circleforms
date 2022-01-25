@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using CircleForms.Models;
+using CircleForms.Models.Configurations;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
 namespace CircleForms.Controllers.Authorization.OAuth;
@@ -21,17 +22,20 @@ public class OAuthController : ControllerBase
     private readonly ILogger<OAuthController> _logger;
     private readonly IOsuUserProvider _osuApiDataService;
     private readonly IConnectionMultiplexer _redis;
+    private readonly IOptions<SuperAdminsId> _superAdminsId;
     private readonly IUserRepository _usersRepository;
 
     public OAuthController(IConfiguration configuration, ILogger<OAuthController> logger,
         IOsuUserProvider osuApiDataService,
-        IUserRepository usersRepository, IConnectionMultiplexer redis)
+        IUserRepository usersRepository, IConnectionMultiplexer redis,
+        IOptions<SuperAdminsId> _superAdminsId)
     {
         _configuration = configuration;
         _logger = logger;
         _osuApiDataService = osuApiDataService;
         _usersRepository = usersRepository;
         _redis = redis;
+        this._superAdminsId = _superAdminsId;
     }
 
 
@@ -69,8 +73,8 @@ public class OAuthController : ControllerBase
         {
             if (await _usersRepository.Get(user.Id) == null)
             {
-                var superAdminId = _configuration["SuperAdminsId"].Split(",");
-                if (superAdminId.Contains(user.Id.ToString()))
+                var superAdminId = _superAdminsId.Value.Ids;
+                if (superAdminId.Contains(user.Id))
                 {
                     user.Roles = Roles.SuperAdmin | Roles.Admin | Roles.Moderator;
                 }
