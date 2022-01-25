@@ -93,6 +93,18 @@ public class User
     [BsonIgnore]
     [JsonProperty("rank_history")]
     public RankHistory RankHistory { get; set; }
+
+    [JsonIgnore]
+    public Roles Roles { get; set; }
+}
+
+[Flags]
+public enum Roles
+{
+    User,
+    Admin,
+    Moderator,
+    SuperAdmin
 }
 
 public class Badge

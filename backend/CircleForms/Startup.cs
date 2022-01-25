@@ -33,6 +33,7 @@ public class Startup
     {
         var config = Configuration.GetSection("osuApi");
         services.Configure<OsuApiConfig>(config);
+        services.Configure<SuperAdminsId>(Configuration.GetSection("SuperAdmins"));
 
         services.AddAuthentication("InternalCookies")
             .AddCookie("InternalCookies", options =>
