@@ -73,7 +73,7 @@ public class OAuthController : ControllerBase
         var redisDb = _redis.GetDatabase();
         if (!redisDb.SetContains("user_ids", user.Id))
         {
-            if (_usersRepository.Get(user.Id) == null)
+            if (await _usersRepository.Get(user.Id) == null)
             {
                 _logger.LogInformation("Adding user {Id} - {Username} to the database", user.Id, user.Username);
                 await _usersRepository.Create(user);
