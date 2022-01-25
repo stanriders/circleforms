@@ -7,5 +7,5 @@ public class PostField
     protected PostField() { }
     public virtual FieldType Type { get; set; }
 
-    public string Value { get; set; }
+    public string Title { get; set; }
 }
