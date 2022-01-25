@@ -13,4 +13,5 @@ public interface IPostRepository
     Task<PostRedis[]> GetCached();
     Task<PostRedis> GetCached(string postId);
     Task<PostRedis[]> GetCachedPage(int page, int pageSize = 50);
+    Task<Post> Update(string id, Post post, bool updateCache);
 }

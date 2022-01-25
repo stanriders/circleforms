@@ -1,6 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CircleForms.Models.Posts;
+using CircleForms.Models.Posts.Questions;
+using CircleForms.Models.Posts.Questions.Answers;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -23,7 +29,7 @@ public class PostsController : ControllerBase
 
 
     [Authorize]
-    [HttpPost]
+    [HttpPost("/posts")]
     public async Task<IActionResult> Post(Post post)
     {
         var claim = HttpContext.User.Identity?.Name;
@@ -37,7 +43,7 @@ public class PostsController : ControllerBase
                 return StatusCode(500);
             }
 
-            return CreatedAtAction("GetCachedPost", new {id = post.Id.ToString()}, result);
+            return CreatedAtAction("GetPostForUser", new {id = post.Id.ToString()}, result);
         }
 
         _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
@@ -70,9 +76,106 @@ public class PostsController : ControllerBase
     }
 
     [HttpGet("/posts/{id}")]
-    public async Task<PostRedis> GetCachedPost(string id)
+    public async Task<Post> GetPostForUser(string id)
     {
-        return await _postRepository.GetCached(id);
+        var post = await _postRepository.Get(id);
+        foreach (var question in post.Questions)
+        {
+            question.Answers = null;
+        }
+
+        return post;
+    }
+
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _answerLockDictionary = new();
+    private static readonly Func<string, SemaphoreSlim> _semaphoreFactory = _ => new SemaphoreSlim(1);
+
+    [Authorize]
+    [HttpPost("/posts/{id}/answer")]
+    public async Task<IActionResult> Answer(string id, [FromBody] List<AnswerContract> answers)
+    {
+        var claim = HttpContext.User.Identity?.Name;
+        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out var userId))
+        {
+            _logger.LogWarning("User had an invalid name claim on answer: {Claim}", claim);
+
+            return BadRequest();
+        }
+
+        var answerLock = _answerLockDictionary.GetOrAdd(id, _semaphoreFactory);
+        await answerLock.WaitAsync();
+
+        try
+        {
+            var post = await _postRepository.Get(id);
+            var questions = post.Questions.ToDictionary(x => x.Id);
+            var answersDictionary = answers.ToDictionary(x => x.QuestionId);
+            foreach (var (key, value) in questions)
+            {
+                if (value.Optional)
+                {
+                    continue;
+                }
+
+                if (!answersDictionary.ContainsKey(key))
+                {
+                    return BadRequest("Not all required parameters are filled");
+                }
+            }
+
+            foreach (var (key, value) in answersDictionary)
+            {
+                if (!questions.TryGetValue(key, out var question))
+                {
+                    return BadRequest($"A question with id {key} does not exist");
+                }
+
+                if (value.Result is null)
+                {
+                    return BadRequest();
+                }
+
+                switch (question.QuestionType)
+                {
+                    case QuestionType.Checkbox:
+                    {
+                        if (!bool.TryParse(value.Result, out _))
+                        {
+                            return BadRequest();
+                        }
+
+                        question.Answers.Add(new Answer
+                        {
+                            UserId = userId,
+                            Value = value.Result
+                        });
+
+                        break;
+                    }
+                    case QuestionType.Freeform:
+                        question.Answers.Add(new Answer
+                        {
+                            Value = value.Result,
+                            UserId = userId
+                        });
+
+                        break;
+                    default:
+                        return BadRequest();
+                }
+            }
+
+            if (await _postRepository.Update(id, post, false) is null)
+            {
+                return BadRequest();
+            }
+
+            return Ok();
+        }
+        finally
+        {
+            answerLock.Release();
+        }
     }
 
     [HttpGet("/posts/page/{page:int}")]

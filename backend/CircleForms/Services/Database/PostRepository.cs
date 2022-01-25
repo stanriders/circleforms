@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CircleForms.Models;
 using CircleForms.Models.Posts;
+using CircleForms.Models.Posts.Questions.Answers;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -29,18 +30,15 @@ public class PostRepository : IPostRepository
     public async Task<Post> Add(long id, Post post)
     {
         post.PublishTime = DateTime.UtcNow;
+        foreach (var postQuestion in post.Questions)
+        {
+            postQuestion.Answers = new List<Answer>();
+        }
 
         var publishUnixTime = ((DateTimeOffset) post.PublishTime).ToUnixTimeMilliseconds();
 
         var update = Builders<User>.Update.AddToSet(x => x.Posts, post);
-        var updatedUser = await _users.FindOneAndUpdateAsync(x => x.Id == id, update);
-        if (updatedUser.Posts.All(x => x.Id != post.Id))
-        {
-            _logger.LogCritical("Post was not created in the database. Post: {@Post}, User: {@User}", post,
-                updatedUser);
-
-            return null;
-        }
+        await _users.FindOneAndUpdateAsync(x => x.Id == id, update);
 
         var postId = $"post:{post.Id}";
         var redisDb = _redis.GetDatabase();
@@ -105,6 +103,28 @@ public class PostRepository : IPostRepository
             take: pageSize);
 
         return await IdsToPosts(ids, redisDb);
+    }
+
+    public async Task<Post> Update(string id, Post post, bool updateCache)
+    {
+        var objId = ObjectId.Parse(id);
+        var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, x => x.Id == objId);
+        var update = Builders<User>.Update.Set(x => x.Posts[-1], post);
+        var result = await _users.UpdateOneAsync(filter, update);
+        if (result.ModifiedCount != 1)
+        {
+            _logger.LogCritical("Post {@Post} with id {Id} modified {Count} entities", post, id, result.ModifiedCount);
+        }
+
+        if (!updateCache)
+        {
+            return post;
+        }
+
+        var redisDb = _redis.GetDatabase();
+        await redisDb.StringSetAsync($"post:{id}", JsonConvert.SerializeObject(PostRedis.FromPost(post)));
+
+        return post;
     }
 
     private static async Task<PostRedis[]> IdsToPosts(IReadOnlyList<RedisValue> ids, IDatabaseAsync redisDb)
