@@ -43,7 +43,7 @@ public class User
     public string Discord { get; set; }
 
     [JsonProperty("join_date")]
-    public DateTimeOffset JoinDate { get; set; }
+    public DateTime JoinDate { get; set; }
 
     [JsonProperty("playmode")]
     public string Playmode { get; set; }
@@ -91,7 +91,7 @@ public enum Roles
 public class Badge
 {
     [JsonProperty("awarded_at")]
-    public DateTimeOffset AwardedAt { get; set; }
+    public DateTime AwardedAt { get; set; }
 
     [JsonProperty("description")]
     public string Description { get; set; }
@@ -115,7 +115,7 @@ public class Country
 public class Count
 {
     [JsonProperty("start_date")]
-    public DateTimeOffset StartDate { get; set; }
+    public DateTime StartDate { get; set; }
 
     [JsonProperty("count")]
     public long CountCount { get; set; }
@@ -214,7 +214,7 @@ public class Rank
 public class UserAchievement
 {
     [JsonProperty("achieved_at")]
-    public DateTimeOffset AchievedAt { get; set; }
+    public DateTime AchievedAt { get; set; }
 
     [JsonProperty("achievement_id")]
     public long AchievementId { get; set; }
