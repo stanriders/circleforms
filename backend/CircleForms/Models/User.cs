@@ -69,8 +69,8 @@ public class User
     [JsonProperty("statistics")]
     public Statistics Statistics { get; set; }
 
-    [JsonProperty("user_achievements")]
-    public List<UserAchievement> UserAchievements { get; set; }
+    // [JsonProperty("user_achievements")]
+    // public List<UserAchievement> UserAchievements { get; set; }
 
     [JsonProperty("rank_history")]
     public RankHistory RankHistory { get; set; }
