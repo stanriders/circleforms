@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CircleForms.Models;
+using CircleForms.Models.Posts;
 using CircleForms.Services.Database.Interfaces;
 using MongoDB.Driver;
 
@@ -32,7 +33,6 @@ public class UserRepository : IUserRepository
 
         return user;
     }
-
 
     public async Task Update(long id, User user)
     {

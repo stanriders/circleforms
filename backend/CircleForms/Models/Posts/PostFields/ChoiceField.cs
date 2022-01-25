@@ -1,6 +1,6 @@
 ﻿using CircleForms.Models.Enums;
 
-namespace CircleForms.Models.PostFields;
+namespace CircleForms.Models.Posts.PostFields;
 
 public class ChoiceField : PostField
 {
