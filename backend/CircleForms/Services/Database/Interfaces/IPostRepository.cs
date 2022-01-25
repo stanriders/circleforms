@@ -1,11 +1,16 @@
-﻿using System.Threading.Tasks;
-using CircleForms.Models;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using CircleForms.Models.Posts;
 
 namespace CircleForms.Services.Database.Interfaces;
 
 public interface IPostRepository
 {
-    Task<User> AddPost(long id, Post post);
-    Task<Post> GetPost(string postId);
-    Task<Post[]> GetPostsPaged(int page, int pageSize = 50);
+    Task<Post> Add(long id, Post post);
+    Task<List<Post>> Get();
+    Task<Post> Get(string postId);
+
+    Task<PostRedis[]> GetCached();
+    Task<PostRedis> GetCached(string postId);
+    Task<PostRedis[]> GetCachedPage(int page, int pageSize = 50);
 }

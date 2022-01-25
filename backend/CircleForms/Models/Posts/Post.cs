@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using CircleForms.Models.Enums;
-using CircleForms.Models.PostFields;
+using CircleForms.Models.Posts.PostFields;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
-namespace CircleForms.Models;
+namespace CircleForms.Models.Posts;
 
 public class Post
 {

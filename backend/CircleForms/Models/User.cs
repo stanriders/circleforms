@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CircleForms.Models.Posts;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
@@ -72,19 +73,19 @@ public class User
     [BsonIgnore]
     [JsonProperty("badges")]
     public List<Badge> Badges { get; set; }
-    
+
     [BsonIgnore]
     [JsonProperty("monthly_playcounts")]
     public List<Count> MonthlyPlaycounts { get; set; }
-    
+
     [BsonIgnore]
     [JsonProperty("previous_usernames")]
     public List<string> PreviousUsernames { get; set; }
-    
+
     [BsonIgnore]
     [JsonProperty("statistics")]
     public Statistics Statistics { get; set; }
-    
+
     [BsonIgnore]
     [JsonProperty("user_achievements")]
     public List<UserAchievement> UserAchievements { get; set; }
