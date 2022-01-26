@@ -47,7 +47,7 @@ public class PostsController : ControllerBase
 
         _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
 
-        return BadRequest();
+        return Unauthorized();
     }
 
     #region Mongo
@@ -136,7 +136,7 @@ public class PostsController : ControllerBase
         {
             _logger.LogWarning("User had an invalid name claim on answer: {Claim}", claim);
 
-            return BadRequest();
+            return Unauthorized();
         }
 
         var res = await _postRepository.UpdateWithLocked(id, post => ProcessAnswer(post, answers, userId), false);
