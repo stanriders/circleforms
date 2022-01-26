@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using CircleForms.Models.Posts;
 
@@ -13,5 +14,6 @@ public interface IPostRepository
     Task<PostRedis[]> GetCached();
     Task<PostRedis> GetCached(string postId);
     Task<PostRedis[]> GetCachedPage(int page, int pageSize = 50);
-    Task<Post> Update(string id, Post post, bool updateCache);
+    Task Update(string id, Post post, bool updateCache);
+    Task<Post> UpdateWithLocked(string id, Func<Post, Post> map, bool updateCache);
 }

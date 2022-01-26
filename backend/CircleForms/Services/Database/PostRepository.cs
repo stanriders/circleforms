@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using CircleForms.Models;
 using CircleForms.Models.Posts;
@@ -16,6 +18,9 @@ namespace CircleForms.Services.Database;
 
 public class PostRepository : IPostRepository
 {
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _postUpdateSemaphores = new();
+    private static readonly Func<string, SemaphoreSlim> _factory = _ => new SemaphoreSlim(1);
+
     private readonly ILogger<PostRepository> _logger;
     private readonly IConnectionMultiplexer _redis;
     private readonly IMongoCollection<User> _users;
@@ -105,7 +110,7 @@ public class PostRepository : IPostRepository
         return await IdsToPosts(ids, redisDb);
     }
 
-    public async Task<Post> Update(string id, Post post, bool updateCache)
+    public async Task Update(string id, Post post, bool updateCache)
     {
         var objId = ObjectId.Parse(id);
         var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, x => x.Id == objId);
@@ -118,13 +123,37 @@ public class PostRepository : IPostRepository
 
         if (!updateCache)
         {
-            return post;
+            return;
         }
 
         var redisDb = _redis.GetDatabase();
         await redisDb.StringSetAsync($"post:{id}", JsonConvert.SerializeObject(PostRedis.FromPost(post)));
+    }
 
-        return post;
+    public async Task<Post> UpdateWithLocked(string id, Func<Post, Post> map, bool updateCache)
+    {
+        var semaphore = _postUpdateSemaphores.GetOrAdd(id, _factory);
+        await semaphore.WaitAsync();
+
+        try
+        {
+            var post = await Get(id);
+            var postMapped = map(post);
+            if (postMapped is not null)
+            {
+                await Update(id, postMapped, updateCache);
+            }
+            else
+            {
+                return null;
+            }
+        }
+        finally
+        {
+            semaphore.Release();
+        }
+
+        return null;
     }
 
     private static async Task<PostRedis[]> IdsToPosts(IReadOnlyList<RedisValue> ids, IDatabaseAsync redisDb)

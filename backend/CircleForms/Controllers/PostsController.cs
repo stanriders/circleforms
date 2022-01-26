@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using CircleForms.Models.Posts;
-using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Answers;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -19,12 +16,14 @@ namespace CircleForms.Controllers;
 public class PostsController : ControllerBase
 {
     private readonly ILogger<PostsController> _logger;
+    private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
 
-    public PostsController(ILogger<PostsController> logger, IPostRepository postRepository)
+    public PostsController(ILogger<PostsController> logger, IPostRepository postRepository, IMapper mapper)
     {
         _logger = logger;
         _postRepository = postRepository;
+        _mapper = mapper;
     }
 
 
@@ -87,9 +86,6 @@ public class PostsController : ControllerBase
         return post;
     }
 
-    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _answerLockDictionary = new();
-    private static readonly Func<string, SemaphoreSlim> _semaphoreFactory = _ => new SemaphoreSlim(1);
-
     [Authorize]
     [HttpPost("/posts/{id}/answer")]
     public async Task<IActionResult> Answer(string id, [FromBody] List<AnswerContract> answers)
@@ -102,16 +98,11 @@ public class PostsController : ControllerBase
             return BadRequest();
         }
 
-        var answerLock = _answerLockDictionary.GetOrAdd(id, _semaphoreFactory);
-        await answerLock.WaitAsync();
-
-        try
+        Post ProcessAnswer(Post post)
         {
-            var post = await _postRepository.Get(id);
-
             if (post.Questions.Any(x => x.Answers.Any(v => v.UserId == userId)))
             {
-                return BadRequest("You already voted");
+                return null;
             }
 
             var questions = post.Questions.ToDictionary(x => x.Id);
@@ -125,63 +116,38 @@ public class PostsController : ControllerBase
 
                 if (!answersDictionary.ContainsKey(key))
                 {
-                    return BadRequest("Not all required parameters are filled");
+                    return null;
                 }
             }
 
             foreach (var (key, value) in answersDictionary)
             {
-                if (!questions.TryGetValue(key, out var question))
+                if (!questions.TryGetValue(key, out var question) || value.Answer is null)
                 {
-                    return BadRequest($"A question with id {key} does not exist");
+                    return null;
                 }
 
-                if (value.Result is null)
+                var answer = _mapper.Map<Answer>((question.QuestionType, value));
+                if (answer.Value is null)
                 {
-                    return BadRequest();
+                    return null;
                 }
 
-                switch (question.QuestionType)
-                {
-                    case QuestionType.Checkbox:
-                    {
-                        if (!bool.TryParse(value.Result, out _))
-                        {
-                            return BadRequest();
-                        }
-
-                        question.Answers.Add(new Answer
-                        {
-                            UserId = userId,
-                            Value = value.Result
-                        });
-
-                        break;
-                    }
-                    case QuestionType.Freeform:
-                        question.Answers.Add(new Answer
-                        {
-                            Value = value.Result,
-                            UserId = userId
-                        });
-
-                        break;
-                    default:
-                        return BadRequest();
-                }
+                answer.UserId = userId;
+                question.Answers.Add(answer);
             }
 
-            if (await _postRepository.Update(id, post, false) is null)
-            {
-                return BadRequest();
-            }
-
-            return Ok();
+            return post;
         }
-        finally
+
+        var res = await _postRepository.UpdateWithLocked(id, ProcessAnswer, false);
+
+        if (res is null)
         {
-            answerLock.Release();
+            return BadRequest();
         }
+
+        return Ok();
     }
 
     [HttpGet("/posts/page/{page:int}")]
