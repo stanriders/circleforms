@@ -86,6 +86,47 @@ public class PostsController : ControllerBase
         return post;
     }
 
+    private Post ProcessAnswer(Post post, IEnumerable<AnswerContract> answers, long userId)
+    {
+        //Check for repeating answers
+        if (post.Questions.Any(x => x.Answers.Any(v => v.UserId == userId)))
+        {
+            return null;
+        }
+
+        var questions = post.Questions.ToDictionary(x => x.Id);
+        var answersDictionary = answers.ToDictionary(x => x.QuestionId);
+
+        //If any required fields doesn't filled
+        if (post.Questions.Where(question => !question.Optional)
+            .Any(question => !answersDictionary.ContainsKey(question.Id)))
+        {
+            return null;
+        }
+
+        foreach (var (key, value) in answersDictionary)
+        {
+            //If question with id doesn't exist or answer was not provided
+            if (!questions.TryGetValue(key, out var question) || value.Answer is null)
+            {
+                return null;
+            }
+
+            var answer = _mapper.Map<Answer>((question.QuestionType, value));
+
+            //If mapping failed
+            if (answer.Value is null)
+            {
+                return null;
+            }
+
+            answer.UserId = userId;
+            question.Answers.Add(answer);
+        }
+
+        return post;
+    }
+
     [Authorize]
     [HttpPost("/posts/{id}/answer")]
     public async Task<IActionResult> Answer(string id, [FromBody] List<AnswerContract> answers)
@@ -98,48 +139,7 @@ public class PostsController : ControllerBase
             return BadRequest();
         }
 
-        Post ProcessAnswer(Post post)
-        {
-            //Check for repeating answers
-            if (post.Questions.Any(x => x.Answers.Any(v => v.UserId == userId)))
-            {
-                return null;
-            }
-
-            var questions = post.Questions.ToDictionary(x => x.Id);
-            var answersDictionary = answers.ToDictionary(x => x.QuestionId);
-
-            //If any required fields doesn't filled
-            if (post.Questions.Where(question => !question.Optional)
-                .Any(question => !answersDictionary.ContainsKey(question.Id)))
-            {
-                return null;
-            }
-
-            foreach (var (key, value) in answersDictionary)
-            {
-                //If question with id doesn't exist or answer was not provided
-                if (!questions.TryGetValue(key, out var question) || value.Answer is null)
-                {
-                    return null;
-                }
-
-                var answer = _mapper.Map<Answer>((question.QuestionType, value));
-
-                //If mapping failed
-                if (answer.Value is null)
-                {
-                    return null;
-                }
-
-                answer.UserId = userId;
-                question.Answers.Add(answer);
-            }
-
-            return post;
-        }
-
-        var res = await _postRepository.UpdateWithLocked(id, ProcessAnswer, false);
+        var res = await _postRepository.UpdateWithLocked(id, post => ProcessAnswer(post, answers, userId), false);
 
         if (res is null)
         {
