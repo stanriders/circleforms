@@ -100,6 +100,7 @@ public class PostsController : ControllerBase
 
         Post ProcessAnswer(Post post)
         {
+            //Check for repeating answers
             if (post.Questions.Any(x => x.Answers.Any(v => v.UserId == userId)))
             {
                 return null;
@@ -107,27 +108,25 @@ public class PostsController : ControllerBase
 
             var questions = post.Questions.ToDictionary(x => x.Id);
             var answersDictionary = answers.ToDictionary(x => x.QuestionId);
-            foreach (var (key, value) in questions)
-            {
-                if (value.Optional)
-                {
-                    continue;
-                }
 
-                if (!answersDictionary.ContainsKey(key))
-                {
-                    return null;
-                }
+            //If any required fields doesn't filled
+            if (post.Questions.Where(question => !question.Optional)
+                .Any(question => !answersDictionary.ContainsKey(question.Id)))
+            {
+                return null;
             }
 
             foreach (var (key, value) in answersDictionary)
             {
+                //If question with id doesn't exist or answer was not provided
                 if (!questions.TryGetValue(key, out var question) || value.Answer is null)
                 {
                     return null;
                 }
 
                 var answer = _mapper.Map<Answer>((question.QuestionType, value));
+
+                //If mapping failed
                 if (answer.Value is null)
                 {
                     return null;
