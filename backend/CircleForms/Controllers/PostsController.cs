@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using CircleForms.Models.Posts;
+using CircleForms.Models.Posts.Questions.Answers;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,17 +16,19 @@ namespace CircleForms.Controllers;
 public class PostsController : ControllerBase
 {
     private readonly ILogger<PostsController> _logger;
+    private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
 
-    public PostsController(ILogger<PostsController> logger, IPostRepository postRepository)
+    public PostsController(ILogger<PostsController> logger, IPostRepository postRepository, IMapper mapper)
     {
         _logger = logger;
         _postRepository = postRepository;
+        _mapper = mapper;
     }
 
 
     [Authorize]
-    [HttpPost]
+    [HttpPost("/posts")]
     public async Task<IActionResult> Post(Post post)
     {
         var claim = HttpContext.User.Identity?.Name;
@@ -37,12 +42,12 @@ public class PostsController : ControllerBase
                 return StatusCode(500);
             }
 
-            return CreatedAtAction("GetCachedPost", new {id = post.Id.ToString()}, result);
+            return CreatedAtAction("GetPostForUser", new {id = post.Id.ToString()}, result);
         }
 
         _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
 
-        return BadRequest();
+        return Unauthorized();
     }
 
     #region Mongo
@@ -70,9 +75,78 @@ public class PostsController : ControllerBase
     }
 
     [HttpGet("/posts/{id}")]
-    public async Task<PostRedis> GetCachedPost(string id)
+    public async Task<Post> GetPostForUser(string id)
     {
-        return await _postRepository.GetCached(id);
+        var post = await _postRepository.Get(id);
+        foreach (var question in post.Questions)
+        {
+            question.Answers = null;
+        }
+
+        return post;
+    }
+
+    private Post ProcessAnswer(Post post, IEnumerable<AnswerContract> answers, long userId)
+    {
+        //Check for repeating answers
+        if (post.Questions.Any(x => x.Answers.Any(v => v.UserId == userId)))
+        {
+            return null;
+        }
+
+        var questions = post.Questions.ToDictionary(x => x.Id);
+        var answersDictionary = answers.ToDictionary(x => x.QuestionId);
+
+        //If any required fields doesn't filled
+        if (post.Questions.Where(question => !question.Optional)
+            .Any(question => !answersDictionary.ContainsKey(question.Id)))
+        {
+            return null;
+        }
+
+        foreach (var (key, value) in answersDictionary)
+        {
+            //If question with id doesn't exist or answer was not provided
+            if (!questions.TryGetValue(key, out var question) || value.Answer is null)
+            {
+                return null;
+            }
+
+            var answer = _mapper.Map<Answer>((question.QuestionType, value));
+
+            //If mapping failed
+            if (answer.Value is null)
+            {
+                return null;
+            }
+
+            answer.UserId = userId;
+            question.Answers.Add(answer);
+        }
+
+        return post;
+    }
+
+    [Authorize]
+    [HttpPost("/posts/{id}/answer")]
+    public async Task<IActionResult> Answer(string id, [FromBody] List<AnswerContract> answers)
+    {
+        var claim = HttpContext.User.Identity?.Name;
+        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out var userId))
+        {
+            _logger.LogWarning("User had an invalid name claim on answer: {Claim}", claim);
+
+            return Unauthorized();
+        }
+
+        var res = await _postRepository.UpdateWithLocked(id, post => ProcessAnswer(post, answers, userId), false);
+
+        if (res is null)
+        {
+            return BadRequest();
+        }
+
+        return Ok();
     }
 
     [HttpGet("/posts/page/{page:int}")]

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CircleForms.Models.Enums;
-using CircleForms.Models.Posts.PostFields;
+using CircleForms.Models.Posts.Questions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
@@ -42,8 +42,8 @@ public class Post
     [JsonProperty("published")]
     public bool Published { get; set; }
 
-    [JsonProperty("fields")]
-    public List<PostField> Fields { get; set; }
+    [JsonProperty("questions")]
+    public List<Question> Questions { get; set; }
 
     [JsonProperty("publish_time")]
     public DateTime PublishTime { get; set; }
