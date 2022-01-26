@@ -25,6 +25,8 @@ public class UsersController : ControllerBase
     [HttpGet("{id:long}")]
     public async Task<IActionResult> Get(long id)
     {
+        _logger.LogInformation("Admin {Admin} requests User {Id}", HttpContext.User.Identity?.Name, id);
+
         var user = await _usersService.Get(id);
         if (user != null)
         {
@@ -38,6 +40,8 @@ public class UsersController : ControllerBase
     [HttpGet]
     public async Task<List<User>> GetAll()
     {
+        _logger.LogInformation("Admin {Admin} requests users from the database", HttpContext.User.Identity?.Name);
+
         return await _usersService.Get();
     }
 
@@ -47,6 +51,10 @@ public class UsersController : ControllerBase
     {
         var user = await _usersService.Get(id);
         user.Roles = (Roles) role;
+
+        _logger.LogWarning("SuperAdmin {Admin} changes privileges of {Id} to {Role}", HttpContext.User.Identity?.Name,
+            id, user.Roles.ToString());
+
         await _usersService.Update(id, user);
 
         return user;
@@ -59,6 +67,8 @@ public class UsersController : ControllerBase
         var claim = HttpContext.User.Identity?.Name;
         if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out var userId))
         {
+            _logger.LogInformation("User {User} requests /me", userId);
+
             var user = await _usersService.Get(userId);
             if (user != null)
             {

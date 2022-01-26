@@ -21,7 +21,6 @@ public class PostsController : ControllerBase
         _postRepository = postRepository;
     }
 
-
     [Authorize]
     [HttpPost]
     public async Task<IActionResult> Post(Post post)
@@ -29,6 +28,8 @@ public class PostsController : ControllerBase
         var claim = HttpContext.User.Identity?.Name;
         if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out var userId))
         {
+            _logger.LogInformation("User {User} posts a post {PostId}", claim, post.Id);
+
             post.AuthorId = userId;
             var result = await _postRepository.Add(userId, post);
 
@@ -50,6 +51,8 @@ public class PostsController : ControllerBase
     [HttpGet("/posts/mongo/{id}")]
     public async Task<Post> Get(string id)
     {
+        _logger.LogInformation("User {User} requested a post from the database", HttpContext.User.Identity?.Name);
+
         return await _postRepository.Get(id);
     }
 
@@ -57,6 +60,8 @@ public class PostsController : ControllerBase
     [HttpGet("/posts/mongo")]
     public async Task<List<Post>> Get()
     {
+        _logger.LogInformation("User {User} requested database posts dump", HttpContext.User.Identity?.Name);
+
         return await _postRepository.Get();
     }
     #endregion
@@ -66,6 +71,8 @@ public class PostsController : ControllerBase
     [HttpGet("/posts")]
     public async Task<PostRedis[]> GetCached()
     {
+        _logger.LogInformation("User {User} requested posts cache dump", HttpContext.User.Identity?.Name);
+
         return await _postRepository.GetCached();
     }
 

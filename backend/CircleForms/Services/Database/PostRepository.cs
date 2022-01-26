@@ -32,6 +32,7 @@ public class PostRepository : IPostRepository
 
         var publishUnixTime = ((DateTimeOffset) post.PublishTime).ToUnixTimeMilliseconds();
 
+        _logger.LogInformation("User {Id} created a new post", id);
         var update = Builders<User>.Update.AddToSet(x => x.Posts, post);
         var updatedUser = await _users.FindOneAndUpdateAsync(x => x.Id == id, update);
         if (updatedUser.Posts.All(x => x.Id != post.Id))
@@ -48,6 +49,7 @@ public class PostRepository : IPostRepository
         var postRedis = PostRedis.FromPost(post);
         var postJson = JsonConvert.SerializeObject(postRedis);
 
+        _logger.LogInformation("Adding {Post} to the cache", postJson);
         if (!await redisDb.StringSetAsync(postId, postJson))
         {
             _logger.LogError("Could not post {@Post} to the redis cache", postRedis);
@@ -55,6 +57,7 @@ public class PostRepository : IPostRepository
             return post;
         }
 
+        _logger.LogInformation("Adding {PostId} to the cached posts set", postId);
         if (!await redisDb.SortedSetAddAsync("posts", postId, publishUnixTime))
         {
             _logger.LogError("Could not post {PostId} with {UnixTime} to the redis posts", postId, publishUnixTime);
