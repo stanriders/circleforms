@@ -2,7 +2,9 @@
 using System.Threading.Tasks;
 using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -21,8 +23,13 @@ public class UsersController : ControllerBase
         _usersService = usersService;
     }
 
+    /// <summary>
+    /// Get user data. (Requires auth, Requires Admin role)
+    /// </summary>
     [Authorize(Roles = "Admin")]
     [HttpGet("{id:long}")]
+    [ProducesResponseType(typeof(User), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(long id)
     {
         _logger.LogInformation("Admin {Admin} requests User {Id}", HttpContext.User.Identity?.Name, id);
@@ -36,6 +43,9 @@ public class UsersController : ControllerBase
         return NotFound();
     }
 
+    /// <summary>
+    /// Get all users. (Requires auth, Requires Admin role)
+    /// </summary>
     [Authorize(Roles = "Admin")]
     [HttpGet]
     public async Task<List<User>> GetAll()
@@ -45,6 +55,9 @@ public class UsersController : ControllerBase
         return await _usersService.Get();
     }
 
+    /// <summary>
+    /// Set user role. (Requires auth, Requires SuperAdmin role)
+    /// </summary>
     [Authorize(Roles = "SuperAdmin")]
     [HttpPatch]
     public async Task<User> EscalatePrivileges(long id, int role)
@@ -60,8 +73,13 @@ public class UsersController : ControllerBase
         return user;
     }
 
+    /// <summary>
+    /// Get data for current user. (Requires auth)
+    /// </summary>
     [Authorize]
     [HttpGet("/me")]
+    [ProducesResponseType(typeof(User), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMe()
     {
         var claim = HttpContext.User.Identity?.Name;
@@ -83,6 +101,8 @@ public class UsersController : ControllerBase
         }
 
         // sign out in case of an invalid cookie just in case
-        return SignOut("InternalCookies");
+        await HttpContext.SignOutAsync("InternalCookies");
+
+        return Unauthorized();
     }
 }

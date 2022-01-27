@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Threading.Tasks;
 using CircleForms.Models.Configurations;
 using CircleForms.Models.Posts.Questions.Answers;
@@ -15,6 +18,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
+using Newtonsoft.Json.Converters;
 using RestSharp;
 using StackExchange.Redis;
 
@@ -82,11 +86,18 @@ public class Startup
         var multiplexer = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("Redis"));
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);
 
-        services.AddControllers().AddNewtonsoftJson();
+        services.AddControllers()
+            .AddNewtonsoftJson(opts => opts.SerializerSettings.Converters.Add(new StringEnumConverter()));
+
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo {Title = "CircleForms", Version = "v1"});
+            c.EnableAnnotations();
+
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
         });
+        services.AddSwaggerGenNewtonsoftSupport();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

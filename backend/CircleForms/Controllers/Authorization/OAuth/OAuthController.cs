@@ -6,6 +6,8 @@ using CircleForms.Models.Configurations;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -35,8 +37,11 @@ public class OAuthController : ControllerBase
         _superAdminsId = superAdminsId.Value.Ids;
     }
 
-
+    /// <summary>
+    /// osu! API authentication.
+    /// </summary>
     [HttpGet("auth")]
+    [ProducesResponseType(StatusCodes.Status302Found)]
     public IActionResult Authenticate()
     {
         var authenticationProperties = new AuthenticationProperties
@@ -47,8 +52,9 @@ public class OAuthController : ControllerBase
         return Challenge(authenticationProperties, "osu");
     }
 
-    [ApiExplorerSettings(IgnoreApi = true)]
     [HttpGet("complete")]
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [ProducesResponseType(StatusCodes.Status302Found)]
     public async Task<IActionResult> CompleteAuthentication()
     {
         var authResult = await HttpContext.AuthenticateAsync("ExternalCookies");
@@ -139,7 +145,12 @@ public class OAuthController : ControllerBase
         return Redirect("https://circleforms.net/");
     }
 
+    /// <summary>
+    /// Sign out from current user. (Requires auth)
+    /// </summary>
+    [Authorize]
     [HttpGet("signout")]
+    [ProducesResponseType(StatusCodes.Status302Found)]
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync("InternalCookies");

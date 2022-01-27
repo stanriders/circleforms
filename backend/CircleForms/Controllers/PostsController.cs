@@ -6,6 +6,7 @@ using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions.Answers;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -26,8 +27,14 @@ public class PostsController : ControllerBase
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Add a new post. (Requires auth)
+    /// </summary>
     [Authorize]
     [HttpPost("/posts")]
+    [ProducesResponseType(typeof(Post), StatusCodes.Status201Created, "application/json")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Post(Post post)
     {
         var claim = HttpContext.User.Identity?.Name;
@@ -52,6 +59,10 @@ public class PostsController : ControllerBase
     }
 
     #region Mongo
+
+    /// <summary>
+    /// Get uncached post. (Requires auth, Requires Admin role)
+    /// </summary>
     [Authorize(Roles = "Admin")]
     [HttpGet("/posts/mongo/{id}")]
     public async Task<Post> Get(string id)
@@ -61,6 +72,9 @@ public class PostsController : ControllerBase
         return await _postRepository.Get(id);
     }
 
+    /// <summary>
+    /// Get all uncached posts. (Requires auth, Requires Admin role)
+    /// </summary>
     [Authorize(Roles = "Admin")]
     [HttpGet("/posts/mongo")]
     public async Task<List<Post>> Get()
@@ -72,6 +86,10 @@ public class PostsController : ControllerBase
     #endregion
 
     #region Cache
+
+    /// <summary>
+    /// Get all posts. (Requires auth, Requires Admin/Moderator role)
+    /// </summary>
     [Authorize(Roles = "Admin,Moderator")]
     [HttpGet("/posts")]
     public async Task<PostRedis[]> GetCached()
@@ -81,16 +99,26 @@ public class PostsController : ControllerBase
         return await _postRepository.GetCached();
     }
 
+    /// <summary>
+    /// Get a post.
+    /// </summary>
     [HttpGet("/posts/{id}")]
-    public async Task<Post> GetPostForUser(string id)
+    [ProducesResponseType(typeof(Post), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetPostForUser(string id)
     {
         var post = await _postRepository.Get(id);
-        foreach (var question in post.Questions)
+        if (post != null)
         {
-            question.Answers = null;
+            foreach (var question in post.Questions)
+            {
+                question.Answers = null;
+            }
+
+            return Ok(post);
         }
 
-        return post;
+        return NotFound();
     }
 
     private Post ProcessAnswer(Post post, IEnumerable<AnswerContract> answers, long userId)
@@ -134,8 +162,14 @@ public class PostsController : ControllerBase
         return post;
     }
 
+    /// <summary>
+    /// Add answer to a question. (Requires auth)
+    /// </summary>
     [Authorize]
     [HttpPost("/posts/{id}/answer")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Answer(string id, [FromBody] List<AnswerContract> answers)
     {
         var claim = HttpContext.User.Identity?.Name;
@@ -156,6 +190,9 @@ public class PostsController : ControllerBase
         return Ok();
     }
 
+    /// <summary>
+    /// Get posts page.
+    /// </summary>
     [HttpGet("/posts/page/{page:int}")]
     public async Task<PostRedis[]> GetPage(int page)
     {
