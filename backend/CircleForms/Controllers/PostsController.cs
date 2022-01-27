@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Models.Posts;
+using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -51,7 +52,21 @@ public class PostsController : ControllerBase
 
             for (var i = 0; i < post.Questions.Count; i++)
             {
-                post.Questions[i].Id = i;
+                var question = post.Questions[i];
+                question.Id = i;
+                if (question.QuestionType == QuestionType.Choice)
+                {
+                    if (question.QuestionInfo.Count == 0)
+                    {
+                        return BadRequest($"Question {i} is choice, but no choices provided");
+                    }
+
+                    if (question.QuestionInfo.Any(string.IsNullOrWhiteSpace))
+                    {
+                        return BadRequest(
+                            $"Question {i} is choice, but one of the choices consists exclusively of white-spaced characters");
+                    }
+                }
             }
 
             var result = await _postRepository.Add(userId, post);
@@ -147,6 +162,19 @@ public class PostsController : ControllerBase
             if (!questions.TryGetValue(key, out var question))
             {
                 return (null, $"Question with id {key} does not exist");
+            }
+
+            if (question.QuestionType == QuestionType.Choice)
+            {
+                if (!int.TryParse(value.Answer, out var choice))
+                {
+                    return (null, $"Provided value for {key} is not a choice id");
+                }
+
+                if (choice < 0 || choice >= question.QuestionInfo.Count)
+                {
+                    return (null, $"Choice for {key} is not in the range of choice ids");
+                }
             }
 
             if (string.IsNullOrWhiteSpace(value.Answer))

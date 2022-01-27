@@ -3,5 +3,6 @@
 public enum QuestionType
 {
     Checkbox,
-    Freeform
+    Freeform,
+    Choice
 }
