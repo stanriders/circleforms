@@ -67,6 +67,10 @@ public class PostsController : ControllerBase
                             $"Question {i} is choice, but one of the choices consists exclusively of white-spaced characters");
                     }
                 }
+                else
+                {
+                    question.QuestionInfo = new List<string>();
+                }
             }
 
             var result = await _postRepository.Add(userId, post);
