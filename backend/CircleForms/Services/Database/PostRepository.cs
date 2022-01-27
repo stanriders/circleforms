@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using CircleForms.Models;
 using CircleForms.Models.Posts;
 using CircleForms.Services.Database.Interfaces;
@@ -17,16 +16,16 @@ namespace CircleForms.Services.Database;
 
 public class PostRepository : IPostRepository
 {
-    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _postUpdateSemaphores = new();
-    private static readonly Func<string, SemaphoreSlim> _factory = _ => new SemaphoreSlim(1);
-
     private readonly ILogger<PostRepository> _logger;
+    private readonly IMapper _mapper;
     private readonly IConnectionMultiplexer _redis;
     private readonly IMongoCollection<User> _users;
 
-    public PostRepository(ILogger<PostRepository> logger, IConnectionMultiplexer redis, IMongoDatabase database)
+    public PostRepository(ILogger<PostRepository> logger, IMapper mapper, IConnectionMultiplexer redis,
+        IMongoDatabase database)
     {
         _logger = logger;
+        _mapper = mapper;
         _redis = redis;
         _users = database.GetCollection<User>("users");
     }
@@ -45,7 +44,7 @@ public class PostRepository : IPostRepository
         var postId = $"post:{post.Id}";
         var redisDb = _redis.GetDatabase();
 
-        var postRedis = PostRedis.FromPost(post);
+        var postRedis = _mapper.Map<PostRedis>(post);
         var postJson = JsonConvert.SerializeObject(postRedis);
 
         _logger.LogInformation("Adding {Post} to the cache", postJson);
@@ -127,7 +126,7 @@ public class PostRepository : IPostRepository
         }
 
         var redisDb = _redis.GetDatabase();
-        await redisDb.StringSetAsync($"post:{id}", JsonConvert.SerializeObject(PostRedis.FromPost(post)));
+        await redisDb.StringSetAsync($"post:{id}", JsonConvert.SerializeObject(_mapper.Map<PostRedis>(post)));
     }
 
     public async Task AddAnswer(ObjectId postId, Answer entry)
