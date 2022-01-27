@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Models.Posts;
-using CircleForms.Models.Posts.Questions.Answers;
+using CircleForms.Models.Posts.Questions.Submissions;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -28,7 +28,7 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
-    /// Add a new post. (Requires auth)
+    ///     Add a new post. (Requires auth)
     /// </summary>
     [Authorize]
     [HttpPost("/posts")]
@@ -43,6 +43,17 @@ public class PostsController : ControllerBase
             _logger.LogInformation("User {User} posts a post {PostId}", claim, post.Id);
 
             post.AuthorId = userId;
+
+            if (post.Questions.Count == 0)
+            {
+                return BadRequest("No questions provided");
+            }
+
+            for (var i = 0; i < post.Questions.Count; i++)
+            {
+                post.Questions[i].Id = i;
+            }
+
             var result = await _postRepository.Add(userId, post);
 
             if (result is null)
@@ -59,9 +70,8 @@ public class PostsController : ControllerBase
     }
 
     #region Mongo
-
     /// <summary>
-    /// Get uncached post. (Requires auth, Requires Admin role)
+    ///     Get uncached post. (Requires auth, Requires Admin role)
     /// </summary>
     [Authorize(Roles = "Admin")]
     [HttpGet("/posts/mongo/{id}")]
@@ -73,7 +83,7 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
-    /// Get all uncached posts. (Requires auth, Requires Admin role)
+    ///     Get all uncached posts. (Requires auth, Requires Admin role)
     /// </summary>
     [Authorize(Roles = "Admin")]
     [HttpGet("/posts/mongo")]
@@ -86,9 +96,8 @@ public class PostsController : ControllerBase
     #endregion
 
     #region Cache
-
     /// <summary>
-    /// Get all posts. (Requires auth, Requires Admin/Moderator role)
+    ///     Get all posts. (Requires auth, Requires Admin/Moderator role)
     /// </summary>
     [Authorize(Roles = "Admin,Moderator")]
     [HttpGet("/posts")]
@@ -100,7 +109,7 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
-    /// Get a post.
+    ///     Get a post.
     /// </summary>
     [HttpGet("/posts/{id}")]
     [ProducesResponseType(typeof(Post), StatusCodes.Status200OK, "application/json")]
@@ -108,27 +117,19 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> GetPostForUser(string id)
     {
         var post = await _postRepository.Get(id);
-        if (post != null)
+        if (post == null)
         {
-            foreach (var question in post.Questions)
-            {
-                question.Answers = null;
-            }
-
-            return Ok(post);
+            return NotFound();
         }
 
-        return NotFound();
+        post.Answers = new List<Answer>();
+
+        return Ok(post);
     }
 
-    private Post ProcessAnswer(Post post, IEnumerable<AnswerContract> answers, long userId)
+    private (List<Submission> submissions, string error) ProcessAnswer(Post post,
+        IEnumerable<SubmissionContract> answers)
     {
-        //Check for repeating answers
-        if (post.Questions.Any(x => x.Answers.Any(v => v.UserId == userId)))
-        {
-            return null;
-        }
-
         var questions = post.Questions.ToDictionary(x => x.Id);
         var answersDictionary = answers.ToDictionary(x => x.QuestionId);
 
@@ -136,41 +137,47 @@ public class PostsController : ControllerBase
         if (post.Questions.Where(question => !question.Optional)
             .Any(question => !answersDictionary.ContainsKey(question.Id)))
         {
-            return null;
+            return (null, "One or more required fields doesn't filled");
         }
 
+        var resultingAnswers = new List<Submission>();
         foreach (var (key, value) in answersDictionary)
         {
             //If question with id doesn't exist or answer was not provided
-            if (!questions.TryGetValue(key, out var question) || value.Answer is null)
+            if (!questions.TryGetValue(key, out var question))
             {
-                return null;
+                return (null, $"Question with id {key} does not exist");
             }
 
-            var answer = _mapper.Map<Answer>((question.QuestionType, value));
+            if (string.IsNullOrWhiteSpace(value.Answer))
+            {
+                return (null, $"Answer on question with id {key} is null or consists exclusively with white-spaces");
+            }
+
+            var answer = _mapper.Map<Submission>((question.QuestionType, value));
 
             //If mapping failed
             if (answer.Value is null)
             {
-                return null;
+                return (null, $"Could not parse answer with question id {key}");
             }
 
-            answer.UserId = userId;
-            question.Answers.Add(answer);
+            resultingAnswers.Add(answer);
         }
 
-        return post;
+        return (resultingAnswers, null);
     }
 
     /// <summary>
-    /// Add answer to a question. (Requires auth)
+    ///     Add answer to a question. (Requires auth)
     /// </summary>
     [Authorize]
     [HttpPost("/posts/{id}/answer")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> Answer(string id, [FromBody] List<AnswerContract> answers)
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Answer(string id, [FromBody] List<SubmissionContract> answerContracts)
     {
         var claim = HttpContext.User.Identity?.Name;
         if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out var userId))
@@ -180,18 +187,38 @@ public class PostsController : ControllerBase
             return Unauthorized();
         }
 
-        var res = await _postRepository.UpdateWithLocked(id, post => ProcessAnswer(post, answers, userId), false);
+        var post = await _postRepository.Get(id);
 
-        if (res is null)
+        if (post is null)
         {
-            return BadRequest();
+            return BadRequest("Could not find post with this id");
         }
+
+        if (post.Answers.Any(x => x.UserId == userId))
+        {
+            return Conflict("You already voted");
+        }
+
+        var (submissions, error) = ProcessAnswer(post, answerContracts);
+
+        if (submissions is null)
+        {
+            return BadRequest(error);
+        }
+
+        var answer = new Answer
+        {
+            Submissions = submissions,
+            UserId = userId
+        };
+
+        await _postRepository.AddAnswer(post.Id, answer);
 
         return Ok();
     }
 
     /// <summary>
-    /// Get posts page.
+    ///     Get posts page.
     /// </summary>
     [HttpGet("/posts/page/{page:int}")]
     public async Task<PostRedis[]> GetPage(int page)

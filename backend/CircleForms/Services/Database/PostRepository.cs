@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using CircleForms.Models;
 using CircleForms.Models.Posts;
-using CircleForms.Models.Posts.Questions.Answers;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -35,10 +34,7 @@ public class PostRepository : IPostRepository
     public async Task<Post> Add(long id, Post post)
     {
         post.PublishTime = DateTime.UtcNow;
-        foreach (var postQuestion in post.Questions)
-        {
-            postQuestion.Answers = new List<Answer>();
-        }
+        post.Answers = new List<Answer>();
 
         var publishUnixTime = ((DateTimeOffset) post.PublishTime).ToUnixTimeMilliseconds();
 
@@ -73,7 +69,8 @@ public class PostRepository : IPostRepository
     {
         var filterDefinition = Builders<User>.Filter.SizeGt(x => x.Posts, 0);
         var postDefinition = Builders<User>.Projection.Expression(x => x.Posts);
-        var postsDocuments = await _users.Find(filterDefinition).Project(postDefinition).ToListAsync();
+        var postsDocuments = await _users
+            .Find(filterDefinition).Project(postDefinition).ToListAsync();
 
         return postsDocuments.SelectMany(x => x).ToList();
     }
@@ -133,30 +130,16 @@ public class PostRepository : IPostRepository
         await redisDb.StringSetAsync($"post:{id}", JsonConvert.SerializeObject(PostRedis.FromPost(post)));
     }
 
-    public async Task<Post> UpdateWithLocked(string id, Func<Post, Post> map, bool updateCache)
+    public async Task AddAnswer(ObjectId postId, Answer entry)
     {
-        var semaphore = _postUpdateSemaphores.GetOrAdd(id, _factory);
-        await semaphore.WaitAsync();
+        var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, post => post.Id == postId);
+        var update = Builders<User>.Update.AddToSet(x => x.Posts[-1].Answers, entry);
+        var projection = Builders<User>.Projection.Expression(x => x.Posts);
 
-        try
+        await _users.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<User, List<Post>>
         {
-            var post = await Get(id);
-            var postMapped = map(post);
-            if (postMapped is not null)
-            {
-                await Update(id, postMapped, updateCache);
-            }
-            else
-            {
-                return null;
-            }
-        }
-        finally
-        {
-            semaphore.Release();
-        }
-
-        return null;
+            Projection = projection
+        });
     }
 
     private static async Task<PostRedis[]> IdsToPosts(IReadOnlyList<RedisValue> ids, IDatabaseAsync redisDb)
