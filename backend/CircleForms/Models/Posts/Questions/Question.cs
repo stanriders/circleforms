@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using CircleForms.Models.Posts.Questions.Answers;
+﻿using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
@@ -24,8 +22,4 @@ public class Question
 
     [JsonProperty("is_optional")]
     public bool Optional { get; set; }
-
-    [JsonProperty("answers")]
-    [SwaggerSchema(ReadOnly = true)]
-    public List<Answer> Answers { get; set; }
 }

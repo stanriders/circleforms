@@ -51,6 +51,10 @@ public class Post
     [JsonProperty("questions")]
     public List<Question> Questions { get; set; }
 
+    [JsonProperty("answers")]
+    [SwaggerSchema(ReadOnly = true)]
+    public List<Answer> Answers { get; set; }
+
     [JsonProperty("publish_time")]
     [SwaggerSchema(ReadOnly = true)]
     public DateTime PublishTime { get; set; }
