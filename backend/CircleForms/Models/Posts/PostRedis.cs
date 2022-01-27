@@ -1,21 +1,11 @@
 ﻿using System;
+using CircleForms.Models.Enums;
 using Newtonsoft.Json;
 
 namespace CircleForms.Models.Posts;
 
 public class PostRedis
 {
-    public static PostRedis FromPost(Post post)
-    {
-        return new PostRedis
-        {
-            Id = post.Id.ToString(),
-            AuthorId = post.AuthorId,
-            Title = post.Title,
-            Description = post.Description,
-            PublishTime = post.PublishTime
-        };
-    }
     [JsonProperty("id")]
     public string Id { get; set; }
 
@@ -30,4 +20,10 @@ public class PostRedis
 
     [JsonProperty("publish_time")]
     public DateTime PublishTime { get; set; }
+
+    [JsonProperty("accessibility")]
+    public Accessibility Accessibility { get; set; }
+
+    [JsonProperty("limitations")]
+    public Limitations Limitations { get; set; }
 }
