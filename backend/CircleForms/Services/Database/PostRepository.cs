@@ -134,12 +134,8 @@ public class PostRepository : IPostRepository
     {
         var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, post => post.Id == postId);
         var update = Builders<User>.Update.AddToSet(x => x.Posts[-1].Answers, entry);
-        var projection = Builders<User>.Projection.Expression(x => x.Posts);
 
-        await _users.FindOneAndUpdateAsync(filter, update, new FindOneAndUpdateOptions<User, List<Post>>
-        {
-            Projection = projection
-        });
+        await _users.FindOneAndUpdateAsync(filter, update);
     }
 
     private static async Task<PostRedis[]> IdsToPosts(IReadOnlyList<RedisValue> ids, IDatabaseAsync redisDb)
