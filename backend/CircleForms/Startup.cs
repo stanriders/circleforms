@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.Models.Configurations;
-using CircleForms.Models.Posts;
-using CircleForms.Models.Posts.Questions.Submissions;
+using CircleForms.Models.Mapping;
 using CircleForms.Services.Database;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
@@ -43,7 +41,7 @@ public class Startup
         services.Configure<SuperAdminsId>(Configuration.GetSection("SuperAdmins"));
 
         services.AddAutoMapper(x =>
-            x.AddProfiles(new Profile[] {new SubmissionContractToSubmissionMapper(), new PostToPostRedisMapper()}));
+            x.AddProfile(new MappingProfile()));
 
         services.AddAuthentication("InternalCookies")
             .AddCookie("InternalCookies", options =>
