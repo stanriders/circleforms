@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
@@ -22,4 +23,7 @@ public class Question
 
     [JsonProperty("is_optional")]
     public bool Optional { get; set; }
+
+    [JsonProperty("question_info")]
+    public List<string> QuestionInfo { get; set; }
 }
