@@ -26,6 +26,7 @@ public class MappingProfile : Profile
         {
             QuestionType.Freeform when !string.IsNullOrWhiteSpace(contract.Answer) => contract.Answer,
             QuestionType.Checkbox when bool.TryParse(contract.Answer, out _) => contract.Answer,
+            QuestionType.Choice when int.TryParse(contract.Answer, out _) => contract.Answer,
             _ => null
         };
     }
