@@ -88,6 +88,30 @@ public class PostsController : ControllerBase
         return Unauthorized();
     }
 
+    /// <summary>
+    ///     Get full info about a page if you are the creator of the page, otherwise return cached version
+    /// </summary>
+    [HttpGet("/posts/{id}/detailed")]
+    [ProducesResponseType(typeof(Post), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(PostRedis), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetDetailed(string id)
+    {
+        var claim = HttpContext.User.Identity?.Name;
+        var cached = await _postRepository.GetCached(id);
+        if (cached is null)
+        {
+            return NotFound();
+        }
+
+        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out var userId))
+        {
+            return Ok(cached);
+        }
+
+        return cached.AuthorId == userId ? Ok(await _postRepository.Get(id)) : Ok(cached);
+    }
+
     #region Mongo
     /// <summary>
     ///     Get uncached post. (Requires auth, Requires Admin role)
