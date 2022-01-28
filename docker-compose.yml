@@ -19,14 +19,17 @@ services:
       - ConnectionStrings__Redis=redis:6379
       - osuApi__ClientId=
       - osuApi__ClientSecret=
-      - osuApi__CallbackUrl=http://localhost:8080/OAuth
+      - osuApi__CallbackUrl=/oauth/callback
     volumes:
-      - ./logs:/app/logs
+      - ./logs/backend:/app/logs
 
   frontend:
     build: ./frontend/.
     ports:
      - "3000:3000"
+    volumes:
+      - ./logs/frontend:/app/logs
+      - ./logs/frontend/npm:/root/.npm/_logs
 
   redis:
     image: redis
@@ -34,6 +37,7 @@ services:
       - "6379:6379"
     volumes:
       - ./redis:/data
+      - ./logs/redis:/var/log/redis
 
   mongodb:
     image: mongo:latest
@@ -45,3 +49,4 @@ services:
       - "27017:27017"
     volumes:
       - ./db:/data/db
+      - ./logs/mongo:/var/log/mongodb
