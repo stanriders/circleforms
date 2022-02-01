@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace CircleForms.Controllers;
+namespace CircleForms.Controllers.V1;
 
 [ApiController]
 [Route("[controller]")]

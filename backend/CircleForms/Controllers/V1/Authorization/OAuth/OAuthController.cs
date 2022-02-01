@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
-namespace CircleForms.Controllers.Authorization.OAuth;
+namespace CircleForms.Controllers.V1.Authorization.OAuth;
 
 [ApiController]
 [Route("[controller]")]
