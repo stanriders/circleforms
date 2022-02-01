@@ -6,6 +6,7 @@ using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
 using CircleForms.Services.Database.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,12 +21,114 @@ public class PostsController : ControllerBase
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
+    private readonly IValidator<SubmissionContract> _submissionValidator;
 
-    public PostsController(ILogger<PostsController> logger, IPostRepository postRepository, IMapper mapper)
+    public PostsController(IValidator<SubmissionContract> submissionValidator, ILogger<PostsController> logger,
+        IPostRepository postRepository, IMapper mapper)
     {
+        _submissionValidator = submissionValidator;
         _logger = logger;
         _postRepository = postRepository;
         _mapper = mapper;
+    }
+
+    private (List<Submission> submissions, string error) ProcessAnswer(Post post,
+        IEnumerable<SubmissionContract> answers)
+    {
+        var questions = post.Questions.ToDictionary(x => x.Id);
+        var answersDictionary = answers.ToDictionary(x => x.QuestionId);
+
+        //If any required fields doesn't filled
+        if (post.Questions.Where(question => !question.Optional)
+            .Any(question => !answersDictionary.ContainsKey(question.Id)))
+        {
+            return (null, "One or more required fields doesn't filled");
+        }
+
+        var resultingAnswers = new List<Submission>();
+        foreach (var (key, value) in answersDictionary)
+        {
+            //If question with id doesn't exist or answer was not provided
+            if (!questions.TryGetValue(key, out var question))
+            {
+                return (null, $"Question with id {key} does not exist");
+            }
+
+            if (question.QuestionType == QuestionType.Choice)
+            {
+                var choice = int.Parse(value.Answer);
+
+                if (choice >= question.QuestionInfo.Count)
+                {
+                    return (null, $"Choice for {key} is not in the range of choice ids");
+                }
+            }
+
+            var answer = _mapper.Map<Submission>(value);
+
+            resultingAnswers.Add(answer);
+        }
+
+        return (resultingAnswers, null);
+    }
+
+    /// <summary>
+    ///     Add answer to a question. (Requires auth)
+    /// </summary>
+    [Authorize]
+    [HttpPost("/posts/{id}/answer")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<IActionResult> Answer(string id, [FromBody] List<SubmissionContract> answerContracts)
+    {
+        var claim = HttpContext.User.Identity?.Name;
+        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out var userId))
+        {
+            _logger.LogWarning("User had an invalid name claim on answer: {Claim}", claim);
+
+            return Unauthorized();
+        }
+
+        var validationTasks = answerContracts.Select(x => _submissionValidator.ValidateAsync(x));
+        var results = await Task.WhenAll(validationTasks);
+        foreach (var validationResult in results)
+        {
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new {errors = validationResult.Errors.Select(x => x.ToString())});
+            }
+        }
+
+        var post = await _postRepository.Get(id);
+
+        if (post is null)
+        {
+            return BadRequest(new {error = "Could not find post with this id"});
+        }
+
+        if (post.Answers.Any(x => x.UserId == userId))
+        {
+            return Conflict(new {error = "You already voted"});
+        }
+
+        var (submissions, error) = ProcessAnswer(post, answerContracts);
+
+        if (submissions is null)
+        {
+            return BadRequest(new {error});
+        }
+
+        var answer = new Answer
+        {
+            Submissions = submissions,
+            UserId = userId
+        };
+
+        await _postRepository.AddAnswer(post.Id, answer);
+
+        return Ok();
     }
 
     /// <summary>
@@ -170,108 +273,6 @@ public class PostsController : ControllerBase
         return Ok(post);
     }
 
-    private (List<Submission> submissions, string error) ProcessAnswer(Post post,
-        IEnumerable<SubmissionContract> answers)
-    {
-        var questions = post.Questions.ToDictionary(x => x.Id);
-        var answersDictionary = answers.ToDictionary(x => x.QuestionId);
-
-        //If any required fields doesn't filled
-        if (post.Questions.Where(question => !question.Optional)
-            .Any(question => !answersDictionary.ContainsKey(question.Id)))
-        {
-            return (null, "One or more required fields doesn't filled");
-        }
-
-        var resultingAnswers = new List<Submission>();
-        foreach (var (key, value) in answersDictionary)
-        {
-            //If question with id doesn't exist or answer was not provided
-            if (!questions.TryGetValue(key, out var question))
-            {
-                return (null, $"Question with id {key} does not exist");
-            }
-
-            if (question.QuestionType == QuestionType.Choice)
-            {
-                if (!int.TryParse(value.Answer, out var choice))
-                {
-                    return (null, $"Provided value for {key} is not a choice id");
-                }
-
-                if (choice < 0 || choice >= question.QuestionInfo.Count)
-                {
-                    return (null, $"Choice for {key} is not in the range of choice ids");
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(value.Answer))
-            {
-                return (null, $"Answer on question with id {key} is null or consists exclusively with white-spaces");
-            }
-
-            var answer = _mapper.Map<Submission>((question.QuestionType, value));
-
-            //If mapping failed
-            if (answer.Value is null)
-            {
-                return (null, $"Could not parse answer with question id {key}");
-            }
-
-            resultingAnswers.Add(answer);
-        }
-
-        return (resultingAnswers, null);
-    }
-
-    /// <summary>
-    ///     Add answer to a question. (Requires auth)
-    /// </summary>
-    [Authorize]
-    [HttpPost("/posts/{id}/answer")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status409Conflict)]
-    public async Task<IActionResult> Answer(string id, [FromBody] List<SubmissionContract> answerContracts)
-    {
-        var claim = HttpContext.User.Identity?.Name;
-        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out var userId))
-        {
-            _logger.LogWarning("User had an invalid name claim on answer: {Claim}", claim);
-
-            return Unauthorized();
-        }
-
-        var post = await _postRepository.Get(id);
-
-        if (post is null)
-        {
-            return BadRequest("Could not find post with this id");
-        }
-
-        if (post.Answers.Any(x => x.UserId == userId))
-        {
-            return Conflict("You already voted");
-        }
-
-        var (submissions, error) = ProcessAnswer(post, answerContracts);
-
-        if (submissions is null)
-        {
-            return BadRequest(error);
-        }
-
-        var answer = new Answer
-        {
-            Submissions = submissions,
-            UserId = userId
-        };
-
-        await _postRepository.AddAnswer(post.Id, answer);
-
-        return Ok();
-    }
 
     /// <summary>
     ///     Get posts page.
