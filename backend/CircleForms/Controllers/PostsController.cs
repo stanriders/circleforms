@@ -6,7 +6,6 @@ using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
 using CircleForms.Services.Database.Interfaces;
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,12 +20,9 @@ public class PostsController : ControllerBase
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
-    private readonly IValidator<SubmissionContract> _submissionValidator;
 
-    public PostsController(IValidator<SubmissionContract> submissionValidator, ILogger<PostsController> logger,
-        IPostRepository postRepository, IMapper mapper)
+    public PostsController(ILogger<PostsController> logger, IPostRepository postRepository, IMapper mapper)
     {
-        _submissionValidator = submissionValidator;
         _logger = logger;
         _postRepository = postRepository;
         _mapper = mapper;
@@ -91,16 +87,6 @@ public class PostsController : ControllerBase
             return Unauthorized();
         }
 
-        var validationTasks = answerContracts.Select(x => _submissionValidator.ValidateAsync(x));
-        var results = await Task.WhenAll(validationTasks);
-        foreach (var validationResult in results)
-        {
-            if (!validationResult.IsValid)
-            {
-                return BadRequest(new {errors = validationResult.Errors.Select(x => x.ToString())});
-            }
-        }
-
         var post = await _postRepository.Get(id);
 
         if (post is null)
@@ -145,32 +131,13 @@ public class PostsController : ControllerBase
         if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out var userId))
         {
             _logger.LogInformation("User {User} posts a post {PostId}", claim, post.Id);
-
             post.AuthorId = userId;
-
-            if (post.Questions.Count == 0)
-            {
-                return BadRequest("No questions provided");
-            }
 
             for (var i = 0; i < post.Questions.Count; i++)
             {
                 var question = post.Questions[i];
                 question.Id = i;
-                if (question.QuestionType == QuestionType.Choice)
-                {
-                    if (question.QuestionInfo.Count == 0)
-                    {
-                        return BadRequest($"Question {i} is choice, but no choices provided");
-                    }
-
-                    if (question.QuestionInfo.Any(string.IsNullOrWhiteSpace))
-                    {
-                        return BadRequest(
-                            $"Question {i} is choice, but one of the choices consists exclusively of white-spaced characters");
-                    }
-                }
-                else
+                if (question.QuestionType != QuestionType.Choice)
                 {
                     question.QuestionInfo = new List<string>();
                 }
