@@ -9,7 +9,7 @@ public class ContractV1Profile : Profile
 {
     public ContractV1Profile()
     {
-        CreateMap<User, ContractV1Profile>();
+        CreateMap<User, UserResponseContract>();
 
         CreateMap<Post, PostResponseContract>();
         CreateMap<PostRedis, PostMinimalResponseContract>();
