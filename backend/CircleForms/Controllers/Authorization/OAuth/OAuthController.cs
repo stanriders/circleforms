@@ -101,6 +101,8 @@ public class OAuthController : ControllerBase
             await HttpContext.SignOutAsync("InternalCookies");
             await HttpContext.SignOutAsync("ExternalCookies");
 
+            await redisDb.SetRemoveAsync("user_ids", userIdLong);
+
             return StatusCode(500);
         }
 
