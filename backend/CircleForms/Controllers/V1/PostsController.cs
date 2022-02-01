@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Contracts.V1;
+using CircleForms.Contracts.V1.ContractModels.Response;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
@@ -128,7 +129,7 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPost(ApiEndpoints.PostsAddPost)]
-    [ProducesResponseType(typeof(Post), StatusCodes.Status201Created, "application/json")]
+    [ProducesResponseType(typeof(PostMinimalResponseContract), StatusCodes.Status201Created, "application/json")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Post(Post post)
