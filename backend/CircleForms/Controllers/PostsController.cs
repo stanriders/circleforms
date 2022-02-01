@@ -79,6 +79,11 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Answer(string id, [FromBody] List<SubmissionContract> answerContracts)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new {errors = ModelState.Values.Select(x => x.Errors.Select(v => v.ErrorMessage))});
+        }
+
         var claim = HttpContext.User.Identity?.Name;
         if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out var userId))
         {
@@ -127,6 +132,11 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Post(Post post)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new {errors = ModelState.Values.Select(x => x.Errors.Select(v => v.ErrorMessage))});
+        }
+
         var claim = HttpContext.User.Identity?.Name;
         if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out var userId))
         {
