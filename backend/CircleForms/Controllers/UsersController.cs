@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
@@ -30,7 +31,7 @@ public class UsersController : ControllerBase
     [HttpGet("{id}")]
     [ProducesResponseType(typeof(User), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(string id)
+    public async Task<IActionResult> Get([RegularExpression(@"^\d$")] string id)
     {
         _logger.LogInformation("Admin {Admin} requests User {Id}", HttpContext.User.Identity?.Name, id);
 
@@ -60,7 +61,7 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize(Roles = "SuperAdmin")]
     [HttpPatch]
-    public async Task<User> EscalatePrivileges(string id, int role)
+    public async Task<User> EscalatePrivileges([RegularExpression(@"^\d$")] string id, int role)
     {
         var user = await _usersService.Get(id);
         user.Roles = (Roles) role;
