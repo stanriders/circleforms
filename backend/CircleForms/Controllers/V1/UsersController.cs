@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using CircleForms.Contracts.V1;
+using CircleForms.Contracts.V1.ContractModels.Response;
 using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -16,11 +18,13 @@ namespace CircleForms.Controllers.V1;
 public class UsersController : ControllerBase
 {
     private readonly ILogger<UsersController> _logger;
+    private readonly IMapper _mapper;
     private readonly IUserRepository _usersService;
 
-    public UsersController(ILogger<UsersController> logger, IUserRepository usersService)
+    public UsersController(ILogger<UsersController> logger, IMapper mapper, IUserRepository usersService)
     {
         _logger = logger;
+        _mapper = mapper;
         _usersService = usersService;
     }
 
@@ -29,7 +33,7 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize(Roles = "Admin")]
     [HttpGet(ApiEndpoints.UsersGetUser)]
-    [ProducesResponseType(typeof(User), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(UserResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(long id)
     {
@@ -49,11 +53,11 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize(Roles = "Admin")]
     [HttpGet(ApiEndpoints.UsersGetAllUsers)]
-    public async Task<List<User>> GetAll()
+    public async Task<List<UserResponseContract>> GetAll()
     {
         _logger.LogInformation("Admin {Admin} requests users from the database", HttpContext.User.Identity?.Name);
 
-        return await _usersService.Get();
+        return _mapper.Map<List<User>, List<UserResponseContract>>(await _usersService.Get());
     }
 
     /// <summary>
@@ -61,7 +65,7 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize(Roles = "SuperAdmin")]
     [HttpPatch(ApiEndpoints.UsersEscalateUserPrivileges)]
-    public async Task<User> EscalatePrivileges(long id, int role)
+    public async Task<UserResponseContract> EscalatePrivileges(long id, int role)
     {
         var user = await _usersService.Get(id);
         user.Roles = (Roles) role;
@@ -71,7 +75,7 @@ public class UsersController : ControllerBase
 
         await _usersService.Update(id, user);
 
-        return user;
+        return _mapper.Map<UserResponseContract>(user);
     }
 
     /// <summary>
@@ -79,7 +83,7 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMe)]
-    [ProducesResponseType(typeof(User), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(UserResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMe()
     {
@@ -91,7 +95,7 @@ public class UsersController : ControllerBase
             var user = await _usersService.Get(userId);
             if (user != null)
             {
-                return Ok(user);
+                return Ok(_mapper.Map<UserResponseContract>(user));
             }
 
             _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", claim);
