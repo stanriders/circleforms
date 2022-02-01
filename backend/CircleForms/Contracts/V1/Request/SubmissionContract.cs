@@ -2,7 +2,7 @@
 using CircleForms.Models.Posts.Questions;
 using Newtonsoft.Json;
 
-namespace CircleForms.Models.Posts;
+namespace CircleForms.Contracts.V1.Request;
 
 public class SubmissionContract
 {

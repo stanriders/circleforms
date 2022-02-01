@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using CircleForms.Models.Posts;
+using CircleForms.Contracts.V1.Request;
 using FluentValidation;
 
 namespace CircleForms.Models.Validators;

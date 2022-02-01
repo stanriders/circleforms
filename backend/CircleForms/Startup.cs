@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.Contracts.V1.ContractModels.Mappings;
 using CircleForms.Models.Configurations;
-using CircleForms.Models.Mapping;
 using CircleForms.Services.Database;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
@@ -45,7 +43,7 @@ public class Startup
 
         services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         services.AddAutoMapper(x =>
-            x.AddProfiles(new Profile[] {new MappingProfile(), new ContractV1Profile()}));
+            x.AddProfile(new ContractV1Profile()));
 
         services.AddAuthentication("InternalCookies")
             .AddCookie("InternalCookies", options =>

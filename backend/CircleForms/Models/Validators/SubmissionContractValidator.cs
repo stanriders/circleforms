@@ -1,4 +1,4 @@
-﻿using CircleForms.Models.Posts;
+﻿using CircleForms.Contracts.V1.Request;
 using CircleForms.Models.Posts.Questions;
 using FluentValidation;
 
