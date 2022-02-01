@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using CircleForms.Models.Configurations;
 using CircleForms.Models.Mapping;
-using CircleForms.Models.Validators;
 using CircleForms.Services.Database;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
@@ -43,7 +42,7 @@ public class Startup
         services.Configure<OsuApiConfig>(config);
         services.Configure<SuperAdminsId>(Configuration.GetSection("SuperAdmins"));
 
-        services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<SubmissionContractValidator>());
+        services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         services.AddAutoMapper(x =>
             x.AddProfile(new MappingProfile()));
 
