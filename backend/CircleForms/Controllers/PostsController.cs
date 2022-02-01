@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using CircleForms.Contracts.V1;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
@@ -72,7 +73,7 @@ public class PostsController : ControllerBase
     ///     Add answer to a question. (Requires auth)
     /// </summary>
     [Authorize]
-    [HttpPost("/posts/{id}/answer")]
+    [HttpPost(ApiEndpoints.PostsAnswer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -126,7 +127,7 @@ public class PostsController : ControllerBase
     ///     Add a new post. (Requires auth)
     /// </summary>
     [Authorize]
-    [HttpPost("/posts")]
+    [HttpPost(ApiEndpoints.PostsAddPost)]
     [ProducesResponseType(typeof(Post), StatusCodes.Status201Created, "application/json")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -160,7 +161,7 @@ public class PostsController : ControllerBase
                 return StatusCode(500);
             }
 
-            return CreatedAtAction("GetPostForUser", new {id = post.Id.ToString()}, result);
+            return CreatedAtAction("GetCached", new {id = post.Id.ToString()}, result);
         }
 
         _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
@@ -171,7 +172,7 @@ public class PostsController : ControllerBase
     /// <summary>
     ///     Get full info about a page if you are the creator of the page, otherwise return cached version
     /// </summary>
-    [HttpGet("/posts/{id}/detailed")]
+    [HttpGet(ApiEndpoints.PostsDetailedPost)]
     [ProducesResponseType(typeof(Post), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(typeof(PostRedis), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -197,7 +198,7 @@ public class PostsController : ControllerBase
     ///     Get uncached post. (Requires auth, Requires Admin role)
     /// </summary>
     [Authorize(Roles = "Admin")]
-    [HttpGet("/posts/mongo/{id}")]
+    [HttpGet(ApiEndpoints.PostsOneDatabasePost)]
     public async Task<Post> Get(string id)
     {
         _logger.LogInformation("User {User} requested a post from the database", HttpContext.User.Identity?.Name);
@@ -209,7 +210,7 @@ public class PostsController : ControllerBase
     ///     Get all uncached posts. (Requires auth, Requires Admin role)
     /// </summary>
     [Authorize(Roles = "Admin")]
-    [HttpGet("/posts/mongo")]
+    [HttpGet(ApiEndpoints.PostsAllDatabasePosts)]
     public async Task<List<Post>> Get()
     {
         _logger.LogInformation("User {User} requested database posts dump", HttpContext.User.Identity?.Name);
@@ -223,7 +224,7 @@ public class PostsController : ControllerBase
     ///     Get all posts. (Requires auth, Requires Admin/Moderator role)
     /// </summary>
     [Authorize(Roles = "Admin,Moderator")]
-    [HttpGet("/posts")]
+    [HttpGet(ApiEndpoints.PostsAllCachedPosts)]
     public async Task<PostRedis[]> GetCached()
     {
         _logger.LogInformation("User {User} requested posts cache dump", HttpContext.User.Identity?.Name);
@@ -234,18 +235,16 @@ public class PostsController : ControllerBase
     /// <summary>
     ///     Get a post.
     /// </summary>
-    [HttpGet("/posts/{id}")]
+    [HttpGet(ApiEndpoints.PostsOneCachedPost)]
     [ProducesResponseType(typeof(Post), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetPostForUser(string id)
+    public async Task<IActionResult> GetCachedPost(string id)
     {
-        var post = await _postRepository.Get(id);
+        var post = await _postRepository.GetCached(id);
         if (post == null)
         {
             return NotFound();
         }
-
-        post.Answers = new List<Answer>();
 
         return Ok(post);
     }
@@ -254,7 +253,7 @@ public class PostsController : ControllerBase
     /// <summary>
     ///     Get posts page.
     /// </summary>
-    [HttpGet("/posts/page/{page:int}")]
+    [HttpGet(ApiEndpoints.PostPage)]
     public async Task<PostRedis[]> GetPage(int page)
     {
         return await _postRepository.GetCachedPage(page);

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using CircleForms.Contracts.V1;
 using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -24,10 +25,10 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Get user data. (Requires auth, Requires Admin role)
+    ///     Get user data. (Requires auth, Requires Admin role)
     /// </summary>
     [Authorize(Roles = "Admin")]
-    [HttpGet("{id:long}")]
+    [HttpGet(ApiEndpoints.UsersGetUser)]
     [ProducesResponseType(typeof(User), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(long id)
@@ -44,10 +45,10 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Get all users. (Requires auth, Requires Admin role)
+    ///     Get all users. (Requires auth, Requires Admin role)
     /// </summary>
     [Authorize(Roles = "Admin")]
-    [HttpGet]
+    [HttpGet(ApiEndpoints.UsersGetAllUsers)]
     public async Task<List<User>> GetAll()
     {
         _logger.LogInformation("Admin {Admin} requests users from the database", HttpContext.User.Identity?.Name);
@@ -56,10 +57,10 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Set user role. (Requires auth, Requires SuperAdmin role)
+    ///     Set user role. (Requires auth, Requires SuperAdmin role)
     /// </summary>
     [Authorize(Roles = "SuperAdmin")]
-    [HttpPatch]
+    [HttpPatch(ApiEndpoints.UsersEscalateUserPrivileges)]
     public async Task<User> EscalatePrivileges(long id, int role)
     {
         var user = await _usersService.Get(id);
@@ -74,10 +75,10 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Get data for current user. (Requires auth)
+    ///     Get data for current user. (Requires auth)
     /// </summary>
     [Authorize]
-    [HttpGet("/me")]
+    [HttpGet(ApiEndpoints.UsersGetMe)]
     [ProducesResponseType(typeof(User), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMe()

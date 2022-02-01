@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using CircleForms.Contracts.V1;
 using CircleForms.Models;
 using CircleForms.Models.Configurations;
 using CircleForms.Services.Database.Interfaces;
@@ -38,9 +39,9 @@ public class OAuthController : ControllerBase
     }
 
     /// <summary>
-    /// osu! API authentication.
+    ///     osu! API authentication.
     /// </summary>
-    [HttpGet("auth")]
+    [HttpGet(ApiEndpoints.OAuthAuthentication)]
     [ProducesResponseType(StatusCodes.Status302Found)]
     public IActionResult Authenticate()
     {
@@ -146,10 +147,10 @@ public class OAuthController : ControllerBase
     }
 
     /// <summary>
-    /// Sign out from current user. (Requires auth)
+    ///     Sign out from current user. (Requires auth)
     /// </summary>
     [Authorize]
-    [HttpGet("signout")]
+    [HttpGet(ApiEndpoints.OAuthSignOut)]
     [ProducesResponseType(StatusCodes.Status302Found)]
     public async Task<IActionResult> Logout()
     {
