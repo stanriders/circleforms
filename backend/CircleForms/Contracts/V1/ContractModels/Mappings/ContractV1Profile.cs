@@ -15,6 +15,7 @@ public class ContractV1Profile : Profile
 
         CreateMap<Post, PostResponseContract>();
         CreateMap<PostRedis, PostMinimalResponseContract>();
+        CreateMap<Post, PostDetailedResponseContract>();
 
         CreateMap<SubmissionContract, Submission>();
     }

@@ -178,25 +178,25 @@ public class PostsController : ControllerBase
     /// </summary>
     [HttpGet(ApiEndpoints.PostsDetailedPost)]
     [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
-    [ProducesResponseType(typeof(PostMinimalResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(PostDetailedResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDetailed(string id)
     {
         var claim = HttpContext.User.Identity?.Name;
-        var cached = await _postRepository.GetCached(id);
-        if (cached is null)
+        var post = await _postRepository.Get(id);
+        if (post is null)
         {
             return NotFound();
         }
 
         if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out var userId))
         {
-            return Ok(_mapper.Map<PostMinimalResponseContract>(cached));
+            return Ok(_mapper.Map<PostDetailedResponseContract>(post));
         }
 
-        return cached.AuthorId == userId
+        return post.AuthorId == userId
             ? Ok(_mapper.Map<PostResponseContract>(await _postRepository.Get(id)))
-            : Ok(_mapper.Map<PostMinimalResponseContract>(cached));
+            : Ok(_mapper.Map<PostDetailedResponseContract>(post));
     }
 
     #region Mongo
