@@ -15,7 +15,7 @@ public class MappingProfile : Profile
                 o => o.MapFrom(src => CalculateAnswer(src)));
 
         CreateMap<Post, PostRedis>()
-            .ForMember(x => x.Id, x => x.MapFrom(v => v.Id.ToString()));
+            .ForMember(x => x.Id, x => x.MapFrom(v => v.ID.ToString()));
     }
 
     private static string CalculateAnswer((QuestionType type, SubmissionContract contract) value)

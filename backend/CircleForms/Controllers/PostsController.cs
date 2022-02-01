@@ -39,11 +39,11 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> Post(Post post)
     {
         var claim = HttpContext.User.Identity?.Name;
-        if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out var userId))
+        if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out _))
         {
-            _logger.LogInformation("User {User} posts a post {PostId}", claim, post.Id);
+            _logger.LogInformation("User {User} posts a post {PostId}", claim, post.ID);
 
-            post.AuthorId = userId;
+            post.AuthorId = claim;
 
             if (post.Questions.Count == 0)
             {
@@ -73,14 +73,14 @@ public class PostsController : ControllerBase
                 }
             }
 
-            var result = await _postRepository.Add(userId, post);
+            var result = await _postRepository.Add(claim, post);
 
             if (result is null)
             {
                 return StatusCode(500);
             }
 
-            return CreatedAtAction("GetPostForUser", new {id = post.Id.ToString()}, result);
+            return CreatedAtAction("GetPostForUser", new {id = post.ID}, result);
         }
 
         _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
@@ -236,7 +236,7 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> Answer(string id, [FromBody] List<SubmissionContract> answerContracts)
     {
         var claim = HttpContext.User.Identity?.Name;
-        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out var userId))
+        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
         {
             _logger.LogWarning("User had an invalid name claim on answer: {Claim}", claim);
 
@@ -250,7 +250,7 @@ public class PostsController : ControllerBase
             return BadRequest("Could not find post with this id");
         }
 
-        if (post.Answers.Any(x => x.UserId == userId))
+        if (post.Answers.Any(x => x.UserId == claim))
         {
             return Conflict("You already voted");
         }
@@ -265,10 +265,10 @@ public class PostsController : ControllerBase
         var answer = new Answer
         {
             Submissions = submissions,
-            UserId = userId
+            UserId = claim
         };
 
-        await _postRepository.AddAnswer(post.Id, answer);
+        await _postRepository.AddAnswer(post.ID, answer);
 
         return Ok();
     }

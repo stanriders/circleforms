@@ -24,13 +24,13 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Get user data. (Requires auth, Requires Admin role)
+    ///     Get user data. (Requires auth, Requires Admin role)
     /// </summary>
     [Authorize(Roles = "Admin")]
-    [HttpGet("{id:long}")]
+    [HttpGet("{id}")]
     [ProducesResponseType(typeof(User), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(long id)
+    public async Task<IActionResult> Get(string id)
     {
         _logger.LogInformation("Admin {Admin} requests User {Id}", HttpContext.User.Identity?.Name, id);
 
@@ -44,7 +44,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Get all users. (Requires auth, Requires Admin role)
+    ///     Get all users. (Requires auth, Requires Admin role)
     /// </summary>
     [Authorize(Roles = "Admin")]
     [HttpGet]
@@ -56,11 +56,11 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Set user role. (Requires auth, Requires SuperAdmin role)
+    ///     Set user role. (Requires auth, Requires SuperAdmin role)
     /// </summary>
     [Authorize(Roles = "SuperAdmin")]
     [HttpPatch]
-    public async Task<User> EscalatePrivileges(long id, int role)
+    public async Task<User> EscalatePrivileges(string id, int role)
     {
         var user = await _usersService.Get(id);
         user.Roles = (Roles) role;
@@ -74,7 +74,7 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Get data for current user. (Requires auth)
+    ///     Get data for current user. (Requires auth)
     /// </summary>
     [Authorize]
     [HttpGet("/me")]
@@ -87,7 +87,7 @@ public class UsersController : ControllerBase
         {
             _logger.LogInformation("User {User} requests /me", userId);
 
-            var user = await _usersService.Get(userId);
+            var user = await _usersService.Get(claim);
             if (user != null)
             {
                 return Ok(user);
