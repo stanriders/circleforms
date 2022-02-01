@@ -104,12 +104,12 @@ public class PostsController : ControllerBase
             return NotFound();
         }
 
-        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out var userId))
+        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
         {
             return Ok(cached);
         }
 
-        return cached.AuthorId == userId ? Ok(await _postRepository.Get(id)) : Ok(cached);
+        return cached.AuthorId == claim ? Ok(await _postRepository.Get(id)) : Ok(cached);
     }
 
     #region Mongo
