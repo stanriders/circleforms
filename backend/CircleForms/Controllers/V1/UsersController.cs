@@ -29,16 +29,13 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    ///     Get user data. (Requires auth, Requires Admin role)
+    ///     Get user data.
     /// </summary>
-    [Authorize(Roles = "Admin")]
     [HttpGet(ApiEndpoints.UsersGetUser)]
     [ProducesResponseType(typeof(UserResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(long id)
     {
-        _logger.LogInformation("Admin {Admin} requests User {Id}", HttpContext.User.Identity?.Name, id);
-
         var user = await _usersService.Get(id);
         if (user != null)
         {
