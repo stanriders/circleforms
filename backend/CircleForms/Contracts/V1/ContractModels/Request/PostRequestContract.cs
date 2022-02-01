@@ -5,7 +5,7 @@ using CircleForms.Models.Enums;
 using CircleForms.Models.Posts.Questions;
 using Newtonsoft.Json;
 
-namespace CircleForms.Contracts.V1.Request;
+namespace CircleForms.Contracts.V1.ContractModels.Request;
 
 public class PostRequestContract
 {
