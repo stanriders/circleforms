@@ -42,7 +42,7 @@ public class UsersController : ControllerBase
         var user = await _usersService.Get(id);
         if (user != null)
         {
-            return Ok(user);
+            return Ok(_mapper.Map<UserResponseContract>(user));
         }
 
         return NotFound();
