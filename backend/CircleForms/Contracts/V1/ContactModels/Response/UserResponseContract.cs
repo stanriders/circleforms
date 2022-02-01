@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CircleForms.Models.Posts;
-using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace CircleForms.Contracts.V1.ContactModels.Response;
@@ -9,7 +7,7 @@ namespace CircleForms.Contracts.V1.ContactModels.Response;
 public class UserResponseContract
 {
     [JsonProperty("posts")]
-    public List<Post> Posts { get; set; }
+    public List<PostMinimalResponseContract> Posts { get; set; }
 
     [JsonProperty("avatar_url")]
     public Uri AvatarUrl { get; set; }
