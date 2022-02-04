@@ -1,13 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CircleForms.Models.Posts;
-using MongoDB.Bson;
 
 namespace CircleForms.Services.Database.Interfaces;
 
 public interface IPostRepository
 {
-    Task<Post> Add(long id, Post post);
+    Task<Post> Add(string id, Post post);
     Task<List<Post>> Get();
     Task<Post> Get(string postId);
 
@@ -15,5 +14,5 @@ public interface IPostRepository
     Task<PostRedis> GetCached(string postId);
     Task<PostRedis[]> GetCachedPage(int page, int pageSize = 50);
     Task Update(string id, Post post, bool updateCache);
-    Task AddAnswer(ObjectId postId, Answer entry);
+    Task AddAnswer(string postId, Answer entry);
 }

@@ -85,7 +85,7 @@ public class PostsController : ControllerBase
         }
 
         var claim = HttpContext.User.Identity?.Name;
-        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out var userId))
+        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
         {
             _logger.LogWarning("User had an invalid name claim on answer: {Claim}", claim);
 
@@ -99,7 +99,7 @@ public class PostsController : ControllerBase
             return BadRequest(new {error = "Could not find post with this id"});
         }
 
-        if (post.Answers.Any(x => x.UserId == userId))
+        if (post.Answers.Any(x => x.UserId == claim))
         {
             return Conflict(new {error = "You already voted"});
         }
@@ -114,10 +114,10 @@ public class PostsController : ControllerBase
         var answer = new Answer
         {
             Submissions = submissions,
-            UserId = userId
+            UserId = claim
         };
 
-        await _postRepository.AddAnswer(post.Id, answer);
+        await _postRepository.AddAnswer(post.ID, answer);
 
         return Ok();
     }
@@ -138,10 +138,11 @@ public class PostsController : ControllerBase
         }
 
         var claim = HttpContext.User.Identity?.Name;
-        if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out var userId))
+        if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out _))
         {
-            _logger.LogInformation("User {User} posts a post {PostId}", claim, post.Id);
-            post.AuthorId = userId;
+            _logger.LogInformation("User {User} posts a post {PostId}", claim, post.ID);
+
+            post.AuthorId = claim;
 
             for (var i = 0; i < post.Questions.Count; i++)
             {
@@ -153,14 +154,14 @@ public class PostsController : ControllerBase
                 }
             }
 
-            var result = await _postRepository.Add(userId, post);
+            var result = await _postRepository.Add(claim, post);
 
             if (result is null)
             {
                 return StatusCode(500);
             }
 
-            return CreatedAtAction("GetPostForUser", new {id = post.Id.ToString()}, result);
+            return CreatedAtAction("GetPostForUser", new {id = post.ID}, result);
         }
 
         _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
@@ -184,12 +185,12 @@ public class PostsController : ControllerBase
             return NotFound();
         }
 
-        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out var userId))
+        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
         {
             return Ok(cached);
         }
 
-        return cached.AuthorId == userId ? Ok(await _postRepository.Get(id)) : Ok(cached);
+        return cached.AuthorId == claim ? Ok(await _postRepository.Get(id)) : Ok(cached);
     }
 
     #region Mongo
@@ -249,7 +250,6 @@ public class PostsController : ControllerBase
 
         return Ok(post);
     }
-
 
     /// <summary>
     ///     Get posts page.

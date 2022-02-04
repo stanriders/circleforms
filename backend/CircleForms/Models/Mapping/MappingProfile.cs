@@ -10,6 +10,6 @@ public class MappingProfile : Profile
     {
         CreateMap<SubmissionContract, Submission>();
         CreateMap<Post, PostRedis>()
-            .ForMember(x => x.Id, x => x.MapFrom(v => v.Id.ToString()));
+            .ForMember(x => x.Id, x => x.MapFrom(v => v.ID.ToString()));
     }
 }
