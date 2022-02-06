@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
 using CircleForms.Contracts.V1;
 using CircleForms.Models;
 using CircleForms.Models.Configurations;
+using CircleForms.Models.OsuContracts;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -21,6 +23,7 @@ namespace CircleForms.Controllers.V1.Authorization.OAuth;
 public class OAuthController : ControllerBase
 {
     private readonly ILogger<OAuthController> _logger;
+    private readonly IMapper _mapper;
     private readonly IOsuUserProvider _osuApiDataService;
     private readonly IConnectionMultiplexer _redis;
     private readonly List<long> _superAdminsId;
@@ -29,12 +32,13 @@ public class OAuthController : ControllerBase
     public OAuthController(ILogger<OAuthController> logger,
         IOsuUserProvider osuApiDataService,
         IUserRepository usersRepository, IConnectionMultiplexer redis,
-        IOptions<SuperAdminsId> superAdminsId)
+        IOptions<SuperAdminsId> superAdminsId, IMapper mapper)
     {
         _logger = logger;
         _osuApiDataService = osuApiDataService;
         _usersRepository = usersRepository;
         _redis = redis;
+        _mapper = mapper;
         _superAdminsId = superAdminsId.Value.Ids;
     }
 
@@ -64,15 +68,18 @@ public class OAuthController : ControllerBase
             return Forbid();
         }
 
-        var user = await _osuApiDataService.GetUser(await HttpContext.GetTokenAsync("ExternalCookies", "access_token"));
-        if (user.IsRestricted)
+        var osuUser =
+            await _osuApiDataService.GetUser(await HttpContext.GetTokenAsync("ExternalCookies", "access_token"));
+        if (osuUser.IsRestricted)
         {
-            _logger.LogInformation("User {User} tried logging in, but they are restricted!", user.ID);
+            _logger.LogInformation("User {User} tried logging in, but they are restricted!", osuUser.Id);
 
             return Forbid();
         }
 
-        var userIdLong = long.Parse(user.ID);
+        var user = _mapper.Map<OsuUser, User>(osuUser);
+
+        var userIdLong = osuUser.Id;
         var redisDb = _redis.GetDatabase();
         if (!redisDb.SetContains("user_ids", userIdLong))
         {

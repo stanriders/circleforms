@@ -53,13 +53,13 @@ public class User : IEntity
     public bool IsRestricted { get; set; }
 
     [JsonProperty("account_history")]
-    public List<object> AccountHistory { get; set; }
+    public List<AccountHistory> AccountHistory { get; set; }
 
     [JsonProperty("badges")]
-    public List<Badge> Badges { get; set; }
+    public List<UserBadge> Badges { get; set; }
 
     [JsonProperty("monthly_playcounts")]
-    public List<Count> MonthlyPlaycounts { get; set; }
+    public List<MonthlyPlaycount> MonthlyPlaycounts { get; set; }
 
     [JsonProperty("previous_usernames")]
     public List<string> PreviousUsernames { get; set; }
@@ -95,7 +95,7 @@ public enum Roles
     SuperAdmin
 }
 
-public class Badge
+public class UserBadge
 {
     [JsonProperty("awarded_at")]
     public DateTime AwardedAt { get; set; }
@@ -119,13 +119,13 @@ public class Country
     public string Name { get; set; }
 }
 
-public class Count
+public class MonthlyPlaycount
 {
     [JsonProperty("start_date")]
     public DateTime StartDate { get; set; }
 
     [JsonProperty("count")]
-    public long CountCount { get; set; }
+    public int Count { get; set; }
 }
 
 public class RankHistory
@@ -142,11 +142,11 @@ public class Statistics
     [JsonProperty("level")]
     public Level Level { get; set; }
 
-    [JsonProperty("pp")]
-    public long Pp { get; set; }
-
     [JsonProperty("global_rank")]
-    public long GlobalRank { get; set; }
+    public int GlobalRank { get; set; }
+
+    [JsonProperty("pp")]
+    public double Pp { get; set; }
 
     [JsonProperty("ranked_score")]
     public long RankedScore { get; set; }
@@ -155,22 +155,22 @@ public class Statistics
     public double HitAccuracy { get; set; }
 
     [JsonProperty("play_count")]
-    public long PlayCount { get; set; }
+    public int PlayCount { get; set; }
 
     [JsonProperty("play_time")]
-    public long PlayTime { get; set; }
+    public int PlayTime { get; set; }
 
     [JsonProperty("total_score")]
     public long TotalScore { get; set; }
 
     [JsonProperty("total_hits")]
-    public long TotalHits { get; set; }
+    public int TotalHits { get; set; }
 
     [JsonProperty("maximum_combo")]
-    public long MaximumCombo { get; set; }
+    public int MaximumCombo { get; set; }
 
     [JsonProperty("replays_watched_by_others")]
-    public long ReplaysWatchedByOthers { get; set; }
+    public int ReplaysWatchedByOthers { get; set; }
 
     [JsonProperty("is_ranked")]
     public bool IsRanked { get; set; }
@@ -178,8 +178,8 @@ public class Statistics
     [JsonProperty("grade_counts")]
     public GradeCounts GradeCounts { get; set; }
 
-    [JsonProperty("rank")]
-    public Rank Rank { get; set; }
+    [JsonProperty("country_rank")]
+    public int CountryRank { get; set; }
 }
 
 public class GradeCounts
@@ -225,4 +225,22 @@ public class UserAchievement
 
     [JsonProperty("achievement_id")]
     public long AchievementId { get; set; }
+}
+
+public class AccountHistory
+{
+    [JsonProperty("description")]
+    public string Description { get; set; }
+
+    [JsonProperty("id")]
+    public int Id { get; set; }
+
+    [JsonProperty("length")]
+    public int Length { get; set; }
+
+    [JsonProperty("timestamp")]
+    public DateTime Timestamp { get; set; }
+
+    [JsonProperty("type")]
+    public string Type { get; set; }
 }
