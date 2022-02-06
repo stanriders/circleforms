@@ -79,13 +79,13 @@ public class OAuthController : ControllerBase
 
         var user = _mapper.Map<OsuUser, User>(osuUser);
 
-        var userIdLong = osuUser.Id;
+        var userId = osuUser.Id;
         var redisDb = _redis.GetDatabase();
-        if (!redisDb.SetContains("user_ids", userIdLong))
+        if (!redisDb.SetContains("user_ids", userId))
         {
             if (await _usersRepository.Get(user.ID) == null)
             {
-                if (_superAdminsId.Contains(userIdLong))
+                if (_superAdminsId.Contains(userId))
                 {
                     user.Roles = Roles.SuperAdmin | Roles.Admin | Roles.Moderator;
                 }
@@ -99,7 +99,7 @@ public class OAuthController : ControllerBase
                     user.Username);
             }
 
-            await redisDb.SetAddAsync("user_ids", userIdLong);
+            await redisDb.SetAddAsync("user_ids", userId);
         }
 
         var dbUser = await _usersRepository.Get(user.ID);
@@ -109,7 +109,7 @@ public class OAuthController : ControllerBase
             await HttpContext.SignOutAsync("InternalCookies");
             await HttpContext.SignOutAsync("ExternalCookies");
 
-            await redisDb.SetRemoveAsync("user_ids", userIdLong);
+            await redisDb.SetRemoveAsync("user_ids", userId);
 
             return StatusCode(500);
         }

@@ -17,6 +17,7 @@ public class ContractV1Profile : Profile
         CreateMap<PostRedis, PostMinimalResponseContract>();
         CreateMap<Post, PostDetailedResponseContract>();
 
+        CreateMap<PostRequestContract, Post>();
         CreateMap<SubmissionContract, Submission>();
         CreateMap<Post, PostRedis>()
             .ForMember(x => x.Id, x => x.MapFrom(v => v.ID.ToString()));
