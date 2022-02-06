@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using CircleForms.Models;
 using CircleForms.Models.Enums;
@@ -26,4 +26,3 @@ public class PostRequestContract
     [JsonProperty("questions")]
     public List<Question> Questions { get; set; }
 }
-

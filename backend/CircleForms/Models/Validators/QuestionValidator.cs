@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using CircleForms.Models.Posts.Questions;
 using FluentValidation;
 
@@ -13,7 +13,8 @@ public class QuestionValidator : AbstractValidator<Question>
             RuleFor(x => x.QuestionInfo)
                 .NotEmpty()
                 .Must(x => x.Count >= 2).WithMessage("Question info must contain at least 2 elements")
-                .Must(x => x.All(v => !string.IsNullOrEmpty(v))).WithMessage("Question info can't contain empty values");
+                .Must(x => x.All(v => !string.IsNullOrEmpty(v)))
+                .WithMessage("Question info can't contain empty values");
         });
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace CircleForms.Contracts.V1;
+namespace CircleForms.Contracts.V1;
 
 public static class ApiEndpoints
 {
@@ -9,13 +9,11 @@ public static class ApiEndpoints
 
     #region Posts
     #region Post endpoints for users
-
     public const string PostsAnswer = "/v1/{id}/answer";
     public const string PostsAddPost = "/v1/posts";
     public const string PostsOneCachedPost = "/v1/posts/{id}";
     public const string PostsDetailedPost = "/v1/posts/{id}/detailed";
     public const string PostPage = "/v1/posts/page/{page:int}";
-
     #endregion
 
     public const string PostsAllCachedPosts = "/v1/posts";
@@ -25,9 +23,7 @@ public static class ApiEndpoints
 
     #region Users
     #region Users endpoints for users
-
     public const string UsersGetMe = "/v1/me";
-
     #endregion
 
     public const string UsersGetUser = "/v1/users/{id}";
