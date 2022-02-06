@@ -46,9 +46,6 @@ public class User : IEntity
     [JsonProperty("playmode")]
     public string Playmode { get; set; }
 
-    [JsonProperty("country")]
-    public Country Country { get; set; }
-
     [JsonProperty("is_restricted")]
     public bool IsRestricted { get; set; }
 
@@ -108,15 +105,6 @@ public class UserBadge
 
     [JsonProperty("url")]
     public string Url { get; set; }
-}
-
-public class Country
-{
-    [JsonProperty("code")]
-    public string Code { get; set; }
-
-    [JsonProperty("name")]
-    public string Name { get; set; }
 }
 
 public class MonthlyPlaycount

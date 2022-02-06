@@ -7,7 +7,6 @@ public class OsuApiMapper : Profile
     public OsuApiMapper()
     {
         CreateMap<UserBadge, Models.UserBadge>();
-        CreateMap<Country, Models.Country>();
         CreateMap<MonthlyPlaycount, Models.MonthlyPlaycount>();
         CreateMap<RankHistory, Models.RankHistory>();
         CreateMap<GradeCounts, Models.GradeCounts>();
