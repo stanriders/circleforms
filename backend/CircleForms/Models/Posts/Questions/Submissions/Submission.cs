@@ -8,5 +8,5 @@ public class Submission
     public int QuestionId { get; set; }
 
     [JsonProperty("answer")]
-    public string Value { get; set; }
+    public string Answer { get; set; }
 }

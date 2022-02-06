@@ -102,7 +102,7 @@ public class PostsController : ControllerBase
             return BadRequest(new {error = "Could not find post with this id"});
         }
 
-        if (post.Answers.Any(x => x.UserId == claim))
+        if (post.Answers.Any(x => x.ID == claim))
         {
             return Conflict(new {error = "You already voted"});
         }
@@ -117,7 +117,7 @@ public class PostsController : ControllerBase
         var answer = new Answer
         {
             Submissions = submissions,
-            UserId = claim
+            ID = claim
         };
 
         await _postRepository.AddAnswer(post.ID, answer);

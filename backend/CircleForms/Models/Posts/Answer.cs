@@ -6,12 +6,17 @@ using Newtonsoft.Json;
 
 namespace CircleForms.Models.Posts;
 
-public class Answer : Entity
+public class Answer : IEntity
 {
-    [BsonId]
-    [JsonProperty("user_id")]
-    public string UserId { get; set; }
-
     [JsonProperty("answers")]
     public List<Submission> Submissions { get; set; }
+
+    [BsonId]
+    [JsonProperty("user_id")]
+    public string ID { get; set; }
+
+    public string GenerateNewID()
+    {
+        return "";
+    }
 }
