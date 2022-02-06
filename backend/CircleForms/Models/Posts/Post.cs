@@ -5,31 +5,22 @@ using CircleForms.Models.Enums;
 using CircleForms.Models.Posts.Questions;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Entities;
 using Newtonsoft.Json;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace CircleForms.Models.Posts;
 
-public class Post
+public class Post : IEntity
 {
     public Post()
     {
-        Id = ObjectId.GenerateNewId();
+        ID = GenerateNewID();
     }
-
-    public Post(string id)
-    {
-        Id = ObjectId.Parse(id);
-    }
-
-    [BsonId]
-    [JsonProperty("id")]
-    [SwaggerSchema(ReadOnly = true)]
-    public ObjectId Id { get; set; }
 
     [JsonProperty("author_id")]
     [SwaggerSchema(ReadOnly = true)]
-    public long AuthorId { get; set; }
+    public string AuthorId { get; set; }
 
     [Required]
     [JsonProperty("title")]
@@ -58,4 +49,15 @@ public class Post
     [JsonProperty("publish_time")]
     [SwaggerSchema(ReadOnly = true)]
     public DateTime PublishTime { get; set; }
+
+    public string GenerateNewID()
+    {
+        return ObjectId.GenerateNewId().ToString();
+    }
+
+    [ObjectId]
+    [BsonId]
+    [JsonProperty("id")]
+    [SwaggerSchema(ReadOnly = true)]
+    public string ID { get; set; }
 }

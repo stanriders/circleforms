@@ -67,49 +67,52 @@ public class OAuthController : ControllerBase
         var user = await _osuApiDataService.GetUser(await HttpContext.GetTokenAsync("ExternalCookies", "access_token"));
         if (user.IsRestricted)
         {
-            _logger.LogInformation("User {User} tried logging in, but they are restricted!", user.Id);
+            _logger.LogInformation("User {User} tried logging in, but they are restricted!", user.ID);
 
             return Forbid();
         }
 
+        var userIdLong = long.Parse(user.ID);
         var redisDb = _redis.GetDatabase();
-        if (!redisDb.SetContains("user_ids", user.Id))
+        if (!redisDb.SetContains("user_ids", userIdLong))
         {
-            if (await _usersRepository.Get(user.Id) == null)
+            if (await _usersRepository.Get(user.ID) == null)
             {
-                if (_superAdminsId.Contains(user.Id))
+                if (_superAdminsId.Contains(userIdLong))
                 {
                     user.Roles = Roles.SuperAdmin | Roles.Admin | Roles.Moderator;
                 }
 
-                _logger.LogInformation("Adding user {Id} - {Username} to the database", user.Id, user.Username);
+                _logger.LogInformation("Adding user {Id} - {Username} to the database", user.ID, user.Username);
                 await _usersRepository.Create(user);
             }
             else
             {
-                _logger.LogWarning("User {Id} - {Username} found in the database but was not cached", user.Id,
+                _logger.LogWarning("User {Id} - {Username} found in the database but was not cached", user.ID,
                     user.Username);
             }
 
-            await redisDb.SetAddAsync("user_ids", user.Id);
+            await redisDb.SetAddAsync("user_ids", userIdLong);
         }
 
-        var dbUser = await _usersRepository.Get(user.Id);
+        var dbUser = await _usersRepository.Get(user.ID);
         if (dbUser is null)
         {
             _logger.LogCritical("Something went horribly wrong. User is not in the database. User: {@User}", user);
             await HttpContext.SignOutAsync("InternalCookies");
             await HttpContext.SignOutAsync("ExternalCookies");
 
+            await redisDb.SetRemoveAsync("user_ids", userIdLong);
+
             return StatusCode(500);
         }
 
         user = TransferMutableData(dbUser, user);
 
-        var updateTask = _usersRepository.Update(user.Id, user);
+        var updateTask = _usersRepository.Update(user.ID, user);
         var claims = new List<Claim>
         {
-            new(ClaimTypes.Name, user.Id.ToString()),
+            new(ClaimTypes.Name, user.ID),
             new(ClaimTypes.Role, "User")
         };
 

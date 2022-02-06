@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using CircleForms.Models.Posts;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Entities;
 using Newtonsoft.Json;
 
 namespace CircleForms.Models;
 
-public class User
+[Collection("users")]
+public class User : IEntity
 {
     [JsonProperty("posts")]
     public List<Post> Posts { get; set; }
@@ -19,10 +21,6 @@ public class User
 
     [JsonProperty("default_group")]
     public string DefaultGroup { get; set; }
-
-    [BsonId]
-    [JsonProperty("id")]
-    public long Id { get; set; }
 
     [JsonProperty("is_active")]
     public bool IsActive { get; set; }
@@ -77,6 +75,15 @@ public class User
 
     [JsonIgnore]
     public Roles Roles { get; set; }
+
+    public string GenerateNewID()
+    {
+        return "000000";
+    }
+
+    [BsonId]
+    [JsonProperty("id")]
+    public string ID { get; set; }
 }
 
 [Flags]

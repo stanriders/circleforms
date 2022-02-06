@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Contracts.V1;
@@ -34,7 +35,7 @@ public class UsersController : ControllerBase
     [HttpGet(ApiEndpoints.UsersGetUser)]
     [ProducesResponseType(typeof(UserResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(long id)
+    public async Task<IActionResult> Get([RegularExpression(@"^\d$")] string id)
     {
         var user = await _usersService.Get(id);
         if (user != null)
@@ -62,7 +63,7 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize(Roles = "SuperAdmin")]
     [HttpPatch(ApiEndpoints.UsersEscalateUserPrivileges)]
-    public async Task<UserResponseContract> EscalatePrivileges(long id, int role)
+    public async Task<UserResponseContract> EscalatePrivileges([RegularExpression(@"^\d$")] string id, int role)
     {
         var user = await _usersService.Get(id);
         user.Roles = (Roles) role;
@@ -89,7 +90,7 @@ public class UsersController : ControllerBase
         {
             _logger.LogInformation("User {User} requests /me", userId);
 
-            var user = await _usersService.Get(userId);
+            var user = await _usersService.Get(claim);
             if (user != null)
             {
                 return Ok(_mapper.Map<UserResponseContract>(user));

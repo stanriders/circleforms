@@ -10,7 +10,7 @@ public class PostRedis
     public string Id { get; set; }
 
     [JsonProperty("author_id")]
-    public long AuthorId { get; set; }
+    public string AuthorId { get; set; }
 
     [JsonProperty("title")]
     public string Title { get; set; }

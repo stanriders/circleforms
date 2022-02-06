@@ -7,9 +7,9 @@ namespace CircleForms.Services.Database.Interfaces;
 public interface IUserRepository
 {
     Task<List<User>> Get();
-    Task<User> Get(long id);
+    Task<User> Get(string id);
     Task<User> Create(User user);
-    Task Update(long id, User user);
+    Task Update(string id, User user);
     Task Remove(User user);
-    Task Remove(long id);
+    Task Remove(string id);
 }

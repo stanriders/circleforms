@@ -7,10 +7,11 @@ using CircleForms.Models;
 using CircleForms.Models.Posts;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Entities;
 using Newtonsoft.Json;
 using StackExchange.Redis;
+using Order = StackExchange.Redis.Order;
 
 namespace CircleForms.Services.Database;
 
@@ -19,18 +20,15 @@ public class PostRepository : IPostRepository
     private readonly ILogger<PostRepository> _logger;
     private readonly IMapper _mapper;
     private readonly IConnectionMultiplexer _redis;
-    private readonly IMongoCollection<User> _users;
 
-    public PostRepository(ILogger<PostRepository> logger, IMapper mapper, IConnectionMultiplexer redis,
-        IMongoDatabase database)
+    public PostRepository(ILogger<PostRepository> logger, IMapper mapper, IConnectionMultiplexer redis)
     {
         _logger = logger;
         _mapper = mapper;
         _redis = redis;
-        _users = database.GetCollection<User>("users");
     }
 
-    public async Task<Post> Add(long id, Post post)
+    public async Task<Post> Add(string id, Post post)
     {
         post.PublishTime = DateTime.UtcNow;
         post.Answers = new List<Answer>();
@@ -38,10 +36,13 @@ public class PostRepository : IPostRepository
         var publishUnixTime = ((DateTimeOffset) post.PublishTime).ToUnixTimeMilliseconds();
 
         _logger.LogInformation("User {Id} created a new post", id);
-        var update = Builders<User>.Update.AddToSet(x => x.Posts, post);
-        await _users.FindOneAndUpdateAsync(x => x.Id == id, update);
 
-        var postId = $"post:{post.Id}";
+        await DB.Update<User>()
+            .MatchID(id)
+            .Modify(v => v.AddToSet(f => f.Posts, post))
+            .ExecuteAsync();
+
+        var postId = $"post:{post.ID}";
         var redisDb = _redis.GetDatabase();
 
         var postRedis = _mapper.Map<PostRedis>(post);
@@ -66,20 +67,25 @@ public class PostRepository : IPostRepository
 
     public async Task<List<Post>> Get()
     {
-        var filterDefinition = Builders<User>.Filter.SizeGt(x => x.Posts, 0);
-        var postDefinition = Builders<User>.Projection.Expression(x => x.Posts);
-        var postsDocuments = await _users
-            .Find(filterDefinition).Project(postDefinition).ToListAsync();
+        var filterDefinition = DB.Filter<User>()
+            .SizeGt(x => x.Posts, 0);
+
+        var postsDocuments = await DB.Find<User, List<Post>>()
+            .Match(filterDefinition)
+            .Project(a => a.Posts)
+            .ExecuteAsync();
 
         return postsDocuments.SelectMany(x => x).ToList();
     }
 
     public async Task<Post> Get(string postId)
     {
-        var objId = ObjectId.Parse(postId);
-        var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, x => x.Id == objId);
-        var post = await _users.Find(filter).Project(x => x.Posts.First(post => post.Id == objId))
-            .FirstOrDefaultAsync();
+        var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, x => x.ID == postId);
+
+        var post = await DB.Find<User, Post>()
+            .Match(filter)
+            .Project(x => x.Posts.First(post => post.ID == postId))
+            .ExecuteFirstAsync();
 
         return post;
     }
@@ -111,10 +117,12 @@ public class PostRepository : IPostRepository
 
     public async Task Update(string id, Post post, bool updateCache)
     {
-        var objId = ObjectId.Parse(id);
-        var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, x => x.Id == objId);
-        var update = Builders<User>.Update.Set(x => x.Posts[-1], post);
-        var result = await _users.UpdateOneAsync(filter, update);
+        var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, x => x.ID == id);
+
+        var result = await DB.Update<User>()
+            .Match(filter)
+            .Modify(x => x.Set(v => v.Posts[-1], post))
+            .ExecuteAsync();
         if (result.ModifiedCount != 1)
         {
             _logger.LogCritical("Post {@Post} with id {Id} modified {Count} entities", post, id, result.ModifiedCount);
@@ -129,12 +137,17 @@ public class PostRepository : IPostRepository
         await redisDb.StringSetAsync($"post:{id}", JsonConvert.SerializeObject(_mapper.Map<PostRedis>(post)));
     }
 
-    public async Task AddAnswer(ObjectId postId, Answer entry)
+    public async Task AddAnswer(string postId, Answer entry)
     {
-        var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, post => post.Id == postId);
-        var update = Builders<User>.Update.AddToSet(x => x.Posts[-1].Answers, entry);
-
-        await _users.FindOneAndUpdateAsync(filter, update);
+        var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, post => post.ID == postId);
+        var result = await DB.Update<User>()
+            .Match(filter)
+            .Modify(a => a.AddToSet(v => v.Posts[-1].Answers, entry))
+            .ExecuteAsync();
+        if (result.ModifiedCount != 1)
+        {
+            _logger.LogInformation("Could not add answer {@Entry} to {PostId}", entry, postId);
+        }
     }
 
     private static async Task<PostRedis[]> IdsToPosts(IReadOnlyList<RedisValue> ids, IDatabaseAsync redisDb)
