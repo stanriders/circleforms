@@ -90,6 +90,9 @@ public class Statistics
     [JsonProperty("global_rank")]
     public int GlobalRank { get; set; }
 
+    [JsonProperty("country_rank")]
+    public int CountryRank { get; set; }
+
     [JsonProperty("pp")]
     public double Pp { get; set; }
 
@@ -122,9 +125,6 @@ public class Statistics
 
     [JsonProperty("grade_counts")]
     public GradeCounts GradeCounts { get; set; }
-
-    [JsonProperty("country_rank")]
-    public int CountryRank { get; set; }
 }
 
 public class GradeCounts
