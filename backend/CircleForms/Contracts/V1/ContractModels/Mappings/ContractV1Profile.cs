@@ -11,7 +11,8 @@ public class ContractV1Profile : Profile
 {
     public ContractV1Profile()
     {
-        CreateMap<User, UserResponseContract>();
+        CreateMap<User, UserResponseContract>()
+            .ForMember(x => x.Id, o => o.MapFrom(x => x.ID));
 
         CreateMap<Post, PostResponseContract>();
         CreateMap<PostRedis, PostMinimalResponseContract>();
@@ -20,6 +21,6 @@ public class ContractV1Profile : Profile
         CreateMap<PostRequestContract, Post>();
         CreateMap<SubmissionContract, Submission>();
         CreateMap<Post, PostRedis>()
-            .ForMember(x => x.Id, x => x.MapFrom(v => v.ID.ToString()));
+            .ForMember(x => x.Id, x => x.MapFrom(v => v.ID));
     }
 }
