@@ -6,14 +6,17 @@ namespace CircleForms.Contracts.V1.ContractModels.Response;
 
 public class UserResponseContract
 {
+    [JsonProperty("id")]
+    public string Id { get; set; }
+
     [JsonProperty("posts")]
     public List<PostMinimalResponseContract> Posts { get; set; }
 
     [JsonProperty("avatar_url")]
     public Uri AvatarUrl { get; set; }
 
-    [JsonProperty("id")]
-    public string Id { get; set; }
+    [JsonProperty("country_code")]
+    public string CountryCode { get; set; }
 
     [JsonProperty("is_supporter")]
     public bool IsSupporter { get; set; }
@@ -30,14 +33,11 @@ public class UserResponseContract
     [JsonProperty("playmode")]
     public string Playmode { get; set; }
 
-    [JsonProperty("country")]
-    public Country Country { get; set; }
-
     [JsonProperty("badges")]
-    public List<Badge> Badges { get; set; }
+    public List<UserBadge> Badges { get; set; }
 
     [JsonProperty("monthly_playcounts")]
-    public List<Count> MonthlyPlaycounts { get; set; }
+    public List<MonthlyPlaycount> MonthlyPlaycounts { get; set; }
 
     [JsonProperty("previous_usernames")]
     public List<string> PreviousUsernames { get; set; }
@@ -49,7 +49,7 @@ public class UserResponseContract
     public RankHistory RankHistory { get; set; }
 }
 
-public class Badge
+public class UserBadge
 {
     [JsonProperty("awarded_at")]
     public DateTime AwardedAt { get; set; }
@@ -64,22 +64,13 @@ public class Badge
     public string Url { get; set; }
 }
 
-public class Country
-{
-    [JsonProperty("code")]
-    public string Code { get; set; }
-
-    [JsonProperty("name")]
-    public string Name { get; set; }
-}
-
-public class Count
+public class MonthlyPlaycount
 {
     [JsonProperty("start_date")]
     public DateTime StartDate { get; set; }
 
     [JsonProperty("count")]
-    public long CountCount { get; set; }
+    public int Count { get; set; }
 }
 
 public class RankHistory
@@ -96,11 +87,14 @@ public class Statistics
     [JsonProperty("level")]
     public Level Level { get; set; }
 
-    [JsonProperty("pp")]
-    public long Pp { get; set; }
-
     [JsonProperty("global_rank")]
-    public long GlobalRank { get; set; }
+    public int GlobalRank { get; set; }
+
+    [JsonProperty("country_rank")]
+    public int CountryRank { get; set; }
+
+    [JsonProperty("pp")]
+    public double Pp { get; set; }
 
     [JsonProperty("ranked_score")]
     public long RankedScore { get; set; }
@@ -109,31 +103,28 @@ public class Statistics
     public double HitAccuracy { get; set; }
 
     [JsonProperty("play_count")]
-    public long PlayCount { get; set; }
+    public int PlayCount { get; set; }
 
     [JsonProperty("play_time")]
-    public long PlayTime { get; set; }
+    public int PlayTime { get; set; }
 
     [JsonProperty("total_score")]
     public long TotalScore { get; set; }
 
     [JsonProperty("total_hits")]
-    public long TotalHits { get; set; }
+    public int TotalHits { get; set; }
 
     [JsonProperty("maximum_combo")]
-    public long MaximumCombo { get; set; }
+    public int MaximumCombo { get; set; }
 
     [JsonProperty("replays_watched_by_others")]
-    public long ReplaysWatchedByOthers { get; set; }
+    public int ReplaysWatchedByOthers { get; set; }
 
     [JsonProperty("is_ranked")]
     public bool IsRanked { get; set; }
 
     [JsonProperty("grade_counts")]
     public GradeCounts GradeCounts { get; set; }
-
-    [JsonProperty("rank")]
-    public Rank Rank { get; set; }
 }
 
 public class GradeCounts
@@ -161,13 +152,4 @@ public class Level
 
     [JsonProperty("progress")]
     public long Progress { get; set; }
-}
-
-public class Rank
-{
-    [JsonProperty("global")]
-    public long Global { get; set; }
-
-    [JsonProperty("country")]
-    public long Country { get; set; }
 }
