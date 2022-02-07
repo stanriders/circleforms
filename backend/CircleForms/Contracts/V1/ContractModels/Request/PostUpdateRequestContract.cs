@@ -25,6 +25,9 @@ public class QuestionUpdateContract
     [JsonProperty("id")]
     public int? Id { get; set; }
 
+    [JsonProperty("delete")]
+    public bool Delete { get; set; }
+
     [JsonProperty("type")]
     public QuestionType QuestionType { get; set; }
 

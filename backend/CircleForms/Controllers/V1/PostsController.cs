@@ -207,6 +207,19 @@ public class PostsController : ControllerBase
         {
             foreach (var updatedPostQuestion in updateContract.Questions)
             {
+                if (updatedPostQuestion.Delete)
+                {
+                    var question = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
+                    if (question is null)
+                    {
+                        return BadRequest($"Question {updatedPostQuestion.Id} is not found");
+                    }
+
+                    questions.Remove(question);
+
+                    continue;
+                }
+
                 var newQuestion = _mapper.Map<Question>(updatedPostQuestion);
                 if (updatedPostQuestion.Id is null)
                 {

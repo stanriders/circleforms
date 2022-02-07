@@ -24,6 +24,12 @@ public class QuestionUpdateContractValidator : AbstractValidator<QuestionUpdateC
 {
     public QuestionUpdateContractValidator()
     {
+        When(x => x.Delete, () =>
+        {
+            RuleFor(x => x.Id)
+                .NotEmpty();
+        });
+
         When(x => x.QuestionType == QuestionType.Choice, () =>
         {
             RuleFor(x => x.QuestionInfo)
