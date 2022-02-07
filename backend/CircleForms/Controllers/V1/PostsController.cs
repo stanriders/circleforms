@@ -201,7 +201,34 @@ public class PostsController : ControllerBase
 
         _logger.LogInformation("User {Claim} updated the post {Id} with {@Updates}", claim, post.ID, updateContract);
 
-        post = _mapper.Map(updateContract, post);
+        var questions = post.Questions;
+        var updatedPost = _mapper.Map(updateContract, post);
+        if (updateContract.Questions is not null)
+        {
+            foreach (var updatedPostQuestion in updateContract.Questions)
+            {
+                if (updatedPostQuestion.Id is null)
+                {
+                    var newPostId = questions.Max(x => x.Id) + 1;
+                    var newQuestion = _mapper.Map<Question>(updatedPostQuestion);
+                    newQuestion.Id = newPostId;
+                    questions.Add(newQuestion);
+
+                    continue;
+                }
+
+                var postToUpdate = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
+                if (postToUpdate is null)
+                {
+                    return BadRequest($"Question {updatedPostQuestion.Id} is not found");
+                }
+
+                questions.Remove(postToUpdate);
+                questions.Add(postToUpdate);
+            }
+        }
+
+        updatedPost.Questions = questions;
 
         await _postRepository.Update(post.ID, post, true);
 

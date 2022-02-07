@@ -1,4 +1,5 @@
 using System.Linq;
+using CircleForms.Contracts.V1.ContractModels.Request;
 using CircleForms.Models.Posts.Questions;
 using FluentValidation;
 
@@ -12,8 +13,23 @@ public class QuestionValidator : AbstractValidator<Question>
         {
             RuleFor(x => x.QuestionInfo)
                 .NotEmpty()
-                .Must(x => x.Count >= 2).WithMessage("Question info must contain at least 2 elements")
-                .Must(x => x.All(v => !string.IsNullOrEmpty(v)))
+                .Must(x => x?.Count >= 2).WithMessage("Question info must contain at least 2 elements")
+                .Must(x => x?.All(v => !string.IsNullOrEmpty(v)) == true)
+                .WithMessage("Question info can't contain empty values");
+        });
+    }
+}
+
+public class QuestionUpdateContractValidator : AbstractValidator<QuestionUpdateContract>
+{
+    public QuestionUpdateContractValidator()
+    {
+        When(x => x.QuestionType == QuestionType.Choice, () =>
+        {
+            RuleFor(x => x.QuestionInfo)
+                .NotEmpty()
+                .Must(x => x?.Count >= 2).WithMessage("Question info must contain at least 2 elements")
+                .Must(x => x?.All(v => !string.IsNullOrEmpty(v)) == true)
                 .WithMessage("Question info can't contain empty values");
         });
     }

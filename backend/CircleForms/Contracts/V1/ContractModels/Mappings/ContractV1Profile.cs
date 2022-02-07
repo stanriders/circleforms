@@ -3,6 +3,7 @@ using CircleForms.Contracts.V1.ContractModels.Request;
 using CircleForms.Contracts.V1.ContractModels.Response;
 using CircleForms.Models;
 using CircleForms.Models.Posts;
+using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
 using GradeCounts = CircleForms.Models.GradeCounts;
 using Level = CircleForms.Models.Level;
@@ -37,6 +38,9 @@ public class ContractV1Profile : Profile
             .ForMember(x => x.Id, x => x.MapFrom(v => v.ID.ToString()));
 
         CreateMap<PostUpdateRequestContract, Post>()
+            .ForAllMembers(opts => opts.Condition((_, _, srcMember) => srcMember != null));
+
+        CreateMap<QuestionUpdateContract, Question>()
             .ForAllMembers(opts => opts.Condition((_, _, srcMember) => srcMember != null));
     }
 }
