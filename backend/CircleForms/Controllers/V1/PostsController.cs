@@ -1,6 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Contracts.V1;
@@ -127,6 +128,25 @@ public class PostsController : ControllerBase
         return Ok();
     }
 
+    private static string GenerateAccessKey(byte size)
+    {
+        const string chars =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        var data = new byte[size];
+        using (var crypto = RandomNumberGenerator.Create())
+        {
+            crypto.GetBytes(data);
+        }
+
+        var result = new StringBuilder(size);
+        foreach (var b in data)
+        {
+            result.Append(chars[b % chars.Length]);
+        }
+
+        return result.ToString();
+    }
+
     /// <summary>
     ///     Add a new post. (Requires auth)
     /// </summary>
@@ -152,7 +172,7 @@ public class PostsController : ControllerBase
             post.AuthorId = claim;
             if (post.Accessibility == Accessibility.Link)
             {
-                post.AccessKey = Guid.NewGuid().ToString();
+                post.AccessKey = GenerateAccessKey(6);
             }
 
             for (var i = 0; i < post.Questions.Count; i++)
@@ -199,7 +219,7 @@ public class PostsController : ControllerBase
         Post forceRequestedPost = null;
         if (post.Accessibility == Accessibility.Link)
         {
-            if (string.IsNullOrEmpty(key) || !Guid.TryParse(key, out _))
+            if (string.IsNullOrEmpty(key) || key.Length != 6)
             {
                 return NotFound();
             }
