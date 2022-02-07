@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using CircleForms.Contracts.V1.ContractModels.Request;
-using CircleForms.Contracts.V1.ContractModels.Response;
+using CircleForms.Contracts.ContractModels.Request;
+using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Models;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
@@ -12,11 +12,11 @@ using RankHistory = CircleForms.Models.RankHistory;
 using Statistics = CircleForms.Models.Statistics;
 using UserBadge = CircleForms.Models.UserBadge;
 
-namespace CircleForms.Contracts.V1.ContractModels.Mappings;
+namespace CircleForms.Contracts.ContractModels.Mappings;
 
-public class ContractV1Profile : Profile
+public class ContractProfile : Profile
 {
-    public ContractV1Profile()
+    public ContractProfile()
     {
         CreateMap<User, UserResponseContract>()
             .ForMember(x => x.Id, o => o.MapFrom(x => x.ID));

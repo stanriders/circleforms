@@ -3,7 +3,7 @@ using CircleForms.Models;
 using CircleForms.Models.Posts.Questions;
 using Newtonsoft.Json;
 
-namespace CircleForms.Contracts.V1.ContractModels.Request;
+namespace CircleForms.Contracts.ContractModels.Request;
 
 public class PostUpdateRequestContract
 {

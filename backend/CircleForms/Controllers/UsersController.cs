@@ -2,8 +2,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using AutoMapper;
-using CircleForms.Contracts.V1;
-using CircleForms.Contracts.V1.ContractModels.Response;
+using CircleForms.Contracts;
+using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace CircleForms.Controllers.V1;
+namespace CircleForms.Controllers;
 
 [ApiController]
 [Route("[controller]")]

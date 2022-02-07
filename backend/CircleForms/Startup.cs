@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
-using CircleForms.Contracts.V1.ContractModels.Mappings;
+using CircleForms.Contracts.ContractModels.Mappings;
 using CircleForms.Models.Configurations;
 using CircleForms.Models.OsuContracts;
 using CircleForms.Services.Database;
@@ -46,7 +46,8 @@ public class Startup
 
         services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         services.AddAutoMapper(x =>
-            x.AddProfiles(new Profile[] {new ContractV1Profile(), new OsuApiMapper()}));
+            x.AddProfiles(new Profile[] {new ContractProfile(), new OsuApiMapper()}));
+
 
         services.AddAuthentication("InternalCookies")
             .AddCookie("InternalCookies", options =>

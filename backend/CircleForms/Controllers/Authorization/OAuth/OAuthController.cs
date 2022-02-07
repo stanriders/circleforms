@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
-using CircleForms.Contracts.V1;
+using CircleForms.Contracts;
 using CircleForms.Models;
 using CircleForms.Models.Configurations;
 using CircleForms.Models.OsuContracts;
@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
-namespace CircleForms.Controllers.V1.Authorization.OAuth;
+namespace CircleForms.Controllers.Authorization.OAuth;
 
 [ApiController]
 [Route("[controller]")]

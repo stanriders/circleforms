@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 
-namespace CircleForms.Contracts.V1.ContractModels.Response;
+namespace CircleForms.Contracts.ContractModels.Response;
 
 public class UserResponseContract
 {

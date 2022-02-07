@@ -2,7 +2,7 @@
 using CircleForms.Models.Posts.Questions;
 using Newtonsoft.Json;
 
-namespace CircleForms.Contracts.V1.ContractModels.Response;
+namespace CircleForms.Contracts.ContractModels.Response;
 
 public class PostDetailedResponseContract : PostMinimalResponseContract
 {

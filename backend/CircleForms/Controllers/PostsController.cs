@@ -4,9 +4,9 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using CircleForms.Contracts.V1;
-using CircleForms.Contracts.V1.ContractModels.Request;
-using CircleForms.Contracts.V1.ContractModels.Response;
+using CircleForms.Contracts;
+using CircleForms.Contracts.ContractModels.Request;
+using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Models.Enums;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
@@ -17,7 +17,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace CircleForms.Controllers.V1;
+namespace CircleForms.Controllers;
 
 [ApiController]
 [Route("[controller]")]
