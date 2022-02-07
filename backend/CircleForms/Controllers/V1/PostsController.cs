@@ -207,10 +207,10 @@ public class PostsController : ControllerBase
         {
             foreach (var updatedPostQuestion in updateContract.Questions)
             {
+                var newQuestion = _mapper.Map<Question>(updatedPostQuestion);
                 if (updatedPostQuestion.Id is null)
                 {
                     var newPostId = questions.Max(x => x.Id) + 1;
-                    var newQuestion = _mapper.Map<Question>(updatedPostQuestion);
                     newQuestion.Id = newPostId;
                     questions.Add(newQuestion);
 
@@ -224,7 +224,7 @@ public class PostsController : ControllerBase
                 }
 
                 questions.Remove(postToUpdate);
-                questions.Add(postToUpdate);
+                questions.Add(newQuestion);
             }
         }
 
