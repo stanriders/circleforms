@@ -21,5 +21,8 @@ public class ContractV1Profile : Profile
         CreateMap<SubmissionContract, Submission>();
         CreateMap<Post, PostRedis>()
             .ForMember(x => x.Id, x => x.MapFrom(v => v.ID.ToString()));
+
+        CreateMap<PostUpdateRequestContract, Post>()
+            .ForAllMembers(opts => opts.Condition((_, _, srcMember) => srcMember != null));
     }
 }

@@ -199,26 +199,9 @@ public class PostsController : ControllerBase
             return Unauthorized();
         }
 
-        _logger.LogInformation("User {Claim} updated the post {Id} with {Updates}", claim, post.ID, updateContract);
-        if (updateContract.Accessibility is not null)
-        {
-            post.Accessibility = updateContract.Accessibility.Value;
-        }
+        _logger.LogInformation("User {Claim} updated the post {Id} with {@Updates}", claim, post.ID, updateContract);
 
-        if (updateContract.Description is not null)
-        {
-            post.Description = updateContract.Description;
-        }
-
-        if (updateContract.Limitations is not null)
-        {
-            post.Limitations = updateContract.Limitations;
-        }
-
-        if (updateContract.Title is not null)
-        {
-            post.Title = updateContract.Title;
-        }
+        post = _mapper.Map(updateContract, post);
 
         await _postRepository.Update(post.ID, post, true);
 
