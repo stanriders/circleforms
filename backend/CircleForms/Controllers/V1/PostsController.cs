@@ -175,6 +175,57 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
+    ///     Update post. (Requires auth)
+    /// </summary>
+    [Authorize]
+    [HttpPatch(ApiEndpoints.PostUpdatePost)]
+    [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
+    public async Task<IActionResult> UpdatePost([FromBody] PostUpdateRequestContract updateContract, string id)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        var claim = HttpContext.User.Identity?.Name;
+        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
+        {
+            return Unauthorized();
+        }
+
+        var post = await _postRepository.Get(id);
+        if (post.AuthorId != claim)
+        {
+            return Unauthorized();
+        }
+
+        _logger.LogInformation("User {Claim} updated the post {Id} with {Updates}", claim, post.ID, updateContract);
+        if (updateContract.Accessibility is not null)
+        {
+            post.Accessibility = updateContract.Accessibility.Value;
+        }
+
+        if (updateContract.Description is not null)
+        {
+            post.Description = updateContract.Description;
+        }
+
+        if (updateContract.Limitations is not null)
+        {
+            post.Limitations = updateContract.Limitations;
+        }
+
+        if (updateContract.Title is not null)
+        {
+            post.Title = updateContract.Title;
+        }
+
+        await _postRepository.Update(post.ID, post, true);
+
+        return Ok(_mapper.Map<PostResponseContract>(post));
+    }
+
+    /// <summary>
     ///     Get full info about a page if you are the creator of the page, otherwise return cached version
     /// </summary>
     [HttpGet(ApiEndpoints.PostsDetailedPost)]
