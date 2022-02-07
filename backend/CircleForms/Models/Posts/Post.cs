@@ -22,6 +22,9 @@ public class Post : IEntity
     [JsonProperty("title")]
     public string Title { get; set; }
 
+    [JsonProperty("access_key")]
+    public string AccessKey { get; set; }
+
     [JsonProperty("description")]
     public string Description { get; set; }
 
