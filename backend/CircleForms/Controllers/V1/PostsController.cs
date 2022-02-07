@@ -175,6 +175,80 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
+    ///     Update post. (Requires auth)
+    /// </summary>
+    [Authorize]
+    [HttpPatch(ApiEndpoints.PostUpdatePost)]
+    [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
+    public async Task<IActionResult> UpdatePost([FromBody] PostUpdateRequestContract updateContract, string id)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest();
+        }
+
+        var claim = HttpContext.User.Identity?.Name;
+        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
+        {
+            return Unauthorized();
+        }
+
+        var post = await _postRepository.Get(id);
+        if (post.AuthorId != claim)
+        {
+            return Unauthorized();
+        }
+
+        _logger.LogInformation("User {Claim} updated the post {Id} with {@Updates}", claim, post.ID, updateContract);
+
+        var questions = post.Questions;
+        var updatedPost = _mapper.Map(updateContract, post);
+        if (updateContract.Questions is not null)
+        {
+            foreach (var updatedPostQuestion in updateContract.Questions)
+            {
+                if (updatedPostQuestion.Delete)
+                {
+                    var question = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
+                    if (question is null)
+                    {
+                        return BadRequest($"Question {updatedPostQuestion.Id} is not found");
+                    }
+
+                    questions.Remove(question);
+
+                    continue;
+                }
+
+                var newQuestion = _mapper.Map<Question>(updatedPostQuestion);
+                if (updatedPostQuestion.Id is null)
+                {
+                    var newPostId = questions.Max(x => x.Id) + 1;
+                    newQuestion.Id = newPostId;
+                    questions.Add(newQuestion);
+
+                    continue;
+                }
+
+                var postToUpdate = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
+                if (postToUpdate is null)
+                {
+                    return BadRequest($"Question {updatedPostQuestion.Id} is not found");
+                }
+
+                questions.Remove(postToUpdate);
+                questions.Add(newQuestion);
+            }
+        }
+
+        updatedPost.Questions = questions;
+
+        await _postRepository.Update(post.ID, post, true);
+
+        return Ok(_mapper.Map<PostResponseContract>(post));
+    }
+
+    /// <summary>
     ///     Get full info about a page if you are the creator of the page, otherwise return cached version
     /// </summary>
     [HttpGet(ApiEndpoints.PostsDetailedPost)]
