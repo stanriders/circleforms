@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Contracts.V1;
 using CircleForms.Contracts.V1.ContractModels.Request;
 using CircleForms.Contracts.V1.ContractModels.Response;
+using CircleForms.Models.Enums;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
@@ -148,6 +150,10 @@ public class PostsController : ControllerBase
             _logger.LogInformation("User {User} posts a post {PostId}", claim, post.ID);
 
             post.AuthorId = claim;
+            if (post.Accessibility == Accessibility.Link)
+            {
+                post.AccessKey = Guid.NewGuid().ToString();
+            }
 
             for (var i = 0; i < post.Questions.Count; i++)
             {
@@ -181,13 +187,28 @@ public class PostsController : ControllerBase
     [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(typeof(PostDetailedResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetDetailed(string id)
+    public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {
         var claim = HttpContext.User.Identity?.Name;
-        var post = await _postRepository.Get(id);
+        var post = await _postRepository.GetCached(id);
         if (post is null)
         {
             return NotFound();
+        }
+
+        Post forceRequestedPost = null;
+        if (post.Accessibility == Accessibility.Link)
+        {
+            if (string.IsNullOrEmpty(key) || !Guid.TryParse(key, out _))
+            {
+                return NotFound();
+            }
+
+            forceRequestedPost = await _postRepository.Get(id);
+            if (forceRequestedPost.AccessKey != key)
+            {
+                return NotFound();
+            }
         }
 
         if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
@@ -196,7 +217,7 @@ public class PostsController : ControllerBase
         }
 
         return post.AuthorId == claim
-            ? Ok(_mapper.Map<PostResponseContract>(await _postRepository.Get(id)))
+            ? Ok(_mapper.Map<PostResponseContract>(forceRequestedPost ?? await _postRepository.Get(id)))
             : Ok(_mapper.Map<PostDetailedResponseContract>(post));
     }
 

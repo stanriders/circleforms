@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Models;
+using CircleForms.Models.Enums;
 using CircleForms.Models.Posts;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -53,6 +54,11 @@ public class PostRepository : IPostRepository
         {
             _logger.LogError("Could not post {@Post} to the redis cache", postRedis);
 
+            return post;
+        }
+
+        if (post.Accessibility != Accessibility.Public)
+        {
             return post;
         }
 
