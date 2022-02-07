@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using CircleForms.Models;
+using CircleForms.Models.OsuContracts;
 using CircleForms.Services.Interfaces;
 using RestSharp;
 
@@ -17,11 +17,11 @@ public class OsuUserProvider : IOsuUserProvider
         _client = client;
     }
 
-    public async Task<User> GetUser(string token)
+    public async Task<OsuUser> GetUser(string token)
     {
         var request = new RestRequest();
         request.AddHeader("Authorization", $"Bearer {token}");
 
-        return await _client.GetAsync<User>(request);
+        return await _client.GetAsync<OsuUser>(request);
     }
 }

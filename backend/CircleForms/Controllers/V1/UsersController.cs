@@ -1,6 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
+using AutoMapper;
+using CircleForms.Contracts.V1;
+using CircleForms.Contracts.V1.ContractModels.Response;
 using CircleForms.Models;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -9,36 +12,35 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace CircleForms.Controllers;
+namespace CircleForms.Controllers.V1;
 
 [ApiController]
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
     private readonly ILogger<UsersController> _logger;
+    private readonly IMapper _mapper;
     private readonly IUserRepository _usersService;
 
-    public UsersController(ILogger<UsersController> logger, IUserRepository usersService)
+    public UsersController(ILogger<UsersController> logger, IMapper mapper, IUserRepository usersService)
     {
         _logger = logger;
+        _mapper = mapper;
         _usersService = usersService;
     }
 
     /// <summary>
-    ///     Get user data. (Requires auth, Requires Admin role)
+    ///     Get user data.
     /// </summary>
-    [Authorize(Roles = "Admin")]
-    [HttpGet("{id}")]
-    [ProducesResponseType(typeof(User), StatusCodes.Status200OK, "application/json")]
+    [HttpGet(ApiEndpoints.UsersGetUser)]
+    [ProducesResponseType(typeof(UserResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([RegularExpression(@"^\d$")] string id)
     {
-        _logger.LogInformation("Admin {Admin} requests User {Id}", HttpContext.User.Identity?.Name, id);
-
         var user = await _usersService.Get(id);
         if (user != null)
         {
-            return Ok(user);
+            return Ok(_mapper.Map<UserResponseContract>(user));
         }
 
         return NotFound();
@@ -48,20 +50,20 @@ public class UsersController : ControllerBase
     ///     Get all users. (Requires auth, Requires Admin role)
     /// </summary>
     [Authorize(Roles = "Admin")]
-    [HttpGet]
-    public async Task<List<User>> GetAll()
+    [HttpGet(ApiEndpoints.UsersGetAllUsers)]
+    public async Task<List<UserResponseContract>> GetAll()
     {
         _logger.LogInformation("Admin {Admin} requests users from the database", HttpContext.User.Identity?.Name);
 
-        return await _usersService.Get();
+        return _mapper.Map<List<User>, List<UserResponseContract>>(await _usersService.Get());
     }
 
     /// <summary>
     ///     Set user role. (Requires auth, Requires SuperAdmin role)
     /// </summary>
     [Authorize(Roles = "SuperAdmin")]
-    [HttpPatch]
-    public async Task<User> EscalatePrivileges([RegularExpression(@"^\d$")] string id, int role)
+    [HttpPatch(ApiEndpoints.UsersEscalateUserPrivileges)]
+    public async Task<UserResponseContract> EscalatePrivileges([RegularExpression(@"^\d$")] string id, int role)
     {
         var user = await _usersService.Get(id);
         user.Roles = (Roles) role;
@@ -71,15 +73,15 @@ public class UsersController : ControllerBase
 
         await _usersService.Update(id, user);
 
-        return user;
+        return _mapper.Map<UserResponseContract>(user);
     }
 
     /// <summary>
     ///     Get data for current user. (Requires auth)
     /// </summary>
     [Authorize]
-    [HttpGet("/me")]
-    [ProducesResponseType(typeof(User), StatusCodes.Status200OK, "application/json")]
+    [HttpGet(ApiEndpoints.UsersGetMe)]
+    [ProducesResponseType(typeof(UserResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMe()
     {
@@ -91,7 +93,7 @@ public class UsersController : ControllerBase
             var user = await _usersService.Get(claim);
             if (user != null)
             {
-                return Ok(user);
+                return Ok(_mapper.Map<UserResponseContract>(user));
             }
 
             _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", claim);

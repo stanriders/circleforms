@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using CircleForms.Models;
 using CircleForms.Models.Enums;
+using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Entities;
 using Newtonsoft.Json;
 
-namespace CircleForms.Models.Posts;
+namespace CircleForms.Contracts.V1.ContractModels.Response;
 
-public class Post : IEntity
+public class PostResponseContract
 {
-    public Post()
-    {
-        ID = GenerateNewID();
-    }
+    [JsonProperty("id")]
+    public string Id { get; set; }
 
     [JsonProperty("author_id")]
     public string AuthorId { get; set; }
@@ -42,14 +39,4 @@ public class Post : IEntity
 
     [JsonProperty("publish_time")]
     public DateTime PublishTime { get; set; }
-
-    public string GenerateNewID()
-    {
-        return ObjectId.GenerateNewId().ToString();
-    }
-
-    [ObjectId]
-    [BsonId]
-    [JsonProperty("id")]
-    public string ID { get; set; }
 }

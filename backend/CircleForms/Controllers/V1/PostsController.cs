@@ -2,6 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using CircleForms.Contracts.V1;
+using CircleForms.Contracts.V1.ContractModels.Request;
+using CircleForms.Contracts.V1.ContractModels.Response;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
@@ -11,7 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-namespace CircleForms.Controllers;
+namespace CircleForms.Controllers.V1;
 
 [ApiController]
 [Route("[controller]")]
@@ -72,7 +75,7 @@ public class PostsController : ControllerBase
     ///     Add answer to a question. (Requires auth)
     /// </summary>
     [Authorize]
-    [HttpPost("/posts/{id}/answer")]
+    [HttpPost(ApiEndpoints.PostsAnswer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -99,7 +102,7 @@ public class PostsController : ControllerBase
             return BadRequest(new {error = "Could not find post with this id"});
         }
 
-        if (post.Answers.Any(x => x.UserId == claim))
+        if (post.Answers.Any(x => x.ID == claim))
         {
             return Conflict(new {error = "You already voted"});
         }
@@ -114,7 +117,7 @@ public class PostsController : ControllerBase
         var answer = new Answer
         {
             Submissions = submissions,
-            UserId = claim
+            ID = claim
         };
 
         await _postRepository.AddAnswer(post.ID, answer);
@@ -126,11 +129,11 @@ public class PostsController : ControllerBase
     ///     Add a new post. (Requires auth)
     /// </summary>
     [Authorize]
-    [HttpPost("/posts")]
-    [ProducesResponseType(typeof(Post), StatusCodes.Status201Created, "application/json")]
+    [HttpPost(ApiEndpoints.PostsAddPost)]
+    [ProducesResponseType(typeof(PostMinimalResponseContract), StatusCodes.Status201Created, "application/json")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Post(Post post)
+    public async Task<IActionResult> Post(PostRequestContract postContract)
     {
         if (!ModelState.IsValid)
         {
@@ -140,6 +143,8 @@ public class PostsController : ControllerBase
         var claim = HttpContext.User.Identity?.Name;
         if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out _))
         {
+            var post = _mapper.Map<Post>(postContract);
+
             _logger.LogInformation("User {User} posts a post {PostId}", claim, post.ID);
 
             post.AuthorId = claim;
@@ -161,7 +166,7 @@ public class PostsController : ControllerBase
                 return StatusCode(500);
             }
 
-            return CreatedAtAction("GetPostForUser", new {id = post.ID}, result);
+            return CreatedAtAction("GetCachedPost", new {id = post.ID}, result);
         }
 
         _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
@@ -172,25 +177,27 @@ public class PostsController : ControllerBase
     /// <summary>
     ///     Get full info about a page if you are the creator of the page, otherwise return cached version
     /// </summary>
-    [HttpGet("/posts/{id}/detailed")]
-    [ProducesResponseType(typeof(Post), StatusCodes.Status200OK, "application/json")]
-    [ProducesResponseType(typeof(PostRedis), StatusCodes.Status200OK, "application/json")]
+    [HttpGet(ApiEndpoints.PostsDetailedPost)]
+    [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(PostDetailedResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDetailed(string id)
     {
         var claim = HttpContext.User.Identity?.Name;
-        var cached = await _postRepository.GetCached(id);
-        if (cached is null)
+        var post = await _postRepository.Get(id);
+        if (post is null)
         {
             return NotFound();
         }
 
         if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
         {
-            return Ok(cached);
+            return Ok(_mapper.Map<PostDetailedResponseContract>(post));
         }
 
-        return cached.AuthorId == claim ? Ok(await _postRepository.Get(id)) : Ok(cached);
+        return post.AuthorId == claim
+            ? Ok(_mapper.Map<PostResponseContract>(await _postRepository.Get(id)))
+            : Ok(_mapper.Map<PostDetailedResponseContract>(post));
     }
 
     #region Mongo
@@ -198,24 +205,24 @@ public class PostsController : ControllerBase
     ///     Get uncached post. (Requires auth, Requires Admin role)
     /// </summary>
     [Authorize(Roles = "Admin")]
-    [HttpGet("/posts/mongo/{id}")]
-    public async Task<Post> Get(string id)
+    [HttpGet(ApiEndpoints.PostsOneDatabasePost)]
+    public async Task<PostResponseContract> Get(string id)
     {
         _logger.LogInformation("User {User} requested a post from the database", HttpContext.User.Identity?.Name);
 
-        return await _postRepository.Get(id);
+        return _mapper.Map<PostResponseContract>(await _postRepository.Get(id));
     }
 
     /// <summary>
     ///     Get all uncached posts. (Requires auth, Requires Admin role)
     /// </summary>
     [Authorize(Roles = "Admin")]
-    [HttpGet("/posts/mongo")]
-    public async Task<List<Post>> Get()
+    [HttpGet(ApiEndpoints.PostsAllDatabasePosts)]
+    public async Task<List<PostResponseContract>> Get()
     {
         _logger.LogInformation("User {User} requested database posts dump", HttpContext.User.Identity?.Name);
 
-        return await _postRepository.Get();
+        return _mapper.Map<List<Post>, List<PostResponseContract>>(await _postRepository.Get());
     }
     #endregion
 
@@ -224,40 +231,38 @@ public class PostsController : ControllerBase
     ///     Get all posts. (Requires auth, Requires Admin/Moderator role)
     /// </summary>
     [Authorize(Roles = "Admin,Moderator")]
-    [HttpGet("/posts")]
-    public async Task<PostRedis[]> GetCached()
+    [HttpGet(ApiEndpoints.PostsAllCachedPosts)]
+    public async Task<PostMinimalResponseContract[]> GetCached()
     {
         _logger.LogInformation("User {User} requested posts cache dump", HttpContext.User.Identity?.Name);
 
-        return await _postRepository.GetCached();
+        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _postRepository.GetCached());
     }
 
     /// <summary>
     ///     Get a post.
     /// </summary>
-    [HttpGet("/posts/{id}")]
-    [ProducesResponseType(typeof(Post), StatusCodes.Status200OK, "application/json")]
+    [HttpGet(ApiEndpoints.PostsOneCachedPost)]
+    [ProducesResponseType(typeof(PostMinimalResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetPostForUser(string id)
+    public async Task<IActionResult> GetCachedPost(string id)
     {
-        var post = await _postRepository.Get(id);
+        var post = await _postRepository.GetCached(id);
         if (post == null)
         {
             return NotFound();
         }
 
-        post.Answers = new List<Answer>();
-
-        return Ok(post);
+        return Ok(_mapper.Map<PostMinimalResponseContract>(post));
     }
 
     /// <summary>
     ///     Get posts page.
     /// </summary>
-    [HttpGet("/posts/page/{page:int}")]
-    public async Task<PostRedis[]> GetPage(int page)
+    [HttpGet(ApiEndpoints.PostPage)]
+    public async Task<PostMinimalResponseContract[]> GetPage(int page)
     {
-        return await _postRepository.GetCachedPage(page);
+        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _postRepository.GetCachedPage(page));
     }
     #endregion
 }

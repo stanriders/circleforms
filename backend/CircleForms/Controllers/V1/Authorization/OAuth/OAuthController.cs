@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using AutoMapper;
+using CircleForms.Contracts.V1;
 using CircleForms.Models;
 using CircleForms.Models.Configurations;
+using CircleForms.Models.OsuContracts;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -13,13 +16,14 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using StackExchange.Redis;
 
-namespace CircleForms.Controllers.Authorization.OAuth;
+namespace CircleForms.Controllers.V1.Authorization.OAuth;
 
 [ApiController]
 [Route("[controller]")]
 public class OAuthController : ControllerBase
 {
     private readonly ILogger<OAuthController> _logger;
+    private readonly IMapper _mapper;
     private readonly IOsuUserProvider _osuApiDataService;
     private readonly IConnectionMultiplexer _redis;
     private readonly List<long> _superAdminsId;
@@ -28,19 +32,20 @@ public class OAuthController : ControllerBase
     public OAuthController(ILogger<OAuthController> logger,
         IOsuUserProvider osuApiDataService,
         IUserRepository usersRepository, IConnectionMultiplexer redis,
-        IOptions<SuperAdminsId> superAdminsId)
+        IOptions<SuperAdminsId> superAdminsId, IMapper mapper)
     {
         _logger = logger;
         _osuApiDataService = osuApiDataService;
         _usersRepository = usersRepository;
         _redis = redis;
+        _mapper = mapper;
         _superAdminsId = superAdminsId.Value.Ids;
     }
 
     /// <summary>
     ///     osu! API authentication.
     /// </summary>
-    [HttpGet("auth")]
+    [HttpGet(ApiEndpoints.OAuthAuthentication)]
     [ProducesResponseType(StatusCodes.Status302Found)]
     public IActionResult Authenticate()
     {
@@ -63,21 +68,24 @@ public class OAuthController : ControllerBase
             return Forbid();
         }
 
-        var user = await _osuApiDataService.GetUser(await HttpContext.GetTokenAsync("ExternalCookies", "access_token"));
-        if (user.IsRestricted)
+        var osuUser =
+            await _osuApiDataService.GetUser(await HttpContext.GetTokenAsync("ExternalCookies", "access_token"));
+        if (osuUser.IsRestricted)
         {
-            _logger.LogInformation("User {User} tried logging in, but they are restricted!", user.ID);
+            _logger.LogInformation("User {User} tried logging in, but they are restricted!", osuUser.Id);
 
             return Forbid();
         }
 
-        var userIdLong = long.Parse(user.ID);
+        var user = _mapper.Map<OsuUser, User>(osuUser);
+
+        var userId = osuUser.Id;
         var redisDb = _redis.GetDatabase();
-        if (!redisDb.SetContains("user_ids", userIdLong))
+        if (!redisDb.SetContains("user_ids", userId))
         {
             if (await _usersRepository.Get(user.ID) == null)
             {
-                if (_superAdminsId.Contains(userIdLong))
+                if (_superAdminsId.Contains(userId))
                 {
                     user.Roles = Roles.SuperAdmin | Roles.Admin | Roles.Moderator;
                 }
@@ -91,7 +99,7 @@ public class OAuthController : ControllerBase
                     user.Username);
             }
 
-            await redisDb.SetAddAsync("user_ids", userIdLong);
+            await redisDb.SetAddAsync("user_ids", userId);
         }
 
         var dbUser = await _usersRepository.Get(user.ID);
@@ -101,7 +109,7 @@ public class OAuthController : ControllerBase
             await HttpContext.SignOutAsync("InternalCookies");
             await HttpContext.SignOutAsync("ExternalCookies");
 
-            await redisDb.SetRemoveAsync("user_ids", userIdLong);
+            await redisDb.SetRemoveAsync("user_ids", userId);
 
             return StatusCode(500);
         }
@@ -152,7 +160,7 @@ public class OAuthController : ControllerBase
     ///     Sign out from current user. (Requires auth)
     /// </summary>
     [Authorize]
-    [HttpGet("signout")]
+    [HttpGet(ApiEndpoints.OAuthSignOut)]
     [ProducesResponseType(StatusCodes.Status302Found)]
     public async Task<IActionResult> Logout()
     {
