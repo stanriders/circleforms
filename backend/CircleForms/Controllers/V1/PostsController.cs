@@ -243,7 +243,7 @@ public class PostsController : ControllerBase
     ///     Get a post.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsOneCachedPost)]
-    [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(PostMinimalResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCachedPost(string id)
     {
@@ -253,7 +253,7 @@ public class PostsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(_mapper.Map<PostResponseContract>(post));
+        return Ok(_mapper.Map<PostMinimalResponseContract>(post));
     }
 
     /// <summary>
