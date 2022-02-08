@@ -2,12 +2,14 @@
 using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
+using CircleForms.Commands;
 using CircleForms.Contracts;
 using CircleForms.Models;
 using CircleForms.Models.Configurations;
 using CircleForms.Models.OsuContracts;
-using CircleForms.Services.Database.Interfaces;
+using CircleForms.Queries;
 using CircleForms.Services.Interfaces;
+using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -24,19 +26,19 @@ public class OAuthController : ControllerBase
 {
     private readonly ILogger<OAuthController> _logger;
     private readonly IMapper _mapper;
+    private readonly IMediator _mediator;
     private readonly IOsuUserProvider _osuApiDataService;
     private readonly IConnectionMultiplexer _redis;
     private readonly List<long> _superAdminsId;
-    private readonly IUserRepository _usersRepository;
 
     public OAuthController(ILogger<OAuthController> logger,
         IOsuUserProvider osuApiDataService,
-        IUserRepository usersRepository, IConnectionMultiplexer redis,
+        IMediator mediator, IConnectionMultiplexer redis,
         IOptions<SuperAdminsId> superAdminsId, IMapper mapper)
     {
         _logger = logger;
         _osuApiDataService = osuApiDataService;
-        _usersRepository = usersRepository;
+        _mediator = mediator;
         _redis = redis;
         _mapper = mapper;
         _superAdminsId = superAdminsId.Value.Ids;
@@ -83,7 +85,7 @@ public class OAuthController : ControllerBase
         var redisDb = _redis.GetDatabase();
         if (!redisDb.SetContains("user_ids", userId))
         {
-            if (await _usersRepository.Get(user.ID) == null)
+            if (await _mediator.Send(new GetUserQuery(user.ID)) == null)
             {
                 if (_superAdminsId.Contains(userId))
                 {
@@ -91,7 +93,7 @@ public class OAuthController : ControllerBase
                 }
 
                 _logger.LogInformation("Adding user {Id} - {Username} to the database", user.ID, user.Username);
-                await _usersRepository.Create(user);
+                await _mediator.Send(new CreateUserCommand(user));
             }
             else
             {
@@ -102,7 +104,7 @@ public class OAuthController : ControllerBase
             await redisDb.SetAddAsync("user_ids", userId);
         }
 
-        var dbUser = await _usersRepository.Get(user.ID);
+        var dbUser = await _mediator.Send(new GetUserQuery(user.ID));
         if (dbUser is null)
         {
             _logger.LogCritical("Something went horribly wrong. User is not in the database. User: {@User}", user);
@@ -116,7 +118,7 @@ public class OAuthController : ControllerBase
 
         user = TransferMutableData(dbUser, user);
 
-        var updateTask = _usersRepository.Update(user.ID, user);
+        var updateTask = _mediator.Send(new UpdateUserCommand(user.ID, user));
         var claims = new List<Claim>
         {
             new(ClaimTypes.Name, user.ID),
