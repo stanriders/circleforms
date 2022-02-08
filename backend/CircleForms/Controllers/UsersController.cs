@@ -2,10 +2,12 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using AutoMapper;
+using CircleForms.Commands;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Models;
-using CircleForms.Services.Database.Interfaces;
+using CircleForms.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -20,13 +22,13 @@ public class UsersController : ControllerBase
 {
     private readonly ILogger<UsersController> _logger;
     private readonly IMapper _mapper;
-    private readonly IUserRepository _usersService;
+    private readonly IMediator _mediator;
 
-    public UsersController(ILogger<UsersController> logger, IMapper mapper, IUserRepository usersService)
+    public UsersController(ILogger<UsersController> logger, IMapper mapper, IMediator mediator)
     {
         _logger = logger;
         _mapper = mapper;
-        _usersService = usersService;
+        _mediator = mediator;
     }
 
     /// <summary>
@@ -37,7 +39,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([RegularExpression(@"^\d$")] string id)
     {
-        var user = await _usersService.Get(id);
+        var user = await _mediator.Send(new GetUserQuery(id));
         if (user != null)
         {
             return Ok(_mapper.Map<UserResponseContract>(user));
@@ -55,7 +57,9 @@ public class UsersController : ControllerBase
     {
         _logger.LogInformation("Admin {Admin} requests users from the database", HttpContext.User.Identity?.Name);
 
-        return _mapper.Map<List<User>, List<UserResponseContract>>(await _usersService.Get());
+        var users = await _mediator.Send(new GetAllUsersQuery());
+
+        return _mapper.Map<List<User>, List<UserResponseContract>>(users);
     }
 
     /// <summary>
@@ -63,17 +67,19 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize(Roles = "SuperAdmin")]
     [HttpPatch(ApiEndpoints.UsersEscalateUserPrivileges)]
-    public async Task<UserResponseContract> EscalatePrivileges([RegularExpression(@"^\d$")] string id, int role)
+    public async Task<IActionResult> EscalatePrivileges([RegularExpression(@"^\d$")] string id, int role)
     {
-        var user = await _usersService.Get(id);
-        user.Roles = (Roles) role;
-
+        var r = (Roles) role;
         _logger.LogWarning("SuperAdmin {Admin} changes privileges of {Id} to {Role}", HttpContext.User.Identity?.Name,
-            id, user.Roles.ToString());
+            id, r);
 
-        await _usersService.Update(id, user);
+        var user = await _mediator.Send(new EscalatePrivilegesCommand(id, r));
+        if (user is null)
+        {
+            return NotFound();
+        }
 
-        return _mapper.Map<UserResponseContract>(user);
+        return Ok(_mapper.Map<UserResponseContract>(user));
     }
 
     /// <summary>
@@ -90,7 +96,7 @@ public class UsersController : ControllerBase
         {
             _logger.LogInformation("User {User} requests /me", userId);
 
-            var user = await _usersService.Get(claim);
+            var user = await _mediator.Send(new GetUserQuery(claim));
             if (user != null)
             {
                 return Ok(_mapper.Map<UserResponseContract>(user));
