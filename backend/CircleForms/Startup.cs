@@ -4,7 +4,7 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
-using CircleForms.Contracts.V1.ContractModels.Mappings;
+using CircleForms.Contracts.ContractModels.Mappings;
 using CircleForms.Models.Configurations;
 using CircleForms.Models.OsuContracts;
 using CircleForms.Services.Database;
@@ -12,6 +12,7 @@ using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using CircleForms.Services.Request;
 using FluentValidation.AspNetCore;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -44,9 +45,11 @@ public class Startup
         services.Configure<OsuApiConfig>(config);
         services.Configure<SuperAdminsId>(Configuration.GetSection("SuperAdmins"));
 
+        services.AddMediatR(typeof(Startup));
         services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         services.AddAutoMapper(x =>
-            x.AddProfiles(new Profile[] {new ContractV1Profile(), new OsuApiMapper()}));
+            x.AddProfiles(new Profile[] {new ContractProfile(), new OsuApiMapper()}));
+
 
         services.AddAuthentication("InternalCookies")
             .AddCookie("InternalCookies", options =>
