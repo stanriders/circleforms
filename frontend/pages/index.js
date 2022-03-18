@@ -3,35 +3,78 @@ import Image from 'next/image'
 import Hero from '../components/Hero'
 import DefaultLayout from '../layouts'
 import constants from '../constants'
-
+import SVG from 'react-inlinesvg'
 import bigLogoImg from '../public/images/big-logo.png'
+import Button from '../components/atoms/Button'
+import FormEntry from '../components/atoms/FormEntry'
 
 export default function Home() {
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms</title>
-        <meta name="description" content={constants.meta.description} />
-        <link rel="icon" href="/favicon.ico" />
+        <title>CircleForms - Home</title>
       </Head>
 
       <Hero>
-        <div className="flex justify-center items-center lg:items-start lg:pt-32">
+        <div className="flex flex-col justify-center items-center py-16 md:py-32 lg:pt-52 lg:pb-72">
           <Image
             src={bigLogoImg}
             alt="CircleForms" />
+            <p className="text-4xl font-display lg:-mt-10 text-center">
+              an innovative solution for your osu! projects.
+            </p>
+            <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
+              <Button theme="secondary" large>Create form!</Button>
+              <Button theme="tertiary" large>Read more</Button>
+            </div>
         </div>
       </Hero>
 
-      <main>
-        <div className="bg-grey-dark text-white px-14 py-8">
-          <h2 className="text-grey-light text-6xl mb-5">ABOUT</h2>
+      <div className="bg-black-darker w-full py-12">
+        <section className="small-container">
+          <div className="flex flex-col lg:flex-row justify-between items-center mb-8">
+            <h2 className="type-h2 uppercase">About project</h2>
+            <SVG className="flex-1 h-8 lg:h-12 lg:-ml-8" src="/svg/circles-sliders.svg" />
+          </div>
+          <div className="flex flex-col lg:flex-row gap-8">
+            <p className="lg:flex-1">
+              CircleForms is an alternative to google forms, aimed at more convenient and faster moderation of various projects on osu!, including registration for tournaments and much more.
+            </p>
+            <p className="lg:flex-1">
+              We are not associated with osu! staff in any way, this is only a community project. Furthermore, we haven't taken assets from osu!, nor we are making profit from this project. It is something we created in our free time, for the people.
+            </p>
+          </div>
+        </section>
+      </div>
 
-          <p>
-            <strong>CircleForms</strong> is an alternative to google forms, aimed at more convenient and faster moderation of various projects on osu!, including registration for tournaments and much more.
-          </p>
-        </div>
-      </main>
+      <div className="bg-black w-full py-24">
+        <section className="container">
+          <div className="mb-8 text-center">
+            <h2 className="type-h1 uppercase">Recently created forms</h2>
+            <p className="text-white text-opacity-50 text-2xl">See the latest projects from the community hosts!</p>
+          </div>
+          <div className="rounded-3xl bg-black-darker p-6">
+            <div className="flex flex-col gap-y-2" style={{
+            background: `
+              linear-gradient(270deg, #131313 2.39%, rgba(17, 17, 17, 0) 98.16%)
+            `
+          }}>
+              <FormEntry />
+              <FormEntry />
+              <FormEntry />
+              <FormEntry />
+              <FormEntry />
+            </div>
+            <div className="flex justify-center mt-4">
+              <Button href="/forms-list" theme="secondary">
+                Show more!
+              </Button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+
     </DefaultLayout>
   )
 }
