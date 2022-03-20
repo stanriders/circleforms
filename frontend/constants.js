@@ -8,26 +8,18 @@ module.exports = {
       href: '/'
     },
     {
-      label: 'Home',
-      href: '/'
+      label: 'Forms List',
+      href: '/forms-list'
     },
     {
-      label: 'Home',
-      href: '/'
-    },
-    {
-      label: 'Home',
-      href: '/'
-    },
-    {
-      label: 'Home',
-      href: '/'
+      label: 'Our Team',
+      href: '/our-team'
     },
   ],
   footerLinks: [
     {
       label: 'CircleForms',
-      href: 'https://discord.com/'
+      href: 'https://discord.gg/rx9RKQsy9H'
     },
     {
       label: 'CircleForms',

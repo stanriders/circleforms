@@ -1,0 +1,128 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap');
+
+@layer base {
+  @font-face {
+    font-family: 'Typo Round';
+    src: url('/fonts/Typo_Round_Regular_Demo.otf') format('opentype');
+    font-weight: 400;
+  }
+
+  @font-face {
+    font-family: 'Typo Round';
+    src: url('/fonts/Typo_Round_Light_Demo.otf') format('opentype');
+    font-weight: 300;
+  }
+
+  @font-face {
+    font-family: 'Typo Round';
+    src: url('/fonts/Typo_Round_Thin_Demo.otf') format('opentype');
+    font-weight: 200;
+  }
+
+  @font-face {
+    font-family: 'Typo Round';
+    src: url('/fonts/Typo_Round_Bold_Demo.otf') format('opentype');
+    font-weight: 500;
+  }
+}
+
+html,
+body {
+  @apply p-0 m-0 bg-black text-white font-body;
+  background-image: url('/images/background-decorations.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.link {
+  @apply text-lg font-bold relative px-5 py-3;
+  @apply font-display;
+
+  &::before {
+    content: '';
+    @apply w-full h-full opacity-0 rounded-3xl
+      transition-opacity ease-out-cubic absolute inset-0;
+    background-color: rgba(255, 102, 170, 0.2);
+  }
+
+  &.active::before {
+    @apply opacity-100;
+  }
+
+  &:hover::before {
+    @apply opacity-100;
+  }
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+footer {
+  a {
+    &:hover {
+      @apply underline;
+    }
+  }
+}
+
+svg {
+  width: auto;
+  height: auto;
+}
+
+.button {
+  @apply font-display text-lg font-bold rounded-3xl px-5 py-2
+    transition ease-out-cubic;
+
+  &.primary {
+    @apply bg-black outline outline-3 outline-pink
+      text-pink;
+  }
+
+  &.secondary {
+    @apply bg-pink text-pink-dark;
+
+    &:hover {
+      @apply bg-pink-600;
+    }
+  }
+
+  &.tertiary {
+    @apply outline-5 outline-dotted outline-pink;
+  }
+
+  &.button--large {
+    @apply text-2xl px-14 py-3;
+  }
+}
+
+.container {
+  @apply w-full mx-auto px-4;
+  max-width: 1172px;
+}
+
+.small-container {
+  @apply w-full mx-auto px-4;
+  max-width: 968px;
+}
+
+.type-h1 {
+  @apply font-display text-7xl;
+}
+
+.type-h2 {
+  @apply font-display text-6xl;
+}
