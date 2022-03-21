@@ -3,7 +3,7 @@ import Link from 'next/link'
 export default function FormEntry() {
   return (
     <Link href="#">
-      <a className="flex rounded-5 overflow-clip bg-black-light z-0 transform transition-transform ease-out-cubic hover:scale-105 hover:z-10">
+      <a className="flex rounded-5 overflow-clip bg-black-light z-0 transform transition-transform ease-out-cubic hover:scale-99 hover:z-10">
         <div
           className="flex-1 bg-cover"
           style={{
@@ -13,12 +13,12 @@ export default function FormEntry() {
             `
           }}
         />
-        <div className="flex-1 flex justify-between py-4">
+        <div className="flex-1 flex justify-between py-5 pr-5">
           <div>
-            <h3 className="font-display text-xl font-bold">
-              nik's winter cup 2022 Registration Form
+            <h3 className="font-display text-xl font-bold truncate max-w-sm">
+              nik's winter cup 2022 Registration
             </h3>
-            <p className="text-xs text-white text-opacity-50 -mt-1">
+            <p className="text-xs text-white text-opacity-50 -mt-1 truncate max-w-sm">
               osu!standard, scorev2, 1v1 tournament
             </p>
           </div>

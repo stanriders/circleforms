@@ -54,11 +54,10 @@ export default function Home() {
             <p className="text-white text-opacity-50 text-2xl">See the latest projects from the community hosts!</p>
           </div>
           <div className="rounded-3xl bg-black-darker p-6">
-            <div className="flex flex-col gap-y-2" style={{
-            background: `
-              linear-gradient(270deg, #131313 2.39%, rgba(17, 17, 17, 0) 98.16%)
-            `
-          }}>
+            <div className="flex flex-col gap-y-2 z-10 relative">
+            <div className="absolute inset-0 z-20 pointer-events-none" style={{
+              background: `linear-gradient(rgba(12, 12, 12, 0) 22%, rgb(12, 12, 12) 113.44%)`
+            }}></div>
               <FormEntry />
               <FormEntry />
               <FormEntry />
