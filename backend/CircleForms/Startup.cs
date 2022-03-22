@@ -12,7 +12,6 @@ using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using CircleForms.Services.Request;
 using FluentValidation.AspNetCore;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -45,7 +44,6 @@ public class Startup
         services.Configure<OsuApiConfig>(config);
         services.Configure<SuperAdminsId>(Configuration.GetSection("SuperAdmins"));
 
-        services.AddMediatR(typeof(Startup));
         services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         services.AddAutoMapper(x =>
             x.AddProfiles(new Profile[] {new ContractProfile(), new OsuApiMapper()}));
