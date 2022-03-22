@@ -58,11 +58,26 @@ export default function Home() {
             <div className="absolute inset-0 z-20 pointer-events-none" style={{
               background: `linear-gradient(rgba(12, 12, 12, 0) 22%, rgb(12, 12, 12) 113.44%)`
             }}></div>
-              <FormEntry />
-              <FormEntry />
-              <FormEntry />
-              <FormEntry />
-              <FormEntry />
+              <FormEntry
+                title="nik's winter cup 2022 Registration"
+                description="osu!standard, scorev2, 1v1 tournament"
+                author_id="nik"
+              />
+              <FormEntry
+                title="nik's winter cup 2022 Registration"
+                description="osu!standard, scorev2, 1v1 tournament"
+                author_id="nik"
+              />
+              <FormEntry
+                title="nik's winter cup 2022 Registration"
+                description="osu!standard, scorev2, 1v1 tournament"
+                author_id="nik"
+              />
+              <FormEntry
+                title="nik's winter cup 2022 Registration"
+                description="osu!standard, scorev2, 1v1 tournament"
+                author_id="nik"
+              />
             </div>
             <div className="flex justify-center mt-4">
               <Button href="/forms-list" theme="secondary">

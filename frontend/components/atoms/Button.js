@@ -8,6 +8,7 @@ export default function Button({
   large,
   rounded,
   active,
+  onClick,
 }) {
   const classnames = classNames(
     'button',
@@ -29,7 +30,8 @@ export default function Button({
 
   return (
     <button
-      className={classnames}>
+      className={classnames}
+      onClick={onClick}>
       {children}
     </button>
   )

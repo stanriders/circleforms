@@ -10,9 +10,29 @@ import FormEntry from '../components/atoms/FormEntry'
 import SubTitle from '../components/atoms/SubTitle'
 import Radio from '../components/atoms/Radio'
 import { useEffect, useState } from 'react'
+import useSWR from 'swr'
+import api from '../libs/api'
+import Loading from '../components/atoms/Loading'
 
-export default function Home() {
+export default function FormsList() {
   const [filter, setFilter] = useState('all')
+  const [page, setPage] = useState(1)
+
+  const { data, error, isValidating } = useSWR(
+    `/posts/page/${page}?filter=${filter}`,
+    api
+  )
+
+  // Go to first page when filter changes
+  useEffect(() => {
+    setPage(1)
+  }, [filter])
+
+  function handlePrevClick() {
+    if (page > 1) {
+      setPage(page - 1)
+    }
+  }
 
   return (
     <DefaultLayout classname="items-stretch">
@@ -65,18 +85,27 @@ export default function Home() {
           <div className="mt-6 px-7">
             <SubTitle>Pinned Forms</SubTitle>
             <div className="flex flex-col gap-y-3">
-              <FormEntry />
+              <FormEntry
+                title="nik's winter cup 2022 Registration"
+                description="osu!standard, scorev2, 1v1 tournament"
+                author_id="nik"
+              />
             </div>
             <SubTitle>Forms</SubTitle>
-            <div className="flex flex-col gap-y-3">
-              <FormEntry />
-              <FormEntry />
+            <div className="flex flex-col gap-y-3 relative">
+              {isValidating && (
+                <div className="flex justify-center absolute top-4 z-50 left-1/2 transform -translate-x-1/2">
+                  <Loading />
+                </div>
+              )}
+              {data && data.length > 0 && data.map(form => (
+                <FormEntry key={form.id} {...form} />
+              ))}
             </div>
             <div className="flex justify-center gap-x-6 py-8">
-              <Button theme="grey">PREV</Button>
-              <Button theme="grey" rounded active>1</Button>
-              <Button theme="grey" rounded>2</Button>
-              <Button theme="grey">NEXT</Button>
+              <Button theme="grey" onClick={handlePrevClick}>PREV</Button>
+              <Button theme="grey" rounded active>{page}</Button>
+              <Button theme="grey" onClick={() => setPage(page + 1)}>NEXT</Button>
             </div>
           </div>
         </div>

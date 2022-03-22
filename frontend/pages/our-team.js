@@ -6,7 +6,7 @@ import SVG from 'react-inlinesvg'
 import { Fragment } from 'react'
 import classNames from 'classnames'
 
-export default function Home() {
+export default function OurTeam() {
   return (
     <DefaultLayout>
       <Head>
