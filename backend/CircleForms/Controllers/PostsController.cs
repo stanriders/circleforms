@@ -1,15 +1,20 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
-using CircleForms.Commands;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Models.Enums;
 using CircleForms.Models.Posts;
+using CircleForms.Models.Posts.Questions;
+using CircleForms.Models.Posts.Questions.Submissions;
+using CircleForms.Queries;
 using CircleForms.Queries.Cache;
 using CircleForms.Queries.Database;
+using CircleForms.Services.Database.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -25,14 +30,56 @@ public class PostsController : ControllerBase
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
     private readonly IMediator _mediator;
+    private readonly IPostRepository _postRepository;
 
-    public PostsController(ILogger<PostsController> logger, IMapper mapper, IMediator mediator)
+    public PostsController(ILogger<PostsController> logger, IPostRepository postRepository, IMapper mapper,
+        IMediator mediator)
     {
         _logger = logger;
+        _postRepository = postRepository;
         _mapper = mapper;
         _mediator = mediator;
     }
 
+    private (List<Submission> submissions, string error) ProcessAnswer(Post post,
+        IEnumerable<SubmissionContract> answers)
+    {
+        var questions = post.Questions.ToDictionary(x => x.Id);
+        var answersDictionary = answers.ToDictionary(x => x.QuestionId);
+
+        //If any required fields doesn't filled
+        if (post.Questions.Where(question => !question.Optional)
+            .Any(question => !answersDictionary.ContainsKey(question.Id)))
+        {
+            return (null, "One or more required fields doesn't filled");
+        }
+
+        var resultingAnswers = new List<Submission>();
+        foreach (var (key, value) in answersDictionary)
+        {
+            //If question with id doesn't exist or answer was not provided
+            if (!questions.TryGetValue(key, out var question))
+            {
+                return (null, $"Question with id {key} does not exist");
+            }
+
+            if (question.QuestionType == QuestionType.Choice)
+            {
+                var choice = int.Parse(value.Answer);
+
+                if (choice >= question.QuestionInfo.Count)
+                {
+                    return (null, $"Choice for {key} is not in the range of choice ids");
+                }
+            }
+
+            var answer = _mapper.Map<Submission>(value);
+
+            resultingAnswers.Add(answer);
+        }
+
+        return (resultingAnswers, null);
+    }
 
     /// <summary>
     ///     Add answer to a question. (Requires auth)
@@ -58,15 +105,54 @@ public class PostsController : ControllerBase
             return Unauthorized();
         }
 
-        var response = await _mediator.Send(new AddAnswerCommand(id, claim, answerContracts));
-        if (response.StatusCode != 200)
+        var post = await _postRepository.Get(id);
+
+        if (post is null)
         {
-            return StatusCode(response.StatusCode, new {error = response.Error});
+            return BadRequest(new {error = "Could not find post with this id"});
         }
+
+        if (post.Answers.Any(x => x.ID == claim))
+        {
+            return Conflict(new {error = "You already voted"});
+        }
+
+        var (submissions, error) = ProcessAnswer(post, answerContracts);
+
+        if (submissions is null)
+        {
+            return BadRequest(new {error});
+        }
+
+        var answer = new Answer
+        {
+            Submissions = submissions,
+            ID = claim
+        };
+
+        await _postRepository.AddAnswer(post.ID, answer);
 
         return Ok();
     }
 
+    private static string GenerateAccessKey(byte size)
+    {
+        const string chars =
+            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+        var data = new byte[size];
+        using (var crypto = RandomNumberGenerator.Create())
+        {
+            crypto.GetBytes(data);
+        }
+
+        var result = new StringBuilder(size);
+        foreach (var b in data)
+        {
+            result.Append(chars[b % chars.Length]);
+        }
+
+        return result.ToString();
+    }
 
     /// <summary>
     ///     Add a new post. (Requires auth)
@@ -84,20 +170,41 @@ public class PostsController : ControllerBase
         }
 
         var claim = HttpContext.User.Identity?.Name;
-        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
+        if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out _))
         {
-            _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
+            var post = _mapper.Map<Post>(postContract);
 
-            return Unauthorized();
+            _logger.LogInformation("User {User} posts a post {PostId}", claim, post.ID);
+
+            post.AuthorId = claim;
+            if (post.Accessibility == Accessibility.Link)
+            {
+                post.AccessKey = GenerateAccessKey(6);
+            }
+
+            for (var i = 0; i < post.Questions.Count; i++)
+            {
+                var question = post.Questions[i];
+                question.Id = i;
+                if (question.QuestionType != QuestionType.Choice)
+                {
+                    question.QuestionInfo = new List<string>();
+                }
+            }
+
+            var result = await _postRepository.Add(claim, post);
+
+            if (result is null)
+            {
+                return StatusCode(500);
+            }
+
+            return CreatedAtAction("GetCachedPost", new {id = post.ID}, result);
         }
 
-        var post = await _mediator.Send(new AddPostCommand(postContract, claim));
-        if (post.StatusCode != 200)
-        {
-            return StatusCode(post.StatusCode, new {error = post.Error});
-        }
+        _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
 
-        return CreatedAtAction("GetCachedPost", new {id = post.Data}, post.Data);
+        return Unauthorized();
     }
 
     /// <summary>
@@ -119,13 +226,59 @@ public class PostsController : ControllerBase
             return Unauthorized();
         }
 
-        var post = await _mediator.Send(new UpdatePostCommand(updateContract, id, claim));
-        if (post.StatusCode != 200)
+        var post = await _postRepository.Get(id);
+        if (post.AuthorId != claim)
         {
-            return StatusCode(post.StatusCode, new {error = post.Error});
+            return Unauthorized();
         }
 
-        return Ok(_mapper.Map<PostResponseContract>(post.Data));
+        _logger.LogInformation("User {Claim} updated the post {Id} with {@Updates}", claim, post.ID, updateContract);
+
+        var questions = post.Questions;
+        var updatedPost = _mapper.Map(updateContract, post);
+        if (updateContract.Questions is not null)
+        {
+            foreach (var updatedPostQuestion in updateContract.Questions)
+            {
+                if (updatedPostQuestion.Delete)
+                {
+                    var question = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
+                    if (question is null)
+                    {
+                        return BadRequest($"Question {updatedPostQuestion.Id} is not found");
+                    }
+
+                    questions.Remove(question);
+
+                    continue;
+                }
+
+                var newQuestion = _mapper.Map<Question>(updatedPostQuestion);
+                if (updatedPostQuestion.Id is null)
+                {
+                    var newPostId = questions.Max(x => x.Id) + 1;
+                    newQuestion.Id = newPostId;
+                    questions.Add(newQuestion);
+
+                    continue;
+                }
+
+                var postToUpdate = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
+                if (postToUpdate is null)
+                {
+                    return BadRequest($"Question {updatedPostQuestion.Id} is not found");
+                }
+
+                questions.Remove(postToUpdate);
+                questions.Add(newQuestion);
+            }
+        }
+
+        updatedPost.Questions = questions;
+
+        await _postRepository.Update(post.ID, post, true);
+
+        return Ok(_mapper.Map<PostResponseContract>(post));
     }
 
     /// <summary>
@@ -138,21 +291,21 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {
         var claim = HttpContext.User.Identity?.Name;
-        var cached = await _mediator.Send(new GetCachedPostQuery(id));
-        if (cached is null)
+        var post = await _postRepository.GetCached(id);
+        if (post is null)
         {
             return NotFound();
         }
 
         Post forceRequestedPost = null;
-        if (cached.Accessibility == Accessibility.Link)
+        if (post.Accessibility == Accessibility.Link)
         {
-            if (string.IsNullOrEmpty(key))
+            if (string.IsNullOrEmpty(key) || key.Length != 6)
             {
                 return NotFound();
             }
 
-            forceRequestedPost = await _mediator.Send(new GetPostQuery(id));
+            forceRequestedPost = await _postRepository.Get(id);
             if (forceRequestedPost.AccessKey != key)
             {
                 return NotFound();
@@ -161,12 +314,12 @@ public class PostsController : ControllerBase
 
         if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
         {
-            return Ok(_mapper.Map<PostDetailedResponseContract>(cached));
+            return Ok(_mapper.Map<PostDetailedResponseContract>(post));
         }
 
-        return cached.AuthorId == claim
-            ? Ok(_mapper.Map<PostResponseContract>(forceRequestedPost ?? await _mediator.Send(new GetPostQuery(id))))
-            : Ok(_mapper.Map<PostDetailedResponseContract>(cached));
+        return post.AuthorId == claim
+            ? Ok(_mapper.Map<PostResponseContract>(forceRequestedPost ?? await _postRepository.Get(id)))
+            : Ok(_mapper.Map<PostDetailedResponseContract>(post));
     }
 
     #region Mongo
