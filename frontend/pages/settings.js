@@ -6,7 +6,7 @@ import { useContext } from 'react'
 import SVG from 'react-inlinesvg'
 import UserContext from '../components/context/UserContext'
 
-export default function Home() {
+export default function Settings() {
   const { user } = useContext(UserContext)
 
   if (!user) {
@@ -51,7 +51,7 @@ export default function Home() {
       </div>
 
       <section className="bg-black-dark2 rounded-70 px-10 py-8">
-        <div class="space-y-8">
+        <div className="space-y-8">
           {/* osu! integration */}
           <div className="flex justify-between bg-black-lightest rounded-40 px-6 py-4">
             <div className="flex items-center">

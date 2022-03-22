@@ -5,7 +5,7 @@ import Button from '../components/atoms/Button'
 import { useContext } from 'react'
 import UserContext from '../components/context/UserContext'
 
-export default function Home() {
+export default function Dashboard() {
   const { user } = useContext(UserContext)
 
   if (!user) {
