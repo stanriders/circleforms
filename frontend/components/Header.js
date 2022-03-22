@@ -10,10 +10,6 @@ import {
   Menu,
   MenuList,
   MenuButton,
-  MenuItem,
-  MenuItems,
-  MenuPopover,
-  MenuLink,
 } from "@reach/menu-button";
 
 export default function Header() {

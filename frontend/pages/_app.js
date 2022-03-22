@@ -6,7 +6,9 @@ import '../styles/globals.scss'
 function MyApp({ Component, pageProps }) {
   const [user, setUser] = useState(null)
 
-  useEffect(getInitialData, [])
+  useEffect(() => {
+    getInitialData()
+  }, [])
 
   async function getInitialData() {
     try {
