@@ -1,11 +1,26 @@
 import classNames from 'classnames'
 import Link from 'next/link'
 
-export default function Button({ href, children, theme = 'primary', large }) {
+export default function Button({
+  href,
+  children,
+  theme = 'primary',
+  large,
+  rounded,
+  active,
+}) {
+  const classnames = classNames(
+    'button',
+    theme,
+    large ? 'button--large' : '',
+    rounded ? 'button--rounded' : '',
+    active ? 'active' : '',
+  )
+
   if (href) {
     return (
       <Link href={href} passHref>
-        <a className={classNames('button', theme, large ? 'button--large' : '')}>
+        <a className={classnames}>
           {children}
         </a>
       </Link>
@@ -14,7 +29,7 @@ export default function Button({ href, children, theme = 'primary', large }) {
 
   return (
     <button
-      className={classNames('button', theme, large ? 'button--large' : '')}>
+      className={classnames}>
       {children}
     </button>
   )

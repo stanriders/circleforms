@@ -4,6 +4,8 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates&display=swap');
+
 @layer base {
   @font-face {
     font-family: 'Typo Round';
@@ -32,10 +34,14 @@
 
 html,
 body {
-  @apply p-0 m-0 bg-black text-white font-body;
+  @apply p-0 m-0 bg-black text-white font-body h-full;
   background-image: url('/images/background-decorations.png');
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+#__next {
+  @apply h-full;
 }
 
 * {
@@ -60,14 +66,6 @@ body {
   &:hover::before {
     @apply opacity-100;
   }
-}
-
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
 }
 
 footer {
@@ -102,6 +100,18 @@ svg {
 
   &.tertiary {
     @apply outline-5 outline-dotted outline-pink;
+  }
+
+  &.grey {
+    @apply font-body bg-grey-dark text-grey text-2xl font-semibold transition-colors ease-out-cubic;
+
+    &.active, &:hover {
+      @apply bg-pink text-black-lighter font-bold;
+    }
+  }
+
+  &.button--rounded {
+    @apply rounded-full w-12 h-12 flex justify-center items-center;
   }
 
   &.button--large {

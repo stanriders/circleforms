@@ -5,7 +5,7 @@ import constants from '../constants';
 
 export default function DefaultLayout({ children }) {
   return (
-    <div>
+    <div className="h-full flex flex-col">
       <Head>
         <title>CircleForms</title>
         <meta name="description" content={constants.meta.description} />
@@ -14,7 +14,7 @@ export default function DefaultLayout({ children }) {
 
       <Header />
 
-      <main>
+      <main className="flex-1">
         { children }
       </main>
 
