@@ -4,9 +4,12 @@ import { useRouter } from 'next/router'
 import Button from './atoms/Button';
 import { navLinks } from '../constants';
 import classNames from 'classnames';
+import { useContext, useEffect } from 'react';
+import UserContext from './context/UserContext';
 
 export default function Header() {
   const router = useRouter()
+  const { user, setUser } = useContext(UserContext)
 
   return (
     <header className="flex items-center justify-between bg-black text-white py-3 4 w-full md:px-16 lg:px-32">
@@ -30,10 +33,20 @@ export default function Header() {
         </ul>
       </div>
 
-      <div>
-        <Button>
-          login
-        </Button>
+      <div className="flex items-center gap-x-3">
+        {user && (
+          <div className="flex items-center gap-x-2 pl-4 bg-black font-display text-lg border-2 border-pink rounded-70">
+            <span>{user.username}</span>
+            <img
+              className="h-9 w-9 rounded-70 m-1"
+              src={user.avatar_url}
+              alt={user.username} />
+          </div>
+        ) || (
+          <Button href="/api/OAuth/auth">
+            login
+          </Button>
+        )}
       </div>
     </header>
   )
