@@ -26,4 +26,26 @@ module.exports = {
       href: 'https://twitter.com/'
     }
   ],
+  team: [
+    {
+      name: 'StanR',
+      role: 'CEO & back-end developer'
+    },
+    {
+      name: 'Arhella',
+      role: 'UX/UI Designer'
+    },
+    {
+      name: 'JustRoxy',
+      role: 'back-end developer'
+    },
+    {
+      name: 'kkk',
+      role: 'quality assurance'
+    },
+    {
+      name: 'Keziah',
+      role: 'front-end developer'
+    }
+  ]
 }

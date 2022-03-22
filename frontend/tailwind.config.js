@@ -2,6 +2,7 @@ module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
+    "./layouts/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     fontFamily: {
@@ -28,7 +29,8 @@ module.exports = {
         },
         pink: {
           DEFAULT: '#FF66AA',
-          dark: '#5C253D'
+          dark: '#5C253D',
+          darker: '#3C1526'
         },
         green: {
           DEFAULT: '#ACFF8F',
