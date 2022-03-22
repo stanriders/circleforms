@@ -11,11 +11,7 @@ using CircleForms.Models.Enums;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
-using CircleForms.Queries;
-using CircleForms.Queries.Cache;
-using CircleForms.Queries.Database;
 using CircleForms.Services.Database.Interfaces;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,16 +25,13 @@ public class PostsController : ControllerBase
 {
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
-    private readonly IMediator _mediator;
     private readonly IPostRepository _postRepository;
 
-    public PostsController(ILogger<PostsController> logger, IPostRepository postRepository, IMapper mapper,
-        IMediator mediator)
+    public PostsController(ILogger<PostsController> logger, IPostRepository postRepository, IMapper mapper)
     {
         _logger = logger;
         _postRepository = postRepository;
         _mapper = mapper;
-        _mediator = mediator;
     }
 
     private (List<Submission> submissions, string error) ProcessAnswer(Post post,
@@ -332,9 +325,7 @@ public class PostsController : ControllerBase
     {
         _logger.LogInformation("User {User} requested a post from the database", HttpContext.User.Identity?.Name);
 
-        var post = await _mediator.Send(new GetPostQuery(id));
-
-        return _mapper.Map<PostResponseContract>(post);
+        return _mapper.Map<PostResponseContract>(await _postRepository.Get(id));
     }
 
     /// <summary>
@@ -346,9 +337,7 @@ public class PostsController : ControllerBase
     {
         _logger.LogInformation("User {User} requested database posts dump", HttpContext.User.Identity?.Name);
 
-        var posts = await _mediator.Send(new GetAllPostsQuery());
-
-        return _mapper.Map<List<Post>, List<PostResponseContract>>(posts);
+        return _mapper.Map<List<Post>, List<PostResponseContract>>(await _postRepository.Get());
     }
     #endregion
 
@@ -358,13 +347,11 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize(Roles = "Admin,Moderator")]
     [HttpGet(ApiEndpoints.PostsAllCachedPosts)]
-    public async Task<List<PostMinimalResponseContract>> GetCached()
+    public async Task<PostMinimalResponseContract[]> GetCached()
     {
         _logger.LogInformation("User {User} requested posts cache dump", HttpContext.User.Identity?.Name);
 
-        var posts = await _mediator.Send(new GetAllCachedPostsQuery());
-
-        return _mapper.Map<List<PostRedis>, List<PostMinimalResponseContract>>(posts);
+        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _postRepository.GetCached());
     }
 
     /// <summary>
@@ -375,7 +362,7 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCachedPost(string id)
     {
-        var post = await _mediator.Send(new GetCachedPostQuery(id));
+        var post = await _postRepository.GetCached(id);
         if (post == null)
         {
             return NotFound();
@@ -388,11 +375,9 @@ public class PostsController : ControllerBase
     ///     Get posts page.
     /// </summary>
     [HttpGet(ApiEndpoints.PostPage)]
-    public async Task<List<PostMinimalResponseContract>> GetPage(int page)
+    public async Task<PostMinimalResponseContract[]> GetPage(int page)
     {
-        var posts = await _mediator.Send(new GetPageQuery(page));
-
-        return _mapper.Map<List<PostRedis>, List<PostMinimalResponseContract>>(posts);
+        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _postRepository.GetCachedPage(page));
     }
     #endregion
 }
