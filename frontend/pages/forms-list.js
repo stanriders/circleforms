@@ -15,13 +15,13 @@ export default function Home() {
   const [filter, setFilter] = useState('all')
 
   return (
-    <DefaultLayout>
+    <DefaultLayout classname="items-stretch">
       <Head>
         <title>CircleForms - Forms list</title>
       </Head>
 
-      <section className="container mt-12">
-        <div className="bg-black-dark2 rounded-70 mb-4">
+      <section className="container mt-12 h-full">
+        <div className="bg-black-dark2  rounded-70 mb-4">
           <div className="flex justify-between bg-black-lighter rounded-full">
             <div className="pl-20 pt-7 pb-4">
               <h2 className="uppercase text-5xl font-bold">Forms list</h2>

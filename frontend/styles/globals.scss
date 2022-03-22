@@ -54,8 +54,7 @@ body {
 
   &::before {
     content: '';
-    @apply w-full h-full opacity-0 rounded-3xl
-      transition-opacity ease-out-cubic absolute inset-0;
+    @apply w-full h-full opacity-0 rounded-3xl transition-opacity ease-out-cubic absolute inset-0;
     background-color: rgba(255, 102, 170, 0.2);
   }
 
@@ -82,12 +81,10 @@ svg {
 }
 
 .button {
-  @apply font-display text-lg font-bold rounded-3xl px-5 py-2
-    transition ease-out-cubic;
+  @apply font-display text-lg font-bold rounded-3xl px-5 py-2 transition ease-out-cubic;
 
   &.primary {
-    @apply bg-black outline outline-3 outline-pink
-      text-pink;
+    @apply bg-black outline outline-3 outline-pink text-pink;
   }
 
   &.secondary {
@@ -105,7 +102,8 @@ svg {
   &.grey {
     @apply font-body bg-grey-dark text-grey text-2xl font-semibold transition-colors ease-out-cubic;
 
-    &.active, &:hover {
+    &.active,
+    &:hover {
       @apply bg-pink text-black-lighter font-bold;
     }
   }
@@ -130,7 +128,7 @@ svg {
 }
 
 .type-h1 {
-  @apply font-display text-7xl;
+  @apply font-display text-7xl font-bold;
 }
 
 .type-h2 {
