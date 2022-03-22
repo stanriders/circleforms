@@ -134,3 +134,43 @@ svg {
 .type-h2 {
   @apply font-display text-6xl;
 }
+
+[data-reach-menu-popover] {
+  @apply mt-4 rounded-14 bg-black-darker p-2;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5)
+}
+
+[data-reach-menu-list] {
+  width: 140px;
+  @apply flex flex-col gap-y-2;
+
+  a {
+    @apply font-alternates text-sm text-center font-semibold py-1 px-4 text-white w-full rounded-7;
+
+    &:not(.danger) {
+      @apply bg-black-light;
+    }
+
+    &.danger {
+      background: rgba(57, 34, 34, 0.8);
+    }
+  }
+}
+
+@keyframes slide-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-down[data-reach-menu-list],
+.slide-down[data-reach-menu-items] {
+  border-radius: 5px;
+  animation: slide-down 0.2s ease;
+}

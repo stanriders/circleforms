@@ -8,6 +8,8 @@ export default async function api (endpoint, options) {
     ...options
   })
 
+  console.log(response)
+
   if (response.status === 204) {
     return null
   }

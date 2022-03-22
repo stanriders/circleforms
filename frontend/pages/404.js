@@ -1,12 +1,7 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import Hero from '../components/Hero'
 import DefaultLayout from '../layouts'
-import constants from '../constants'
-import SVG from 'react-inlinesvg'
-import bigLogoImg from '../public/images/big-logo.png'
 import Button from '../components/atoms/Button'
-import FormEntry from '../components/atoms/FormEntry'
 
 export default function Home() {
   return (

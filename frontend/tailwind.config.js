@@ -37,11 +37,15 @@ module.exports = {
         },
         red: {
           DEFAULT: '#FF8F8F',
+          a: '#614e4e'
         }
       },
       borderRadius: {
         5: '5px',
+        7: '7px',
         9: '9px',
+        14: '14px',
+        40: '40px',
         70: '70px',
       },
       outlineWidth: {
