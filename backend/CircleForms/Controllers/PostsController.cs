@@ -30,9 +30,9 @@ public class PostsController : ControllerBase
         _mapper = mapper;
     }
 
-    private IActionResult Error<T>(Maybe<T> maybe)
+    private IActionResult Error<T>(Result<T> result)
     {
-        return maybe.IsError ? StatusCode((int) maybe.StatusCode, new {error = maybe.Message}) : Ok(maybe.Value);
+        return result.IsError ? StatusCode((int) result.StatusCode, new {error = result.Message}) : Ok(result.Value);
     }
 
     /// <summary>

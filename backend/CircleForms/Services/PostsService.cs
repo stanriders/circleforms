@@ -30,7 +30,7 @@ public class PostsService
         _mapper = mapper;
     }
 
-    private Maybe<List<Submission>> ProcessAnswer(Post post,
+    private Result<List<Submission>> ProcessAnswer(Post post,
         IEnumerable<SubmissionContract> answers)
     {
         var questions = post.Questions.ToDictionary(x => x.Id);
@@ -40,7 +40,7 @@ public class PostsService
         if (post.Questions.Where(question => !question.Optional)
             .Any(question => !answersDictionary.ContainsKey(question.Id)))
         {
-            return new Maybe<List<Submission>>("One or more required fields doesn't filled");
+            return new Result<List<Submission>>("One or more required fields doesn't filled");
         }
 
         var resultingAnswers = new List<Submission>();
@@ -49,7 +49,7 @@ public class PostsService
             //If question with id doesn't exist or answer was not provided
             if (!questions.TryGetValue(key, out var question))
             {
-                return new Maybe<List<Submission>>($"Question with id {key} does not exist");
+                return new Result<List<Submission>>($"Question with id {key} does not exist");
             }
 
             if (question.QuestionType == QuestionType.Choice)
@@ -58,7 +58,7 @@ public class PostsService
 
                 if (choice >= question.QuestionInfo.Count)
                 {
-                    return new Maybe<List<Submission>>($"Choice for {key} is not in the range of choice ids");
+                    return new Result<List<Submission>>($"Choice for {key} is not in the range of choice ids");
                 }
             }
 
@@ -67,33 +67,33 @@ public class PostsService
             resultingAnswers.Add(answer);
         }
 
-        return new Maybe<List<Submission>>(resultingAnswers);
+        return new Result<List<Submission>>(resultingAnswers);
     }
 
 
-    public async Task<Maybe<bool>> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
+    public async Task<Result<bool>> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
     {
         var post = await _postRepository.Get(id);
 
         if (post is null)
         {
-            return new Maybe<bool>(HttpStatusCode.BadRequest, "Could not find post with this id");
+            return new Result<bool>(HttpStatusCode.BadRequest, "Could not find post with this id");
         }
 
         if (!post.IsActive)
         {
-            return new Maybe<bool>(HttpStatusCode.Forbidden, "The post is inactive");
+            return new Result<bool>(HttpStatusCode.Forbidden, "The post is inactive");
         }
 
         if (post.Answers.Any(x => x.ID == user))
         {
-            return new Maybe<bool>(HttpStatusCode.Conflict, "You already voted");
+            return new Result<bool>(HttpStatusCode.Conflict, "You already voted");
         }
 
         var result = ProcessAnswer(post, answerContracts);
         if (result.IsError)
         {
-            return new Maybe<bool>(result.StatusCode, result.Message);
+            return new Result<bool>(result.StatusCode, result.Message);
         }
 
         var submissions = result.Value;
@@ -106,7 +106,7 @@ public class PostsService
 
         await _postRepository.AddAnswer(post.ID, answer);
 
-        return new Maybe<bool>(true);
+        return new Result<bool>(true);
     }
 
     private static string GenerateAccessKey(byte size)
@@ -128,7 +128,7 @@ public class PostsService
         return result.ToString();
     }
 
-    public async Task<Maybe<Post>> AddPost(string userId, Post post)
+    public async Task<Result<Post>> AddPost(string userId, Post post)
     {
         post.AuthorId = userId;
         if (post.Accessibility == Accessibility.Link)
@@ -148,16 +148,16 @@ public class PostsService
 
         var result = await _postRepository.Add(userId, post);
 
-        return result is null ? new Maybe<Post>(HttpStatusCode.InternalServerError, "Can't add new post :/") : new Maybe<Post>(post);
+        return result is null ? new Result<Post>(HttpStatusCode.InternalServerError, "Can't add new post :/") : new Result<Post>(post);
     }
 
 
-    public async Task<Maybe<Post>> UpdatePost(string userId, PostUpdateRequestContract updateContract, string id)
+    public async Task<Result<Post>> UpdatePost(string userId, PostUpdateRequestContract updateContract, string id)
     {
         var post = await _postRepository.Get(id);
         if (post.AuthorId != userId)
         {
-            return new Maybe<Post>(HttpStatusCode.Unauthorized, "You can't update this post");
+            return new Result<Post>(HttpStatusCode.Unauthorized, "You can't update this post");
         }
 
         _logger.LogInformation("User {Claim} updated the post {Id} with {@Updates}", userId, post.ID, updateContract);
@@ -173,7 +173,7 @@ public class PostsService
                     var question = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
                     if (question is null)
                     {
-                        return new Maybe<Post>($"Question {updatedPostQuestion} is not found");
+                        return new Result<Post>($"Question {updatedPostQuestion} is not found");
                     }
 
                     questions.Remove(question);
@@ -194,7 +194,7 @@ public class PostsService
                 var postToUpdate = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
                 if (postToUpdate is null)
                 {
-                    return new Maybe<Post>($"Question {updatedPostQuestion.Id} is not found");
+                    return new Result<Post>($"Question {updatedPostQuestion.Id} is not found");
                 }
 
                 questions.Remove(postToUpdate);
@@ -206,10 +206,10 @@ public class PostsService
 
         await _postRepository.Update(post.ID, post, true);
 
-        return new Maybe<Post>(post);
+        return new Result<Post>(post);
     }
 
-    public async Task<Maybe<object>> GetDetailedPost(string claim, string id, string key)
+    public async Task<Result<object>> GetDetailedPost(string claim, string id, string key)
     {
         var cachedResult = await GetCachedPost(id);
         if (cachedResult.IsError)
@@ -224,24 +224,24 @@ public class PostsService
         {
             if (string.IsNullOrEmpty(key) || key.Length != 6)
             {
-                return Maybe<object>.NotFound(id);
+                return Result<object>.NotFound(id);
             }
 
             forceRequestedPost = await _postRepository.Get(id);
             if (forceRequestedPost.AccessKey != key)
             {
-                return Maybe<object>.NotFound(id);
+                return Result<object>.NotFound(id);
             }
         }
 
         return cached.AuthorId != claim ? cached : forceRequestedPost ?? await _postRepository.Get(id);
     }
 
-    public async Task<Maybe<Post>> Get(string id)
+    public async Task<Result<Post>> Get(string id)
     {
         var post = await _postRepository.Get(id);
 
-        return post ?? Maybe<Post>.NotFound(id);
+        return post ?? Result<Post>.NotFound(id);
     }
 
     public async Task<List<Post>> GetAll()
@@ -254,10 +254,10 @@ public class PostsService
         return await _postRepository.GetCached();
     }
 
-    public async Task<Maybe<PostRedis>> GetCachedPost(string id)
+    public async Task<Result<PostRedis>> GetCachedPost(string id)
     {
         var post = await _postRepository.GetCached(id);
-        return post ?? Maybe<PostRedis>.NotFound(id);
+        return post ?? Result<PostRedis>.NotFound(id);
     }
 
     public async Task<PostRedis[]> GetPage(int page, int pageSize, PostFilter filter)

@@ -2,32 +2,32 @@
 
 namespace CircleForms.Models;
 
-public class Maybe<T>
+public class Result<T>
 {
-    public static Maybe<T> NotFound(string id) => new(HttpStatusCode.NotFound, $"Entity {id} is not found");
-    public Maybe(T value)
+    public static Result<T> NotFound(string id) => new(HttpStatusCode.NotFound, $"Entity {id} is not found");
+    public Result(T value)
     {
         Value = value;
         IsError = false;
     }
 
-    public Maybe(HttpStatusCode code, string message)
+    public Result(HttpStatusCode code, string message)
     {
         StatusCode = code;
         Message = message;
         IsError = true;
     }
 
-    public Maybe(string message)
+    public Result(string message)
     {
         StatusCode = HttpStatusCode.BadRequest;
         Message = message;
         IsError = true;
     }
 
-    public static implicit operator Maybe<T>(T value)
+    public static implicit operator Result<T>(T value)
     {
-        return new Maybe<T>(value);
+        return new Result<T>(value);
     }
     public T Value { get; }
 
