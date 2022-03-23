@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using CircleForms.Models.Enums;
+using CircleForms.Models.Posts.Questions;
 using Newtonsoft.Json;
 
 namespace CircleForms.Models.Posts;
@@ -8,6 +10,9 @@ public class PostRedis
 {
     [JsonProperty("id")]
     public string Id { get; set; }
+
+    [JsonProperty("is_active")]
+    public bool IsActive { get; set; }
 
     [JsonProperty("author_id")]
     public string AuthorId { get; set; }
@@ -26,4 +31,7 @@ public class PostRedis
 
     [JsonProperty("limitations")]
     public Limitations Limitations { get; set; }
+
+    [JsonProperty("questions")]
+    public List<Question> Questions { get; set; }
 }

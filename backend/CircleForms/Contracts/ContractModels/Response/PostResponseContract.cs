@@ -16,6 +16,9 @@ public class PostResponseContract
     [JsonProperty("author_id")]
     public string AuthorId { get; set; }
 
+    [JsonProperty("is_active")]
+    public bool IsActive { get; set; }
+
     [JsonProperty("title")]
     public string Title { get; set; }
 

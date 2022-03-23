@@ -17,13 +17,13 @@ using Microsoft.Extensions.Logging;
 
 namespace CircleForms.Services;
 
-public class PostService
+public class PostsService
 {
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
 
-    public PostService(ILogger<PostsController> logger, IPostRepository postRepository, IMapper mapper)
+    public PostsService(ILogger<PostsController> logger, IPostRepository postRepository, IMapper mapper)
     {
         _logger = logger;
         _postRepository = postRepository;
@@ -80,6 +80,11 @@ public class PostService
             return new Maybe<bool>(HttpStatusCode.BadRequest, "Could not find post with this id");
         }
 
+        if (!post.IsActive)
+        {
+            return new Maybe<bool>(HttpStatusCode.Forbidden, "The post is inactive");
+        }
+
         if (post.Answers.Any(x => x.ID == user))
         {
             return new Maybe<bool>(HttpStatusCode.Conflict, "You already voted");
@@ -123,13 +128,8 @@ public class PostService
         return result.ToString();
     }
 
-    public async Task<Maybe<Post>> AddPost(string userId, PostRequestContract postContract)
+    public async Task<Maybe<Post>> AddPost(string userId, Post post)
     {
-
-        var post = _mapper.Map<Post>(postContract);
-
-        _logger.LogInformation("User {User} posts a post {PostId}", userId, post.ID);
-
         post.AuthorId = userId;
         if (post.Accessibility == Accessibility.Link)
         {
@@ -154,7 +154,6 @@ public class PostService
 
     public async Task<Maybe<Post>> UpdatePost(string userId, PostUpdateRequestContract updateContract, string id)
     {
-
         var post = await _postRepository.Get(id);
         if (post.AuthorId != userId)
         {
@@ -212,7 +211,6 @@ public class PostService
 
     public async Task<Maybe<object>> GetDetailedPost(string claim, string id, string key)
     {
-
         var cachedResult = await GetCachedPost(id);
         if (cachedResult.IsError)
         {
@@ -262,9 +260,8 @@ public class PostService
         return post ?? Maybe<PostRedis>.NotFound(id);
     }
 
-    public async Task<PostRedis[]> GetPage(int page)
+    public async Task<PostRedis[]> GetPage(int page, int pageSize, PostFilter filter)
     {
-        return await _postRepository.GetCachedPage(page);
-
+        return await _postRepository.GetCachedPage(page, pageSize, filter);
     }
 }
