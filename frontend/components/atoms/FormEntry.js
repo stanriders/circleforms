@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import * as timeago from 'timeago.js';
 
 export default function FormEntry({
   id,
@@ -33,11 +34,13 @@ export default function FormEntry({
           <div className="flex items-center">
             <div className="flex flex-col text-xs mr-2 text-right">
               <span>posted by <span className="font-bold">{author_id}</span></span>
-              <span className="text-green">5 days ago</span>
+              <span className="text-green">
+                {timeago.format(publish_time)}
+              </span>
             </div>
             <img
               className="h-10 w-10 rounded-full"
-              src="https://a.ppy.sh/5914915?1639077555.jpeg"
+              src={`https://s.ppy.sh/a/${author_id}`}
               alt="Profile user {name}" />
           </div>
         </div>

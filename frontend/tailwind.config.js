@@ -38,6 +38,9 @@ module.exports = {
         red: {
           DEFAULT: '#FF8F8F',
           a: '#614e4e'
+        },
+        blue: {
+          discord: '#5865F2',
         }
       },
       borderRadius: {

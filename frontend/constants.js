@@ -29,23 +29,28 @@ module.exports = {
   team: [
     {
       name: 'StanR',
-      role: 'CEO & back-end developer'
+      role: 'CEO & back-end developer',
+      osuId: '7217455',
     },
     {
       name: 'Arhella',
-      role: 'UX/UI Designer'
+      role: 'UX/UI Designer',
+      osuId: '4411044',
     },
     {
       name: 'JustRoxy',
-      role: 'back-end developer'
+      role: 'back-end developer',
+      osuId: '9083516',
     },
     {
       name: 'kkk',
-      role: 'quality assurance'
+      role: 'quality assurance',
+      osuId: '4735736',
     },
     {
       name: 'Keziah',
-      role: 'front-end developer'
+      role: 'front-end developer',
+      osuId: '5914915',
     }
   ]
 }

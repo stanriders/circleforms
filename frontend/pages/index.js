@@ -7,8 +7,16 @@ import SVG from 'react-inlinesvg'
 import bigLogoImg from '../public/images/big-logo.png'
 import Button from '../components/atoms/Button'
 import FormEntry from '../components/atoms/FormEntry'
+import useSWR from 'swr'
+import api from '../libs/api'
+import Loading from '../components/atoms/Loading'
 
 export default function Home() {
+  const { data, error, isValidating } = useSWR(
+    `/posts/page/1?pageSize=4&filter=Active`,
+    api
+  )
+
   return (
     <DefaultLayout>
       <Head>
@@ -58,26 +66,16 @@ export default function Home() {
             <div className="absolute inset-0 z-20 pointer-events-none" style={{
               background: `linear-gradient(rgba(12, 12, 12, 0) 22%, rgb(12, 12, 12) 113.44%)`
             }}></div>
-              <FormEntry
-                title="nik's winter cup 2022 Registration"
-                description="osu!standard, scorev2, 1v1 tournament"
-                author_id="nik"
-              />
-              <FormEntry
-                title="nik's winter cup 2022 Registration"
-                description="osu!standard, scorev2, 1v1 tournament"
-                author_id="nik"
-              />
-              <FormEntry
-                title="nik's winter cup 2022 Registration"
-                description="osu!standard, scorev2, 1v1 tournament"
-                author_id="nik"
-              />
-              <FormEntry
-                title="nik's winter cup 2022 Registration"
-                description="osu!standard, scorev2, 1v1 tournament"
-                author_id="nik"
-              />
+              <div className="relative space-y-3">
+                {isValidating && (
+                  <div className="flex justify-center absolute top-4 z-50 left-1/2 transform -translate-x-1/2">
+                    <Loading />
+                  </div>
+                )}
+                {data && data.length > 0 && data.map(form => (
+                  <FormEntry key={form.id} {...form} />
+                ))}
+              </div>
             </div>
             <div className="flex justify-center mt-4">
               <Button href="/forms-list" theme="secondary">

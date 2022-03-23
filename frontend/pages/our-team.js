@@ -61,7 +61,9 @@ export default function OurTeam() {
           )
         })}
 
-        <SVG className="w-full lg:w-auto col-span-2 text-white" src="/svg/logo.svg" alt="circle forms" />
+        <a href="https://discord.gg/rx9RKQsy9H" className="flex justify-center items-center bg-blue-discord col-span-2 text-white focus:brightness-90 hover:brightness-90 transition">
+          <SVG className="w-32" src="/svg/discord.svg" alt="Join our Discord" />
+        </a>
       </div>
     </DefaultLayout>
   )

@@ -50,7 +50,7 @@ export default function Settings() {
         </div>
       </div>
 
-      <section className="bg-black-dark2 rounded-70 px-10 py-8">
+      <section className="container bg-black-dark2 rounded-70 px-10 py-8">
         <div className="space-y-8">
           {/* osu! integration */}
           <div className="flex justify-between bg-black-lightest rounded-40 px-6 py-4">
