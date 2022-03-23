@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Contracts;
@@ -12,6 +14,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
+using MongoDB.Driver;
 
 namespace CircleForms.Controllers;
 
@@ -30,6 +34,25 @@ public class PostsController : ControllerBase
         _mapper = mapper;
     }
 
+    private IActionResult Map<T, TR>(Result<T> result, Func<T, TR> mapOk)
+    {
+        if (!result.IsError)
+        {
+            return Ok(mapOk(result.Value));
+        }
+
+        var payload = new {error = result.Message};
+
+        return result.StatusCode switch
+        {
+            HttpStatusCode.BadRequest => BadRequest(payload),
+            HttpStatusCode.Conflict => Conflict(payload),
+            HttpStatusCode.NotFound => NotFound(payload),
+            HttpStatusCode.Forbidden => Forbid(),
+            HttpStatusCode.Unauthorized => Unauthorized(payload),
+            _ => StatusCode((int) result.StatusCode, payload)
+        };
+    }
     private IActionResult Error<T>(Result<T> result)
     {
         return result.IsError ? StatusCode((int) result.StatusCode, new {error = result.Message}) : Ok(result.Value);
@@ -92,7 +115,12 @@ public class PostsController : ControllerBase
         _logger.LogInformation("User {User} posts a post {PostId}", claim, post.ID);
 
         var result = await _posts.AddPost(claim, post);
-        return result.IsError ? Error(result) : CreatedAtAction("GetCachedPost", new {id = result.Value.ID}, result.Value);
+        if (!result.IsError)
+        {
+            CreatedAtAction("GetCachedPost", new {id = result.Value.ID}, result.Value);
+        }
+
+        return Map(result, _ => _);
     }
 
     /// <summary>
@@ -116,7 +144,7 @@ public class PostsController : ControllerBase
 
         var result = await _posts.UpdatePost(claim, updateContract, id);
 
-        return result.IsError ? Error(result) : Ok(_mapper.Map<PostResponseContract>(result.Value));
+        return Map(result, post => _mapper.Map<PostResponseContract>(post));
     }
 
     /// <summary>
@@ -133,21 +161,21 @@ public class PostsController : ControllerBase
         if (claim is null)
         {
             var resultCached = await _posts.GetCachedPost(id);
-            return resultCached.IsError ? Error(resultCached) : Ok(_mapper.Map<PostDetailedResponseContract>(resultCached.Value));
+
+            return Map(resultCached, p => _mapper.Map<PostDetailedResponseContract>(p));
         }
 
         var result = await _posts.GetDetailedPost(claim, id, key);
-        if (result.IsError)
-        {
-            return Error(result);
-        }
 
-        return result.Value switch
+        return Map<object, object>(result, v =>
         {
-            PostRedis postRedis => Ok(_mapper.Map<PostDetailedResponseContract>(postRedis)),
-            Post post => Ok(_mapper.Map<PostResponseContract>(post)),
-            _ => BadRequest()
-        };
+            return v switch
+            {
+                PostRedis postRedis => _mapper.Map<PostDetailedResponseContract>(postRedis),
+                Post post => _mapper.Map<PostResponseContract>(post),
+                _ => throw new ArgumentOutOfRangeException(nameof(v), v, null)
+            };
+        });
     }
 
     #region Mongo
@@ -163,7 +191,8 @@ public class PostsController : ControllerBase
         _logger.LogInformation("User {User} requested a post from the database", HttpContext.User.Identity?.Name);
 
         var result = await _posts.Get(id);
-        return result.IsError ? Error(result) : Ok(_mapper.Map<PostResponseContract>(result.Value));
+
+        return Map(result, post => _mapper.Map<PostResponseContract>(post));
     }
 
     /// <summary>
@@ -201,7 +230,7 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> GetCachedPost(string id)
     {
         var post = await _posts.GetCachedPost(id);
-        return post.IsError ? Error(post) : Ok(_mapper.Map<PostMinimalResponseContract>(post.Value));
+        return Map(post, v => _mapper.Map<PostMinimalResponseContract>(v));
     }
 
     /// <summary>
