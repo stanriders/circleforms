@@ -1,17 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
+using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
-using CircleForms.Models.Enums;
+using CircleForms.Models;
 using CircleForms.Models.Posts;
-using CircleForms.Models.Posts.Questions;
-using CircleForms.Models.Posts.Questions.Submissions;
-using CircleForms.Services.Database.Interfaces;
+using CircleForms.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,53 +23,43 @@ public class PostsController : ControllerBase
 {
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
-    private readonly IPostRepository _postRepository;
+    private readonly PostsService _posts;
 
-    public PostsController(ILogger<PostsController> logger, IPostRepository postRepository, IMapper mapper)
+    public PostsController(ILogger<PostsController> logger, PostsService posts, IMapper mapper)
     {
         _logger = logger;
-        _postRepository = postRepository;
+        _posts = posts;
         _mapper = mapper;
     }
 
-    private (List<Submission> submissions, string error) ProcessAnswer(Post post,
-        IEnumerable<SubmissionContract> answers)
+    private IActionResult Map<T, TR>(Result<T> result)
     {
-        var questions = post.Questions.ToDictionary(x => x.Id);
-        var answersDictionary = answers.ToDictionary(x => x.QuestionId);
+        return Map(result, arg => _mapper.Map<TR>(arg));
+    }
 
-        //If any required fields doesn't filled
-        if (post.Questions.Where(question => !question.Optional)
-            .Any(question => !answersDictionary.ContainsKey(question.Id)))
+    private IActionResult Map<T, TR>(Result<T> result, Func<T, TR> mapOk)
+    {
+        if (!result.IsError)
         {
-            return (null, "One or more required fields doesn't filled");
+            return Ok(mapOk(result.Value));
         }
 
-        var resultingAnswers = new List<Submission>();
-        foreach (var (key, value) in answersDictionary)
+        var payload = new {error = result.Message};
+
+        return result.StatusCode switch
         {
-            //If question with id doesn't exist or answer was not provided
-            if (!questions.TryGetValue(key, out var question))
-            {
-                return (null, $"Question with id {key} does not exist");
-            }
+            HttpStatusCode.BadRequest => BadRequest(payload),
+            HttpStatusCode.Conflict => Conflict(payload),
+            HttpStatusCode.NotFound => NotFound(payload),
+            HttpStatusCode.Forbidden => Forbid(),
+            HttpStatusCode.Unauthorized => Unauthorized(payload),
+            _ => StatusCode((int) result.StatusCode, payload)
+        };
+    }
 
-            if (question.QuestionType == QuestionType.Choice)
-            {
-                var choice = int.Parse(value.Answer);
-
-                if (choice >= question.QuestionInfo.Count)
-                {
-                    return (null, $"Choice for {key} is not in the range of choice ids");
-                }
-            }
-
-            var answer = _mapper.Map<Submission>(value);
-
-            resultingAnswers.Add(answer);
-        }
-
-        return (resultingAnswers, null);
+    private IActionResult Error<T>(Result<T> result)
+    {
+        return result.IsError ? StatusCode((int) result.StatusCode, new {error = result.Message}) : Ok(result.Value);
     }
 
     /// <summary>
@@ -98,53 +86,9 @@ public class PostsController : ControllerBase
             return Unauthorized();
         }
 
-        var post = await _postRepository.Get(id);
+        var postResult = await _posts.Answer(claim, id, answerContracts);
 
-        if (post is null)
-        {
-            return BadRequest(new {error = "Could not find post with this id"});
-        }
-
-        if (post.Answers.Any(x => x.ID == claim))
-        {
-            return Conflict(new {error = "You already voted"});
-        }
-
-        var (submissions, error) = ProcessAnswer(post, answerContracts);
-
-        if (submissions is null)
-        {
-            return BadRequest(new {error});
-        }
-
-        var answer = new Answer
-        {
-            Submissions = submissions,
-            ID = claim
-        };
-
-        await _postRepository.AddAnswer(post.ID, answer);
-
-        return Ok();
-    }
-
-    private static string GenerateAccessKey(byte size)
-    {
-        const string chars =
-            "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-        var data = new byte[size];
-        using (var crypto = RandomNumberGenerator.Create())
-        {
-            crypto.GetBytes(data);
-        }
-
-        var result = new StringBuilder(size);
-        foreach (var b in data)
-        {
-            result.Append(chars[b % chars.Length]);
-        }
-
-        return result.ToString();
+        return postResult.IsError ? Error(postResult) : Ok();
     }
 
     /// <summary>
@@ -163,41 +107,24 @@ public class PostsController : ControllerBase
         }
 
         var claim = HttpContext.User.Identity?.Name;
-        if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out _))
+        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
         {
-            var post = _mapper.Map<Post>(postContract);
+            _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
 
-            _logger.LogInformation("User {User} posts a post {PostId}", claim, post.ID);
-
-            post.AuthorId = claim;
-            if (post.Accessibility == Accessibility.Link)
-            {
-                post.AccessKey = GenerateAccessKey(6);
-            }
-
-            for (var i = 0; i < post.Questions.Count; i++)
-            {
-                var question = post.Questions[i];
-                question.Id = i;
-                if (question.QuestionType != QuestionType.Choice)
-                {
-                    question.QuestionInfo = new List<string>();
-                }
-            }
-
-            var result = await _postRepository.Add(claim, post);
-
-            if (result is null)
-            {
-                return StatusCode(500);
-            }
-
-            return CreatedAtAction("GetCachedPost", new {id = post.ID}, result);
+            return Unauthorized();
         }
 
-        _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
+        var post = _mapper.Map<Post>(postContract);
 
-        return Unauthorized();
+        _logger.LogInformation("User {User} posts a post {PostId}", claim, post.ID);
+
+        var result = await _posts.AddPost(claim, post);
+        if (!result.IsError)
+        {
+            return CreatedAtAction("GetCachedPost", new {id = result.Value.ID}, result.Value);
+        }
+
+        return Map(result, _ => _);
     }
 
     /// <summary>
@@ -219,59 +146,9 @@ public class PostsController : ControllerBase
             return Unauthorized();
         }
 
-        var post = await _postRepository.Get(id);
-        if (post.AuthorId != claim)
-        {
-            return Unauthorized();
-        }
+        var result = await _posts.UpdatePost(claim, updateContract, id);
 
-        _logger.LogInformation("User {Claim} updated the post {Id} with {@Updates}", claim, post.ID, updateContract);
-
-        var questions = post.Questions;
-        var updatedPost = _mapper.Map(updateContract, post);
-        if (updateContract.Questions is not null)
-        {
-            foreach (var updatedPostQuestion in updateContract.Questions)
-            {
-                if (updatedPostQuestion.Delete)
-                {
-                    var question = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
-                    if (question is null)
-                    {
-                        return BadRequest($"Question {updatedPostQuestion.Id} is not found");
-                    }
-
-                    questions.Remove(question);
-
-                    continue;
-                }
-
-                var newQuestion = _mapper.Map<Question>(updatedPostQuestion);
-                if (updatedPostQuestion.Id is null)
-                {
-                    var newPostId = questions.Max(x => x.Id) + 1;
-                    newQuestion.Id = newPostId;
-                    questions.Add(newQuestion);
-
-                    continue;
-                }
-
-                var postToUpdate = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
-                if (postToUpdate is null)
-                {
-                    return BadRequest($"Question {updatedPostQuestion.Id} is not found");
-                }
-
-                questions.Remove(postToUpdate);
-                questions.Add(newQuestion);
-            }
-        }
-
-        updatedPost.Questions = questions;
-
-        await _postRepository.Update(post.ID, post, true);
-
-        return Ok(_mapper.Map<PostResponseContract>(post));
+        return Map<Post, PostResponseContract>(result);
     }
 
     /// <summary>
@@ -284,35 +161,25 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {
         var claim = HttpContext.User.Identity?.Name;
-        var post = await _postRepository.GetCached(id);
-        if (post is null)
+
+        if (claim is null)
         {
-            return NotFound();
+            var resultCached = await _posts.GetCachedPost(id);
+
+            return Map<PostRedis, PostDetailedResponseContract>(resultCached);
         }
 
-        Post forceRequestedPost = null;
-        if (post.Accessibility == Accessibility.Link)
+        var result = await _posts.GetDetailedPost(claim, id, key);
+
+        return Map<object, object>(result, v =>
         {
-            if (string.IsNullOrEmpty(key) || key.Length != 6)
+            return v switch
             {
-                return NotFound();
-            }
-
-            forceRequestedPost = await _postRepository.Get(id);
-            if (forceRequestedPost.AccessKey != key)
-            {
-                return NotFound();
-            }
-        }
-
-        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
-        {
-            return Ok(_mapper.Map<PostDetailedResponseContract>(post));
-        }
-
-        return post.AuthorId == claim
-            ? Ok(_mapper.Map<PostResponseContract>(forceRequestedPost ?? await _postRepository.Get(id)))
-            : Ok(_mapper.Map<PostDetailedResponseContract>(post));
+                PostRedis postRedis => _mapper.Map<PostDetailedResponseContract>(postRedis),
+                Post post => _mapper.Map<PostResponseContract>(post),
+                _ => throw new ArgumentOutOfRangeException(nameof(v), v, null)
+            };
+        });
     }
 
     #region Mongo
@@ -321,11 +188,15 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize(Roles = "Admin")]
     [HttpGet(ApiEndpoints.PostsOneDatabasePost)]
-    public async Task<PostResponseContract> Get(string id)
+    [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Get(string id)
     {
         _logger.LogInformation("User {User} requested a post from the database", HttpContext.User.Identity?.Name);
 
-        return _mapper.Map<PostResponseContract>(await _postRepository.Get(id));
+        var result = await _posts.Get(id);
+
+        return Map<Post, PostResponseContract>(result);
     }
 
     /// <summary>
@@ -337,7 +208,7 @@ public class PostsController : ControllerBase
     {
         _logger.LogInformation("User {User} requested database posts dump", HttpContext.User.Identity?.Name);
 
-        return _mapper.Map<List<Post>, List<PostResponseContract>>(await _postRepository.Get());
+        return _mapper.Map<List<Post>, List<PostResponseContract>>(await _posts.GetAll());
     }
     #endregion
 
@@ -351,7 +222,7 @@ public class PostsController : ControllerBase
     {
         _logger.LogInformation("User {User} requested posts cache dump", HttpContext.User.Identity?.Name);
 
-        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _postRepository.GetCached());
+        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _posts.GetAllCached());
     }
 
     /// <summary>
@@ -362,22 +233,27 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCachedPost(string id)
     {
-        var post = await _postRepository.GetCached(id);
-        if (post == null)
-        {
-            return NotFound();
-        }
+        var post = await _posts.GetCachedPost(id);
 
-        return Ok(_mapper.Map<PostMinimalResponseContract>(post));
+        return Map<PostRedis, PostMinimalResponseContract>(post);
     }
 
     /// <summary>
     ///     Get posts page.
     /// </summary>
     [HttpGet(ApiEndpoints.PostPage)]
-    public async Task<PostMinimalResponseContract[]> GetPage(int page)
+    [ProducesResponseType(typeof(PostMinimalResponseContract[]), 200)]
+    [ProducesResponseType(400)]
+    public async Task<IActionResult> GetPage(int page, [FromQuery] int pageSize = 50,
+        [FromQuery] PostFilter filter = PostFilter.Both)
     {
-        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _postRepository.GetCachedPage(page));
+        if (pageSize > 50)
+        {
+            return BadRequest("Too many elements requested");
+        }
+
+        return Ok(_mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _posts.GetPage(page, pageSize,
+            filter)));
     }
     #endregion
 }

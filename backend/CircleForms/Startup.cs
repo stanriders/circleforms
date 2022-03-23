@@ -7,6 +7,7 @@ using AutoMapper;
 using CircleForms.Contracts.ContractModels.Mappings;
 using CircleForms.Models.Configurations;
 using CircleForms.Models.OsuContracts;
+using CircleForms.Services;
 using CircleForms.Services.Database;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
@@ -85,6 +86,7 @@ public class Startup
         services.AddTransient<IOsuUserProvider, OsuUserProvider>();
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IPostRepository, PostRepository>();
+        services.AddTransient<PostsService>();
 
         DB.InitAsync("circleforms",
             MongoClientSettings.FromConnectionString(Configuration.GetConnectionString("Database"))).Wait();

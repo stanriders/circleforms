@@ -34,7 +34,7 @@ public class PostRepository : IPostRepository
         post.PublishTime = DateTime.UtcNow;
         post.Answers = new List<Answer>();
 
-        var publishUnixTime = ((DateTimeOffset) post.PublishTime).ToUnixTimeMilliseconds();
+        var publishUnixTime = ToUnixTimestamp(post.PublishTime);
 
         _logger.LogInformation("User {Id} created a new post", id);
 
@@ -112,10 +112,18 @@ public class PostRepository : IPostRepository
         return JsonConvert.DeserializeObject<PostRedis>(val);
     }
 
-    public async Task<PostRedis[]> GetCachedPage(int page, int pageSize = 50)
+    public async Task<PostRedis[]> GetCachedPage(int page, int pageSize, PostFilter filter)
     {
+        var key = filter switch
+        {
+            PostFilter.Both => "posts",
+            PostFilter.Active => "posts:active",
+            PostFilter.Inactive => "posts:inactive",
+            _ => throw new ArgumentOutOfRangeException(nameof(filter), filter, null)
+        };
+
         var redisDb = _redis.GetDatabase();
-        var ids = redisDb.SortedSetRangeByScore("posts", order: Order.Descending, skip: (page - 1) * pageSize,
+        var ids = redisDb.SortedSetRangeByScore(key, order: Order.Descending, skip: (page - 1) * pageSize,
             take: pageSize);
 
         return await IdsToPosts(ids, redisDb);
@@ -129,6 +137,13 @@ public class PostRepository : IPostRepository
             .Match(filter)
             .Modify(x => x.Set(v => v.Posts[-1], post))
             .ExecuteAsync();
+        if (result.ModifiedCount == 0)
+        {
+            _logger.LogCritical("Post {@Post} with id {Id} modified 0 entities", post, id);
+
+            return;
+        }
+
         if (result.ModifiedCount != 1)
         {
             _logger.LogCritical("Post {@Post} with id {Id} modified {Count} entities", post, id, result.ModifiedCount);
@@ -140,7 +155,16 @@ public class PostRepository : IPostRepository
         }
 
         var redisDb = _redis.GetDatabase();
-        await redisDb.StringSetAsync($"post:{id}", JsonConvert.SerializeObject(_mapper.Map<PostRedis>(post)));
+        var removeFrom = post.IsActive ? "posts:inactive" : "posts:active";
+        var addTo = post.IsActive ? "posts:active" : "posts:inactive";
+
+        var postId = $"post:{id}";
+        await Task.WhenAll(
+            redisDb.SortedSetRemoveAsync(removeFrom, postId),
+            redisDb.SortedSetAddAsync(addTo, postId, ToUnixTimestamp(post.PublishTime))
+        );
+
+        await redisDb.StringSetAsync(postId, JsonConvert.SerializeObject(_mapper.Map<PostRedis>(post)));
     }
 
     public async Task AddAnswer(string postId, Answer entry)
@@ -154,6 +178,11 @@ public class PostRepository : IPostRepository
         {
             _logger.LogInformation("Could not add answer {@Entry} to {PostId}", entry, postId);
         }
+    }
+
+    private static long ToUnixTimestamp(DateTime time)
+    {
+        return ((DateTimeOffset) time).ToUnixTimeMilliseconds();
     }
 
     private static async Task<PostRedis[]> IdsToPosts(IReadOnlyList<RedisValue> ids, IDatabaseAsync redisDb)

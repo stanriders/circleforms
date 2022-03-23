@@ -30,6 +30,7 @@ public class ContractProfile : Profile
         CreateMap<Post, PostMinimalResponseContract>();
         CreateMap<Post, PostResponseContract>();
         CreateMap<PostRedis, PostMinimalResponseContract>();
+        CreateMap<PostRedis, PostDetailedResponseContract>();
         CreateMap<Post, PostDetailedResponseContract>();
 
         CreateMap<PostRequestContract, Post>();

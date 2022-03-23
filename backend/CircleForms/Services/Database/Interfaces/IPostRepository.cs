@@ -12,7 +12,7 @@ public interface IPostRepository
 
     Task<PostRedis[]> GetCached();
     Task<PostRedis> GetCached(string postId);
-    Task<PostRedis[]> GetCachedPage(int page, int pageSize = 50);
+    Task<PostRedis[]> GetCachedPage(int page, int pageSize, PostFilter filter);
     Task Update(string id, Post post, bool updateCache);
     Task AddAnswer(string postId, Answer entry);
 }
