@@ -4,7 +4,6 @@ namespace CircleForms.Models;
 
 public class Result<T>
 {
-    public static Result<T> NotFound(string id) => new(HttpStatusCode.NotFound, $"Entity {id} is not found");
     public Result(T value)
     {
         Value = value;
@@ -25,14 +24,20 @@ public class Result<T>
         IsError = true;
     }
 
-    public static implicit operator Result<T>(T value)
-    {
-        return new Result<T>(value);
-    }
     public T Value { get; }
 
     public HttpStatusCode StatusCode { get; }
     public string Message { get; }
 
     public bool IsError { get; }
+
+    public static Result<T> NotFound(string id)
+    {
+        return new(HttpStatusCode.NotFound, $"Entity {id} is not found");
+    }
+
+    public static implicit operator Result<T>(T value)
+    {
+        return new Result<T>(value);
+    }
 }

@@ -148,7 +148,9 @@ public class PostsService
 
         var result = await _postRepository.Add(userId, post);
 
-        return result is null ? new Result<Post>(HttpStatusCode.InternalServerError, "Can't add new post :/") : new Result<Post>(post);
+        return result is null
+            ? new Result<Post>(HttpStatusCode.InternalServerError, "Can't add new post :/")
+            : new Result<Post>(post);
     }
 
 
@@ -257,6 +259,7 @@ public class PostsService
     public async Task<Result<PostRedis>> GetCachedPost(string id)
     {
         var post = await _postRepository.GetCached(id);
+
         return post ?? Result<PostRedis>.NotFound(id);
     }
 

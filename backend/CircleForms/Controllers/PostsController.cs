@@ -14,8 +14,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Net.Http.Headers;
-using MongoDB.Driver;
 
 namespace CircleForms.Controllers;
 
@@ -53,6 +51,7 @@ public class PostsController : ControllerBase
             _ => StatusCode((int) result.StatusCode, payload)
         };
     }
+
     private IActionResult Error<T>(Result<T> result)
     {
         return result.IsError ? StatusCode((int) result.StatusCode, new {error = result.Message}) : Ok(result.Value);
@@ -230,6 +229,7 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> GetCachedPost(string id)
     {
         var post = await _posts.GetCachedPost(id);
+
         return Map(post, v => _mapper.Map<PostMinimalResponseContract>(v));
     }
 
@@ -239,14 +239,16 @@ public class PostsController : ControllerBase
     [HttpGet(ApiEndpoints.PostPage)]
     [ProducesResponseType(typeof(PostMinimalResponseContract[]), 200)]
     [ProducesResponseType(400)]
-    public async Task<IActionResult> GetPage(int page, [FromQuery] int pageSize = 50, [FromQuery] PostFilter filter = PostFilter.Both)
+    public async Task<IActionResult> GetPage(int page, [FromQuery] int pageSize = 50,
+        [FromQuery] PostFilter filter = PostFilter.Both)
     {
         if (pageSize > 50)
         {
             return BadRequest("Too many elements requested");
         }
 
-        return Ok(_mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _posts.GetPage(page, pageSize, filter)));
+        return Ok(_mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _posts.GetPage(page, pageSize,
+            filter)));
     }
     #endregion
 }

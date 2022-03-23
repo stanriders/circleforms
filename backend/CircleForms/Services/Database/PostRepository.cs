@@ -29,8 +29,6 @@ public class PostRepository : IPostRepository
         _redis = redis;
     }
 
-    private static long ToUnixTimestamp(DateTime time) => ((DateTimeOffset) time).ToUnixTimeMilliseconds();
-
     public async Task<Post> Add(string id, Post post)
     {
         post.PublishTime = DateTime.UtcNow;
@@ -142,6 +140,7 @@ public class PostRepository : IPostRepository
         if (result.ModifiedCount == 0)
         {
             _logger.LogCritical("Post {@Post} with id {Id} modified 0 entities", post, id);
+
             return;
         }
 
@@ -157,13 +156,13 @@ public class PostRepository : IPostRepository
 
         var redisDb = _redis.GetDatabase();
         var removeFrom = post.IsActive ? "posts:inactive" : "posts:active";
-        var addTo = post.IsActive ?  "posts:active" : "posts:inactive";
+        var addTo = post.IsActive ? "posts:active" : "posts:inactive";
 
         var postId = $"post:{id}";
         await Task.WhenAll(
             redisDb.SortedSetRemoveAsync(removeFrom, postId),
             redisDb.SortedSetAddAsync(addTo, postId, ToUnixTimestamp(post.PublishTime))
-            );
+        );
 
         await redisDb.StringSetAsync(postId, JsonConvert.SerializeObject(_mapper.Map<PostRedis>(post)));
     }
@@ -179,6 +178,11 @@ public class PostRepository : IPostRepository
         {
             _logger.LogInformation("Could not add answer {@Entry} to {PostId}", entry, postId);
         }
+    }
+
+    private static long ToUnixTimestamp(DateTime time)
+    {
+        return ((DateTimeOffset) time).ToUnixTimeMilliseconds();
     }
 
     private static async Task<PostRedis[]> IdsToPosts(IReadOnlyList<RedisValue> ids, IDatabaseAsync redisDb)
