@@ -9,7 +9,7 @@ public static class ApiEndpoints
 
     #region Posts
     #region Post endpoints for users
-    public const string PostsAnswer = "/{id}/answer";
+    public const string PostsAnswer = "/posts/{id}/answer";
     public const string PostsAddPost = "/posts";
     public const string PostsOneCachedPost = "/posts/{id}";
     public const string PostsDetailedPost = "/posts/{id}/detailed";
