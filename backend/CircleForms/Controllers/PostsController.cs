@@ -32,6 +32,11 @@ public class PostsController : ControllerBase
         _mapper = mapper;
     }
 
+    private IActionResult Map<T, TR>(Result<T> result)
+    {
+        return Map(result, arg => _mapper.Map<TR>(arg));
+    }
+
     private IActionResult Map<T, TR>(Result<T> result, Func<T, TR> mapOk)
     {
         if (!result.IsError)
@@ -116,7 +121,7 @@ public class PostsController : ControllerBase
         var result = await _posts.AddPost(claim, post);
         if (!result.IsError)
         {
-            CreatedAtAction("GetCachedPost", new {id = result.Value.ID}, result.Value);
+            return CreatedAtAction("GetCachedPost", new {id = result.Value.ID}, result.Value);
         }
 
         return Map(result, _ => _);
@@ -143,7 +148,7 @@ public class PostsController : ControllerBase
 
         var result = await _posts.UpdatePost(claim, updateContract, id);
 
-        return Map(result, post => _mapper.Map<PostResponseContract>(post));
+        return Map<Post, PostResponseContract>(result);
     }
 
     /// <summary>
@@ -161,7 +166,7 @@ public class PostsController : ControllerBase
         {
             var resultCached = await _posts.GetCachedPost(id);
 
-            return Map(resultCached, p => _mapper.Map<PostDetailedResponseContract>(p));
+            return Map<PostRedis, PostDetailedResponseContract>(resultCached);
         }
 
         var result = await _posts.GetDetailedPost(claim, id, key);
@@ -191,7 +196,7 @@ public class PostsController : ControllerBase
 
         var result = await _posts.Get(id);
 
-        return Map(result, post => _mapper.Map<PostResponseContract>(post));
+        return Map<Post, PostResponseContract>(result);
     }
 
     /// <summary>
@@ -230,7 +235,7 @@ public class PostsController : ControllerBase
     {
         var post = await _posts.GetCachedPost(id);
 
-        return Map(post, v => _mapper.Map<PostMinimalResponseContract>(v));
+        return Map<PostRedis, PostMinimalResponseContract>(post);
     }
 
     /// <summary>
