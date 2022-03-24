@@ -121,7 +121,7 @@ public class PostsController : ControllerBase
 
         switch (image.Length)
         {
-            case > 1048576: //1 mebibyte
+            case > 1 * 1024 * 1024: //1 mebibyte
                 return BadRequest("File size is too big");
             case 0:
                 return BadRequest("No file provided");
