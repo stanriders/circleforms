@@ -9,14 +9,15 @@ import Button from '../components/atoms/Button'
 import FormEntry from '../components/atoms/FormEntry'
 import SubTitle from '../components/atoms/SubTitle'
 import Radio from '../components/atoms/Radio'
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import api from '../libs/api'
 import Loading from '../components/atoms/Loading'
 
 export default function FormsList() {
-  const [filter, setFilter] = useState('all')
+  const [filter, setFilter] = useState('Both')
   const [page, setPage] = useState(1)
+  const firstUpdate = useRef(true);
 
   const { data, error, isValidating } = useSWR(
     `/posts/page/${page}?filter=${filter}&pageSize=10`,
@@ -26,8 +27,16 @@ export default function FormsList() {
   // Handle direct link to page and/or filter
   useEffect(() => {
     const qs = new URLSearchParams(window.location.search)
-    setFilter(qs.get('filter') || 'Both')
-    setPage(qs.get('page') || 1)
+    const qsPage = Number(qs.get('page'))
+    const qsFilter = qs.get('filter')
+
+    if (qsPage > 0) {
+      setPage(qsPage)
+    }
+
+    if (['Both', 'Active', 'Inactive'].includes(qsFilter)) {
+      setFilter(qsFilter)
+    }
   }, [])
 
   // Update history and url when filter/page changes
@@ -35,15 +44,18 @@ export default function FormsList() {
     history.pushState(null, null, `/forms-list?page=${page}&filter=${filter}`)
   }, [filter, page])
 
-  // Go to first page when filter changes
-  useEffect(() => {
-    setPage(1)
-  }, [filter])
 
   function handlePrevClick() {
     if (page > 1) {
       setPage(page - 1)
     }
+  }
+
+  function handleFilterClick(value) {
+    setFilter(value)
+
+    if (page === 1) return
+    setPage(1)
   }
 
   return (
@@ -71,7 +83,7 @@ export default function FormsList() {
                 <Radio
                   name="filter"
                   value="Both"
-                  onClick={e => setFilter(e.target.value)}
+                  onClick={e => handleFilterClick(e.target.value)}
                   active={'all' === filter}>
                   All
                 </Radio>
@@ -79,7 +91,7 @@ export default function FormsList() {
                   name="filter"
                   value="Active"
                   color="bg-green"
-                  onClick={e => setFilter(e.target.value)}
+                  onClick={e => handleFilterClick(e.target.value)}
                   active={'active' === filter}>
                   Active
                 </Radio>
@@ -87,7 +99,7 @@ export default function FormsList() {
                   name="filter"
                   value="Inactive"
                   color="bg-red"
-                  onClick={e => setFilter(e.target.value)}
+                  onClick={e => handleFilterClick(e.target.value)}
                   active={'inactive' === filter}>
                   Inactive
                 </Radio>

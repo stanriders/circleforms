@@ -2,13 +2,19 @@ import Head from 'next/head'
 import Hero from '../components/Hero'
 import DefaultLayout from '../layouts'
 import Button from '../components/atoms/Button'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import SVG from 'react-inlinesvg'
 import UserContext from '../components/context/UserContext'
 import FormThumbnail from '../components/atoms/FormThumbnail'
+import useAuth from '../hooks/useAuth'
 
 export default function Settings() {
   const { user } = useContext(UserContext)
+  const { invalidateCache } = useAuth()
+
+  useEffect(() => {
+    invalidateCache()
+  }, [])
 
   if (!user) {
     return (

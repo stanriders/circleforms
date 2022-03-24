@@ -11,7 +11,7 @@ export default function FormEntry({
   limitations,
 }) {
   return (
-    <Link href="#">
+    <Link href="/post/1">
       <a className="flex rounded-5 overflow-clip bg-black-light z-0 transform transition-transform ease-out-cubic hover:scale-99 hover:z-10">
         <div
           className="flex-1 bg-cover"

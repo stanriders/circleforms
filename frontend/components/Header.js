@@ -14,7 +14,7 @@ import {
 
 export default function Header() {
   const router = useRouter()
-  const { user, setUser } = useContext(UserContext)
+  const { user } = useContext(UserContext)
 
   return (
     <header className="fixed top-0 flex items-center justify-between bg-black text-white py-3 4 w-full z-navbar md:px-16 lg:px-32">
