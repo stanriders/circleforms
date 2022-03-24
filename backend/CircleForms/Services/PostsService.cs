@@ -291,7 +291,6 @@ public class PostsService
         {
             case ImageQuery.Icon:
                 post.Icon = image.FileName;
-
                 break;
             case ImageQuery.Banner:
                 post.Banner = image.FileName;
