@@ -7,11 +7,6 @@ import localforage from 'localforage'
 
 const ONE_HOUR = 1000 * 60 * 60
 
-function isLoggedIn() {
-  if (process.env.NODE_ENV === 'development') return true
-  return Cookies.get('.AspNetCore.InternalCookies')
-}
-
 function MyApp({ Component, pageProps }) {
   const [user, setUser] = useState(null)
 
@@ -20,10 +15,6 @@ function MyApp({ Component, pageProps }) {
   }, [])
 
   async function getInitialData() {
-    if (!isLoggedIn()) {
-      return
-    }
-
     // Get user data from localstorage if it's not expired (1 hour)
     const [user, userUpdatedAt] = await Promise.all([
       localforage.getItem('user'),
