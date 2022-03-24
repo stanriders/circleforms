@@ -22,16 +22,16 @@ namespace CircleForms.Services;
 
 public class PostsService
 {
-    private readonly IStaticFilesService _cdnResolveService;
+    private readonly IStaticFilesService _staticFilesService;
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
 
-    public PostsService(ILogger<PostsController> logger, IStaticFilesService cdnResolveService,
+    public PostsService(ILogger<PostsController> logger, IStaticFilesService staticFilesService,
         IPostRepository postRepository, IMapper mapper)
     {
         _logger = logger;
-        _cdnResolveService = cdnResolveService;
+        _staticFilesService = staticFilesService;
         _postRepository = postRepository;
         _mapper = mapper;
     }
@@ -285,7 +285,7 @@ public class PostsService
         }
 
         await using var stream = image.OpenReadStream();
-        await _cdnResolveService.WriteImageAsync(stream, id, image.FileName);
+        await _staticFilesService.WriteImageAsync(stream, id, image.FileName);
 
         switch (query)
         {
