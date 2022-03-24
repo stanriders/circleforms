@@ -58,6 +58,7 @@ public class Startup
                 options.AccessDeniedPath = string.Empty;
                 options.LogoutPath = string.Empty;
                 options.Cookie.Path = "/";
+                options.SlidingExpiration = true;
                 options.Events.OnRedirectToLogin = context =>
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
