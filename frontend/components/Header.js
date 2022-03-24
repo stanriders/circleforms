@@ -17,7 +17,7 @@ export default function Header() {
   const { user, setUser } = useContext(UserContext)
 
   return (
-    <header className="flex items-center justify-between bg-black text-white py-3 4 w-full md:px-16 lg:px-32">
+    <header className="fixed top-0 flex items-center justify-between bg-black text-white py-3 4 w-full z-navbar md:px-16 lg:px-32">
       <div className="flex items-center">
         <Link href="/" passHref>
           <a>
@@ -42,7 +42,7 @@ export default function Header() {
         {user && (
           <Menu className="slide-down">
             <MenuButton>
-              <div className="flex items-center gap-x-2 pl-4 bg-black font-display text-lg border-2 border-pink rounded-70">
+              <div className="flex items-center gap-x-2 pl-4 bg-black font-alternates border-2 border-pink rounded-70">
                 <span>{user.username}</span>
                 <img
                   className="h-9 w-9 rounded-70 m-1"

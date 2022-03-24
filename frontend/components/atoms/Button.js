@@ -9,6 +9,7 @@ export default function Button({
   rounded,
   active,
   onClick,
+  ...props,
 }) {
   const classnames = classNames(
     'button',
@@ -21,7 +22,7 @@ export default function Button({
   if (href) {
     return (
       <Link href={href} passHref>
-        <a className={classnames}>
+        <a className={classnames} {...props}>
           {children}
         </a>
       </Link>
@@ -29,7 +30,7 @@ export default function Button({
   }
 
   return (
-    <button
+    <button {...props}
       className={classnames}
       onClick={onClick}>
       {children}

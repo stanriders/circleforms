@@ -6,8 +6,6 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
-      'display': ['Typo Round', 'sans-serif', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'],
       'body': ['Montserrat', 'sans-serif', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'],
       'alternates': ['Montserrat Alternates', 'sans-serif', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen',
@@ -38,6 +36,9 @@ module.exports = {
         red: {
           DEFAULT: '#FF8F8F',
           a: '#614e4e'
+        },
+        blue: {
+          discord: '#5865F2',
         }
       },
       borderRadius: {
@@ -45,6 +46,8 @@ module.exports = {
         7: '7px',
         9: '9px',
         14: '14px',
+        20: '20px',
+        35: '35px',
         40: '40px',
         70: '70px',
       },
@@ -54,6 +57,10 @@ module.exports = {
       },
       scale: {
         '99': '0.99',
+      },
+      zIndex: {
+        navbar: '999',
+        aboveNavbar: '9999',
       }
     },
   },
