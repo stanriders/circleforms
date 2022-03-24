@@ -14,7 +14,7 @@ import {
 
 export default function Header() {
   const router = useRouter()
-  const { user, setUser } = useContext(UserContext)
+  const { user } = useContext(UserContext)
 
   return (
     <header className="fixed top-0 flex items-center justify-between bg-black text-white py-3 4 w-full z-navbar md:px-16 lg:px-32">
@@ -42,7 +42,7 @@ export default function Header() {
         {user && (
           <Menu className="slide-down">
             <MenuButton>
-              <div className="flex items-center gap-x-2 pl-4 bg-black font-alternates border-2 border-pink rounded-70">
+              <div className="flex items-center gap-x-2 pl-4 bg-black border-2 border-pink rounded-70 font-bold">
                 <span>{user.username}</span>
                 <img
                   className="h-9 w-9 rounded-70 m-1"

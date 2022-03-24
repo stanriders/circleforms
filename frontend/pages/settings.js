@@ -2,13 +2,19 @@ import Head from 'next/head'
 import Hero from '../components/Hero'
 import DefaultLayout from '../layouts'
 import Button from '../components/atoms/Button'
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import SVG from 'react-inlinesvg'
 import UserContext from '../components/context/UserContext'
 import FormThumbnail from '../components/atoms/FormThumbnail'
+import useAuth from '../hooks/useAuth'
 
 export default function Settings() {
   const { user } = useContext(UserContext)
+  const { invalidateUserCache } = useAuth()
+
+  useEffect(() => {
+    invalidateUserCache()
+  }, [])
 
   if (!user) {
     return (
@@ -46,7 +52,7 @@ export default function Settings() {
           <rect x="424.59" width="73.8418" height="75.893" rx="36.9209" fill="#FF66AA"/>
         </svg>
         <div className="z-10 text-center">
-          <h1 className="font-alternates text-6xl lg:text-8xl font-bold  mt-4">SETTINGS</h1>
+          <h1 className="text-6xl lg:text-8xl font-bold  mt-4">SETTINGS</h1>
           <p className="text-2xl font-alternates mt-2">Link your accounts and edit recently submitted forms.</p>
         </div>
       </div>

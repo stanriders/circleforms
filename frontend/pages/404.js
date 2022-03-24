@@ -3,7 +3,7 @@ import Hero from '../components/Hero'
 import DefaultLayout from '../layouts'
 import Button from '../components/atoms/Button'
 
-export default function Home() {
+export default function Error404() {
   return (
     <DefaultLayout>
       <Head>

@@ -3,15 +3,21 @@ import Hero from '../components/Hero'
 import DefaultLayout from '../layouts'
 import Button from '../components/atoms/Button'
 import FormCard from '../components/atoms/FormCard'
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import SVG from 'react-inlinesvg'
 import UserContext from '../components/context/UserContext'
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import classNames from 'classnames'
+import useAuth from '../hooks/useAuth'
 
 export default function Dashboard() {
   const { user } = useContext(UserContext)
+  const { invalidateUserCache } = useAuth()
   const [isFormOpen, setIsFormOpen] = useState(false)
+
+  useEffect(() => {
+    invalidateUserCache()
+  }, [])
 
   if (!user) {
     return (

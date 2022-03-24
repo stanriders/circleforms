@@ -15,7 +15,7 @@ export default function OurTeam() {
 
       <div className="flex justify-center relative py-6">
         <img src="/images/team-decoration.png" className="absolute -ml-32" alt="team" />
-        <h1 className="font-alternates text-6xl lg:text-8xl font-bold z-10 mt-4">OUR TEAM</h1>
+        <h1 className="text-6xl lg:text-8xl font-bold z-10 mt-4">OUR TEAM</h1>
       </div>
 
       <div className="grid grid-cols-2  lg:grid-cols-4 mt-4">
@@ -42,7 +42,7 @@ export default function OurTeam() {
                   : 'bg-black-lightest text-white',
                 index >= 2  && index <= 3 ? 'text-right' : ''
                 )}>
-                <h2 className="font-alternates font-bold text-xl lg:text-5xl ">
+                <h2 className="font-bold text-xl lg:text-5xl ">
                   {member.name}
                 </h2>
                 <p className="font-light lg:text-2xl">
