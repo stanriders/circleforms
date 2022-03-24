@@ -17,7 +17,7 @@ public class StaticFilesService : IStaticFilesService
         _config = config.Value;
     }
 
-    public async Task<string> WriteImageAsync(Stream image, string id, string filename)
+    public async Task WriteImageAsync(Stream image, string id, string filename)
     {
         var directory = Path.GetFullPath(Path.Combine(_config.VolumePath, id));
         Directory.CreateDirectory(directory);
@@ -26,7 +26,5 @@ public class StaticFilesService : IStaticFilesService
         _logger.LogDebug("Writing image to the static path {Path}", filename);
         await using var fileStream = File.OpenWrite(filePath);
         await image.CopyToAsync(fileStream);
-
-        return $"{_config.StaticRoute}/{id}/{filename}";
     }
 }

@@ -5,5 +5,5 @@ namespace CircleForms.Services.IO;
 
 public interface IStaticFilesService
 {
-    Task<string> WriteImageAsync(Stream image, string id, string filename);
+    Task WriteImageAsync(Stream image, string id, string filename);
 }

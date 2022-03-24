@@ -284,25 +284,17 @@ public class PostsService
             return new Result<string>("You can't upload images to this post");
         }
 
-        var filename = query switch
-        {
-            ImageQuery.Icon => "icon.png",
-            ImageQuery.Banner => "banner.png",
-            _ => throw new ArgumentOutOfRangeException(nameof(query), query, null)
-        };
-
         await using var stream = image.OpenReadStream();
-        var url = await _cdnResolveService.WriteImageAsync(stream, id, filename);
+        await _cdnResolveService.WriteImageAsync(stream, id, image.FileName);
 
         switch (query)
         {
             case ImageQuery.Icon:
-                post.Icon = url;
+                post.Icon = image.FileName;
 
                 break;
             case ImageQuery.Banner:
-                post.Banner = url;
-
+                post.Banner = image.FileName;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(query), query, null);
@@ -310,6 +302,6 @@ public class PostsService
 
         await _postRepository.Update(id, post, true);
 
-        return url;
+        return image.FileName;
     }
 }
