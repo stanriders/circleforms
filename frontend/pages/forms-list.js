@@ -9,7 +9,7 @@ import Button from '../components/atoms/Button'
 import FormEntry from '../components/atoms/FormEntry'
 import SubTitle from '../components/atoms/SubTitle'
 import Radio from '../components/atoms/Radio'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import useSWR from 'swr'
 import api from '../libs/api'
 import Loading from '../components/atoms/Loading'
@@ -47,16 +47,16 @@ export default function FormsList() {
   }
 
   return (
-    <DefaultLayout classname="items-stretch">
+    <DefaultLayout>
       <Head>
         <title>CircleForms - Forms list (page {page})</title>
       </Head>
 
-      <section className="container mt-12 h-full">
-        <div className="bg-black-dark2  rounded-70 mb-4">
+      <section className="container flex flex-col justify-between mt-12 max-height bg-black-dark2">
+        <div className="rounded-70 mb-4 h-full">
           <div className="flex justify-between bg-black-lighter rounded-full">
             <div className="pl-20 pt-7 pb-4">
-              <h2 className="uppercase text-5xl font-bold">Forms list</h2>
+              <h2 className="uppercase text-5xl font-bold font-alternates">Forms list</h2>
               <p className="text-white text-opacity-50 font-alternates">Get involved in community activities!</p>
             </div>
             <div className="flex flex-col items-center justify-center bg-black-lightest h-auto rounded-full px-8">
@@ -110,16 +110,25 @@ export default function FormsList() {
                   <Loading />
                 </div>
               )}
+
+              {data && data.length === 0 && (
+                <p className="font-alternates font-semibold text-center">
+                  No found forms.<br/>
+                  Come back later!
+                </p>
+              )}
+
               {data && data.length > 0 && data.map(form => (
                 <FormEntry key={form.id} {...form} />
               ))}
             </div>
-            <div className="flex justify-center gap-x-6 py-8">
-              <Button theme="grey" onClick={handlePrevClick}>PREV</Button>
-              <Button theme="grey" rounded active>{page}</Button>
-              <Button theme="grey" onClick={() => setPage(page + 1)}>NEXT</Button>
-            </div>
           </div>
+        </div>
+
+        <div className="flex justify-center gap-x-6 py-8">
+          <Button theme="grey" onClick={handlePrevClick}>PREV</Button>
+          <Button theme="grey" rounded active>{page}</Button>
+          <Button theme="grey" onClick={() => setPage(page + 1)}>NEXT</Button>
         </div>
       </section>
     </DefaultLayout>

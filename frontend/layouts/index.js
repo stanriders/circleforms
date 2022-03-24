@@ -3,8 +3,9 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import constants from '../constants';
 import { Fragment } from 'react';
+import classNames from 'classnames';
 
-export default function DefaultLayout({ children }) {
+export default function DefaultLayout({ children, classname = 'mt-28' }) {
   return (
     <div className="flex flex-col h-full">
       <Head>
@@ -18,7 +19,7 @@ export default function DefaultLayout({ children }) {
 
       <Header />
 
-      <main className="flex-1">
+      <main className={classNames("flex-1", classname)}>
         { children }
       </main>
 

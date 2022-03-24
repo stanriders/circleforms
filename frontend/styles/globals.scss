@@ -4,33 +4,8 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700&display=swap');
 
-@layer base {
-  @font-face {
-    font-family: 'Typo Round';
-    src: url('/fonts/Typo_Round_Regular_Demo.otf') format('opentype');
-    font-weight: 400;
-  }
-
-  @font-face {
-    font-family: 'Typo Round';
-    src: url('/fonts/Typo_Round_Light_Demo.otf') format('opentype');
-    font-weight: 300;
-  }
-
-  @font-face {
-    font-family: 'Typo Round';
-    src: url('/fonts/Typo_Round_Thin_Demo.otf') format('opentype');
-    font-weight: 200;
-  }
-
-  @font-face {
-    font-family: 'Typo Round';
-    src: url('/fonts/Typo_Round_Bold_Demo.otf') format('opentype');
-    font-weight: 500;
-  }
-}
 
 html,
 body {
@@ -49,8 +24,8 @@ body {
 }
 
 .link {
-  @apply text-lg font-bold relative px-5 py-3;
-  @apply font-display;
+  @apply text-lg font-medium relative px-5 py-3;
+  @apply font-alternates;
 
   &::before {
     content: '';
@@ -81,7 +56,7 @@ svg {
 }
 
 .button {
-  @apply font-display text-lg font-bold rounded-3xl px-5 py-2 transition ease-out-cubic;
+  @apply font-alternates text-lg font-bold rounded-3xl px-5 py-2 transition ease-out-cubic;
 
   &.primary {
     @apply bg-black outline outline-3 outline-pink text-pink;
@@ -115,11 +90,19 @@ svg {
   &.button--large {
     @apply text-2xl px-14 py-3;
   }
+
+  &[disabled] {
+    @apply opacity-50 cursor-not-allowed;
+  }
 }
 
 .container {
   @apply w-full mx-auto px-4;
   max-width: 1172px;
+
+  &.max-height {
+    height: calc(100% - 56px);
+  }
 }
 
 .small-container {
@@ -128,11 +111,15 @@ svg {
 }
 
 .type-h1 {
-  @apply font-display text-7xl font-bold;
+  @apply font-alternates text-7xl font-bold;
 }
 
 .type-h2 {
-  @apply font-display text-6xl;
+  @apply font-alternates text-5xl;
+}
+
+[data-reach-popover] {
+  @apply z-aboveNavbar;
 }
 
 [data-reach-menu-popover] {

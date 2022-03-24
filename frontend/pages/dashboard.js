@@ -17,7 +17,7 @@ export default function Dashboard() {
 
         <Hero>
           <div className="flex flex-col justify-center items-center py-16 md:py-32 lg:pt-52 lg:pb-72">
-              <p className="text-4xl font-display lg:-mt-10 text-center">
+              <p className="text-4xl font-alternates lg:-mt-10 text-center">
                 You are not logged in.
               </p>
               <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
@@ -43,7 +43,7 @@ export default function Dashboard() {
           <rect x="195" width="72" height="76" rx="35.8953" fill="#FF66AA"/>
           <rect x="424.59" width="73.8418" height="75.893" rx="36.9209" fill="#FF66AA"/>
         </svg>
-        <h1 className="font-display text-6xl lg:text-8xl font-bold z-10 mt-4">CREATE FORM</h1>
+        <h1 className="font-alternates text-6xl lg:text-8xl font-bold z-10 mt-4">CREATE FORM</h1>
       </div>
 
     </DefaultLayout>

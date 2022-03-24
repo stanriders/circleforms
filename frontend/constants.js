@@ -16,16 +16,6 @@ module.exports = {
       href: '/our-team'
     },
   ],
-  footerLinks: [
-    {
-      label: 'CircleForms',
-      href: 'https://discord.gg/rx9RKQsy9H'
-    },
-    {
-      label: 'CircleForms',
-      href: 'https://twitter.com/'
-    }
-  ],
   team: [
     {
       name: 'StanR',

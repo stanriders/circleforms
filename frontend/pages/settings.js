@@ -5,6 +5,7 @@ import Button from '../components/atoms/Button'
 import { useContext } from 'react'
 import SVG from 'react-inlinesvg'
 import UserContext from '../components/context/UserContext'
+import FormThumbnail from '../components/atoms/FormThumbnail'
 
 export default function Settings() {
   const { user } = useContext(UserContext)
@@ -18,7 +19,7 @@ export default function Settings() {
 
         <Hero>
           <div className="flex flex-col justify-center items-center py-16 md:py-32 lg:pt-52 lg:pb-72">
-              <p className="text-4xl font-display lg:-mt-10 text-center">
+              <p className="text-4xl font-alternates lg:-mt-10 text-center">
                 You are not logged in.
               </p>
               <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
@@ -45,7 +46,7 @@ export default function Settings() {
           <rect x="424.59" width="73.8418" height="75.893" rx="36.9209" fill="#FF66AA"/>
         </svg>
         <div className="z-10 text-center">
-          <h1 className="font-display text-6xl lg:text-8xl font-bold  mt-4">SETTINGS</h1>
+          <h1 className="font-alternates text-6xl lg:text-8xl font-bold  mt-4">SETTINGS</h1>
           <p className="text-2xl font-alternates mt-4">Link your accounts and edit recently submitted forms.</p>
         </div>
       </div>
@@ -84,17 +85,21 @@ export default function Settings() {
               </div>
             </div>
             <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
-              <Button>Connect</Button>
+              <Button disabled>Connect</Button>
             </div>
           </div>
         </div>
 
         <h2 className="text-6xl font-bold text-center mt-9 mb-8">RECENTLY SUBMITTED FORMS</h2>
 
-        <div>
+        <div className="flex flex-wrap gap-4 bg-black-lightest rounded-40 px-4 py-3">
           {user.posts.length === 0 && (
-            <p className="text-center text-xl font-alternates">No recent forms submitted.</p>
+            <p className="text-center flex-1 text-xl font-alternates">No recent forms submitted.</p>
           )}
+
+          {user.posts.map(post => (
+            <FormThumbnail {...post} />
+          ))}
         </div>
       </section>
 

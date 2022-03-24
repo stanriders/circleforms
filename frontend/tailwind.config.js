@@ -6,8 +6,6 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
-      'display': ['Typo Round', 'sans-serif', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen',
-      'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'],
       'body': ['Montserrat', 'sans-serif', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen',
       'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'sans-serif'],
       'alternates': ['Montserrat Alternates', 'sans-serif', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Oxygen',
@@ -57,6 +55,10 @@ module.exports = {
       },
       scale: {
         '99': '0.99',
+      },
+      zIndex: {
+        navbar: '999',
+        aboveNavbar: '9999',
       }
     },
   },
