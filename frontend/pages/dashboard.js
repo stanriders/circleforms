@@ -57,7 +57,7 @@ export default function Dashboard() {
 
       <div className="space-y-9">
         <section className="container bg-black-lightest rounded-40 px-8 py-5">
-          <div class="grid grid-cols-4 gap-x-10">
+          <div className="grid grid-cols-4 gap-x-10">
             <button
               onClick={() => setIsFormOpen(true)}
               className="flex justify-center items-center bg-pink rounded-20 h-40 transition-transform ease-out-cubic hover:scale-99"
