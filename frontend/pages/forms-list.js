@@ -26,7 +26,7 @@ export default function FormsList() {
   // Handle direct link to page and/or filter
   useEffect(() => {
     const qs = new URLSearchParams(window.location.search)
-    setFilter(qs.get('filter') || 'all')
+    setFilter(qs.get('filter') || 'Both')
     setPage(qs.get('page') || 1)
   }, [])
 
@@ -70,14 +70,14 @@ export default function FormsList() {
               <div className="space-x-2">
                 <Radio
                   name="filter"
-                  value="all"
+                  value="Both"
                   onClick={e => setFilter(e.target.value)}
                   active={'all' === filter}>
                   All
                 </Radio>
                 <Radio
                   name="filter"
-                  value="active"
+                  value="Active"
                   color="bg-green"
                   onClick={e => setFilter(e.target.value)}
                   active={'active' === filter}>
@@ -85,7 +85,7 @@ export default function FormsList() {
                 </Radio>
                 <Radio
                   name="filter"
-                  value="inactive"
+                  value="Inactive"
                   color="bg-red"
                   onClick={e => setFilter(e.target.value)}
                   active={'inactive' === filter}>
