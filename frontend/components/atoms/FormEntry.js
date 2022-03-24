@@ -24,7 +24,7 @@ export default function FormEntry({
         />
         <div className="flex-1 flex justify-between py-5 pr-5">
           <div>
-            <h3 className="font-alternates text-xl font-bold truncate max-w-sm">
+            <h3 className="font-alternates text-m font-bold truncate max-w-sm">
               { title }
             </h3>
             <p className="text-xs text-white text-opacity-50 -mt-1 truncate max-w-sm">
@@ -33,7 +33,7 @@ export default function FormEntry({
           </div>
           <div className="flex items-center">
             <div className="flex flex-col text-xs mr-2 text-right">
-              <span>posted by <span className="font-bold">{author_id}</span></span>
+              <span className="font-semibold">posted by <span className="font-bold">{author_id}</span></span>
               <span className="text-green">
                 {timeago.format(publish_time)}
               </span>

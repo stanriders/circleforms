@@ -61,15 +61,15 @@ export default function FormsList() {
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - Forms list (page {page})</title>
+        <title>CircleForms - Forms (page {page})</title>
       </Head>
 
       <section className="container flex flex-col justify-between mt-12 max-height bg-black-dark2">
         <div className="rounded-70 mb-4 h-full">
           <div className="flex justify-between bg-black-lighter rounded-full">
             <div className="pl-20 pt-7 pb-4">
-              <h2 className="uppercase text-5xl font-bold font-alternates">Forms list</h2>
-              <p className="text-white text-opacity-50 font-alternates">Get involved in community activities!</p>
+              <h2 className="uppercase text-5xl font-bold">Forms list</h2>
+              <p className="text-white text-opacity-50">Get involved in community activities!</p>
             </div>
             <div className="flex flex-col items-center justify-center bg-black-lightest h-auto rounded-full px-8">
               <h3 className="text-3xl font-medium flex gap-x-2 mb-1">

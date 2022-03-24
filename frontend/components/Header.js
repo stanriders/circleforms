@@ -42,7 +42,7 @@ export default function Header() {
         {user && (
           <Menu className="slide-down">
             <MenuButton>
-              <div className="flex items-center gap-x-2 pl-4 bg-black font-alternates border-2 border-pink rounded-70">
+              <div className="flex items-center gap-x-2 pl-4 bg-black border-2 border-pink rounded-70 font-bold">
                 <span>{user.username}</span>
                 <img
                   className="h-9 w-9 rounded-70 m-1"

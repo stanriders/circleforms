@@ -38,10 +38,10 @@ export default function Home() {
       <div className="bg-black-darker w-full py-32">
         <section className="small-container">
           <div className="flex flex-col lg:flex-row justify-between items-center mb-8">
-            <h2 className="type-h2 uppercase font-semibold">About project</h2>
-            <SVG className="flex-1 h-8 lg:h-12 lg:-ml-8" src="/svg/circles-sliders.svg" />
+            <h2 className="text-6xl uppercase font-semibold">About project</h2>
+            <SVG className="h-8 lg:h-11 lg:-ml-8" src="/svg/circles-sliders.svg" />
           </div>
-          <div className="flex flex-col lg:flex-row gap-8">
+          <div className="flex flex-col lg:flex-row gap-8 text-xl font-medium">
             <p className="lg:flex-1">
               CircleForms is an alternative to google forms, aimed at more convenient and faster moderation of various projects on osu!, including registration for tournaments and much more.
             </p>

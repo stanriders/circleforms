@@ -52,7 +52,7 @@ export default function Settings() {
           <rect x="424.59" width="73.8418" height="75.893" rx="36.9209" fill="#FF66AA"/>
         </svg>
         <div className="z-10 text-center">
-          <h1 className="font-alternates text-6xl lg:text-8xl font-bold  mt-4">SETTINGS</h1>
+          <h1 className="text-6xl lg:text-8xl font-bold  mt-4">SETTINGS</h1>
           <p className="text-2xl font-alternates mt-2">Link your accounts and edit recently submitted forms.</p>
         </div>
       </div>

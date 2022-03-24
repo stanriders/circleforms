@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap');
+
 
 @import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700&display=swap');
 
@@ -25,7 +26,6 @@ body {
 
 .link {
   @apply text-lg font-medium relative px-5 py-3;
-  @apply font-alternates;
 
   &::before {
     content: '';
@@ -56,7 +56,7 @@ svg {
 }
 
 .button {
-  @apply font-alternates text-lg font-bold rounded-3xl px-5 py-2 transition ease-out-cubic;
+  @apply font-body text-lg font-bold rounded-3xl px-5 py-2 transition ease-out-cubic;
 
   &.primary {
     @apply bg-black outline outline-3 outline-pink text-pink;
@@ -111,11 +111,11 @@ svg {
 }
 
 .type-h1 {
-  @apply font-alternates text-7xl font-bold;
+  @apply text-7xl font-bold;
 }
 
 .type-h2 {
-  @apply font-alternates text-5xl;
+  @apply text-5xl;
 }
 
 [data-reach-popover] {
@@ -132,7 +132,7 @@ svg {
   @apply flex flex-col gap-y-2;
 
   a {
-    @apply font-alternates text-sm text-center font-semibold py-1 px-4 text-white w-full rounded-7 transition ease-out-cubic;
+    @apply text-sm text-center font-semibold py-1 px-4 text-white w-full rounded-7 transition ease-out-cubic;
 
     &:not(.danger) {
       @apply bg-black-light;
