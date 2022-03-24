@@ -17,7 +17,6 @@ import Loading from '../components/atoms/Loading'
 export default function FormsList() {
   const [filter, setFilter] = useState('Both')
   const [page, setPage] = useState(1)
-  const firstUpdate = useRef(true);
 
   const { data, error, isValidating } = useSWR(
     `/posts/page/${page}?filter=${filter}&pageSize=10`,
