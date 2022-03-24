@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
@@ -23,12 +22,13 @@ namespace CircleForms.Services;
 
 public class PostsService
 {
-    private readonly ILogger<PostsController> _logger;
     private readonly IStaticFilesService _cdnResolveService;
+    private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
 
-    public PostsService(ILogger<PostsController> logger, IStaticFilesService cdnResolveService, IPostRepository postRepository, IMapper mapper)
+    public PostsService(ILogger<PostsController> logger, IStaticFilesService cdnResolveService,
+        IPostRepository postRepository, IMapper mapper)
     {
         _logger = logger;
         _cdnResolveService = cdnResolveService;
@@ -280,6 +280,7 @@ public class PostsService
         if (post.AuthorId != claim)
         {
             _logger.LogWarning("User {User} tries to upload an image to {Post} as non-author", claim, post.ID);
+
             return new Result<string>("You can't upload images to this post");
         }
 
@@ -297,9 +298,11 @@ public class PostsService
         {
             case ImageQuery.Icon:
                 post.Icon = url;
+
                 break;
             case ImageQuery.Banner:
                 post.Banner = url;
+
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(query), query, null);
