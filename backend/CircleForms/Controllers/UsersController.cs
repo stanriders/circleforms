@@ -35,7 +35,7 @@ public class UsersController : ControllerBase
     [HttpGet(ApiEndpoints.UsersGetUser)]
     [ProducesResponseType(typeof(UserResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get([RegularExpression(@"^\d$")] string id)
+    public async Task<IActionResult> Get([RegularExpression(@"^\d+$")] string id)
     {
         var user = await _usersService.Get(id);
         if (user != null)

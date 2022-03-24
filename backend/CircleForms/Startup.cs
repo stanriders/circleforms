@@ -60,6 +60,7 @@ public class Startup
                 options.AccessDeniedPath = string.Empty;
                 options.LogoutPath = string.Empty;
                 options.Cookie.Path = "/";
+                options.SlidingExpiration = true;
                 options.Events.OnRedirectToLogin = context =>
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
@@ -84,8 +85,7 @@ public class Startup
                 options.Validate();
             });
 
-        services.AddTransient<IRestClient, RestClient>();
-        services.AddTransient<IOsuUserProvider, OsuUserProvider>();
+        services.AddSingleton<IOsuApiProvider, OsuApiProvider>();
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IPostRepository, PostRepository>();
         services.AddTransient<PostsService>();

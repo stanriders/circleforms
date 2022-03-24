@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CircleForms.Models.OsuContracts;
 using CircleForms.Models.Posts;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Entities;
@@ -9,6 +10,7 @@ namespace CircleForms.Models;
 [Collection("users")]
 public class User : IEntity
 {
+    public TokenResponse Token { get; set; }
     public List<Post> Posts { get; set; }
 
     public Uri AvatarUrl { get; set; }
