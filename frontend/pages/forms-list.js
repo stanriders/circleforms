@@ -16,10 +16,10 @@ import Loading from '../components/atoms/Loading'
 
 export default function FormsList() {
   const [filter, setFilter] = useState('all')
-  const [pageSize, setPageSize] = useState(1)
+  const [page, setPage] = useState(1)
 
   const { data, error, isValidating } = useSWR(
-    `/posts/page/${pageSize}?filter=${filter}`,
+    `/posts/page/${page}?filter=${filter}&pageSize=10`,
     api
   )
 
@@ -27,29 +27,29 @@ export default function FormsList() {
   useEffect(() => {
     const qs = new URLSearchParams(window.location.search)
     setFilter(qs.get('filter') || 'all')
-    setPageSize(qs.get('pageSize') || 1)
+    setPage(qs.get('page') || 1)
   }, [])
 
   // Update history and url when filter/page changes
   useEffect(() => {
-    history.pushState(null, null, `/forms-list?pageSize=${pageSize}&filter=${filter}`)
-  }, [filter, pageSize])
+    history.pushState(null, null, `/forms-list?page=${page}&filter=${filter}`)
+  }, [filter, page])
 
   // Go to first page when filter changes
   useEffect(() => {
-    setPageSize(1)
+    setPage(1)
   }, [filter])
 
   function handlePrevClick() {
-    if (pageSize > 1) {
-      setPageSize(pageSize - 1)
+    if (page > 1) {
+      setPage(page - 1)
     }
   }
 
   return (
     <DefaultLayout classname="items-stretch">
       <Head>
-        <title>CircleForms - Forms list (page {pageSize})</title>
+        <title>CircleForms - Forms list (page {page})</title>
       </Head>
 
       <section className="container mt-12 h-full">
@@ -116,8 +116,8 @@ export default function FormsList() {
             </div>
             <div className="flex justify-center gap-x-6 py-8">
               <Button theme="grey" onClick={handlePrevClick}>PREV</Button>
-              <Button theme="grey" rounded active>{pageSize}</Button>
-              <Button theme="grey" onClick={() => setPageSize(pageSize + 1)}>NEXT</Button>
+              <Button theme="grey" rounded active>{page}</Button>
+              <Button theme="grey" onClick={() => setPage(page + 1)}>NEXT</Button>
             </div>
           </div>
         </div>
