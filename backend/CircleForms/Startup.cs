@@ -83,8 +83,7 @@ public class Startup
                 options.Validate();
             });
 
-        services.AddTransient<IRestClient, RestClient>();
-        services.AddTransient<IOsuApiProvider, OsuApiProvider>();
+        services.AddSingleton<IOsuApiProvider, OsuApiProvider>();
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IPostRepository, PostRepository>();
         services.AddTransient<PostsService>();

@@ -10,12 +10,9 @@ public class RefreshTokenRequest
      [JsonProperty("client_secret")]
      public string ClientSecret { get; set; }
 
-     [JsonProperty("redirect_uri")]
-     public string CallbackUrl { get; set; }
-
      [JsonProperty("grant_type")]
-     public string GrantType { get; set; }
+     public string GrantType { get; set; } = "refresh_token";
 
      [JsonProperty("refresh_token")]
-     public string RefreshToken { get; set; } = "refresh_token";
+     public string RefreshToken { get; set; }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using CircleForms.Models.Configurations;
+using MongoDB.Bson;
 
 namespace CircleForms.Models.OsuContracts;
 
