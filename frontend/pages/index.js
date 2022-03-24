@@ -17,7 +17,7 @@ export default function Home() {
   )
 
   return (
-    <DefaultLayout>
+    <DefaultLayout classname="">
       <Head>
         <title>CircleForms - Home</title>
       </Head>
