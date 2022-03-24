@@ -32,14 +32,13 @@ public class OsuApiProvider : IOsuApiProvider
         request.AddHeader("Authorization", $"Bearer {token}");
 
         var response = await _getUserClient.ExecuteGetAsync<OsuUser>(request);
-        if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.OK)
-        {
-            return response.StatusCode == HttpStatusCode.Unauthorized
-                ? new Result<OsuUser>(HttpStatusCode.Unauthorized, null)
-                : new Result<OsuUser>(response.Data);
-        }
 
-        return new Result<OsuUser>(response.StatusCode, "An error occured on osu! user request");
+        return response.StatusCode switch
+        {
+            HttpStatusCode.OK => new Result<OsuUser>(response.Data),
+            HttpStatusCode.Unauthorized => new Result<OsuUser>(HttpStatusCode.Unauthorized, null),
+            _ => new Result<OsuUser>(response.StatusCode, "An error occured on osu! user request"),
+        };
     }
 
     public async Task<Result<TokenResponse>> RefreshToken(string refreshToken)
