@@ -15,6 +15,7 @@ public static class ApiEndpoints
     public const string PostsDetailedPost = "/posts/{id}/detailed";
     public const string PostPage = "/posts/page/{page:int}";
     public const string PostUpdatePost = "/posts/{id}";
+    public const string PostUploadImage = "/posts/{id}/file";
     #endregion
 
     public const string PostsAllCachedPosts = "/posts";

@@ -17,6 +17,12 @@ public class PostRedis
     [JsonProperty("author_id")]
     public string AuthorId { get; set; }
 
+    [JsonProperty("icon")]
+    public string Icon { get; set; }
+
+    [JsonProperty("banner")]
+    public string Banner { get; set; }
+
     [JsonProperty("title")]
     public string Title { get; set; }
 

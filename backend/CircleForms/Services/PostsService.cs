@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
@@ -13,19 +14,24 @@ using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
 using CircleForms.Services.Database.Interfaces;
+using CircleForms.Services.IO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace CircleForms.Services;
 
 public class PostsService
 {
+    private readonly IStaticFilesService _staticFilesService;
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
 
-    public PostsService(ILogger<PostsController> logger, IPostRepository postRepository, IMapper mapper)
+    public PostsService(ILogger<PostsController> logger, IStaticFilesService staticFilesService,
+        IPostRepository postRepository, IMapper mapper)
     {
         _logger = logger;
+        _staticFilesService = staticFilesService;
         _postRepository = postRepository;
         _mapper = mapper;
     }
@@ -266,5 +272,35 @@ public class PostsService
     public async Task<PostRedis[]> GetPage(int page, int pageSize, PostFilter filter)
     {
         return await _postRepository.GetCachedPage(page, pageSize, filter);
+    }
+
+    public async Task<Result<string>> SaveImage(string claim, string id, IFormFile image, ImageQuery query)
+    {
+        var post = await _postRepository.Get(id);
+        if (post.AuthorId != claim)
+        {
+            _logger.LogWarning("User {User} tries to upload an image to {Post} as non-author", claim, post.ID);
+
+            return new Result<string>("You can't upload images to this post");
+        }
+
+        await using var stream = image.OpenReadStream();
+        await _staticFilesService.WriteImageAsync(stream, id, image.FileName);
+
+        switch (query)
+        {
+            case ImageQuery.Icon:
+                post.Icon = image.FileName;
+                break;
+            case ImageQuery.Banner:
+                post.Banner = image.FileName;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(query), query, null);
+        }
+
+        await _postRepository.Update(id, post, true);
+
+        return image.FileName;
     }
 }
