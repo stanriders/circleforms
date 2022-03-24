@@ -23,7 +23,7 @@ namespace CircleForms.Controllers;
 [Route("[controller]")]
 public class PostsController : ControllerBase
 {
-    private readonly string[] _imageUploadExtensions = {".jpg", ".png"};
+    private static readonly string[] _imageUploadExtensions = {".jpg", ".png"};
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
     private readonly PostsService _posts;
