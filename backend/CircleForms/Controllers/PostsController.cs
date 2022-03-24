@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Models;
+using CircleForms.Models.Enums;
 using CircleForms.Models.Posts;
 using CircleForms.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -21,6 +23,7 @@ namespace CircleForms.Controllers;
 [Route("[controller]")]
 public class PostsController : ControllerBase
 {
+    private readonly string[] _imageUploadExtensions = {".jpg", ".png"};
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
     private readonly PostsService _posts;
@@ -89,6 +92,49 @@ public class PostsController : ControllerBase
         var postResult = await _posts.Answer(claim, id, answerContracts);
 
         return postResult.IsError ? Error(postResult) : Ok();
+    }
+
+    /// <summary>
+    ///     Upload an image. (Requires auth)
+    /// </summary>
+    [Authorize]
+    [HttpPut(ApiEndpoints.PostUploadImage)]
+    public async Task<IActionResult> UploadImage(string id, IFormFile image, [FromQuery] ImageQuery query)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new {errors = ModelState.Values.Select(x => x.Errors.Select(v => v.ErrorMessage))});
+        }
+
+        var claim = HttpContext.User.Identity?.Name;
+        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
+        {
+            _logger.LogWarning("User had an invalid name claim on answer: {Claim}", claim);
+
+            return Unauthorized();
+        }
+
+        if (image is null)
+        {
+            return BadRequest("No multipart/form-data image was provided");
+        }
+
+        switch (image.Length)
+        {
+            case > 1048576: //1 mebibyte
+                return BadRequest("File size is too big");
+            case 0:
+                return BadRequest("No file provided");
+        }
+
+        if (!_imageUploadExtensions.Contains(Path.GetExtension(image.FileName).ToLower()))
+        {
+            return BadRequest("This image extension in not allowed");
+        }
+
+        var result = await _posts.SaveImage(claim, id, image, query);
+
+        return result.IsError ? Error(result) : Ok();
     }
 
     /// <summary>

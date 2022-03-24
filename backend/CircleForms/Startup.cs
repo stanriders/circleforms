@@ -11,6 +11,7 @@ using CircleForms.Services;
 using CircleForms.Services.Database;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
+using CircleForms.Services.IO;
 using CircleForms.Services.Request;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -44,6 +45,7 @@ public class Startup
         var config = Configuration.GetSection("osuApi");
         services.Configure<OsuApiConfig>(config);
         services.Configure<SuperAdminsId>(Configuration.GetSection("SuperAdmins"));
+        services.Configure<StaticFilesConfig>(Configuration.GetSection("StaticFiles"));
 
         services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         services.AddAutoMapper(x =>
@@ -87,6 +89,7 @@ public class Startup
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IPostRepository, PostRepository>();
         services.AddTransient<PostsService>();
+        services.AddTransient<IStaticFilesService, StaticFilesService>();
 
         DB.InitAsync("circleforms",
             MongoClientSettings.FromConnectionString(Configuration.GetConnectionString("Database"))).Wait();

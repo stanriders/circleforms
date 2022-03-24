@@ -16,6 +16,12 @@ public class PostMinimalResponseContract
     [JsonProperty("is_active")]
     public bool IsActive { get; set; }
 
+    [JsonProperty("icon")]
+    public string Icon { get; set; }
+
+    [JsonProperty("banner")]
+    public string Banner { get; set; }
+
     [JsonProperty("title")]
     public string Title { get; set; }
 

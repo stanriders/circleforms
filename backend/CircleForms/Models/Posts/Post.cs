@@ -25,6 +25,12 @@ public class Post : IEntity
     [JsonProperty("title")]
     public string Title { get; set; }
 
+    [JsonProperty("icon")]
+    public string Icon { get; set; }
+
+    [JsonProperty("banner")]
+    public string Banner { get; set; }
+
     [JsonProperty("access_key")]
     public string AccessKey { get; set; }
 
