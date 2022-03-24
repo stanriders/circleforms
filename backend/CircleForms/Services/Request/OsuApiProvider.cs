@@ -13,10 +13,10 @@ namespace CircleForms.Services.Request;
 
 public class OsuApiProvider : IOsuApiProvider
 {
-    private const string _apiMeLink = "https://osu.ppy.sh/api/v2/me";
-    private const string _apiTokenLink = "https://osu.ppy.sh/oauth/token";
-    private readonly RestClient _getUserClient = new RestClient(_apiMeLink).UseNewtonsoftJson();
-    private readonly RestClient _refreshTokenClient = new RestClient(_apiTokenLink).UseNewtonsoftJson();
+    private const string _osuBase = "https://osu.ppy.sh/";
+    private const string _apiMeLink = "api/v2/me";
+    private const string _apiTokenLink = "oauth/token";
+    private readonly RestClient _client = new(_osuBase);
     private readonly OsuApiConfig _config;
     private readonly IMapper _mapper;
 
@@ -28,10 +28,10 @@ public class OsuApiProvider : IOsuApiProvider
 
     public async Task<Result<OsuUser>> GetUser(string token)
     {
-        var request = new RestRequest();
-        request.AddHeader("Authorization", $"Bearer {token}");
+        var request = new RestRequest(_apiMeLink)
+            .AddHeader("Authorization", $"Bearer {token}");
 
-        var response = await _getUserClient.ExecuteGetAsync<OsuUser>(request);
+        var response = await _client.ExecuteGetAsync<OsuUser>(request);
 
         return response.StatusCode switch
         {
@@ -45,9 +45,9 @@ public class OsuApiProvider : IOsuApiProvider
     {
         var config = _mapper.Map<RefreshTokenRequest>(_config);
         config.RefreshToken = refreshToken;
-        var request = new RestRequest()
+        var request = new RestRequest(_apiTokenLink)
             .AddJsonBody(config);
-        var response = await _refreshTokenClient.ExecutePostAsync<TokenResponse>(request);
+        var response = await _client.ExecutePostAsync<TokenResponse>(request);
 
         return response.IsSuccessful
             ? new Result<TokenResponse>(response.Data)
