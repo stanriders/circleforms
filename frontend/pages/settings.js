@@ -101,7 +101,7 @@ export default function Settings() {
           )}
 
           {user.posts.map(post => (
-            <FormThumbnail {...post} />
+            <FormThumbnail key={post.id} {...post} />
           ))}
         </div>
       </section>

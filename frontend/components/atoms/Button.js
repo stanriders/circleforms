@@ -9,7 +9,7 @@ export default function Button({
   rounded,
   active,
   onClick,
-  ...props,
+  ...props
 }) {
   const classnames = classNames(
     'button',
