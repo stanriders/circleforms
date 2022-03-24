@@ -144,6 +144,26 @@ svg {
   }
 }
 
+[data-reach-tab-panels] {
+  @apply bg-black-lightest px-8 py-5 rounded-b-3xl;
+}
+
+[data-reach-tab-list] {
+  @apply flex bg-black-light rounded-t-35;
+}
+
+[data-reach-tab] {
+  @apply font-alternates font-bold text-3xl py-3 flex-1 text-white transition-colors;
+
+  &[aria-selected="true"] {
+    @apply bg-black-lightest rounded-t-20;
+  }
+
+  &[aria-selected="false"] {
+    @apply font-medium text-opacity-25;
+  }
+}
+
 @keyframes slide-down {
   0% {
     opacity: 0;

@@ -47,7 +47,7 @@ export default function Settings() {
         </svg>
         <div className="z-10 text-center">
           <h1 className="font-alternates text-6xl lg:text-8xl font-bold  mt-4">SETTINGS</h1>
-          <p className="text-2xl font-alternates mt-4">Link your accounts and edit recently submitted forms.</p>
+          <p className="text-2xl font-alternates mt-2">Link your accounts and edit recently submitted forms.</p>
         </div>
       </div>
 
