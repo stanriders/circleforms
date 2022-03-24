@@ -12,11 +12,11 @@ import useAuth from '../hooks/useAuth'
 
 export default function Dashboard() {
   const { user } = useContext(UserContext)
-  const { invalidateCache } = useAuth()
+  const { invalidateUserCache } = useAuth()
   const [isFormOpen, setIsFormOpen] = useState(false)
 
   useEffect(() => {
-    invalidateCache()
+    invalidateUserCache()
   }, [])
 
   if (!user) {

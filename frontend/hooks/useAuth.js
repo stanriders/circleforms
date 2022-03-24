@@ -38,7 +38,7 @@ export default function useAuth() {
     }
   }
 
-  function invalidateCache() {
+  function invalidateUserCache() {
     localforage.removeItem('user')
     localforage.removeItem('user_updated_at')
     getInitialData()
@@ -46,6 +46,6 @@ export default function useAuth() {
 
   return {
     user,
-    invalidateCache
+    invalidateUserCache
   }
 }

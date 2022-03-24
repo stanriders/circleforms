@@ -10,10 +10,10 @@ import useAuth from '../hooks/useAuth'
 
 export default function Settings() {
   const { user } = useContext(UserContext)
-  const { invalidateCache } = useAuth()
+  const { invalidateUserCache } = useAuth()
 
   useEffect(() => {
-    invalidateCache()
+    invalidateUserCache()
   }, [])
 
   if (!user) {
