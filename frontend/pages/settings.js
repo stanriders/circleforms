@@ -85,7 +85,10 @@ export default function Settings() {
               </div>
             </div>
             <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
-              <Button disabled>Connect</Button>
+              <Button disabled style={{
+                outlineColor: '#5865F2',
+                color: '#5865F2'
+              }}>Connect</Button>
             </div>
           </div>
         </div>
