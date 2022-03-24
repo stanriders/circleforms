@@ -24,13 +24,13 @@ public class OAuthController : ControllerBase
 {
     private readonly ILogger<OAuthController> _logger;
     private readonly IMapper _mapper;
-    private readonly IOsuUserProvider _osuApiDataService;
+    private readonly IOsuApiProvider _osuApiDataService;
     private readonly IConnectionMultiplexer _redis;
     private readonly List<long> _superAdminsId;
     private readonly IUserRepository _usersRepository;
 
     public OAuthController(ILogger<OAuthController> logger,
-        IOsuUserProvider osuApiDataService,
+        IOsuApiProvider osuApiDataService,
         IUserRepository usersRepository, IConnectionMultiplexer redis,
         IOptions<SuperAdminsId> superAdminsId, IMapper mapper)
     {
@@ -68,8 +68,15 @@ public class OAuthController : ControllerBase
             return Forbid();
         }
 
-        var osuUser =
-            await _osuApiDataService.GetUser(await HttpContext.GetTokenAsync("ExternalCookies", "access_token"));
+        var accessToken = await HttpContext.GetTokenAsync("ExternalCookies", "access_token");
+        var refreshToken = await HttpContext.GetTokenAsync("ExternalCookies", "refresh_token");
+        var osuUserResult = await _osuApiDataService.GetUser(accessToken);
+        if (osuUserResult.IsError)
+        {
+            return Forbid();
+        }
+
+        var osuUser = osuUserResult.Value;
         if (osuUser.IsRestricted)
         {
             _logger.LogInformation("User {User} tried logging in, but they are restricted!", osuUser.Id);
@@ -115,6 +122,14 @@ public class OAuthController : ControllerBase
         }
 
         user = TransferMutableData(dbUser, user);
+
+        user.Token = new TokenResponse
+        {
+            AccessToken = accessToken,
+            ExpiresIn = 86400,
+            RefreshToken = refreshToken,
+            TokenType = "Bearer"
+        };
 
         var updateTask = _usersRepository.Update(user.ID, user);
         var claims = new List<Claim>

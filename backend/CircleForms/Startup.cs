@@ -83,7 +83,7 @@ public class Startup
             });
 
         services.AddTransient<IRestClient, RestClient>();
-        services.AddTransient<IOsuUserProvider, OsuUserProvider>();
+        services.AddTransient<IOsuApiProvider, OsuApiProvider>();
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IPostRepository, PostRepository>();
         services.AddTransient<PostsService>();

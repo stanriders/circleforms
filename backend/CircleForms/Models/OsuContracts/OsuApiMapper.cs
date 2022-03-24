@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using CircleForms.Models.Configurations;
 
 namespace CircleForms.Models.OsuContracts;
 
@@ -18,5 +19,6 @@ public class OsuApiMapper : Profile
         CreateMap<OsuUser, User>()
             .ForMember(x => x.ID,
                 x => x.MapFrom(v => v.Id.ToString()));
+        CreateMap<OsuApiConfig, RefreshTokenRequest>();
     }
 }
