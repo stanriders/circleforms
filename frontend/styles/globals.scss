@@ -132,7 +132,7 @@ svg {
   @apply flex flex-col gap-y-2;
 
   a {
-    @apply font-alternates text-sm text-center font-semibold py-1 px-4 text-white w-full rounded-7;
+    @apply font-alternates text-sm text-center font-semibold py-1 px-4 text-white w-full rounded-7 transition ease-out-cubic;
 
     &:not(.danger) {
       @apply bg-black-light;
@@ -140,6 +140,11 @@ svg {
 
     &.danger {
       background: rgba(57, 34, 34, 0.8);
+    }
+
+    &:hover,
+    &:focus {
+      @apply brightness-150;
     }
   }
 }
