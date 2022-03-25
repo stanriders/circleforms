@@ -16,7 +16,8 @@ public class OsuApiProvider : IOsuApiProvider
     private const string _osuBase = "https://osu.ppy.sh/";
     private const string _apiMeLink = "api/v2/me";
     private const string _apiTokenLink = "oauth/token";
-    private readonly RestClient _client = new(_osuBase);
+    private readonly RestClient _client = new RestClient(_osuBase)
+        .UseNewtonsoftJson();
     private readonly OsuApiConfig _config;
     private readonly IMapper _mapper;
 
