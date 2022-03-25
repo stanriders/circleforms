@@ -25,7 +25,7 @@ export default function Settings() {
 
         <Hero>
           <div className="flex flex-col justify-center items-center py-16 md:py-32 lg:pt-52 lg:pb-72">
-              <p className="text-4xl font-alternates lg:-mt-10 text-center">
+              <p className="text-4xl lg:-mt-10 text-center">
                 You are not logged in.
               </p>
               <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
@@ -53,7 +53,7 @@ export default function Settings() {
         </svg>
         <div className="z-10 text-center">
           <h1 className="text-6xl lg:text-8xl font-bold  mt-4">SETTINGS</h1>
-          <p className="text-2xl font-alternates mt-2">Link your accounts and edit recently submitted forms.</p>
+          <p className="text-2xl mt-2">Link your accounts and edit recently submitted forms.</p>
         </div>
       </div>
 
@@ -68,7 +68,7 @@ export default function Settings() {
                 alt={user.username} />
               <div className="pl-3">
                 <h2 className="font-bold text-3xl">osu!</h2>
-                <p className="font-alternates text-sm">osu! integration for CircleForms</p>
+                <p className="text-sm">osu! integration for CircleForms</p>
               </div>
             </div>
             <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
@@ -87,7 +87,7 @@ export default function Settings() {
               </div>
               <div className="pl-3">
                 <h2 className="font-bold text-3xl">Discord</h2>
-                <p className="font-alternates text-sm">Discord integration for CircleForms</p>
+                <p className="text-sm">Discord integration for CircleForms</p>
               </div>
             </div>
             <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
@@ -103,7 +103,7 @@ export default function Settings() {
 
         <div className="flex flex-wrap gap-4 bg-black-lightest rounded-40 px-4 py-3">
           {user.posts.length === 0 && (
-            <p className="text-center flex-1 text-xl font-alternates">No recent forms submitted.</p>
+            <p className="text-center flex-1 text-xl">No recent forms submitted.</p>
           )}
 
           {user.posts.map(post => (

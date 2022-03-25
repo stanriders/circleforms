@@ -2,11 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700&family=MuseoModerno:wght@500&display=swap');
 
-
-@import url('https://fonts.googleapis.com/css2?family=Montserrat+Alternates:wght@300;400;500;600;700&display=swap');
-
+@import 'reach';
 
 html,
 body {
@@ -25,7 +23,7 @@ body {
 }
 
 .link {
-  @apply text-lg font-medium relative px-5 py-3;
+  @apply font-museo font-medium relative px-5 py-3;
 
   &::before {
     content: '';
@@ -40,6 +38,10 @@ body {
   &:hover::before {
     @apply opacity-100;
   }
+}
+
+header .button.primary {
+  @apply font-museo text-base;
 }
 
 footer {
@@ -116,75 +118,6 @@ svg {
 
 .type-h2 {
   @apply text-5xl;
-}
-
-[data-reach-popover] {
-  @apply z-aboveNavbar;
-}
-
-[data-reach-menu-popover] {
-  @apply mt-4 rounded-14 bg-black-darker p-2;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5)
-}
-
-[data-reach-menu-list] {
-  width: 140px;
-  @apply flex flex-col gap-y-2;
-
-  a {
-    @apply text-sm text-center font-semibold py-1 px-4 text-white w-full rounded-7 transition ease-out-cubic;
-
-    &:not(.danger) {
-      @apply bg-black-light;
-    }
-
-    &.danger {
-      background: rgba(57, 34, 34, 0.8);
-    }
-
-    &:hover,
-    &:focus {
-      @apply brightness-150;
-    }
-  }
-}
-
-[data-reach-tab-panels] {
-  @apply bg-black-lightest px-8 py-5 rounded-b-3xl;
-}
-
-[data-reach-tab-list] {
-  @apply flex bg-black-light rounded-t-35;
-}
-
-[data-reach-tab] {
-  @apply font-alternates font-bold text-3xl py-3 flex-1 text-white transition-colors;
-
-  &[aria-selected="true"] {
-    @apply bg-black-lightest rounded-t-20;
-  }
-
-  &[aria-selected="false"] {
-    @apply font-medium text-opacity-25;
-  }
-}
-
-@keyframes slide-down {
-  0% {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.slide-down[data-reach-menu-list],
-.slide-down[data-reach-menu-items] {
-  border-radius: 5px;
-  animation: slide-down 0.2s ease;
 }
 
 .lds-ellipsis {

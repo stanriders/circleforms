@@ -38,14 +38,26 @@ export default function useAuth() {
     }
   }
 
-  function invalidateUserCache() {
-    localforage.removeItem('user')
-    localforage.removeItem('user_updated_at')
+ async function invalidateUserCache() {
+    await Promise.all([
+      localforage.removeItem('user'),
+      localforage.removeItem('user_updated_at')
+    ])
     getInitialData()
+  }
+
+  async function logout() {
+    await Promise.all([
+      localforage.removeItem('user'),
+      localforage.removeItem('user_updated_at')
+    ])
+
+    window.location = '/api/OAuth/signout'
   }
 
   return {
     user,
+    logout,
     invalidateUserCache
   }
 }

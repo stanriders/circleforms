@@ -12,7 +12,7 @@ export default function Error404() {
 
       <Hero>
         <div className="flex flex-col justify-center items-center py-16 md:py-32 lg:pt-52 lg:pb-72">
-            <p className="text-4xl font-alternates lg:-mt-10 text-center">
+            <p className="text-4xl lg:-mt-10 text-center">
               There's nothing here.
             </p>
             <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">

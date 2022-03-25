@@ -8,7 +8,7 @@ export default function Header() {
   return (
     <footer className="bg-black-darker text-white py-1 w-full">
       <div className="flex flex-col items-center">
-        <ul className="flex gap-x-11 text-xl">
+        <ul className="flex gap-x-11 text-sm lg:text-xl">
           <li>
             <Link href="/terms" passHref>
               <a>

@@ -9,11 +9,13 @@ export default function Button({
   rounded,
   active,
   onClick,
+  classname,
   ...props
 }) {
   const classnames = classNames(
     'button',
     theme,
+    classname,
     large ? 'button--large' : '',
     rounded ? 'button--rounded' : '',
     active ? 'active' : '',

@@ -10,14 +10,17 @@ import {
   Menu,
   MenuList,
   MenuButton,
+  MenuItem,
 } from "@reach/menu-button";
+import useAuth from '../hooks/useAuth';
 
 export default function Header() {
   const router = useRouter()
   const { user } = useContext(UserContext)
+  const { logout } = useAuth()
 
   return (
-    <header className="fixed top-0 flex items-center justify-between bg-black text-white py-3 4 w-full z-navbar md:px-16 lg:px-32">
+    <header className="fixed top-0 flex items-center justify-between bg-black text-white px-4 py-3 4 w-full z-navbar md:px-16 lg:px-32">
       <div className="flex items-center">
         <Link href="/" passHref>
           <a>
@@ -40,7 +43,7 @@ export default function Header() {
 
       <div className="flex items-center gap-x-3">
         {user && (
-          <Menu className="slide-down">
+          <Menu>
             <MenuButton>
               <div className="flex items-center gap-x-2 pl-4 bg-black border-2 border-pink rounded-70 font-bold">
                 <span>{user.username}</span>
@@ -50,22 +53,16 @@ export default function Header() {
                   alt={user.username} />
               </div>
             </MenuButton>
-            <MenuList>
-              <Link href="/dashboard" passHref>
-                <a>
-                  Dashboard
-                </a>
-              </Link>
-              <Link href="/settings" passHref>
-                <a>
-                  Settings
-                </a>
-              </Link>
-              <Link href="/api/OAuth/signout" passHref>
-                <a className="danger">
-                  Log Out
-                </a>
-              </Link>
+            <MenuList className="slide-down">
+              <MenuItem onSelect={() => router.push('/dashboard')}>
+                Dashboard
+              </MenuItem>
+              <MenuItem onSelect={() => router.push('/settings')}>
+                Settings
+              </MenuItem>
+              <MenuItem className="danger" onSelect={logout}>
+                Log Out
+              </MenuItem>
             </MenuList>
           </Menu>
         ) || (
