@@ -22,11 +22,12 @@ export default function Home() {
         <title>CircleForms - Home</title>
       </Head>
 
-      <div className="flex flex-col justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center min-h-screen">
         <SVG
+          className="w-3/4"
           src="/svg/logo.svg"
           alt="CircleForms" />
-          <p className="text-4xl font-alternates mt-4 text-center">
+          <p className="font-museo lg:text-4xl mt-4 text-center">
             an innovative solution for your osu! projects.
           </p>
           <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
@@ -71,7 +72,7 @@ export default function Home() {
                 )}
 
                 {data && data.length === 0 && (
-                  <p className="font-alternates font-semibold text-center">
+                  <p className="font-semibold text-center">
                     No found forms.<br/>
                     Come back later!
                   </p>
@@ -83,7 +84,7 @@ export default function Home() {
               </div>
             </div>
             <div className="flex justify-center mt-4">
-              <Button href="/forms-list" theme="secondary">
+              <Button href="/forms" theme="secondary">
                 Show more!
               </Button>
             </div>

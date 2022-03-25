@@ -4,27 +4,32 @@ import * as timeago from 'timeago.js';
 export default function FormEntry({
   id,
   author_id,
+  is_active,
+  icon,
+  banner,
   title,
   description,
   publish_time,
   accessibility,
   limitations,
 }) {
+  const bannerImg = banner ? `https://assets.circleforms.net/${id}/${banner}` : `/images/form-entry-test.jpg`
+
   return (
-    <Link href="/post/1">
+    <Link href={`/form/${id}`}>
       <a className="flex rounded-5 overflow-clip bg-black-light z-0 transform transition-transform ease-out-cubic hover:scale-99 hover:z-10">
         <div
           className="flex-1 bg-cover"
           style={{
             backgroundImage: `
               linear-gradient(270deg, #131313 2.39%, rgba(17, 17, 17, 0) 98.16%),
-              url('/images/form-entry-test.jpg')
+              url('${bannerImg}')
             `
           }}
         />
         <div className="flex-1 flex justify-between py-5 pr-5">
           <div>
-            <h3 className="font-alternates text-m font-bold truncate max-w-sm">
+            <h3 className="text-m font-bold truncate max-w-sm">
               { title }
             </h3>
             <p className="text-xs text-white text-opacity-50 -mt-1 truncate max-w-sm">

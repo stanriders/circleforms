@@ -28,7 +28,7 @@ export default function Dashboard() {
 
         <Hero>
           <div className="flex flex-col justify-center items-center py-16 md:py-32 lg:pt-52 lg:pb-72">
-              <p className="text-4xl font-alternates lg:-mt-10 text-center">
+              <p className="text-4xl lg:-mt-10 text-center">
                 You are not logged in.
               </p>
               <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
@@ -54,8 +54,8 @@ export default function Dashboard() {
           <rect x="424.59" width="73.8418" height="75.893" rx="36.9209" fill="#FF66AA"/>
         </svg>
         <div className="z-10 text-center">
-          <h1 className="font-alternates text-6xl lg:text-8xl font-bold z-10 mt-4">DASHBOARD</h1>
-          <p className="text-2xl font-alternates mt-2">
+          <h1 className="text-6xl lg:text-8xl font-bold z-10 mt-4">DASHBOARD</h1>
+          <p className="text-2xl mt-2">
             Create your "<span className="text-pink">CircleForms</span>".
           </p>
         </div>
@@ -87,7 +87,7 @@ export default function Dashboard() {
 
             <TabPanels>
               <TabPanel>
-                <span className="font-alternates font-semibold text-3xl">
+                <span className="font-semibold text-3xl">
                   Icon
                 </span>
               </TabPanel>
@@ -108,17 +108,17 @@ export default function Dashboard() {
 
             <TabPanels className="bg-black-lightest px-8 py-5 rounded-b-3xl">
               <TabPanel>
-                <span className="font-alternates font-semibold text-3xl">
+                <span className="font-semibold text-3xl">
                   Questions
                 </span>
               </TabPanel>
               <TabPanel>
-                <span className="font-alternates font-semibold text-3xl">
+                <span className="font-semibold text-3xl">
                   Responses
                 </span>
               </TabPanel>
               <TabPanel>
-                <span className="font-alternates font-semibold text-3xl">
+                <span className="font-semibold text-3xl">
                   Options
                 </span>
               </TabPanel>

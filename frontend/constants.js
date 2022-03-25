@@ -9,7 +9,7 @@ module.exports = {
     },
     {
       label: 'Forms List',
-      href: '/forms-list'
+      href: '/forms'
     },
     {
       label: 'Our Team',
