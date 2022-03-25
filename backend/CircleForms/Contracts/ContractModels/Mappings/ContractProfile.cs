@@ -21,6 +21,9 @@ public class ContractProfile : Profile
     {
         CreateMap<User, UserResponseContract>()
             .ForMember(x => x.Id, o => o.MapFrom(x => x.ID));
+        CreateMap<UserMinimalRedis, UserMinimalResponseContract>();
+        CreateMap<User, UserMinimalRedis>();
+
         CreateMap<UserBadge, Response.UserBadge>();
         CreateMap<MonthlyPlaycount, Response.MonthlyPlaycount>();
         CreateMap<RankHistory, Response.RankHistory>();
