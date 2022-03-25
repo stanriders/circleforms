@@ -5,7 +5,7 @@ using CircleForms.Models.Posts;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Entities;
 
-namespace CircleForms.Models;
+namespace CircleForms.Models.Users;
 
 [Collection("users")]
 public class User : IEntity

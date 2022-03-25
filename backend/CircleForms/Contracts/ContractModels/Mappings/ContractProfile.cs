@@ -5,12 +5,13 @@ using CircleForms.Models;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
-using GradeCounts = CircleForms.Models.GradeCounts;
-using Level = CircleForms.Models.Level;
-using MonthlyPlaycount = CircleForms.Models.MonthlyPlaycount;
-using RankHistory = CircleForms.Models.RankHistory;
-using Statistics = CircleForms.Models.Statistics;
-using UserBadge = CircleForms.Models.UserBadge;
+using CircleForms.Models.Users;
+using GradeCounts = CircleForms.Models.Users.GradeCounts;
+using Level = CircleForms.Models.Users.Level;
+using MonthlyPlaycount = CircleForms.Models.Users.MonthlyPlaycount;
+using RankHistory = CircleForms.Models.Users.RankHistory;
+using Statistics = CircleForms.Models.Users.Statistics;
+using UserBadge = CircleForms.Models.Users.UserBadge;
 
 namespace CircleForms.Contracts.ContractModels.Mappings;
 

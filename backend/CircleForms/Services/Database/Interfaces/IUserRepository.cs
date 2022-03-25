@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using CircleForms.Models;
+using CircleForms.Models.Users;
 
 namespace CircleForms.Services.Database.Interfaces;
 

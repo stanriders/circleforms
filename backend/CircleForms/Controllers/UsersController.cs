@@ -5,6 +5,7 @@ using AutoMapper;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Models;
+using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;

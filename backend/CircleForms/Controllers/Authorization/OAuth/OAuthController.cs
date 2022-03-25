@@ -6,6 +6,7 @@ using CircleForms.Contracts;
 using CircleForms.Models;
 using CircleForms.Models.Configurations;
 using CircleForms.Models.OsuContracts;
+using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;

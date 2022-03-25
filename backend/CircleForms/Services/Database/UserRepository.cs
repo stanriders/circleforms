@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using CircleForms.Models;
 using CircleForms.Models.Posts;
+using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.Extensions.Logging;
 using MongoDB.Entities;
