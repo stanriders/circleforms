@@ -48,6 +48,23 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
+    ///     Get user data.
+    /// </summary>
+    [HttpGet(ApiEndpoints.UsersGetMinimalUser)]
+    [ProducesResponseType(typeof(UserMinimalResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetMinimal([RegularExpression(@"^\d+$")] string id)
+    {
+        var user = await _usersService.GetMinimal(id);
+        if (user != null)
+        {
+            return Ok(_mapper.Map<UserMinimalResponseContract>(user));
+        }
+
+        return NotFound();
+    }
+
+    /// <summary>
     ///     Get all users. (Requires auth, Requires Admin role)
     /// </summary>
     [Authorize(Roles = "Admin")]
