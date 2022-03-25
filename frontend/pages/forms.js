@@ -64,7 +64,7 @@ export default function FormsList() {
       </Head>
 
       <section className="container max-height">
-        <div class="flex flex-col justify-between mb-12 bg-black-dark2 rounded-70 h-full">
+        <div className="flex flex-col justify-between mb-12 bg-black-dark2 rounded-70 h-full">
           <div className="h-full">
             <div className="flex flex-col lg:flex-row justify-between bg-black-lighter rounded-full">
               <div className="pl-20 pt-7 pb-4">
