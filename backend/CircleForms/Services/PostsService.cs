@@ -285,15 +285,15 @@ public class PostsService
         }
 
         await using var stream = image.OpenReadStream();
-        await _staticFilesService.WriteImageAsync(stream, id, image.FileName);
+        var filename = await _staticFilesService.WriteImageAsync(stream, id, image.FileName);
 
         switch (query)
         {
             case ImageQuery.Icon:
-                post.Icon = image.FileName;
+                post.Icon = filename;
                 break;
             case ImageQuery.Banner:
-                post.Banner = image.FileName;
+                post.Banner = filename;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(query), query, null);
@@ -301,6 +301,6 @@ public class PostsService
 
         await _postRepository.Update(id, post, true);
 
-        return image.FileName;
+        return filename;
     }
 }
