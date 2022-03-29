@@ -98,20 +98,7 @@ export default function Settings() {
             </div>
           </div>
         </div>
-
-        <h2 className="text-6xl font-bold text-center mt-9 mb-8">RECENTLY SUBMITTED FORMS</h2>
-
-        <div className="flex flex-wrap gap-4 bg-black-lightest rounded-40 px-4 py-3">
-          {user.posts.length === 0 && (
-            <p className="text-center flex-1 text-xl">No recent forms submitted.</p>
-          )}
-
-          {user.posts.map(post => (
-            <FormThumbnail key={post.id} {...post} />
-          ))}
-        </div>
       </section>
-
     </DefaultLayout>
   )
 }
