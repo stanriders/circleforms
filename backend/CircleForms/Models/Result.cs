@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CircleForms.Models;
 
@@ -34,6 +36,31 @@ public class Result<T>
     public static Result<T> NotFound(string id)
     {
         return new(HttpStatusCode.NotFound, $"Entity {id} is not found");
+    }
+
+    public IActionResult Map()
+    {
+        return !IsError ? new OkResult() : Map(_ => _);
+    }
+
+    public IActionResult Map<TR>(Func<T, TR> mapOk)
+    {
+        if (!IsError)
+        {
+            return new OkObjectResult(mapOk(Value));
+        }
+
+        var payload = new {error = Message};
+
+        return StatusCode switch
+        {
+            HttpStatusCode.BadRequest => new BadRequestObjectResult(payload),
+            HttpStatusCode.Conflict => new ConflictObjectResult(payload),
+            HttpStatusCode.NotFound => new NotFoundObjectResult(payload),
+            HttpStatusCode.Forbidden => new ForbidResult(),
+            HttpStatusCode.Unauthorized => new UnauthorizedObjectResult(payload),
+            _ => new ObjectResult(payload) {StatusCode = (int) StatusCode}
+        };
     }
 
     public static implicit operator Result<T>(T value)
