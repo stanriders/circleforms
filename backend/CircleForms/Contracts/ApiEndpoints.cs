@@ -34,6 +34,6 @@ public static class ApiEndpoints
     #endregion
 
     #region Pages
-    public const string PagePosts = "/pages/posts/{page:int}";
+    public const string PostsPage = "/posts/page/{page:int}";
     #endregion
 }

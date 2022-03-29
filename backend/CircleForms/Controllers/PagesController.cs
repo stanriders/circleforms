@@ -31,7 +31,7 @@ public class PagesController : ControllerBase
     /// <summary>
     ///     Get posts page.
     /// </summary>
-    [HttpGet(ApiEndpoints.PagePosts)]
+    [HttpGet(ApiEndpoints.PostsPage)]
     [ProducesResponseType(typeof(PageResponseContract), 200)]
     [ProducesResponseType(400)]
     public async Task<IActionResult> GetPage(int page, [FromQuery] int pageSize = 50,
