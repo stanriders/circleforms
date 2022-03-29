@@ -35,5 +35,6 @@ public static class ApiEndpoints
 
     #region Pages
     public const string PostsPage = "/posts/page/{page:int}";
+    public const string PostsPagePinned = "/posts/page/pinned";
     #endregion
 }
