@@ -13,7 +13,6 @@ public static class ApiEndpoints
     public const string PostsAddPost = "/posts";
     public const string PostsOneCachedPost = "/posts/{id}";
     public const string PostsDetailedPost = "/posts/{id}/detailed";
-    public const string PostPage = "/posts/page/{page:int}";
     public const string PostUpdatePost = "/posts/{id}";
     public const string PostUploadImage = "/posts/{id}/file";
     #endregion
@@ -32,5 +31,9 @@ public static class ApiEndpoints
 
     public const string UsersGetAllUsers = "/users";
     public const string UsersEscalateUserPrivileges = "/users";
+    #endregion
+
+    #region Pages
+    public const string PagePosts = "/pages/posts/{page:int}";
     #endregion
 }
