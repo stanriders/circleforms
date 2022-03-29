@@ -29,7 +29,7 @@ export default function OurTeam() {
                 src={`/images/${member.name.toLowerCase()}.png`}
                 alt={member.name} />
               <img
-                className="absolute h-28 w-28 lg:w-32 lg:h-32"
+                className="absolute"
                 style={{ ... member.avatarStyles }}
                 src={`http://s.ppy.sh/a/${member.osuId}`}
                 alt={`${member.name} osu avatar`} />

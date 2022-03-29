@@ -22,8 +22,10 @@ module.exports = {
       role: 'CEO & back-end developer',
       osuId: '7217455',
       avatarStyles: {
-        left: '6.5rem',
-        top: '0.9rem',
+        height: '118px',
+        width: '118px',
+        right: '30%',
+        top: '0',
       }
     },
     {
@@ -31,7 +33,9 @@ module.exports = {
       role: 'UX/UI Designer',
       osuId: '4411044',
       avatarStyles: {
-        right: '0',
+        height: '100px',
+        width: '100px',
+        right: '30%',
         top: '0',
       }
     },
@@ -40,8 +44,10 @@ module.exports = {
       role: 'back-end developer',
       osuId: '9083516',
       avatarStyles: {
-        right: '5rem',
-        top: '0.8rem',
+        height: '111px',
+        width: '111px',
+        left: '20%',
+        top: '5%',
       }
     },
     {
@@ -49,7 +55,9 @@ module.exports = {
       role: 'quality assurance',
       osuId: '4735736',
       avatarStyles: {
-        left: '5.5rem',
+        height: '114px',
+        width: '114px',
+        left: '25%',
         top: '0rem',
       }
     },
@@ -58,8 +66,10 @@ module.exports = {
       role: 'front-end developer',
       osuId: '5914915',
       avatarStyles: {
-        right: '0',
-        top: '2rem'
+        height: '105px',
+        width: '105px',
+        right: '23%',
+        top: '0'
       }
     }
   ]
