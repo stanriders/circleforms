@@ -181,6 +181,28 @@ public class PostRepository : IPostRepository
         }
     }
 
+    public async Task<bool> AddPinnedPosts(string postId)
+    {
+        var redisDb = _redis.GetDatabase();
+        var key = $"post:{postId}";
+
+        if (!redisDb.KeyExists(key))
+        {
+            return false;
+        }
+
+        await redisDb.SetAddAsync("posts:pinned", key);
+        return true;
+    }
+
+    public async Task<PostRedis[]> GetPinnedPosts()
+    {
+        var redisDb = _redis.GetDatabase();
+        var members = await redisDb.SetMembersAsync("posts:pinned");
+
+        return await IdsToPosts(members, redisDb);
+    }
+
     private static long ToUnixTimestamp(DateTime time)
     {
         return ((DateTimeOffset) time).ToUnixTimeMilliseconds();

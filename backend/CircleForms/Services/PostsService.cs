@@ -304,4 +304,15 @@ public class PostsService
 
         return filename;
     }
+
+    public async Task<Result<bool>> AddPinned(string postId)
+    {
+        var result = await _postRepository.AddPinnedPosts(postId);
+        return !result ? Result<bool>.NotFound(postId) : true;
+    }
+
+    public async Task<PostRedis[]> GetPinned()
+    {
+        return await _postRepository.GetPinnedPosts();
+    }
 }

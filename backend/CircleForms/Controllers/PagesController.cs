@@ -9,6 +9,8 @@ using CircleForms.Models.Posts;
 using CircleForms.Models.Users;
 using CircleForms.Services;
 using CircleForms.Services.Database.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CircleForms.Controllers;
@@ -71,5 +73,30 @@ public class PagesController : ControllerBase
         responseContract.Posts = posts;
 
         return Ok(responseContract);
+    }
+
+    /// <summary>
+    ///     Get all pinned posts
+    /// </summary>
+    [HttpGet(ApiEndpoints.PostsPagePinned)]
+    public async Task<PostMinimalResponseContract[]> GetPinned()
+    {
+        var posts = await _posts.GetPinned();
+
+        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(posts);
+    }
+
+    /// <summary>
+    ///     Add post to pinned posts. (Requires auth, Admin/Moderator role)"
+    /// </summary>
+    [HttpPost(ApiEndpoints.PostsPagePinned)]
+    [Authorize(Roles = "Admin,Moderator")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> PinPost(string post)
+    {
+        var result = await _posts.AddPinned(post);
+
+        return result.Map();
     }
 }

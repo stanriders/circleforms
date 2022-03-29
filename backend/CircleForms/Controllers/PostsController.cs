@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Contracts;
@@ -37,32 +36,7 @@ public class PostsController : ControllerBase
 
     private IActionResult Map<T, TR>(Result<T> result)
     {
-        return Map(result, arg => _mapper.Map<TR>(arg));
-    }
-
-    private IActionResult Map<T, TR>(Result<T> result, Func<T, TR> mapOk)
-    {
-        if (!result.IsError)
-        {
-            return Ok(mapOk(result.Value));
-        }
-
-        var payload = new {error = result.Message};
-
-        return result.StatusCode switch
-        {
-            HttpStatusCode.BadRequest => BadRequest(payload),
-            HttpStatusCode.Conflict => Conflict(payload),
-            HttpStatusCode.NotFound => NotFound(payload),
-            HttpStatusCode.Forbidden => Forbid(),
-            HttpStatusCode.Unauthorized => Unauthorized(payload),
-            _ => StatusCode((int) result.StatusCode, payload)
-        };
-    }
-
-    private IActionResult Error<T>(Result<T> result)
-    {
-        return result.IsError ? StatusCode((int) result.StatusCode, new {error = result.Message}) : Ok(result.Value);
+        return result.Map(arg => _mapper.Map<TR>(arg));
     }
 
     /// <summary>
@@ -91,7 +65,7 @@ public class PostsController : ControllerBase
 
         var postResult = await _posts.Answer(claim, id, answerContracts);
 
-        return postResult.IsError ? Error(postResult) : Ok();
+        return postResult.Map();
     }
 
     /// <summary>
@@ -134,7 +108,7 @@ public class PostsController : ControllerBase
 
         var result = await _posts.SaveImage(claim, id, image, query);
 
-        return result.IsError ? Error(result) : Ok();
+        return result.Map();
     }
 
     /// <summary>
@@ -170,7 +144,7 @@ public class PostsController : ControllerBase
             return CreatedAtAction("GetCachedPost", new {id = result.Value.ID}, result.Value);
         }
 
-        return Map(result, _ => _);
+        return result.Map(_ => _);
     }
 
     /// <summary>
@@ -217,7 +191,7 @@ public class PostsController : ControllerBase
 
         var result = await _posts.GetDetailedPost(claim, id, key);
 
-        return Map<object, object>(result, v =>
+        return result.Map<object>(v =>
         {
             return v switch
             {
