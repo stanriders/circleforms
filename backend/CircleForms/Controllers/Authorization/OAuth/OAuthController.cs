@@ -6,6 +6,7 @@ using CircleForms.Contracts;
 using CircleForms.Models;
 using CircleForms.Models.Configurations;
 using CircleForms.Models.OsuContracts;
+using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -14,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 
 namespace CircleForms.Controllers.Authorization.OAuth;
@@ -161,6 +163,9 @@ public class OAuthController : ControllerBase
         };
 
         await updateTask;
+
+        var cachedUser = _mapper.Map<User, UserMinimalRedis>(user);
+        await redisDb.StringSetAsync($"user:{user.ID}", JsonConvert.SerializeObject(cachedUser));
 
         await HttpContext.SignInAsync("InternalCookies", new ClaimsPrincipal(id), authProperties);
         await HttpContext.SignOutAsync("ExternalCookies");

@@ -1,20 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using CircleForms.Models;
 using CircleForms.Models.Posts;
+using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.Extensions.Logging;
 using MongoDB.Entities;
+using Newtonsoft.Json;
+using StackExchange.Redis;
 
 namespace CircleForms.Services.Database;
 
 public class UserRepository : IUserRepository
 {
     private readonly ILogger<UserRepository> _logger;
+    private readonly IDatabase _redis;
 
-    public UserRepository(ILogger<UserRepository> logger)
+    public UserRepository(ILogger<UserRepository> logger, IConnectionMultiplexer redis)
     {
         _logger = logger;
+        _redis = redis.GetDatabase();
     }
 
     public async Task<List<User>> Get()
@@ -25,6 +29,12 @@ public class UserRepository : IUserRepository
     public async Task<User> Get(string id)
     {
         return await DB.Find<User>().OneAsync(id);
+    }
+
+    public async Task<UserMinimalRedis> GetMinimal(string id)
+    {
+        var userJson = await _redis.StringGetAsync($"user:{id}");
+        return !userJson.HasValue ? null : JsonConvert.DeserializeObject<UserMinimalRedis>(userJson);
     }
 
     public async Task<User> Create(User user)

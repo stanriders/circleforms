@@ -283,23 +283,5 @@ public class PostsController : ControllerBase
 
         return Map<PostRedis, PostMinimalResponseContract>(post);
     }
-
-    /// <summary>
-    ///     Get posts page.
-    /// </summary>
-    [HttpGet(ApiEndpoints.PostPage)]
-    [ProducesResponseType(typeof(PostMinimalResponseContract[]), 200)]
-    [ProducesResponseType(400)]
-    public async Task<IActionResult> GetPage(int page, [FromQuery] int pageSize = 50,
-        [FromQuery] PostFilter filter = PostFilter.Both)
-    {
-        if (pageSize > 50)
-        {
-            return BadRequest("Too many elements requested");
-        }
-
-        return Ok(_mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _posts.GetPage(page, pageSize,
-            filter)));
-    }
     #endregion
 }

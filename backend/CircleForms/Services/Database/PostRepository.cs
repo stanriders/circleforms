@@ -6,6 +6,7 @@ using AutoMapper;
 using CircleForms.Models;
 using CircleForms.Models.Enums;
 using CircleForms.Models.Posts;
+using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;

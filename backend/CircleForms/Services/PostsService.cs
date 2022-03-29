@@ -13,6 +13,7 @@ using CircleForms.Models.Enums;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
+using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.IO;
 using Microsoft.AspNetCore.Http;

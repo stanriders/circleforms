@@ -1,16 +1,16 @@
 ﻿using AutoMapper;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
-using CircleForms.Models;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
-using GradeCounts = CircleForms.Models.GradeCounts;
-using Level = CircleForms.Models.Level;
-using MonthlyPlaycount = CircleForms.Models.MonthlyPlaycount;
-using RankHistory = CircleForms.Models.RankHistory;
-using Statistics = CircleForms.Models.Statistics;
-using UserBadge = CircleForms.Models.UserBadge;
+using CircleForms.Models.Users;
+using GradeCounts = CircleForms.Models.Users.GradeCounts;
+using Level = CircleForms.Models.Users.Level;
+using MonthlyPlaycount = CircleForms.Models.Users.MonthlyPlaycount;
+using RankHistory = CircleForms.Models.Users.RankHistory;
+using Statistics = CircleForms.Models.Users.Statistics;
+using UserBadge = CircleForms.Models.Users.UserBadge;
 
 namespace CircleForms.Contracts.ContractModels.Mappings;
 
@@ -20,6 +20,9 @@ public class ContractProfile : Profile
     {
         CreateMap<User, UserResponseContract>()
             .ForMember(x => x.Id, o => o.MapFrom(x => x.ID));
+        CreateMap<UserMinimalRedis, UserMinimalResponseContract>();
+        CreateMap<User, UserMinimalRedis>();
+
         CreateMap<UserBadge, Response.UserBadge>();
         CreateMap<MonthlyPlaycount, Response.MonthlyPlaycount>();
         CreateMap<RankHistory, Response.RankHistory>();

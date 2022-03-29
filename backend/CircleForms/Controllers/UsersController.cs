@@ -5,6 +5,7 @@ using AutoMapper;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Models;
+using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -41,6 +42,23 @@ public class UsersController : ControllerBase
         if (user != null)
         {
             return Ok(_mapper.Map<UserResponseContract>(user));
+        }
+
+        return NotFound();
+    }
+
+    /// <summary>
+    ///     Get user data.
+    /// </summary>
+    [HttpGet(ApiEndpoints.UsersGetMinimalUser)]
+    [ProducesResponseType(typeof(UserMinimalResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetMinimal([RegularExpression(@"^\d+$")] string id)
+    {
+        var user = await _usersService.GetMinimal(id);
+        if (user != null)
+        {
+            return Ok(_mapper.Map<UserMinimalResponseContract>(user));
         }
 
         return NotFound();
