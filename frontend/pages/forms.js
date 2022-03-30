@@ -125,11 +125,7 @@ export default function FormsList() {
                         <Loading />
                       </div>
                     )}
-                    {pinnedForms && pinnedForms.posts.length === 0 && (
-                      <p className="font-semibold text-center">
-                        No pinned forms yet.
-                      </p>
-                    )}
+
                     {pinnedForms && pinnedForms.posts.length > 0 && pinnedForms.posts.map(form => (
                       <FormEntry
                         key={form.id}
