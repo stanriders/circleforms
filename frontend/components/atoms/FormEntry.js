@@ -3,6 +3,7 @@ import * as timeago from 'timeago.js';
 
 export default function FormEntry({
   id,
+  author,
   author_id,
   is_active,
   icon,
@@ -38,14 +39,14 @@ export default function FormEntry({
           </div>
           <div className="flex items-center">
             <div className="flex flex-col text-xs mr-2 text-right">
-              <span className="font-semibold">posted by <span className="font-bold">{author_id}</span></span>
+              <span className="font-semibold">posted by <span className="font-bold">{author?.username}</span></span>
               <span className="text-green">
                 {timeago.format(publish_time)}
               </span>
             </div>
             <img
               className="h-10 w-10 rounded-full"
-              src={`https://s.ppy.sh/a/${author_id}`}
+              src={author?.avatar_url}
               alt="Profile user {name}" />
           </div>
         </div>

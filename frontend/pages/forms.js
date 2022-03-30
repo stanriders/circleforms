@@ -18,6 +18,15 @@ export default function FormsList() {
   const [filter, setFilter] = useState('Both')
   const [page, setPage] = useState(1)
 
+  const {
+    data: pinnedForms,
+    error: pinnedError,
+    isValidating: pinnedValidating
+  } = useSWR(
+    `/posts/page/pinned`,
+    api
+  )
+
   const { data, error, isValidating } = useSWR(
     `/posts/page/${page}?filter=${filter}&pageSize=10`,
     api
@@ -109,11 +118,22 @@ export default function FormsList() {
             <div className="mt-6 px-7">
               <SubTitle>Pinned Forms</SubTitle>
               <div className="flex flex-col gap-y-3">
-                <FormEntry
-                  title="nik's winter cup 2022 Registration"
-                  description="osu!standard, scorev2, 1v1 tournament"
-                  author_id="nik"
-                />
+                {pinnedValidating && (
+                  <div className="flex justify-center absolute top-4 z-50 left-1/2 transform -translate-x-1/2">
+                    <Loading />
+                  </div>
+                )}
+                {pinnedForms && pinnedForms.posts.length === 0 && (
+                  <p className="font-semibold text-center">
+                    No pinned forms yet.
+                  </p>
+                )}
+                {pinnedForms && pinnedForms.posts.length > 0 && pinnedForms.posts.map(form => (
+                  <FormEntry
+                    key={form.id}
+                    author={pinnedForms.authors[form.author_id]}
+                    {...form} />
+                ))}
               </div>
               <SubTitle>Forms</SubTitle>
               <div className="flex flex-col gap-y-3 relative">
@@ -122,14 +142,17 @@ export default function FormsList() {
                     <Loading />
                   </div>
                 )}
-                {data && data.length === 0 && (
+                {data && data.posts.length === 0 && (
                   <p className="font-semibold text-center">
                     No found forms.<br/>
                     Come back later!
                   </p>
                 )}
-                {data && data.length > 0 && data.map(form => (
-                  <FormEntry key={form.id} {...form} />
+                {data && data.posts.length > 0 && data.posts.map(form => (
+                  <FormEntry
+                    key={form.id}
+                    author={data.authors[form.author_id]}
+                    {...form} />
                 ))}
               </div>
             </div>

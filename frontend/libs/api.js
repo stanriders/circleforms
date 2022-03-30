@@ -3,115 +3,123 @@ export default async function api (endpoint, options) {
     await wait(350)
 
     if (endpoint.includes('/posts/page')) {
-      return [
-        {
-          "id": "623db4d2745ef1dd19eaad80",
-          "author_id": "7217455",
-          "is_active": true,
-          "icon": null,
-          "banner": null,
-          "title": "An active form",
-          "description": "how cool is that eh?",
-          "publish_time": "2022-03-25T12:25:54.143Z",
-          "accessibility": "Public",
-          "limitations": {
-            "rank": null,
-            "pp": {
-              "start": 1,
-              "end": 10000
-            },
-            "gamemode": "Standard"
+      return {
+        "authors": {
+          "7217455": {
+            "avatar_url": "https://a.ppy.sh/7217455?1588635261.jpeg",
+            "username": "StanR"
           }
         },
-        {
-          "id": "623d11660b337d32004023d1",
-          "author_id": "7217455",
-          "is_active": true,
-          "icon": "gusenitsa_smol.png",
-          "banner": "68747470733a2f2f692e696d6775722e636f6d2f7a6334667671462e706e67.png",
-          "title": "ex cupidatat nisi",
-          "description": "labore tempor",
-          "publish_time": "2022-03-25T00:48:38.014Z",
-          "accessibility": "Public",
-          "limitations": {
-            "rank": {
-              "start": 1000,
-              "end": 2000
-            },
-            "pp": {
-              "start": 2000,
-              "end": 3000
-            },
-            "gamemode": "Mania"
+        "posts": [
+          {
+            "id": "623db4d2745ef1dd19eaad80",
+            "author_id": "7217455",
+            "is_active": true,
+            "icon": null,
+            "banner": null,
+            "title": "An active form",
+            "description": "how cool is that eh?",
+            "publish_time": "2022-03-25T12:25:54.143Z",
+            "accessibility": "Public",
+            "limitations": {
+              "rank": null,
+              "pp": {
+                "start": 1,
+                "end": 10000
+              },
+              "gamemode": "Standard"
+            }
+          },
+          {
+            "id": "623d11660b337d32004023d1",
+            "author_id": "7217455",
+            "is_active": false,
+            "icon": "gusenitsa_smol.png",
+            "banner": "68747470733a2f2f692e696d6775722e636f6d2f7a6334667671462e706e67.png",
+            "title": "ex cupidatat nisi",
+            "description": "labore tempor",
+            "publish_time": "2022-03-25T00:48:38.014Z",
+            "accessibility": "Public",
+            "limitations": {
+              "rank": {
+                "start": 1000,
+                "end": 2000
+              },
+              "pp": {
+                "start": 2000,
+                "end": 3000
+              },
+              "gamemode": "Mania"
+            }
+          },
+          {
+            "id": "623d11650b337d32004023d0",
+            "author_id": "7217455",
+            "is_active": false,
+            "icon": null,
+            "banner": null,
+            "title": "ex cupidatat nisi",
+            "description": "labore tempor",
+            "publish_time": "2022-03-25T00:48:37.8369548Z",
+            "accessibility": "Public",
+            "limitations": {
+              "rank": {
+                "start": 1000,
+                "end": 2000
+              },
+              "pp": {
+                "start": 2000,
+                "end": 3000
+              },
+              "gamemode": "Mania"
+            }
+          },
+          {
+            "id": "623d11650b337d32004023cf",
+            "author_id": "7217455",
+            "is_active": false,
+            "icon": null,
+            "banner": null,
+            "title": "ex cupidatat nisi",
+            "description": "labore tempor",
+            "publish_time": "2022-03-25T00:48:37.6637777Z",
+            "accessibility": "Public",
+            "limitations": {
+              "rank": {
+                "start": 1000,
+                "end": 2000
+              },
+              "pp": {
+                "start": 2000,
+                "end": 3000
+              },
+              "gamemode": "Mania"
+            }
+          },
+          {
+            "id": "623d11650b337d32004023ce",
+            "author_id": "7217455",
+            "is_active": false,
+            "icon": null,
+            "banner": null,
+            "title": "ex cupidatat nisi",
+            "description": "labore tempor",
+            "publish_time": "2022-03-25T00:48:37.3837636Z",
+            "accessibility": "Public",
+            "limitations": {
+              "rank": {
+                "start": 1000,
+                "end": 2000
+              },
+              "pp": {
+                "start": 2000,
+                "end": 3000
+              },
+              "gamemode": "Mania"
+            }
           }
-        },
-        {
-          "id": "623d11650b337d32004023d0",
-          "author_id": "7217455",
-          "is_active": false,
-          "icon": null,
-          "banner": null,
-          "title": "ex cupidatat nisi",
-          "description": "labore tempor",
-          "publish_time": "2022-03-25T00:48:37.8369548Z",
-          "accessibility": "Public",
-          "limitations": {
-            "rank": {
-              "start": 1000,
-              "end": 2000
-            },
-            "pp": {
-              "start": 2000,
-              "end": 3000
-            },
-            "gamemode": "Mania"
-          }
-        },
-        {
-          "id": "623d11650b337d32004023cf",
-          "author_id": "7217455",
-          "is_active": false,
-          "icon": null,
-          "banner": null,
-          "title": "ex cupidatat nisi",
-          "description": "labore tempor",
-          "publish_time": "2022-03-25T00:48:37.6637777Z",
-          "accessibility": "Public",
-          "limitations": {
-            "rank": {
-              "start": 1000,
-              "end": 2000
-            },
-            "pp": {
-              "start": 2000,
-              "end": 3000
-            },
-            "gamemode": "Mania"
-          }
-        },
-        {
-          "id": "623d11650b337d32004023ce",
-          "author_id": "7217455",
-          "is_active": false,
-          "icon": null,
-          "banner": null,
-          "title": "ex cupidatat nisi",
-          "description": "labore tempor",
-          "publish_time": "2022-03-25T00:48:37.3837636Z",
-          "accessibility": "Public",
-          "limitations": {
-            "rank": {
-              "start": 1000,
-              "end": 2000
-            },
-            "pp": {
-              "start": 2000,
-              "end": 3000
-            },
-            "gamemode": "Mania"
-          }
-        },
-      ]
+        ]
+      }
     }
 
     if (endpoint === '/me') {
