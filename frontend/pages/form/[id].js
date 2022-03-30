@@ -13,7 +13,7 @@ export default function SingleForm({
         <title>CircleForms - Form</title>
       </Head>
 
-      <section class="container mb-12">
+      <section className="container mb-12">
         <Form
           author={author}
           {...form} />
