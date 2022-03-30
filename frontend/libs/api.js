@@ -8,6 +8,14 @@ export default async function api (endpoint, options) {
       return mocks.forms
     }
 
+    if (endpoint.includes('/posts/id')) {
+      return mocks.form
+    }
+
+    if (endpoint.includes('/users/id/minimal')) {
+      return mocks.userMinimal
+    }
+
     if (endpoint === '/me') {
       return mocks.me
     }

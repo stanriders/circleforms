@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import * as timeago from 'timeago.js';
+import getImage from '../../utils/getImage';
 
 export default function FormEntry({
   id,
@@ -14,13 +15,13 @@ export default function FormEntry({
   accessibility,
   limitations,
 }) {
-  const bannerImg = banner ? `https://assets.circleforms.net/${id}/${banner}` : `/images/form-entry-test.jpg`
+  const bannerImg = getImage({ banner, id, type: 'banner' })
 
   return (
     <Link href={`/form/${id}`}>
       <a className="flex rounded-5 overflow-clip bg-black-light z-0 transform transition-transform ease-out-cubic hover:scale-99 hover:z-10">
         <div
-          className="flex-1 bg-cover"
+          className="flex-1 bg-contain"
           style={{
             backgroundImage: `
               linear-gradient(270deg, #131313 2.39%, rgba(17, 17, 17, 0) 98.16%),

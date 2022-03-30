@@ -85,6 +85,15 @@ svg {
     }
   }
 
+  &.dark {
+    @apply font-body bg-black-lighter text-white font-semibold transition-colors ease-out-cubic;
+
+    &.active,
+    &:hover {
+      @apply bg-pink text-black-lighter font-bold;
+    }
+  }
+
   &.button--rounded {
     @apply rounded-full w-12 h-12 flex justify-center items-center;
   }
