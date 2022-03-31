@@ -22,18 +22,20 @@ namespace CircleForms.Services;
 
 public class PostsService
 {
+    private readonly ICacheRepository _cache;
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
     private readonly IStaticFilesService _staticFilesService;
 
     public PostsService(ILogger<PostsController> logger, IStaticFilesService staticFilesService,
-        IPostRepository postRepository, IMapper mapper)
+        IPostRepository postRepository, IMapper mapper, ICacheRepository cache)
     {
         _logger = logger;
         _staticFilesService = staticFilesService;
         _postRepository = postRepository;
         _mapper = mapper;
+        _cache = cache;
     }
 
     private Result<List<Submission>> ProcessAnswer(Post post,
@@ -111,6 +113,7 @@ public class PostsService
         };
 
         await _postRepository.AddAnswer(post.ID, answer);
+        await _cache.IncrementAnswers(post.ID);
 
         return new Result<bool>(true);
     }
@@ -213,7 +216,12 @@ public class PostsService
 
         updatedPost.Questions = questions;
 
-        await _postRepository.Update(post.ID, post, true);
+        await _postRepository.Update(post.ID, post);
+        await _cache.AddOrUpdate(post);
+        if (post.Published)
+        {
+            await _cache.Publish(post);
+        }
 
         return new Result<Post>(post);
     }
@@ -262,25 +270,25 @@ public class PostsService
 
     public async Task<PostRedis[]> GetAllCached()
     {
-        return await MapWithAnswerCounts(await _postRepository.GetCached());
+        return await MapWithAnswerCounts(await _cache.GetDump());
     }
 
     public async Task<Result<PostRedis>> GetCachedPost(string id)
     {
-        var post = await _postRepository.GetCached(id);
+        var post = await _cache.GetPost(id);
         if (post is null)
         {
             return Result<PostRedis>.NotFound(id);
         }
 
-        post.AnswerCount = await _postRepository.GetAnswerCount(id);
+        post.AnswerCount = await _cache.GetAnswerCount(id);
 
         return post;
     }
 
     public async Task<PostRedis[]> GetPage(int page, int pageSize, PostFilter filter)
     {
-        var posts = await _postRepository.GetCachedPage(page, pageSize, filter);
+        var posts = await _cache.GetPage(page, pageSize, filter);
 
         return await MapWithAnswerCounts(posts);
     }
@@ -312,26 +320,27 @@ public class PostsService
                 throw new ArgumentOutOfRangeException(nameof(query), query, null);
         }
 
-        await _postRepository.Update(id, post, true);
+        await _postRepository.Update(id, post);
+        await _cache.AddOrUpdate(post);
 
         return filename;
     }
 
     public async Task<Result<bool>> AddPinned(string postId)
     {
-        var result = await _postRepository.AddPinnedPosts(postId);
+        var result = await _cache.PinPost(postId);
 
         return !result ? Result<bool>.NotFound(postId) : true;
     }
 
     public async Task<PostRedis[]> GetPinned()
     {
-        return await MapWithAnswerCounts(await _postRepository.GetPinnedPosts());
+        return await MapWithAnswerCounts(await _cache.GetPinnedPosts());
     }
 
     private async Task<PostRedis> MapWithAnswerCounts(PostRedis post)
     {
-        post.AnswerCount = await _postRepository.GetAnswerCount(post.Id);
+        post.AnswerCount = await _cache.GetAnswerCount(post.Id);
 
         return post;
     }
@@ -341,7 +350,7 @@ public class PostsService
         var tasks = new Task<int>[posts.Length];
         for (var i = 0; i < posts.Length; i++)
         {
-            tasks[i] = _postRepository.GetAnswerCount(posts[i].Id);
+            tasks[i] = _cache.GetAnswerCount(posts[i].Id);
         }
 
         var answerCounts = await Task.WhenAll(tasks);
@@ -352,5 +361,12 @@ public class PostsService
         }
 
         return posts;
+    }
+
+    public async Task Publish(Post post)
+    {
+        post.Published = true;
+        await _postRepository.Update(post.ID, post);
+        await _cache.Publish(post);
     }
 }
