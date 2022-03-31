@@ -73,23 +73,8 @@ export default function Form({
 
           <TabPanels className="bg-black-lightest px-8 py-5 rounded-b-3xl">
             <TabPanel>
-              Forum Post
-              Discord
-              Pick’em
-              Spreadsheet
-              Bracket
-              Stream
-
-              • This is an osu!standard, scorev2, 1v1 tournament
-              • The rank range is #1 to #5,000
-              • Joining the discord is required
-              • The top 64 players from qualifiers will be placed into a double-elimination bracket
-
-              Current prizepool: 1500€
-
-              Check Forum Post for full information.
-              Registration ends January 2 (23:59UTC).
-              This registration is organized by nik.
+              {/* Handle BBCode/HTML/Markdown */}
+              {description}
             </TabPanel>
             <TabPanel>
               <span className="font-semibold text-3xl">

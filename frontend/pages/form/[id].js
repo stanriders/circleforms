@@ -11,7 +11,7 @@ export default function SingleForm({
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - Form</title>
+        <title>CircleForms - {form.title}</title>
       </Head>
 
       <section className="container mb-12">

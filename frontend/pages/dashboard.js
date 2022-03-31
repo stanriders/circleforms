@@ -11,6 +11,7 @@ import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import classNames from 'classnames'
 import useAuth from '../hooks/useAuth'
 import Link from 'next/link'
+import Unauthorized from '../components/pages/Unauthorized'
 
 export default function Dashboard() {
   const { user } = useContext(UserContext)
@@ -31,25 +32,9 @@ export default function Dashboard() {
     }
   }, [user])
 
-  if (!user) {
-    return (
-      <DefaultLayout>
-        <Head>
-          <title>CircleForms - Not Authorized</title>
-        </Head>
 
-        <Hero>
-          <div className="flex flex-col justify-center items-center py-16 md:py-32 lg:pt-52 lg:pb-72">
-              <p className="text-4xl lg:-mt-10 text-center">
-                You are not logged in.
-              </p>
-              <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
-                <Button large href="/api/OAuth/auth">Login to access your dashboard</Button>
-              </div>
-          </div>
-        </Hero>
-      </DefaultLayout>
-    )
+  if (!user) {
+    return <Unauthorized />
   }
 
   return (
@@ -71,8 +56,10 @@ export default function Dashboard() {
                 <SVG src="/svg/plus.svg" />
             </a>
           </Link>
-          {forms.map(form => (
-            <FormCard key={form.id} {...form} />
+          {forms.map((form, index) => (
+            <FormCard
+              key={form?.id ? form.id : index}
+              {...form} />
           ))}
         </div>
       </section>
