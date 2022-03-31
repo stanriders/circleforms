@@ -59,7 +59,9 @@ export default function Form({
 
           <div className="p-4 bg-black-lightest rounded-14">
             <span className="text-4xl font-bold leading-5">Status:</span>
-            <Tag label="Active" theme="success" />
+            <Tag
+              label={is_active ? 'Active' : 'Inactive'}
+              theme={is_active ? 'success': 'stale'} />
           </div>
         </div>
 
