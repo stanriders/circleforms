@@ -148,10 +148,8 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
-    ///     Publish a post. (Requires auth)
+    ///     Unpublish a post. (Requires auth)
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
     [Authorize]
     [HttpPost(ApiEndpoints.PostUnpublish)]
     public async Task<IActionResult> Unpublish(string id)
