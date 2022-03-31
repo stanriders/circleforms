@@ -18,6 +18,7 @@ export default function Form({
   publish_time,
   accessibility,
   limitations,
+  answer_count
 }) {
   const router = useRouter()
   const bannerImg = getImage({ id, banner, type: 'banner' })
@@ -51,7 +52,7 @@ export default function Form({
             <div>
               <h1 className="text-4xl font-bold">{title}</h1>
               <p className="text-white text-opacity-50 text-2xl">
-                "count" answers submitted
+                {answer_count} answers submitted
               </p>
             </div>
           </div>
