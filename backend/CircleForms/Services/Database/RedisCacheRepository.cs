@@ -113,7 +113,7 @@ public class RedisCacheRepository : ICacheRepository
     {
         var postId = ToPostId(id);
         _logger.LogInformation("Deleting {PostId} from cache", postId);
-        var tasks = _postOccupation.Select(x => _redis.SortedSetRemoveAsync(x, id));
+        var tasks = _postOccupation.Select(x => _redis.SortedSetRemoveAsync(x, postId));
         await Task.WhenAll(tasks);
         _redis.StringGetDelete(postId);
         _redis.StringGetDelete(ToPostAnswersCount(id));
