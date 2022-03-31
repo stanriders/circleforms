@@ -40,4 +40,7 @@ public class PostRedis
 
     [JsonProperty("questions")]
     public List<Question> Questions { get; set; }
+
+    [JsonIgnore]
+    public int AnswerCount { get; set; }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using CircleForms.Models;
 using CircleForms.Models.Enums;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Users;
@@ -113,6 +112,14 @@ public class PostRepository : IPostRepository
         return JsonConvert.DeserializeObject<PostRedis>(val);
     }
 
+    public async Task<int> GetAnswerCount(string id)
+    {
+        var redisDb = _redis.GetDatabase();
+        var result = await redisDb.StringGetAsync($"post:{id}:answers");
+        result.TryParse(out int val);
+        return val;
+    }
+
     public async Task<PostRedis[]> GetCachedPage(int page, int pageSize, PostFilter filter)
     {
         var key = filter switch
@@ -178,7 +185,12 @@ public class PostRepository : IPostRepository
         if (result.ModifiedCount != 1)
         {
             _logger.LogInformation("Could not add answer {@Entry} to {PostId}", entry, postId);
+
+            return;
         }
+
+        var redisDb = _redis.GetDatabase();
+        await redisDb.StringIncrementAsync($"post:{postId}:answers");
     }
 
     public async Task<bool> AddPinnedPosts(string postId)
