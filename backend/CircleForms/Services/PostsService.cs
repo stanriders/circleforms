@@ -140,6 +140,7 @@ public class PostsService
     public async Task<Result<Post>> AddPost(string userId, Post post)
     {
         post.AuthorId = userId;
+        post.IsActive = true;
         if (post.Accessibility == Accessibility.Link)
         {
             post.AccessKey = GenerateAccessKey(6);
@@ -229,31 +230,42 @@ public class PostsService
     public async Task<Result<object>> GetDetailedPost(string claim, string id, string key)
     {
         var cachedResult = await GetCachedPost(id);
-        if (cachedResult.IsError)
-        {
-            return cachedResult;
-        }
-
         var cached = cachedResult.Value;
 
-        Post forceRequestedPost = null;
-        if (cached.Accessibility == Accessibility.Link)
+        if (cachedResult.IsError)
         {
-            if (string.IsNullOrEmpty(key) || key.Length != 6)
+            var postResultInCache = await Get(id);
+            if (postResultInCache.IsError)
             {
-                return Result<object>.NotFound(id);
+                return postResultInCache.Error();
             }
 
-            forceRequestedPost = await _postRepository.Get(id);
-            if (forceRequestedPost.AccessKey != key)
-            {
-                return Result<object>.NotFound(id);
-            }
+            return postResultInCache.Value.AuthorId == claim ? postResultInCache.Value : Result<object>.NotFound(id);
         }
 
-        return cached.AuthorId != claim
-            ? await MapWithAnswerCounts(cached)
-            : forceRequestedPost ?? await _postRepository.Get(id);
+        if (cached.AuthorId != claim && cached.Accessibility == Accessibility.Public)
+        {
+            return MapWithAnswerCounts(cached);
+        }
+
+        var postResult = await Get(id);
+        if (postResult.IsError)
+        {
+            return postResult.Error();
+        }
+
+        var post = postResult.Value;
+        if (post.AuthorId == claim)
+        {
+            return post;
+        }
+
+        if (post.Accessibility == Accessibility.Link && post.AccessKey == key)
+        {
+            return MapWithAnswerCounts(cached);
+        }
+
+        return Result<object>.NotFound(id);
     }
 
     public async Task<Result<Post>> Get(string id)
@@ -363,10 +375,63 @@ public class PostsService
         return posts;
     }
 
-    public async Task Publish(Post post)
+    public async Task<Result<Post>> Publish(string id, string claim)
     {
+        var postResult = await GetAndValidate(id, claim);
+        if (postResult.IsError)
+        {
+            return postResult;
+        }
+
+        var post = postResult.Value;
+        if (post.Published)
+        {
+            return post;
+        }
+
         post.Published = true;
+        post.PublishTime = DateTime.UtcNow;
         await _postRepository.Update(post.ID, post);
         await _cache.Publish(post);
+
+        return post;
+    }
+
+    public async Task<Result<Post>> Unpublish(string id, string claim)
+    {
+        var postResult = await GetAndValidate(id, claim);
+        if (postResult.IsError)
+        {
+            return postResult;
+        }
+
+        var post = postResult.Value;
+        if (!post.Published)
+        {
+            return post;
+        }
+
+        post.Published = false;
+        await _postRepository.Update(post.ID, post);
+        await _cache.Unpublish(post.ID);
+
+        return post;
+    }
+
+    private async Task<Result<Post>> GetAndValidate(string id, string claim)
+    {
+        var postResult = await Get(id);
+        if (postResult.IsError)
+        {
+            return postResult;
+        }
+
+        var post = postResult.Value;
+        if (post.AuthorId != claim)
+        {
+            return Result<Post>.NotFound(id);
+        }
+
+        return post;
     }
 }

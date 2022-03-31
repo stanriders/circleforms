@@ -35,7 +35,12 @@ public class Result<T>
 
     public static Result<T> NotFound(string id)
     {
-        return new(HttpStatusCode.NotFound, $"Entity {id} is not found");
+        return new Result<T>(HttpStatusCode.NotFound, $"Entity {id} is not found");
+    }
+
+    public Result<object> Error()
+    {
+        return new Result<object>(StatusCode, Message);
     }
 
     public IActionResult Map()
