@@ -36,4 +36,7 @@ public class PostMinimalResponseContract
 
     [JsonProperty("limitations")]
     public Limitations Limitations { get; set; }
+
+    [JsonProperty("answer_count")]
+    public int AnswerCount { get; set; }
 }
