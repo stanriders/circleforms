@@ -65,10 +65,10 @@ public class User : IEntity
 [Flags]
 public enum Roles
 {
-    User,
-    Admin,
-    Moderator,
-    SuperAdmin
+    User = 0,
+    Admin = 1,
+    Moderator = 2,
+    SuperAdmin = 4
 }
 
 public class UserBadge

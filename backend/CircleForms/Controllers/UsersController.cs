@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
-using CircleForms.Models;
 using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.AspNetCore.Authentication;
@@ -81,8 +80,15 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize(Roles = "SuperAdmin")]
     [HttpPatch(ApiEndpoints.UsersEscalateUserPrivileges)]
-    public async Task<UserResponseContract> EscalatePrivileges([RegularExpression(@"^\d$")] string id, int role)
+    [ProducesResponseType(typeof(UserResponseContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> EscalatePrivileges([RegularExpression(@"^\d+$")] string id, int role)
     {
+        if (!ModelState.IsValid)
+        {
+            return Unauthorized();
+        }
+
         var user = await _usersService.Get(id);
         user.Roles = (Roles) role;
 
@@ -91,7 +97,7 @@ public class UsersController : ControllerBase
 
         await _usersService.Update(id, user);
 
-        return _mapper.Map<UserResponseContract>(user);
+        return Ok(_mapper.Map<UserResponseContract>(user));
     }
 
     /// <summary>
