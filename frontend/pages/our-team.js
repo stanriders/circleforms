@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import Image from 'next/image'
+import Title from '../components/atoms/Title'
 import DefaultLayout from '../layouts'
 import constants, { team } from '../constants'
 import SVG from 'react-inlinesvg'
@@ -13,10 +14,9 @@ export default function OurTeam() {
         <title>CircleForms - Our Team</title>
       </Head>
 
-      <div className="flex justify-center relative py-6">
-        <img src="/images/team-decoration.png" className="absolute -ml-32" alt="team" />
-        <h1 className="text-6xl lg:text-8xl font-bold z-10 mt-4">OUR TEAM</h1>
-      </div>
+      <Title
+        title="OUR TEAM"
+        Decoration={Decoration} />
 
       <div className="grid grid-cols-1 mt-4 gap-y-4 mx-4 mb-4 lg:grid-cols-4 lg:gap-0 lg:m-0">
         {constants.team.map((member, index) => {
@@ -84,5 +84,11 @@ export default function OurTeam() {
         </a>
       </div>
     </DefaultLayout>
+  )
+}
+
+function Decoration() {
+  return (
+    <img src="/images/team-decoration.png" className="absolute -ml-32" alt="team" />
   )
 }
