@@ -37,6 +37,7 @@ public class PostRepository : IPostRepository
         var publishUnixTime = ToUnixTimestamp(post.PublishTime);
 
         _logger.LogInformation("User {Id} created a new post", id);
+        _logger.LogDebug("User {Id} created a new post {@Post}", id, post);
 
         await DB.Update<User>()
             .MatchID(id)
@@ -49,7 +50,7 @@ public class PostRepository : IPostRepository
         var postRedis = _mapper.Map<PostRedis>(post);
         var postJson = JsonConvert.SerializeObject(postRedis);
 
-        _logger.LogInformation("Adding {Post} to the cache", postJson);
+        _logger.LogInformation("Adding {Post} to the cache", postId);
         if (!await redisDb.StringSetAsync(postId, postJson))
         {
             _logger.LogError("Could not post {@Post} to the redis cache", postRedis);
@@ -147,14 +148,14 @@ public class PostRepository : IPostRepository
             .ExecuteAsync();
         if (result.ModifiedCount == 0)
         {
-            _logger.LogCritical("Post {@Post} with id {Id} modified 0 entities", post, id);
+            _logger.LogError("Post {@Post} with id {Id} modified 0 entities", post, id);
 
             return;
         }
 
         if (result.ModifiedCount != 1)
         {
-            _logger.LogCritical("Post {@Post} with id {Id} modified {Count} entities", post, id, result.ModifiedCount);
+            _logger.LogError("Post {@Post} with id {Id} modified {Count} entities", post, id, result.ModifiedCount);
         }
 
         if (!updateCache)
@@ -184,7 +185,7 @@ public class PostRepository : IPostRepository
             .ExecuteAsync();
         if (result.ModifiedCount != 1)
         {
-            _logger.LogInformation("Could not add answer {@Entry} to {PostId}", entry, postId);
+            _logger.LogError("Could not add answer {@Entry} to {PostId}", entry, postId);
 
             return;
         }
