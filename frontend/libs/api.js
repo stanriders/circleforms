@@ -1,18 +1,17 @@
-import * as mocks from '../mocks'
-
 export default async function api (endpoint, options) {
   if (process.env.NODE_ENV === 'development') {
+    const mocks = await import('../mocks')
     await wait(350)
 
     if (endpoint.includes('/posts/page')) {
       return mocks.forms
     }
 
-    if (endpoint.includes('/posts/id')) {
+    if (endpoint.includes('/posts/')) {
       return mocks.form
     }
 
-    if (endpoint.includes('/users/id/minimal')) {
+    if (endpoint.includes('/minimal')) {
       return mocks.userMinimal
     }
 

@@ -58,7 +58,7 @@ svg {
 }
 
 .button {
-  @apply font-body text-lg font-bold rounded-3xl px-5 py-2 transition ease-out-cubic;
+  @apply font-body text-lg font-bold rounded-3xl px-5 py-2 transition ease-out-cubic select-none;
 
   &.primary {
     @apply bg-black outline outline-3 outline-pink text-pink;
@@ -73,7 +73,7 @@ svg {
   }
 
   &.tertiary {
-    @apply outline-5 outline-dotted outline-pink;
+    @apply outline-5 outline-dashed outline-pink;
   }
 
   &.grey {

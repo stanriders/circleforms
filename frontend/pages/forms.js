@@ -13,8 +13,10 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import api from '../libs/api'
 import Loading from '../components/atoms/Loading'
+import { useRouter } from 'next/router'
 
 export default function FormsList() {
+  const router = useRouter()
   const [filter, setFilter] = useState('Both')
   const [page, setPage] = useState(1)
 
@@ -49,7 +51,12 @@ export default function FormsList() {
 
   // Update history and url when filter/page changes
   useEffect(() => {
-    history.pushState(null, null, `/forms?page=${page}&filter=${filter}`)
+    router.push({
+      query: {
+        page,
+        filter,
+      }
+    })
   }, [filter, page])
 
 

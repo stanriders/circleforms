@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Title from '../components/atoms/Title'
 import Hero from '../components/Hero'
 import DefaultLayout from '../layouts'
 import Button from '../components/atoms/Button'
@@ -9,15 +10,26 @@ import UserContext from '../components/context/UserContext'
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import classNames from 'classnames'
 import useAuth from '../hooks/useAuth'
+import Link from 'next/link'
 
 export default function Dashboard() {
   const { user } = useContext(UserContext)
   const { invalidateUserCache } = useAuth()
-  const [isFormOpen, setIsFormOpen] = useState(false)
+  const [forms, setForms] = useState(Array.from({ length: 11 }))
 
   useEffect(() => {
     invalidateUserCache()
   }, [])
+
+  useEffect(() => {
+    if (user?.posts.length) {
+      const newForms = [...forms]
+      user.posts.forEach((el, index) => {
+        newForms.splice(index, 1, el)
+      })
+      setForms(newForms)
+    }
+  }, [user])
 
   if (!user) {
     return (
@@ -46,86 +58,24 @@ export default function Dashboard() {
         <title>CircleForms - Dashboard</title>
       </Head>
 
-      <div className="flex justify-center relative py-6">
-        <svg className="absolute -ml-32" width="499" height="76" viewBox="0 0 499 76" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="182.553" height="75.893" rx="37.9465" fill="#FF66AA"/>
-          <rect x="283.061" width="129.223" height="75.893" rx="37.9465" fill="#FF66AA"/>
-          <rect x="195" width="72" height="76" rx="35.8953" fill="#FF66AA"/>
-          <rect x="424.59" width="73.8418" height="75.893" rx="36.9209" fill="#FF66AA"/>
-        </svg>
-        <div className="z-10 text-center">
-          <h1 className="text-6xl lg:text-8xl font-bold z-10 mt-4">DASHBOARD</h1>
-          <p className="text-2xl mt-2">
-            Create your "<span className="text-pink">CircleForms</span>".
-          </p>
-        </div>
-      </div>
+      <Title title="DASHBOARD">
+        The place where your forms are stored.
+      </Title>
 
-      <div className="space-y-9">
-        <section className="container bg-black-lightest rounded-40 px-8 py-5">
-          <div className="grid grid-cols-4 gap-x-10">
-            <button
-              onClick={() => setIsFormOpen(true)}
+      <section className="container bg-black-lightest rounded-40 px-8 py-5">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
+          <Link href="/create-a-form" passHref>
+            <a
               className="flex justify-center items-center bg-pink rounded-20 h-40 transition-transform ease-out-cubic hover:scale-99"
               title="Create your form">
                 <SVG src="/svg/plus.svg" />
-            </button>
-            <FormCard />
-            <FormCard />
-            <FormCard />
-          </div>
-        </section>
-
-        {/* Form design */}
-        <section className={classNames(
-          "container transition-opacity ease-out-cubic", isFormOpen ? 'opacity-100': 'opacity-0'
-        )}>
-          <Tabs>
-            <TabList>
-              <Tab>Design</Tab>
-            </TabList>
-
-            <TabPanels>
-              <TabPanel>
-                <span className="font-semibold text-3xl">
-                  Icon
-                </span>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </section>
-
-        {/* Questions / Responses / Options */}
-        <section className={classNames(
-          "container transition-opacity ease-out-cubic", isFormOpen ? 'opacity-100': 'opacity-0'
-        )}>
-          <Tabs>
-            <TabList>
-              <Tab>Questions</Tab>
-              <Tab>Responses</Tab>
-              <Tab>Options</Tab>
-            </TabList>
-
-            <TabPanels className="bg-black-lightest px-8 py-5 rounded-b-3xl">
-              <TabPanel>
-                <span className="font-semibold text-3xl">
-                  Questions
-                </span>
-              </TabPanel>
-              <TabPanel>
-                <span className="font-semibold text-3xl">
-                  Responses
-                </span>
-              </TabPanel>
-              <TabPanel>
-                <span className="font-semibold text-3xl">
-                  Options
-                </span>
-              </TabPanel>
-            </TabPanels>
-          </Tabs>
-        </section>
-      </div>
+            </a>
+          </Link>
+          {forms.map(form => (
+            <FormCard key={form.id} {...form} />
+          ))}
+        </div>
+      </section>
 
     </DefaultLayout>
   )

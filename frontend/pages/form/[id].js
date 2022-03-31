@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import { GetServerSidePropsContext } from 'next'
 import DefaultLayout from '../../layouts'
 import Form from '../../components/molecules/Form'
 import api from '../../libs/api'
@@ -22,9 +23,17 @@ export default function SingleForm({
   )
 }
 
+/**
+ * Get form data
+ *
+ * @param {GetServerSidePropsContext} context
+ * @returns
+ */
 export async function getServerSideProps(context) {
-  const form = await api('/posts/id')
-  const author = await api('/users/id/minimal')
+  const { id } = context.params
+
+  const form = await api(`/posts/${id}`)
+  const author = await api(`/users/${form.author_id}/minimal`)
 
   return {
     props: {

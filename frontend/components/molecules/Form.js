@@ -4,6 +4,7 @@ import * as timeago from 'timeago.js';
 import Tag from '../atoms/Tag'
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import Button from '../atoms/Button';
+import { useRouter } from 'next/router';
 
 export default function Form({
   id,
@@ -18,6 +19,7 @@ export default function Form({
   accessibility,
   limitations,
 }) {
+  const router = useRouter()
   const bannerImg = getImage({ id, banner, type: 'banner' })
   const iconImg = getImage({ id, icon, type: 'icon' })
 
@@ -95,7 +97,7 @@ export default function Form({
         </Tabs>
 
         <div className="flex justify-between">
-          <Button theme="dark">
+          <Button theme="dark" onClick={router.back}>
             Back
           </Button>
 
