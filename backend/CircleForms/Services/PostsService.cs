@@ -168,7 +168,8 @@ public class PostsService
             return new Result<Post>(HttpStatusCode.Unauthorized, "You can't update this post");
         }
 
-        _logger.LogInformation("User {Claim} updated the post {Id} with {@Updates}", userId, post.ID, updateContract);
+        _logger.LogInformation("User {Claim} updated the post {Id}", userId, post.ID);
+        _logger.LogDebug("User {Claim} updated the post {Id} with {Contract}", userId, post.ID, updateContract);
 
         var questions = post.Questions;
         var updatedPost = _mapper.Map(updateContract, post);

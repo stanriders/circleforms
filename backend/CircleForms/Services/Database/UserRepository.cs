@@ -39,7 +39,7 @@ public class UserRepository : IUserRepository
 
     public async Task<User> Create(User user)
     {
-        _logger.LogInformation("Creating a new user {@User}", user);
+        _logger.LogInformation("Creating a new user {User}", user.ID);
 
         user.Posts = new List<Post>();
         await DB.InsertAsync(user);
@@ -49,7 +49,8 @@ public class UserRepository : IUserRepository
 
     public async Task Update(string id, User user)
     {
-        _logger.LogInformation("Updating user {Id} with {@User}", id, user);
+        _logger.LogInformation("Updating user {Id}", id);
+        _logger.LogDebug("Updating user {Id} to {@User}", id, user);
 
         var result = await DB.Replace<User>()
             .MatchID(id)
@@ -61,14 +62,14 @@ public class UserRepository : IUserRepository
         }
         else if (result.ModifiedCount == 0)
         {
-            _logger.LogWarning("Could not update {Id} with {@User}", id, user);
+            _logger.LogError("Could not update {Id} with {@User}", id, user);
         }
     }
 
     public async Task Remove(User user)
     {
-        _logger.LogWarning("Removing user {@User}", user);
-        await DB.DeleteAsync<User>(user.ID);
+        _logger.LogDebug("Removing user {User}", user);
+        await Remove(user.ID);
     }
 
     public async Task Remove(string id)

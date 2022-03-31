@@ -114,7 +114,7 @@ public class OAuthController : ControllerBase
         var dbUser = await _usersRepository.Get(user.ID);
         if (dbUser is null)
         {
-            _logger.LogCritical("Something went horribly wrong. User is not in the database. User: {@User}", user);
+            _logger.LogError("Something went horribly wrong. User is not in the database. User: {@User}", user);
             await HttpContext.SignOutAsync("InternalCookies");
             await HttpContext.SignOutAsync("ExternalCookies");
 
