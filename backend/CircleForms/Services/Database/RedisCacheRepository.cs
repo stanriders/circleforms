@@ -14,8 +14,15 @@ namespace CircleForms.Services.Database;
 
 public class RedisCacheRepository : ICacheRepository
 {
-    private readonly IMapper _mapper;
+    private const string _postsSet = "posts";
+    private const string _activeSet = "posts:active";
+    private const string _inactiveSet = "posts:inactive";
+    private const string _pinnedSet = "posts:pinned";
+    private const string _userIds = "user_ids";
+
     private readonly ILogger<RedisCacheRepository> _logger;
+    private readonly IMapper _mapper;
+    private readonly string[] _postOccupation = {_postsSet, _activeSet, _pinnedSet, _inactiveSet};
     private readonly IDatabase _redis;
 
     public RedisCacheRepository(IConnectionMultiplexer redis, IMapper mapper, ILogger<RedisCacheRepository> logger)
@@ -23,71 +30,6 @@ public class RedisCacheRepository : ICacheRepository
         _mapper = mapper;
         _logger = logger;
         _redis = redis.GetDatabase();
-    }
-
-    private static string ToPostId(string id) => $"post:{id}";
-    private static string ToPostAnswersCount(string id) => $"post:{id}:answers";
-    private static string ToUserId(string user) => $"user:{user}";
-    private const string _postsSet = "posts";
-    private const string _activeSet = "posts:active";
-    private const string _inactiveSet = "posts:inactive";
-    private const string _pinnedSet = "posts:pinned";
-    private const string _userIds = "user_ids";
-    private readonly string[] _postOccupation = {_postsSet, _activeSet, _pinnedSet, _inactiveSet};
-
-    #region Mappings
-    private async Task<PostRedis> Map(string key)
-    {
-        var value = await _redis.StringGetAsync(key);
-
-        return JsonConvert.DeserializeObject<PostRedis>(value);
-    }
-
-    private async Task<PostRedis> Map(RedisValue key)
-    {
-        return await Map(key.ToString());
-    }
-
-    private async Task<PostRedis[]> Map(IEnumerable<string> stringKeys)
-    {
-        var keys = stringKeys.Select(x => (RedisKey) x.ToString()).ToArray();
-        return await Map(keys);
-    }
-
-    private async Task<PostRedis[]> Map(IEnumerable<RedisValue> stringKeys)
-    {
-        var keys = stringKeys.Select(x => (RedisKey) x.ToString()).ToArray();
-        return await Map(keys);
-    }
-
-    private async Task<PostRedis[]> Map(RedisKey[] keys)
-    {
-        var values = await _redis.StringGetAsync(keys);
-
-        return values.Select(x => JsonConvert.DeserializeObject<PostRedis>(x)).ToArray();
-    }
-    #endregion
-
-    private async Task PurgePost(string id)
-    {
-        var postId = ToPostId(id);
-        _logger.LogInformation("Deleting {PostId} from cache", postId);
-        var tasks = _postOccupation.Select(x => _redis.SortedSetRemoveAsync(x, id));
-        await Task.WhenAll(tasks);
-        _redis.StringGetDelete(postId);
-        _redis.StringGetDelete(ToPostAnswersCount(id));
-    }
-
-    private async Task SetActivity(Post post)
-    {
-        var removeFrom = post.IsActive ? _inactiveSet : _activeSet;
-        var addTo = post.IsActive ? _activeSet : _inactiveSet;
-
-         var postId = ToPostId(post.ID);
-         await Task.WhenAll(
-             _redis.SortedSetRemoveAsync(removeFrom, postId),
-             _redis.SortedSetAddAsync(addTo, postId, post.PublishTime.ToUnixTimestamp())
-         );
     }
 
     public async Task IncrementAnswers(string id)
@@ -105,6 +47,7 @@ public class RedisCacheRepository : ICacheRepository
         }
 
         await _redis.SetAddAsync(_pinnedSet, key);
+
         return true;
     }
 
@@ -151,16 +94,90 @@ public class RedisCacheRepository : ICacheRepository
         return postRedis;
     }
 
+    private static string ToPostId(string id)
+    {
+        return $"post:{id}";
+    }
+
+    private static string ToPostAnswersCount(string id)
+    {
+        return $"post:{id}:answers";
+    }
+
+    private static string ToUserId(string user)
+    {
+        return $"user:{user}";
+    }
+
+    private async Task PurgePost(string id)
+    {
+        var postId = ToPostId(id);
+        _logger.LogInformation("Deleting {PostId} from cache", postId);
+        var tasks = _postOccupation.Select(x => _redis.SortedSetRemoveAsync(x, id));
+        await Task.WhenAll(tasks);
+        _redis.StringGetDelete(postId);
+        _redis.StringGetDelete(ToPostAnswersCount(id));
+    }
+
+    private async Task SetActivity(Post post)
+    {
+        var removeFrom = post.IsActive ? _inactiveSet : _activeSet;
+        var addTo = post.IsActive ? _activeSet : _inactiveSet;
+
+        var postId = ToPostId(post.ID);
+        await Task.WhenAll(
+            _redis.SortedSetRemoveAsync(removeFrom, postId),
+            _redis.SortedSetAddAsync(addTo, postId, post.PublishTime.ToUnixTimestamp())
+        );
+    }
+
+    #region Mappings
+    private async Task<PostRedis> Map(string key)
+    {
+        var value = await _redis.StringGetAsync(key);
+
+        return !value.HasValue ? null : JsonConvert.DeserializeObject<PostRedis>(value);
+    }
+
+    private async Task<PostRedis> Map(RedisValue key)
+    {
+        return await Map(key.ToString());
+    }
+
+    private async Task<PostRedis[]> Map(IEnumerable<string> stringKeys)
+    {
+        var keys = stringKeys.Select(x => (RedisKey) x.ToString()).ToArray();
+
+        return await Map(keys);
+    }
+
+    private async Task<PostRedis[]> Map(IEnumerable<RedisValue> stringKeys)
+    {
+        var keys = stringKeys.Select(x => (RedisKey) x.ToString()).ToArray();
+
+        return await Map(keys);
+    }
+
+    private async Task<PostRedis[]> Map(RedisKey[] keys)
+    {
+        var values = await _redis.StringGetAsync(keys);
+
+        return values.Select(x => !x.HasValue ? null : JsonConvert.DeserializeObject<PostRedis>(x)).ToArray();
+    }
+    #endregion
+
     #region CRUD
     public async Task<PostRedis> GetPost(string id)
     {
         var postId = ToPostId(id);
+
         return await Map(postId);
     }
 
     public async Task<PostRedis[]> GetDump()
     {
         var ids = _redis.SortedSetRangeByScore(_postsSet, order: Order.Descending);
+
         return await Map(ids);
     }
 
