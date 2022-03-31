@@ -141,10 +141,50 @@ public class PostsController : ControllerBase
         var result = await _posts.AddPost(claim, post);
         if (!result.IsError)
         {
-            return CreatedAtAction("GetCachedPost", new {id = result.Value.ID}, result.Value);
+            return CreatedAtAction("GetDetailed", new {id = result.Value.ID}, result.Value);
         }
 
-        return result.Map(_ => _);
+        return result.Map();
+    }
+
+    /// <summary>
+    ///     Publish a post. (Requires auth)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [Authorize]
+    [HttpPost(ApiEndpoints.PostUnpublish)]
+    public async Task<IActionResult> Unpublish(string id)
+    {
+        var claim = HttpContext.User.Identity?.Name;
+        if (!ModelState.IsValid || string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _posts.Unpublish(id, claim);
+
+        return Map<Post, PostResponseContract>(result);
+    }
+
+    /// <summary>
+    ///     Publish a post. (Requires auth)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [Authorize]
+    [HttpPost(ApiEndpoints.PostPublish)]
+    public async Task<IActionResult> Publish(string id)
+    {
+        var claim = HttpContext.User.Identity?.Name;
+        if (!ModelState.IsValid || string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _posts.Publish(id, claim);
+
+        return Map<Post, PostResponseContract>(result);
     }
 
     /// <summary>
