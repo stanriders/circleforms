@@ -127,12 +127,6 @@ export default function FormsList() {
                 <Fragment>
                   <SubTitle>Pinned Forms</SubTitle>
                   <div className="flex flex-col gap-y-3">
-                    {pinnedValidating && (
-                      <div className="flex justify-center absolute top-4 z-50 left-1/2 transform -translate-x-1/2">
-                        <Loading />
-                      </div>
-                    )}
-
                     {pinnedForms && pinnedForms.posts.length > 0 && pinnedForms.posts.map(form => (
                       <FormEntry
                         key={form.id}
