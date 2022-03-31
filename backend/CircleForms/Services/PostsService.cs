@@ -13,7 +13,6 @@ using CircleForms.Models.Enums;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using CircleForms.Models.Posts.Questions.Submissions;
-using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
 using CircleForms.Services.IO;
 using Microsoft.AspNetCore.Http;
@@ -23,10 +22,10 @@ namespace CircleForms.Services;
 
 public class PostsService
 {
-    private readonly IStaticFilesService _staticFilesService;
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
+    private readonly IStaticFilesService _staticFilesService;
 
     public PostsService(ILogger<PostsController> logger, IStaticFilesService staticFilesService,
         IPostRepository postRepository, IMapper mapper)
@@ -243,7 +242,9 @@ public class PostsService
             }
         }
 
-        return cached.AuthorId != claim ? cached : forceRequestedPost ?? await _postRepository.Get(id);
+        return cached.AuthorId != claim
+            ? await MapWithAnswerCounts(cached)
+            : forceRequestedPost ?? await _postRepository.Get(id);
     }
 
     public async Task<Result<Post>> Get(string id)
@@ -260,19 +261,27 @@ public class PostsService
 
     public async Task<PostRedis[]> GetAllCached()
     {
-        return await _postRepository.GetCached();
+        return await MapWithAnswerCounts(await _postRepository.GetCached());
     }
 
     public async Task<Result<PostRedis>> GetCachedPost(string id)
     {
         var post = await _postRepository.GetCached(id);
+        if (post is null)
+        {
+            return Result<PostRedis>.NotFound(id);
+        }
 
-        return post ?? Result<PostRedis>.NotFound(id);
+        post.AnswerCount = await _postRepository.GetAnswerCount(id);
+
+        return post;
     }
 
     public async Task<PostRedis[]> GetPage(int page, int pageSize, PostFilter filter)
     {
-        return await _postRepository.GetCachedPage(page, pageSize, filter);
+        var posts = await _postRepository.GetCachedPage(page, pageSize, filter);
+
+        return await MapWithAnswerCounts(posts);
     }
 
     public async Task<Result<string>> SaveImage(string claim, string id, IFormFile image, ImageQuery query)
@@ -292,9 +301,11 @@ public class PostsService
         {
             case ImageQuery.Icon:
                 post.Icon = filename;
+
                 break;
             case ImageQuery.Banner:
                 post.Banner = filename;
+
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(query), query, null);
@@ -308,11 +319,37 @@ public class PostsService
     public async Task<Result<bool>> AddPinned(string postId)
     {
         var result = await _postRepository.AddPinnedPosts(postId);
+
         return !result ? Result<bool>.NotFound(postId) : true;
     }
 
     public async Task<PostRedis[]> GetPinned()
     {
-        return await _postRepository.GetPinnedPosts();
+        return await MapWithAnswerCounts(await _postRepository.GetPinnedPosts());
+    }
+
+    private async Task<PostRedis> MapWithAnswerCounts(PostRedis post)
+    {
+        post.AnswerCount = await _postRepository.GetAnswerCount(post.Id);
+
+        return post;
+    }
+
+    private async Task<PostRedis[]> MapWithAnswerCounts(PostRedis[] posts)
+    {
+        var tasks = new Task<int>[posts.Length];
+        for (var i = 0; i < posts.Length; i++)
+        {
+            tasks[i] = _postRepository.GetAnswerCount(posts[i].Id);
+        }
+
+        var answerCounts = await Task.WhenAll(tasks);
+
+        for (var i = 0; i < answerCounts.Length; i++)
+        {
+            posts[i].AnswerCount = answerCounts[i];
+        }
+
+        return posts;
     }
 }
