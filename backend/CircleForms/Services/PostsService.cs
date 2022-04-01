@@ -227,45 +227,67 @@ public class PostsService
         return new Result<Post>(post);
     }
 
+    private async Task<Result<object>> DetailedPostResponseForNonAuthor(PostRedis post, string key,
+        Post prefetchedPost = null)
+    {
+        if (post.Accessibility == Accessibility.Link)
+        {
+            if (prefetchedPost is null)
+            {
+                var privatePost = await Get(post.Id);
+                if (privatePost.IsError)
+                {
+                    return privatePost.Error();
+                }
+
+                prefetchedPost = privatePost.Value;
+            }
+
+            if (prefetchedPost.AccessKey != key || !prefetchedPost.Published)
+            {
+                return Result<object>.NotFound(post.Id);
+            }
+
+            return post;
+        }
+
+        if (post.Accessibility == Accessibility.Public)
+        {
+            return post;
+        }
+
+        return null;
+    }
+
     public async Task<Result<object>> GetDetailedPost(string claim, string id, string key)
     {
         var cachedResult = await GetCachedPost(id);
         var cached = cachedResult.Value;
 
-        if (cachedResult.IsError)
+        if (!cachedResult.IsError) //If post in cache (it means the post is public)
         {
-            var postResultInCache = await Get(id);
-            if (postResultInCache.IsError)
+            if (cached.AuthorId != claim)
             {
-                return postResultInCache.Error();
+                return DetailedPostResponseForNonAuthor(cached, key);
             }
-
-            return postResultInCache.Value.AuthorId == claim ? postResultInCache.Value : Result<object>.NotFound(id);
         }
 
-        if (cached.AuthorId != claim && cached.Accessibility == Accessibility.Public)
-        {
-            return MapWithAnswerCounts(cached);
-        }
-
+        //The post isn't public or author requests it
         var postResult = await Get(id);
+        var post = postResult.Value;
+
         if (postResult.IsError)
         {
             return postResult.Error();
         }
 
-        var post = postResult.Value;
-        if (post.AuthorId == claim)
+        //If post isn't public and non-author requests it
+        if (post.AuthorId != claim)
         {
-            return post;
+            return DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
         }
 
-        if (post.Accessibility == Accessibility.Link && post.AccessKey == key)
-        {
-            return MapWithAnswerCounts(cached);
-        }
-
-        return Result<object>.NotFound(id);
+        return post; //If author requests post
     }
 
     public async Task<Result<Post>> Get(string id)
