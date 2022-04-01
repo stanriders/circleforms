@@ -9,17 +9,17 @@ public static class ApiEndpoints
 
     #region Posts
     #region Post endpoints for users
-    public const string PostsAnswer = "/posts/{id}/answer";
+    public const string PostsAnswer = "/posts/{id}/answers";
     public const string PostsAddPost = "/posts";
-    public const string PostsOneCachedPost = "/posts/{id}";
-    public const string PostsDetailedPost = "/posts/{id}/detailed";
-    public const string PostUpdatePost = "/posts/{id}";
-    public const string PostUploadImage = "/posts/{id}/file";
+    public const string PostsDetailedPost = "/posts/{id}";
+    public const string PostsUpdatePost = "/posts/{id}";
+    public const string PostsUploadImage = "/posts/{id}/files";
     public const string PostPublish = "/posts/{id}/publish";
     public const string PostUnpublish = "/posts/{id}/unpublish";
     #endregion
 
-    public const string PostsAllCachedPosts = "/posts";
+    public const string PostsOneCachedPost = "/posts/cached/{id}";
+    public const string PostsAllCachedPosts = "/posts/cached";
     public const string PostsOneDatabasePost = "/posts/mongo/{id}";
     public const string PostsAllDatabasePosts = "/posts/mongo";
     #endregion

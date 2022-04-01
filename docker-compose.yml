@@ -22,6 +22,7 @@ services:
       - osuApi__CallbackUrl=/oauth/callback
     volumes:
       - ./logs/backend:/app/logs
+      - ./keys:/root/.aspnet/DataProtection-Keys
 
   frontend:
     build: ./frontend/.

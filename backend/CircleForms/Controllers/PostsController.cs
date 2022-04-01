@@ -61,7 +61,7 @@ public class PostsController : ControllerBase
     ///     Upload an image. (Requires auth)
     /// </summary>
     [Authorize]
-    [HttpPut(ApiEndpoints.PostUploadImage)]
+    [HttpPut(ApiEndpoints.PostsUploadImage)]
     public async Task<IActionResult> UploadImage(string id, IFormFile image, [FromQuery] ImageQuery query)
     {
         if (image is null)
@@ -152,7 +152,7 @@ public class PostsController : ControllerBase
     ///     Update post. (Requires auth)
     /// </summary>
     [Authorize]
-    [HttpPatch(ApiEndpoints.PostUpdatePost)]
+    [HttpPatch(ApiEndpoints.PostsUpdatePost)]
     [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
     public async Task<IActionResult> UpdatePost([FromBody] PostUpdateRequestContract updateContract, string id)
     {
@@ -234,6 +234,7 @@ public class PostsController : ControllerBase
     /// <summary>
     ///     Get a post.
     /// </summary>
+    [Authorize(Roles = "Admin,Moderator")]
     [HttpGet(ApiEndpoints.PostsOneCachedPost)]
     [ProducesResponseType(typeof(PostMinimalResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
