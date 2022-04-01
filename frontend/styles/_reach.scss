@@ -86,7 +86,7 @@
 }
 
 [data-reach-tab] {
-  @apply font-bold text-3xl py-3 flex-1 text-white transition-colors;
+  @apply font-bold text-3xl py-3 flex-1 text-white transition-colors select-none;
 
   &[aria-selected="true"] {
     @apply bg-black-lightest rounded-t-20;

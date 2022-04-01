@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import getImage from '../../utils/getImage'
 
 export default function FormThumbnail({
   id,
@@ -12,7 +13,7 @@ export default function FormThumbnail({
   accessibility,
   limitations,
 }) {
-  const iconImg = icon ? `https://assets.circleforms.net/${id}/${icon}` : `/images/form-entry-test-thumbnail.png`
+  const iconImg = getImage({ icon, id, type: 'icon' })
 
   return (
     <Link href={`/form/${id}`}>

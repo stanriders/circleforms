@@ -34,6 +34,8 @@ public class PostsController : ControllerBase
         _mapper = mapper;
     }
 
+    private string _claim => HttpContext.User.Identity!.Name;
+
     private IActionResult Map<T, TR>(Result<T> result)
     {
         return result.Map(arg => _mapper.Map<TR>(arg));
@@ -50,20 +52,7 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Answer(string id, [FromBody] List<SubmissionContract> answerContracts)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new {errors = ModelState.Values.Select(x => x.Errors.Select(v => v.ErrorMessage))});
-        }
-
-        var claim = HttpContext.User.Identity?.Name;
-        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
-        {
-            _logger.LogWarning("User had an invalid name claim on answer: {Claim}", claim);
-
-            return Unauthorized();
-        }
-
-        var postResult = await _posts.Answer(claim, id, answerContracts);
+        var postResult = await _posts.Answer(_claim, id, answerContracts);
 
         return postResult.Map();
     }
@@ -75,19 +64,6 @@ public class PostsController : ControllerBase
     [HttpPut(ApiEndpoints.PostUploadImage)]
     public async Task<IActionResult> UploadImage(string id, IFormFile image, [FromQuery] ImageQuery query)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new {errors = ModelState.Values.Select(x => x.Errors.Select(v => v.ErrorMessage))});
-        }
-
-        var claim = HttpContext.User.Identity?.Name;
-        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
-        {
-            _logger.LogWarning("User had an invalid name claim on answer: {Claim}", claim);
-
-            return Unauthorized();
-        }
-
         if (image is null)
         {
             return BadRequest("No multipart/form-data image was provided");
@@ -106,7 +82,7 @@ public class PostsController : ControllerBase
             return BadRequest("This image extension in not allowed");
         }
 
-        var result = await _posts.SaveImage(claim, id, image, query);
+        var result = await _posts.SaveImage(_claim, id, image, query);
 
         return result.Map();
     }
@@ -121,24 +97,11 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Post(PostRequestContract postContract)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new {errors = ModelState.Values.Select(x => x.Errors.Select(v => v.ErrorMessage))});
-        }
-
-        var claim = HttpContext.User.Identity?.Name;
-        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
-        {
-            _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
-
-            return Unauthorized();
-        }
-
         var post = _mapper.Map<Post>(postContract);
 
-        _logger.LogInformation("User {User} posts a post {PostId}", claim, post.ID);
+        _logger.LogInformation("User {User} posts a post {PostId}", _claim, post.ID);
 
-        var result = await _posts.AddPost(claim, post);
+        var result = await _posts.AddPost(_claim, post);
         if (!result.IsError)
         {
             return CreatedAtAction("GetDetailed", new {id = result.Value.ID}, result.Value);
@@ -193,18 +156,12 @@ public class PostsController : ControllerBase
     [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
     public async Task<IActionResult> UpdatePost([FromBody] PostUpdateRequestContract updateContract, string id)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest();
-        }
-
-        var claim = HttpContext.User.Identity?.Name;
-        if (string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
+        if (string.IsNullOrEmpty(_claim) || !long.TryParse(_claim, out _))
         {
             return Unauthorized();
         }
 
-        var result = await _posts.UpdatePost(claim, updateContract, id);
+        var result = await _posts.UpdatePost(_claim, updateContract, id);
 
         return Map<Post, PostResponseContract>(result);
     }
@@ -218,9 +175,7 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {
-        var claim = HttpContext.User.Identity?.Name;
-
-        var result = await _posts.GetDetailedPost(claim, id, key);
+        var result = await _posts.GetDetailedPost(_claim, id, key);
 
         return result.Map<object>(v =>
         {
@@ -243,7 +198,7 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(string id)
     {
-        _logger.LogInformation("User {User} requested a post from the database", HttpContext.User.Identity?.Name);
+        _logger.LogInformation("User {User} requested a post from the database", _claim);
 
         var result = await _posts.Get(id);
 
@@ -257,7 +212,7 @@ public class PostsController : ControllerBase
     [HttpGet(ApiEndpoints.PostsAllDatabasePosts)]
     public async Task<List<PostResponseContract>> Get()
     {
-        _logger.LogInformation("User {User} requested database posts dump", HttpContext.User.Identity?.Name);
+        _logger.LogInformation("User {User} requested database posts dump", _claim);
 
         return _mapper.Map<List<Post>, List<PostResponseContract>>(await _posts.GetAll());
     }
@@ -271,7 +226,7 @@ public class PostsController : ControllerBase
     [HttpGet(ApiEndpoints.PostsAllCachedPosts)]
     public async Task<PostMinimalResponseContract[]> GetCached()
     {
-        _logger.LogInformation("User {User} requested posts cache dump", HttpContext.User.Identity?.Name);
+        _logger.LogInformation("User {User} requested posts cache dump", _claim);
 
         return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _posts.GetAllCached());
     }

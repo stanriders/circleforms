@@ -58,7 +58,7 @@ svg {
 }
 
 .button {
-  @apply font-body text-lg font-bold rounded-3xl px-5 py-2 transition ease-out-cubic;
+  @apply font-body text-lg font-bold rounded-3xl px-5 py-2 transition ease-out-cubic select-none;
 
   &.primary {
     @apply bg-black outline outline-3 outline-pink text-pink;
@@ -73,11 +73,20 @@ svg {
   }
 
   &.tertiary {
-    @apply outline-5 outline-dotted outline-pink;
+    @apply outline-5 outline-dashed outline-pink;
   }
 
   &.grey {
     @apply font-body bg-grey-dark text-grey text-2xl font-semibold transition-colors ease-out-cubic;
+
+    &.active,
+    &:hover {
+      @apply bg-pink text-black-lighter font-bold;
+    }
+  }
+
+  &.dark {
+    @apply font-body bg-black-lighter text-white font-semibold transition-colors ease-out-cubic;
 
     &.active,
     &:hover {

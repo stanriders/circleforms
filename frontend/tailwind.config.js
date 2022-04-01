@@ -24,6 +24,7 @@ module.exports = {
         grey: {
           dark: "#2D2D2D",
           DEFAULT: "#999999",
+          border: 'rgba(255, 255, 255, 0.15)',
         },
         pink: {
           DEFAULT: '#FF66AA',
@@ -32,6 +33,7 @@ module.exports = {
         },
         green: {
           DEFAULT: '#ACFF8F',
+          dark: '#426636'
         },
         red: {
           DEFAULT: '#FF8F8F',

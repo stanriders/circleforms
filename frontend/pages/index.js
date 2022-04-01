@@ -78,8 +78,11 @@ export default function Home() {
                   </p>
                 )}
 
-                {data && data.length > 0 && data.map(form => (
-                  <FormEntry key={form.id} {...form} />
+                {data && data.posts.length > 0 && data.posts.map(form => (
+                  <FormEntry
+                    key={form.id}
+                    author={data.authors[form.author_id]}
+                    {...form} />
                 ))}
               </div>
             </div>

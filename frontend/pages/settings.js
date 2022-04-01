@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Title from '../components/atoms/Title'
 import Hero from '../components/Hero'
 import DefaultLayout from '../layouts'
 import Button from '../components/atoms/Button'
@@ -7,6 +8,7 @@ import SVG from 'react-inlinesvg'
 import UserContext from '../components/context/UserContext'
 import FormThumbnail from '../components/atoms/FormThumbnail'
 import useAuth from '../hooks/useAuth'
+import Unauthorized from '../components/pages/Unauthorized'
 
 export default function Settings() {
   const { user } = useContext(UserContext)
@@ -17,24 +19,7 @@ export default function Settings() {
   }, [])
 
   if (!user) {
-    return (
-      <DefaultLayout>
-        <Head>
-          <title>CircleForms - Not Authorized</title>
-        </Head>
-
-        <Hero>
-          <div className="flex flex-col justify-center items-center py-16 md:py-32 lg:pt-52 lg:pb-72">
-              <p className="text-4xl lg:-mt-10 text-center">
-                You are not logged in.
-              </p>
-              <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
-                <Button large href="/api/OAuth/auth">Login to access your dashboard</Button>
-              </div>
-          </div>
-        </Hero>
-      </DefaultLayout>
-    )
+    return <Unauthorized />
   }
 
   return (
@@ -43,19 +28,11 @@ export default function Settings() {
         <title>CircleForms - Settings</title>
       </Head>
 
-
-      <div className="flex justify-center relative py-6">
-        <svg className="absolute -ml-32" width="499" height="76" viewBox="0 0 499 76" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="182.553" height="75.893" rx="37.9465" fill="#FF66AA"/>
-          <rect x="283.061" width="129.223" height="75.893" rx="37.9465" fill="#FF66AA"/>
-          <rect x="195" width="72" height="76" rx="35.8953" fill="#FF66AA"/>
-          <rect x="424.59" width="73.8418" height="75.893" rx="36.9209" fill="#FF66AA"/>
-        </svg>
-        <div className="z-10 text-center">
-          <h1 className="text-6xl lg:text-8xl font-bold  mt-4">SETTINGS</h1>
-          <p className="text-2xl mt-2">Link your accounts and edit recently submitted forms.</p>
-        </div>
-      </div>
+      <Title title="SETTINGS">
+        <p className="text-2xl mt-2">
+          Link your accounts and edit recently submitted forms.
+        </p>
+      </Title>
 
       <section className="container bg-black-dark2 rounded-70 px-10 py-8">
         <div className="space-y-8">

@@ -13,10 +13,21 @@ import { Fragment, useEffect, useRef, useState } from 'react'
 import useSWR from 'swr'
 import api from '../libs/api'
 import Loading from '../components/atoms/Loading'
+import { useRouter } from 'next/router'
 
 export default function FormsList() {
+  const router = useRouter()
   const [filter, setFilter] = useState('Both')
   const [page, setPage] = useState(1)
+
+  const {
+    data: pinnedForms,
+    error: pinnedError,
+    isValidating: pinnedValidating
+  } = useSWR(
+    `/posts/page/pinned`,
+    api
+  )
 
   const { data, error, isValidating } = useSWR(
     `/posts/page/${page}?filter=${filter}&pageSize=10`,
@@ -40,7 +51,12 @@ export default function FormsList() {
 
   // Update history and url when filter/page changes
   useEffect(() => {
-    history.pushState(null, null, `/forms?page=${page}&filter=${filter}`)
+    router.push({
+      query: {
+        page,
+        filter,
+      }
+    })
   }, [filter, page])
 
 
@@ -107,14 +123,19 @@ export default function FormsList() {
               </div>
             </div>
             <div className="mt-6 px-7">
-              <SubTitle>Pinned Forms</SubTitle>
-              <div className="flex flex-col gap-y-3">
-                <FormEntry
-                  title="nik's winter cup 2022 Registration"
-                  description="osu!standard, scorev2, 1v1 tournament"
-                  author_id="nik"
-                />
-              </div>
+              {pinnedForms && pinnedForms.posts.length > 0 && (
+                <Fragment>
+                  <SubTitle>Pinned Forms</SubTitle>
+                  <div className="flex flex-col gap-y-3">
+                    {pinnedForms && pinnedForms.posts.length > 0 && pinnedForms.posts.map(form => (
+                      <FormEntry
+                        key={form.id}
+                        author={pinnedForms.authors[form.author_id]}
+                        {...form} />
+                    ))}
+                  </div>
+                </Fragment>
+              )}
               <SubTitle>Forms</SubTitle>
               <div className="flex flex-col gap-y-3 relative">
                 {isValidating && (
@@ -122,14 +143,17 @@ export default function FormsList() {
                     <Loading />
                   </div>
                 )}
-                {data && data.length === 0 && (
+                {data && data.posts.length === 0 && (
                   <p className="font-semibold text-center">
                     No found forms.<br/>
                     Come back later!
                   </p>
                 )}
-                {data && data.length > 0 && data.map(form => (
-                  <FormEntry key={form.id} {...form} />
+                {data && data.posts.length > 0 && data.posts.map(form => (
+                  <FormEntry
+                    key={form.id}
+                    author={data.authors[form.author_id]}
+                    {...form} />
                 ))}
               </div>
             </div>

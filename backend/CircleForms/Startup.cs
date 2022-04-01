@@ -60,6 +60,17 @@ public class Startup
                 options.LogoutPath = string.Empty;
                 options.Cookie.Path = "/";
                 options.SlidingExpiration = true;
+                options.Events.OnValidatePrincipal = context =>
+                {
+                    var name = context.Principal?.Identity?.Name;
+                    if (string.IsNullOrEmpty(name) || !long.TryParse(name, out _))
+                    {
+                        context.RejectPrincipal();
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    }
+
+                    return Task.CompletedTask;
+                };
                 options.Events.OnRedirectToLogin = context =>
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;

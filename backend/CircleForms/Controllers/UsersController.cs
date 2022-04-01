@@ -6,7 +6,6 @@ using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -28,6 +27,8 @@ public class UsersController : ControllerBase
         _mapper = mapper;
         _usersService = usersService;
     }
+
+    private string _claim => HttpContext.User.Identity!.Name;
 
     /// <summary>
     ///     Get user data.
@@ -70,7 +71,7 @@ public class UsersController : ControllerBase
     [HttpGet(ApiEndpoints.UsersGetAllUsers)]
     public async Task<List<UserResponseContract>> GetAll()
     {
-        _logger.LogInformation("Admin {Admin} requests users from the database", HttpContext.User.Identity?.Name);
+        _logger.LogInformation("Admin {Admin} requests users from the database", _claim);
 
         return _mapper.Map<List<User>, List<UserResponseContract>>(await _usersService.Get());
     }
@@ -84,15 +85,10 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> EscalatePrivileges([RegularExpression(@"^\d+$")] string id, int role)
     {
-        if (!ModelState.IsValid)
-        {
-            return Unauthorized();
-        }
-
         var user = await _usersService.Get(id);
         user.Roles = (Roles) role;
 
-        _logger.LogWarning("SuperAdmin {Admin} changes privileges of {Id} to {Role}", HttpContext.User.Identity?.Name,
+        _logger.LogWarning("SuperAdmin {Admin} changes privileges of {Id} to {Role}", _claim,
             id, user.Roles.ToString());
 
         await _usersService.Update(id, user);
@@ -109,27 +105,16 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMe()
     {
-        var claim = HttpContext.User.Identity?.Name;
-        if (!string.IsNullOrEmpty(claim) && long.TryParse(claim, out var userId))
-        {
-            _logger.LogInformation("User {User} requests /me", userId);
+        _logger.LogInformation("User {User} requests /me", _claim);
 
-            var user = await _usersService.Get(claim);
-            if (user != null)
-            {
-                return Ok(_mapper.Map<UserResponseContract>(user));
-            }
-
-            _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", claim);
-        }
-        else
+        var user = await _usersService.Get(_claim);
+        if (user != null)
         {
-            _logger.LogWarning("User had an invalid name claim: {Claim}", claim);
+            return Ok(_mapper.Map<UserResponseContract>(user));
         }
 
-        // sign out in case of an invalid cookie just in case
-        await HttpContext.SignOutAsync("InternalCookies");
+        _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", _claim);
 
-        return Unauthorized();
+        return NotFound();
     }
 }
