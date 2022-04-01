@@ -392,7 +392,10 @@ public class PostsService
         post.Published = true;
         post.PublishTime = DateTime.UtcNow;
         await _postRepository.Update(post.ID, post);
-        await _cache.Publish(post);
+        if (post.Accessibility == Accessibility.Public)
+        {
+            await _cache.Publish(post);
+        }
 
         return post;
     }
