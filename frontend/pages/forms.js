@@ -14,6 +14,7 @@ import useSWR from 'swr'
 import api from '../libs/api'
 import Loading from '../components/atoms/Loading'
 import { useRouter } from 'next/router'
+import FormEntrySkeletonList from '../components/molecules/FormEntrySkeletonList'
 
 export default function FormsList() {
   const router = useRouter()
@@ -49,13 +50,15 @@ export default function FormsList() {
     }
   }, [])
 
-  // Update history and url when filter/page changes
+  // Update history and url when filter/page changesp
   useEffect(() => {
     router.push({
       query: {
         page,
         filter,
-      }
+      },
+    }, undefined, {
+      scroll: false,
     })
   }, [filter, page])
 
@@ -123,25 +126,11 @@ export default function FormsList() {
               </div>
             </div>
             <div className="mt-6 px-7">
-              {pinnedForms && pinnedForms.posts.length > 0 && (
-                <Fragment>
-                  <SubTitle>Pinned Forms</SubTitle>
-                  <div className="flex flex-col gap-y-3">
-                    {pinnedForms && pinnedForms.posts.length > 0 && pinnedForms.posts.map(form => (
-                      <FormEntry
-                        key={form.id}
-                        author={pinnedForms.authors[form.author_id]}
-                        {...form} />
-                    ))}
-                  </div>
-                </Fragment>
-              )}
+
               <SubTitle>Forms</SubTitle>
               <div className="flex flex-col gap-y-3 relative">
-                {isValidating && (
-                  <div className="flex justify-center absolute top-4 z-50 left-1/2 transform -translate-x-1/2">
-                    <Loading />
-                  </div>
+                {!data && isValidating && (
+                  <FormEntrySkeletonList length={10} />
                 )}
                 {data && data.posts.length === 0 && (
                   <p className="font-semibold text-center">
