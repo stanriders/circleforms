@@ -220,13 +220,6 @@ public class PostsController : ControllerBase
     {
         var claim = HttpContext.User.Identity?.Name;
 
-        if (claim is null)
-        {
-            var resultCached = await _posts.GetCachedPost(id);
-
-            return Map<PostRedis, PostDetailedResponseContract>(resultCached);
-        }
-
         var result = await _posts.GetDetailedPost(claim, id, key);
 
         return result.Map<object>(v =>
