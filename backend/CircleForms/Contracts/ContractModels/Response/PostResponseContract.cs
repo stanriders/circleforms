@@ -34,6 +34,9 @@ public class PostResponseContract
     [JsonProperty("description")]
     public string Description { get; set; }
 
+    [JsonProperty("excerpt")]
+    public string Excerpt { get; set; }
+
     [JsonProperty("accessibility")]
     public Accessibility Accessibility { get; set; }
 
