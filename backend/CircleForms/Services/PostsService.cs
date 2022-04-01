@@ -172,6 +172,11 @@ public class PostsService
             return new Result<Post>(HttpStatusCode.Unauthorized, "You can't update this post");
         }
 
+        if (post.Published && updateContract.Questions is not null)
+        {
+            return new Result<Post>("Question change is not allowed in published posts");
+        }
+
         _logger.LogInformation("User {Claim} updated the post {Id}", userId, post.ID);
         _logger.LogDebug("User {Claim} updated the post {Id} with {Contract}", userId, post.ID, updateContract);
 
