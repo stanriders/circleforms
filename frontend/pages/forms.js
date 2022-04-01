@@ -126,6 +126,19 @@ export default function FormsList() {
               </div>
             </div>
             <div className="mt-6 px-7">
+              {pinnedForms && pinnedForms.posts.length > 0 && (
+                <Fragment>
+                  <SubTitle>Pinned Forms</SubTitle>
+                  <div className="flex flex-col gap-y-3">
+                    {pinnedForms && pinnedForms.posts.length > 0 && pinnedForms.posts.map(form => (
+                      <FormEntry
+                        key={form.id}
+                        author={pinnedForms.authors[form.author_id]}
+                        {...form} />
+                    ))}
+                  </div>
+                </Fragment>
+              )}
 
               <SubTitle>Forms</SubTitle>
               <div className="flex flex-col gap-y-3 relative">

@@ -5,6 +5,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700&family=MuseoModerno:wght@500&display=swap');
 
 @import 'reach';
+@import 'inputs';
+@import 'bbcode';
 
 html,
 body {
@@ -30,7 +32,9 @@ body {
   @apply h-full;
 }
 
-* {
+*,
+*:before,
+*:after {
   box-sizing: border-box;
 }
 
@@ -221,4 +225,8 @@ svg {
   to {
     background-position: 150% 0;
   }
+}
+
+.bg-gradient {
+  background: linear-gradient(89.81deg, #0C0C0C 27.73%, #151515 46.49%, #0C0C0C 65.11%);
 }

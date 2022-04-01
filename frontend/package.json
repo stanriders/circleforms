@@ -9,6 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@bbob/core": "^2.8.0",
+    "@bbob/html": "^2.8.0",
+    "@bbob/plugin-helper": "^2.8.0",
+    "@bbob/preset": "^2.8.0",
+    "@bbob/preset-html5": "^2.8.0",
+    "@bbob/preset-react": "^2.8.0",
+    "@bbob/react": "^2.8.0",
     "@reach/menu-button": "^0.16.2",
     "@reach/tabs": "^0.16.4",
     "classnames": "^2.3.1",
@@ -18,6 +25,7 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-error-boundary": "^3.1.4",
+    "react-flagpack": "^1.2.0",
     "react-icons": "^4.3.1",
     "react-inlinesvg": "^2.3.0",
     "swr": "^1.2.2",

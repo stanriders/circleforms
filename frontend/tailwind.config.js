@@ -41,6 +41,7 @@ module.exports = {
           a: '#614e4e'
         },
         blue: {
+          DEFAULT: '#005ce7',
           discord: '#5865F2',
         }
       },
