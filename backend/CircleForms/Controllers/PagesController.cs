@@ -30,6 +30,30 @@ public class PagesController : ControllerBase
         _users = users;
     }
 
+    //TODO: Move it to PostService
+    private async Task<PageResponseContract> FillResponseContract(PageResponseContract responseContract,
+        PostRedis[] posts)
+    {
+        var authorIds = posts
+            .Select(x => x.AuthorId)
+            .Distinct()
+            .ToArray();
+
+        var minimalAuthors =
+            _mapper.Map<UserMinimalRedis[], UserMinimalResponseContract[]>(
+                await Task.WhenAll(authorIds.Select(x => _users.GetMinimal(x))));
+
+        for (var i = 0; i < minimalAuthors.Length; i++)
+        {
+            responseContract.Authors[authorIds[i]] = minimalAuthors[i];
+        }
+
+        var postsMinimal = _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(posts);
+        responseContract.Posts = postsMinimal;
+
+        return responseContract;
+    }
+
     /// <summary>
     ///     Get posts page.
     /// </summary>
@@ -57,33 +81,18 @@ public class PagesController : ControllerBase
             return Ok(responseContract);
         }
 
-        var authorIds = postsRedis
-            .Select(x => x.AuthorId)
-            .Distinct()
-            .ToArray();
-
-        var minimalAuthors = _mapper.Map<UserMinimalRedis[], UserMinimalResponseContract[]>(await Task.WhenAll(authorIds.Select(x => _users.GetMinimal(x))));
-
-        for (var i = 0; i < minimalAuthors.Length; i++)
-        {
-            responseContract.Authors[authorIds[i]] = minimalAuthors[i];
-        }
-
-        var posts = _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(postsRedis);
-        responseContract.Posts = posts;
-
-        return Ok(responseContract);
+        return Ok(await FillResponseContract(responseContract, postsRedis));
     }
 
     /// <summary>
     ///     Get all pinned posts
     /// </summary>
     [HttpGet(ApiEndpoints.PostsPagePinned)]
-    public async Task<PostMinimalResponseContract[]> GetPinned()
+    public async Task<PageResponseContract> GetPinned()
     {
         var posts = await _posts.GetPinned();
 
-        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(posts);
+        return await FillResponseContract(new PageResponseContract(), posts);
     }
 
     /// <summary>
