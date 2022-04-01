@@ -14,6 +14,18 @@ body {
   background-size: cover;
 }
 
+::-webkit-scrollbar {
+  @apply w-1;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply outline-none bg-pink rounded-14;
+}
+
+:root {
+  scrollbar-width: thin;
+}
+
 #__next {
   @apply h-full;
 }
