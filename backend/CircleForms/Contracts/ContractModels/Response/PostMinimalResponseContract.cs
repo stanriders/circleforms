@@ -28,6 +28,9 @@ public class PostMinimalResponseContract
     [JsonProperty("description")]
     public string Description { get; set; }
 
+    [JsonProperty("excerpt")]
+    public string Excerpt { get; set; }
+
     [JsonProperty("publish_time")]
     public DateTime PublishTime { get; set; }
 

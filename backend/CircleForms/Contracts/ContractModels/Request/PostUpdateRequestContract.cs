@@ -13,6 +13,9 @@ public class PostUpdateRequestContract
     [JsonProperty("description")]
     public string Description { get; set; }
 
+    [JsonProperty("excerpt")]
+    public string Excerpt { get; set; }
+
     [JsonProperty("is_active")]
     public bool IsActive { get; set; }
 
