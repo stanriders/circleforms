@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CircleForms.Models;
+namespace CircleForms.Extensions;
 
 public static class DateTimeExtensions
 {

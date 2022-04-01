@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using CircleForms.Extensions;
 using CircleForms.Models;
 using CircleForms.Models.Posts;
 using CircleForms.Services.Database.Interfaces;
