@@ -113,7 +113,7 @@ public class PostsController : ControllerBase
     /// <summary>
     ///     Unpublish a post. (Requires auth)
     /// </summary>
-    [Authorize]
+    [Authorize(Roles = "Admin,Moderator")]
     [HttpPost(ApiEndpoints.PostUnpublish)]
     public async Task<IActionResult> Unpublish(string id)
     {
