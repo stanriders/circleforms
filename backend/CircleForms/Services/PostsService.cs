@@ -273,7 +273,7 @@ public class PostsService
         {
             if (cached.AuthorId != claim)
             {
-                return DetailedPostResponseForNonAuthor(cached, key);
+                return await DetailedPostResponseForNonAuthor(cached, key);
             }
         }
 
@@ -289,7 +289,7 @@ public class PostsService
         //If post isn't public and non-author requests it
         if (post.AuthorId != claim)
         {
-            return DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
+            return await DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
         }
 
         return post; //If author requests post
