@@ -1,0 +1,14 @@
+.radio {
+  appearance: none;
+  margin: 0;
+  @apply h-5 w-5 rounded-full outline outline-2 outline-pink flex justify-center items-center;
+
+  &::before {
+    content: '';
+    @apply w-3 h-3 bg-pink rounded-full transform scale-0 transition ease-out-cubic;
+  }
+
+  &:checked::before {
+    @apply scale-100;
+  }
+}

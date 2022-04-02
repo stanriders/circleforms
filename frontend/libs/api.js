@@ -3,6 +3,10 @@ export default async function api (endpoint, options) {
     const mocks = await import('../mocks')
     await wait(350)
 
+    if (endpoint.includes('/posts/page/pinned')) {
+      return mocks.pinned
+    }
+
     if (endpoint.includes('/posts/page')) {
       return mocks.forms
     }

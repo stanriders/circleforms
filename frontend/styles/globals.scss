@@ -5,20 +5,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700&family=MuseoModerno:wght@500&display=swap');
 
 @import 'reach';
+@import 'inputs';
+@import 'bbcode';
 
 html,
 body {
-  @apply p-0 m-0 bg-black text-white font-body h-full;
+  @apply p-0 m-0 bg-black text-white font-body h-full scroll-smooth;
   background-image: url('/images/background-decorations.png');
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+::-webkit-scrollbar {
+  @apply w-1;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply outline-none bg-pink rounded-14;
+}
+
+:root {
+  scrollbar-width: thin;
 }
 
 #__next {
   @apply h-full;
 }
 
-* {
+*,
+*:before,
+*:after {
   box-sizing: border-box;
 }
 
@@ -194,4 +210,23 @@ svg {
   100% {
     transform: translate(24px, 0);
   }
+}
+
+.skeleton {
+  background-image:
+    linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.106) 200%, rgba(255, 255, 255, 0) 80%);
+  background-repeat: repeat-y;
+  background-size: 100px 200px;
+  background-position: 0 0;
+  animation: shine 1.3s infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 150% 0;
+  }
+}
+
+.bg-gradient {
+  background: linear-gradient(89.81deg, #0C0C0C 27.73%, #151515 46.49%, #0C0C0C 65.11%);
 }

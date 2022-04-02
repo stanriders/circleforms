@@ -25,6 +25,7 @@ module.exports = {
           dark: "#2D2D2D",
           DEFAULT: "#999999",
           border: 'rgba(255, 255, 255, 0.15)',
+          skeleton: 'rgba(255, 255, 255, 0.02)',
         },
         pink: {
           DEFAULT: '#FF66AA',
@@ -40,6 +41,7 @@ module.exports = {
           a: '#614e4e'
         },
         blue: {
+          DEFAULT: '#005ce7',
           discord: '#5865F2',
         }
       },

@@ -24,7 +24,7 @@ export default function Home() {
 
       <div className="flex flex-col justify-center items-center min-h-screen">
         <SVG
-          className="w-3/4"
+          className="w-3/4 max-w-6xl"
           src="/svg/logo.svg"
           alt="CircleForms" />
           <p className="font-museo lg:text-4xl mt-4 text-center">
