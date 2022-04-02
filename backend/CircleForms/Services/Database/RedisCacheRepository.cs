@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Extensions;
-using CircleForms.Models;
 using CircleForms.Models.Posts;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -25,12 +24,14 @@ public class RedisCacheRepository : ICacheRepository
     private readonly IMapper _mapper;
     private readonly string[] _postOccupation = {_postsSet, _activeSet, _pinnedSet, _inactiveSet};
     private readonly IDatabase _redis;
+    private readonly IConnectionMultiplexer _redisMultiplexer;
 
     public RedisCacheRepository(IConnectionMultiplexer redis, IMapper mapper, ILogger<RedisCacheRepository> logger)
     {
         _mapper = mapper;
         _logger = logger;
         _redis = redis.GetDatabase();
+        _redisMultiplexer = redis;
     }
 
     public async Task IncrementAnswers(string id)
@@ -50,6 +51,15 @@ public class RedisCacheRepository : ICacheRepository
         await _redis.SetAddAsync(_pinnedSet, key);
 
         return true;
+    }
+
+    public async Task Purge()
+    {
+        var endpoints = _redisMultiplexer.GetEndPoints();
+        foreach (var endpoint in endpoints)
+        {
+            await _redisMultiplexer.GetServer(endpoint).FlushAllDatabasesAsync();
+        }
     }
 
     public async Task<bool> UserExists(string id)
@@ -110,7 +120,7 @@ public class RedisCacheRepository : ICacheRepository
         return $"user:{user}";
     }
 
-    private async Task PurgePost(string id)
+    public async Task PurgePost(string id)
     {
         var postId = ToPostId(id);
         _logger.LogInformation("Deleting {PostId} from cache", postId);
