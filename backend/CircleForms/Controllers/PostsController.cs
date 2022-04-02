@@ -104,10 +104,48 @@ public class PostsController : ControllerBase
         var result = await _posts.AddPost(_claim, post);
         if (!result.IsError)
         {
-            return CreatedAtAction("GetCachedPost", new {id = result.Value.ID}, result.Value);
+            return CreatedAtAction("GetDetailed", new {id = result.Value.ID}, result.Value);
         }
 
-        return result.Map(_ => _);
+        return result.Map();
+    }
+
+    /// <summary>
+    ///     Unpublish a post. (Requires auth)
+    /// </summary>
+    [Authorize(Roles = "Admin,Moderator")]
+    [HttpPost(ApiEndpoints.PostUnpublish)]
+    public async Task<IActionResult> Unpublish(string id)
+    {
+        var claim = HttpContext.User.Identity?.Name;
+        if (!ModelState.IsValid || string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _posts.Unpublish(id, claim);
+
+        return Map<Post, PostResponseContract>(result);
+    }
+
+    /// <summary>
+    ///     Publish a post. (Requires auth)
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    [Authorize]
+    [HttpPost(ApiEndpoints.PostPublish)]
+    public async Task<IActionResult> Publish(string id)
+    {
+        var claim = HttpContext.User.Identity?.Name;
+        if (!ModelState.IsValid || string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
+        {
+            return Unauthorized();
+        }
+
+        var result = await _posts.Publish(id, claim);
+
+        return Map<Post, PostResponseContract>(result);
     }
 
     /// <summary>
@@ -137,13 +175,6 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {
-        if (_claim is null)
-        {
-            var resultCached = await _posts.GetCachedPost(id);
-
-            return Map<PostRedis, PostDetailedResponseContract>(resultCached);
-        }
-
         var result = await _posts.GetDetailedPost(_claim, id, key);
 
         return result.Map<object>(v =>

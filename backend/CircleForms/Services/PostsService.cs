@@ -22,18 +22,20 @@ namespace CircleForms.Services;
 
 public class PostsService
 {
+    private readonly ICacheRepository _cache;
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
     private readonly IStaticFilesService _staticFilesService;
 
     public PostsService(ILogger<PostsController> logger, IStaticFilesService staticFilesService,
-        IPostRepository postRepository, IMapper mapper)
+        IPostRepository postRepository, IMapper mapper, ICacheRepository cache)
     {
         _logger = logger;
         _staticFilesService = staticFilesService;
         _postRepository = postRepository;
         _mapper = mapper;
+        _cache = cache;
     }
 
     private Result<List<Submission>> ProcessAnswer(Post post,
@@ -111,6 +113,7 @@ public class PostsService
         };
 
         await _postRepository.AddAnswer(post.ID, answer);
+        await _cache.IncrementAnswers(post.ID);
 
         return new Result<bool>(true);
     }
@@ -137,6 +140,7 @@ public class PostsService
     public async Task<Result<Post>> AddPost(string userId, Post post)
     {
         post.AuthorId = userId;
+        post.IsActive = true;
         if (post.Accessibility == Accessibility.Link)
         {
             post.AccessKey = GenerateAccessKey(6);
@@ -166,6 +170,11 @@ public class PostsService
         if (post.AuthorId != userId)
         {
             return new Result<Post>(HttpStatusCode.Unauthorized, "You can't update this post");
+        }
+
+        if (post.Published && updateContract.Questions is not null)
+        {
+            return new Result<Post>("Question change is not allowed in published posts");
         }
 
         _logger.LogInformation("User {Claim} updated the post {Id}", userId, post.ID);
@@ -213,39 +222,77 @@ public class PostsService
 
         updatedPost.Questions = questions;
 
-        await _postRepository.Update(post.ID, post, true);
+        await _postRepository.Update(post.ID, post);
+        await _cache.AddOrUpdate(post);
+        if (post.Published)
+        {
+            await _cache.Publish(post);
+        }
 
         return new Result<Post>(post);
+    }
+
+    private async Task<Result<object>> DetailedPostResponseForNonAuthor(PostRedis post, string key,
+        Post prefetchedPost = null)
+    {
+        if (post.Accessibility == Accessibility.Link)
+        {
+            if (prefetchedPost is null)
+            {
+                var privatePost = await Get(post.Id);
+                if (privatePost.IsError)
+                {
+                    return privatePost.Error();
+                }
+
+                prefetchedPost = privatePost.Value;
+            }
+
+            if (prefetchedPost.AccessKey != key || !prefetchedPost.Published)
+            {
+                return Result<object>.NotFound(post.Id);
+            }
+
+            return post;
+        }
+
+        if (post.Accessibility == Accessibility.Public)
+        {
+            return post;
+        }
+
+        return null;
     }
 
     public async Task<Result<object>> GetDetailedPost(string claim, string id, string key)
     {
         var cachedResult = await GetCachedPost(id);
-        if (cachedResult.IsError)
-        {
-            return cachedResult;
-        }
-
         var cached = cachedResult.Value;
 
-        Post forceRequestedPost = null;
-        if (cached.Accessibility == Accessibility.Link)
+        if (!cachedResult.IsError) //If post in cache (it means the post is public)
         {
-            if (string.IsNullOrEmpty(key) || key.Length != 6)
+            if (cached.AuthorId != claim)
             {
-                return Result<object>.NotFound(id);
-            }
-
-            forceRequestedPost = await _postRepository.Get(id);
-            if (forceRequestedPost.AccessKey != key)
-            {
-                return Result<object>.NotFound(id);
+                return DetailedPostResponseForNonAuthor(cached, key);
             }
         }
 
-        return cached.AuthorId != claim
-            ? await MapWithAnswerCounts(cached)
-            : forceRequestedPost ?? await _postRepository.Get(id);
+        //The post isn't public or author requests it
+        var postResult = await Get(id);
+        var post = postResult.Value;
+
+        if (postResult.IsError)
+        {
+            return postResult.Error();
+        }
+
+        //If post isn't public and non-author requests it
+        if (post.AuthorId != claim)
+        {
+            return DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
+        }
+
+        return post; //If author requests post
     }
 
     public async Task<Result<Post>> Get(string id)
@@ -262,25 +309,25 @@ public class PostsService
 
     public async Task<PostRedis[]> GetAllCached()
     {
-        return await MapWithAnswerCounts(await _postRepository.GetCached());
+        return await MapWithAnswerCounts(await _cache.GetDump());
     }
 
     public async Task<Result<PostRedis>> GetCachedPost(string id)
     {
-        var post = await _postRepository.GetCached(id);
+        var post = await _cache.GetPost(id);
         if (post is null)
         {
             return Result<PostRedis>.NotFound(id);
         }
 
-        post.AnswerCount = await _postRepository.GetAnswerCount(id);
+        post.AnswerCount = await _cache.GetAnswerCount(id);
 
         return post;
     }
 
     public async Task<PostRedis[]> GetPage(int page, int pageSize, PostFilter filter)
     {
-        var posts = await _postRepository.GetCachedPage(page, pageSize, filter);
+        var posts = await _cache.GetPage(page, pageSize, filter);
 
         return await MapWithAnswerCounts(posts);
     }
@@ -312,26 +359,27 @@ public class PostsService
                 throw new ArgumentOutOfRangeException(nameof(query), query, null);
         }
 
-        await _postRepository.Update(id, post, true);
+        await _postRepository.Update(id, post);
+        await _cache.AddOrUpdate(post);
 
         return filename;
     }
 
     public async Task<Result<bool>> AddPinned(string postId)
     {
-        var result = await _postRepository.AddPinnedPosts(postId);
+        var result = await _cache.PinPost(postId);
 
         return !result ? Result<bool>.NotFound(postId) : true;
     }
 
     public async Task<PostRedis[]> GetPinned()
     {
-        return await MapWithAnswerCounts(await _postRepository.GetPinnedPosts());
+        return await MapWithAnswerCounts(await _cache.GetPinnedPosts());
     }
 
     private async Task<PostRedis> MapWithAnswerCounts(PostRedis post)
     {
-        post.AnswerCount = await _postRepository.GetAnswerCount(post.Id);
+        post.AnswerCount = await _cache.GetAnswerCount(post.Id);
 
         return post;
     }
@@ -341,7 +389,7 @@ public class PostsService
         var tasks = new Task<int>[posts.Length];
         for (var i = 0; i < posts.Length; i++)
         {
-            tasks[i] = _postRepository.GetAnswerCount(posts[i].Id);
+            tasks[i] = _cache.GetAnswerCount(posts[i].Id);
         }
 
         var answerCounts = await Task.WhenAll(tasks);
@@ -352,5 +400,68 @@ public class PostsService
         }
 
         return posts;
+    }
+
+    public async Task<Result<Post>> Publish(string id, string claim)
+    {
+        var postResult = await GetAndValidate(id, claim);
+        if (postResult.IsError)
+        {
+            return postResult;
+        }
+
+        var post = postResult.Value;
+        if (post.Published)
+        {
+            return post;
+        }
+
+        post.Published = true;
+        post.PublishTime = DateTime.UtcNow;
+        await _postRepository.Update(post.ID, post);
+        if (post.Accessibility == Accessibility.Public)
+        {
+            await _cache.Publish(post);
+        }
+
+        return post;
+    }
+
+    public async Task<Result<Post>> Unpublish(string id, string claim)
+    {
+        var postResult = await GetAndValidate(id, claim);
+        if (postResult.IsError)
+        {
+            return postResult;
+        }
+
+        var post = postResult.Value;
+        if (!post.Published)
+        {
+            return post;
+        }
+
+        post.Published = false;
+        await _postRepository.Update(post.ID, post);
+        await _cache.Unpublish(post.ID);
+
+        return post;
+    }
+
+    private async Task<Result<Post>> GetAndValidate(string id, string claim)
+    {
+        var postResult = await Get(id);
+        if (postResult.IsError)
+        {
+            return postResult;
+        }
+
+        var post = postResult.Value;
+        if (post.AuthorId != claim)
+        {
+            return Result<Post>.NotFound(id);
+        }
+
+        return post;
     }
 }

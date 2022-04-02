@@ -99,6 +99,7 @@ public class Startup
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IPostRepository, PostRepository>();
         services.AddTransient<PostsService>();
+        services.AddTransient<ICacheRepository, RedisCacheRepository>();
         services.AddTransient<IStaticFilesService, StaticFilesService>();
 
         DB.InitAsync("circleforms",
