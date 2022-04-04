@@ -37,12 +37,12 @@ public class RedisCacheRepository : ICacheRepository
 
     public async Task IncrementAnswers(string id)
     {
-        await _redis.StringIncrementAsync(ToPostAnswersCount(id));
+        await _redis.StringIncrementAsync(id.ToPostAnswersCount());
     }
 
     public async Task<bool> PinPost(string id)
     {
-        var key = ToPostId(id);
+        var key = id.ToPostId();
 
         if (!_redis.KeyExists(key))
         {
@@ -77,7 +77,7 @@ public class RedisCacheRepository : ICacheRepository
 
     public async Task RemoveUser(string userId)
     {
-        var id = ToUserId(userId);
+        var id = userId.ToUserId();
         await Task.WhenAll(_redis.KeyDeleteAsync(id), _redis.SetRemoveAsync(_userIds, id));
     }
 
@@ -90,7 +90,7 @@ public class RedisCacheRepository : ICacheRepository
     {
         await PurgePost(post.ID); //Purge just for fun
 
-        var postId = ToPostId(post.ID);
+        var postId = post.ID.ToPostId();
         var postRedis = _mapper.Map<PostRedis>(post);
         var postJson = JsonConvert.SerializeObject(postRedis);
 
@@ -114,29 +114,15 @@ public class RedisCacheRepository : ICacheRepository
         return postRedis;
     }
 
-    private static string ToPostId(string id)
-    {
-        return $"post:{id}";
-    }
-
-    private static string ToPostAnswersCount(string id)
-    {
-        return $"post:{id}:answers";
-    }
-
-    private static string ToUserId(string user)
-    {
-        return $"user:{user}";
-    }
 
     public async Task PurgePost(string id)
     {
-        var postId = ToPostId(id);
+        var postId = id.ToUserId();
         _logger.LogInformation("Deleting {PostId} from cache", postId);
         var tasks = _postOccupation.Select(x => _redis.SortedSetRemoveAsync(x, postId));
         await Task.WhenAll(tasks);
         _redis.StringGetDelete(postId);
-        _redis.StringGetDelete(ToPostAnswersCount(id));
+        _redis.StringGetDelete(id.ToPostAnswersCount());
     }
 
     private async Task SetActivity(Post post)
@@ -144,7 +130,7 @@ public class RedisCacheRepository : ICacheRepository
         var removeFrom = post.IsActive ? _inactiveSet : _activeSet;
         var addTo = post.IsActive ? _activeSet : _inactiveSet;
 
-        var postId = ToPostId(post.ID);
+        var postId = post.ID.ToPostId();
         await Task.WhenAll(
             _redis.SortedSetRemoveAsync(removeFrom, postId),
             _redis.SortedSetAddAsync(addTo, postId, post.PublishTime.ToUnixTimestamp())
@@ -189,7 +175,7 @@ public class RedisCacheRepository : ICacheRepository
     #region CRUD
     public async Task<PostRedis> GetPost(string id)
     {
-        var postId = ToPostId(id);
+        var postId = id.ToPostId();
 
         return await Map(postId);
     }
@@ -203,7 +189,7 @@ public class RedisCacheRepository : ICacheRepository
 
     public async Task<int> GetAnswerCount(string id)
     {
-        var result = await _redis.StringGetAsync(ToPostAnswersCount(id));
+        var result = await _redis.StringGetAsync(id.ToPostAnswersCount());
         result.TryParse(out int val);
 
         return val;
@@ -212,7 +198,7 @@ public class RedisCacheRepository : ICacheRepository
     public async Task<PostRedis> AddOrUpdate(Post post)
     {
         var map = _mapper.Map<PostRedis>(post);
-        await _redis.StringSetAsync(ToPostId(post.ID), JsonConvert.SerializeObject(map));
+        await _redis.StringSetAsync(post.ID.ToPostId(), JsonConvert.SerializeObject(map));
 
         return map;
     }
