@@ -148,11 +148,6 @@ public class OAuthController : ControllerBase
         else
         {
             //TODO: rewrite it
-            if (user.Roles.HasFlag(Roles.SuperAdmin))
-            {
-                claims.Add(new Claim(ClaimTypes.Role, "SuperAdmin"));
-            }
-
             if (user.Roles.HasFlag(Roles.Admin))
             {
                 claims.Add(new Claim(ClaimTypes.Role, "Admin"));
