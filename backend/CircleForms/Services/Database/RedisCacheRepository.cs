@@ -114,11 +114,6 @@ public class RedisCacheRepository : ICacheRepository
         return postRedis;
     }
 
-    public Task AddUser(User user, bool updateUserIds = true)
-    {
-        throw new NotImplementedException();
-    }
-
     private static string ToPostId(string id)
     {
         return $"post:{id}";
