@@ -83,10 +83,16 @@ public class UsersController : ControllerBase
     [HttpPatch(ApiEndpoints.UsersEscalateUserPrivileges)]
     [ProducesResponseType(typeof(UserResponseContract), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> EscalatePrivileges([RegularExpression(@"^\d+$")] string id, int role)
+    public async Task<IActionResult> EscalatePrivileges([RegularExpression(@"^\d+$")] string id, int roles)
     {
+        var role = (Roles) roles;
+        if (role.HasFlag(Roles.SuperAdmin))
+        {
+            return BadRequest("You can not escalate user's role to SuperAdmin");
+        }
+
         var user = await _usersService.Get(id);
-        user.Roles = (Roles) role;
+        user.Roles = role;
 
         _logger.LogWarning("SuperAdmin {Admin} changes privileges of {Id} to {Role}", _claim,
             id, user.Roles.ToString());
