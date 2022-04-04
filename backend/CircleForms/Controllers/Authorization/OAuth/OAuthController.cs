@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Contracts;
-using CircleForms.Models;
 using CircleForms.Models.Configurations;
 using CircleForms.Models.OsuContracts;
 using CircleForms.Models.Users;
@@ -140,19 +139,29 @@ public class OAuthController : ControllerBase
             new(ClaimTypes.Role, "User")
         };
 
-        if (user.Roles.HasFlag(Roles.SuperAdmin))
+        if (_superAdminsId.Contains(userId))
         {
             claims.Add(new Claim(ClaimTypes.Role, "SuperAdmin"));
-        }
-
-        if (user.Roles.HasFlag(Roles.Admin))
-        {
             claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-        }
-
-        if (user.Roles.HasFlag(Roles.Moderator))
-        {
             claims.Add(new Claim(ClaimTypes.Role, "Moderator"));
+        }
+        else
+        {
+            //TODO: rewrite it
+            if (user.Roles.HasFlag(Roles.SuperAdmin))
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "SuperAdmin"));
+            }
+
+            if (user.Roles.HasFlag(Roles.Admin))
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+            }
+
+            if (user.Roles.HasFlag(Roles.Moderator))
+            {
+                claims.Add(new Claim(ClaimTypes.Role, "Moderator"));
+            }
         }
 
         var id = new ClaimsIdentity(claims, "InternalCookies");
