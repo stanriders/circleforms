@@ -6,9 +6,7 @@ export default function Player() {
           className="w-14 h-14 rounded-14"
           src={`http://s.ppy.sh/a/2291265`}
           alt="{player name}'s avatar" />
-        <div className="bg-red-500">
-          PERU
-        </div>
+        <span className="fi fi-pe"></span>
         <span className="text-2xl font-bold">Arnold24x24</span>
       </div>
 
