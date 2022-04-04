@@ -10,6 +10,7 @@ public interface ICacheRepository
     Task<PostRedis> Publish(Post post);
     Task Unpublish(string id);
 
+    Task Purge();
     Task<bool> UserExists(string id);
     Task AddUserToUserIds(string id);
 

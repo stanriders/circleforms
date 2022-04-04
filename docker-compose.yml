@@ -10,13 +10,13 @@ services:
       - redis
       - mongodb
     ports:
-     - "3001:3001"
+      - "3001:3001"
     environment:
       - PathBase=/api
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:3001
       - ConnectionStrings__Database=mongodb://mongodb:mongodb@mongodb
-      - ConnectionStrings__Redis=redis:6379
+      - ConnectionStrings__Redis=redis:6379,allowAdmin=true
       - osuApi__ClientId=
       - osuApi__ClientSecret=
       - osuApi__CallbackUrl=/oauth/callback
@@ -27,7 +27,7 @@ services:
   frontend:
     build: ./frontend/.
     ports:
-     - "3000:3000"
+      - "3000:3000"
     volumes:
       - ./logs/frontend:/app/logs
       - ./logs/frontend/npm:/root/.npm/_logs
