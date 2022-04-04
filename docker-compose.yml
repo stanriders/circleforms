@@ -10,7 +10,7 @@ services:
       - redis
       - mongodb
     ports:
-      - "3001:3001"
+      - "127.0.0.1:3001:3001"
     environment:
       - PathBase=/api
       - ASPNETCORE_ENVIRONMENT=Development
@@ -27,7 +27,7 @@ services:
   frontend:
     build: ./frontend/.
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - ./logs/frontend:/app/logs
       - ./logs/frontend/npm:/root/.npm/_logs
@@ -35,7 +35,7 @@ services:
   redis:
     image: redis
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"
     volumes:
       - ./redis:/data
       - ./logs/redis:/var/log/redis
@@ -47,7 +47,7 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=mongodb
       - MONGO_INITDB_DATABASE=circleforms
     ports:
-      - "27017:27017"
+      - "127.0.0.1:27017:27017"
     volumes:
       - ./db:/data/db
       - ./logs/mongo:/var/log/mongodb
