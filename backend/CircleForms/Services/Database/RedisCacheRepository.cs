@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Extensions;
 using CircleForms.Models.Posts;
+using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -67,9 +68,17 @@ public class RedisCacheRepository : ICacheRepository
         return await _redis.SetContainsAsync(_userIds, id);
     }
 
-    public async Task AddUserToUserIds(string id)
+    public async Task AddUser(User user)
     {
-        await _redis.SetAddAsync(_userIds, id);
+        await _redis.SetAddAsync(_userIds, user.ID);
+        var cachedUser = _mapper.Map<User, UserMinimalRedis>(user);
+        await _redis.StringSetAsync($"user:{user.ID}", JsonConvert.SerializeObject(cachedUser));
+    }
+
+    public async Task RemoveUser(string userId)
+    {
+        var id = ToUserId(userId);
+        await Task.WhenAll(_redis.KeyDeleteAsync(id), _redis.SetRemoveAsync(_userIds, id));
     }
 
     public async Task Unpublish(string id)
@@ -103,6 +112,11 @@ public class RedisCacheRepository : ICacheRepository
         await SetActivity(post);
 
         return postRedis;
+    }
+
+    public Task AddUser(User user, bool updateUserIds = true)
+    {
+        throw new NotImplementedException();
     }
 
     private static string ToPostId(string id)

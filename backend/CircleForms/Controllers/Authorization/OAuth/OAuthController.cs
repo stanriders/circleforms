@@ -14,8 +14,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using StackExchange.Redis;
 
 namespace CircleForms.Controllers.Authorization.OAuth;
 
@@ -23,22 +21,22 @@ namespace CircleForms.Controllers.Authorization.OAuth;
 [Route("[controller]")]
 public class OAuthController : ControllerBase
 {
+    private readonly ICacheRepository _cache;
     private readonly ILogger<OAuthController> _logger;
     private readonly IMapper _mapper;
     private readonly IOsuApiProvider _osuApiDataService;
-    private readonly IConnectionMultiplexer _redis;
     private readonly List<long> _superAdminsId;
     private readonly IUserRepository _usersRepository;
 
     public OAuthController(ILogger<OAuthController> logger,
         IOsuApiProvider osuApiDataService,
-        IUserRepository usersRepository, IConnectionMultiplexer redis,
+        IUserRepository usersRepository, ICacheRepository cache,
         IOptions<SuperAdminsId> superAdminsId, IMapper mapper)
     {
         _logger = logger;
         _osuApiDataService = osuApiDataService;
         _usersRepository = usersRepository;
-        _redis = redis;
+        _cache = cache;
         _mapper = mapper;
         _superAdminsId = superAdminsId.Value.Ids;
     }
@@ -88,8 +86,7 @@ public class OAuthController : ControllerBase
         var user = _mapper.Map<OsuUser, User>(osuUser);
 
         var userId = osuUser.Id;
-        var redisDb = _redis.GetDatabase();
-        if (!redisDb.SetContains("user_ids", userId))
+        if (!await _cache.UserExists(user.ID))
         {
             if (await _usersRepository.Get(user.ID) == null)
             {
@@ -106,8 +103,6 @@ public class OAuthController : ControllerBase
                 _logger.LogWarning("User {Id} - {Username} found in the database but was not cached", user.ID,
                     user.Username);
             }
-
-            await redisDb.SetAddAsync("user_ids", userId);
         }
 
         var dbUser = await _usersRepository.Get(user.ID);
@@ -117,7 +112,7 @@ public class OAuthController : ControllerBase
             await HttpContext.SignOutAsync("InternalCookies");
             await HttpContext.SignOutAsync("ExternalCookies");
 
-            await redisDb.SetRemoveAsync("user_ids", userId);
+            await _cache.RemoveUser(user.ID);
 
             return StatusCode(500);
         }
@@ -168,8 +163,7 @@ public class OAuthController : ControllerBase
 
         await updateTask;
 
-        var cachedUser = _mapper.Map<User, UserMinimalRedis>(user);
-        await redisDb.StringSetAsync($"user:{user.ID}", JsonConvert.SerializeObject(cachedUser));
+        await _cache.AddUser(user);
 
         await HttpContext.SignInAsync("InternalCookies", new ClaimsPrincipal(id), authProperties);
         await HttpContext.SignOutAsync("ExternalCookies");

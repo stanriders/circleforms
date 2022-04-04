@@ -12,9 +12,9 @@ namespace CircleForms.Controllers.Admin;
 [Route("admin")]
 public class AdminController : ControllerBase
 {
-    private readonly IUserRepository _users;
     private readonly ICacheRepository _cache;
     private readonly IPostRepository _posts;
+    private readonly IUserRepository _users;
 
     public AdminController(IUserRepository users, ICacheRepository cache, IPostRepository posts)
     {
@@ -30,13 +30,13 @@ public class AdminController : ControllerBase
 
         var posts = await _posts.Get();
         var publishTask = posts
-                     .Where(post => post.Published && post.Accessibility == Accessibility.Public)
-                     .Select(x => _cache.Publish(x));
+            .Where(post => post.Published && post.Accessibility == Accessibility.Public)
+            .Select(x => _cache.Publish(x));
 
         await Task.WhenAll(publishTask);
 
         var users = await _users.Get();
-        var userPublishing = users.Select(x => _cache.AddUserToUserIds(x.ID));
+        var userPublishing = users.Select(x => _cache.AddUser(x));
 
         await Task.WhenAll(userPublishing);
     }
