@@ -88,9 +88,9 @@ public class PostsService
             return new Result<bool>(HttpStatusCode.BadRequest, "Could not find post with this id");
         }
 
-        if (!post.IsActive)
+        if (!post.IsActive || !post.Published)
         {
-            return new Result<bool>(HttpStatusCode.Forbidden, "The post is inactive");
+            return new Result<bool>(HttpStatusCode.BadRequest, "The post is inactive");
         }
 
         if (post.Answers.Any(x => x.ID == user))
@@ -109,7 +109,7 @@ public class PostsService
         var answer = new Answer
         {
             Submissions = submissions,
-            ID = user
+            User = user
         };
 
         await _postRepository.AddAnswer(post.ID, answer);
@@ -291,6 +291,9 @@ public class PostsService
         {
             return await DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
         }
+
+        var answerTask = post.Answers.Select(x => x.FetchUser());
+        await Task.WhenAll(answerTask);
 
         return post; //If author requests post
     }

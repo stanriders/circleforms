@@ -1,22 +1,35 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using CircleForms.Models.Posts.Questions.Submissions;
-using MongoDB.Bson.Serialization.Attributes;
+using CircleForms.Models.Users;
 using MongoDB.Entities;
 using Newtonsoft.Json;
 
 namespace CircleForms.Models.Posts;
 
-public class Answer : IEntity
+public class Answer : Entity
 {
     [JsonProperty("answers")]
     public List<Submission> Submissions { get; set; }
 
-    [BsonId]
-    [JsonProperty("user_id")]
-    public string ID { get; set; }
+    [JsonProperty("user")]
+    public One<User> User { get; set; }
 
-    public string GenerateNewID()
+    [JsonIgnore]
+    public User UserDto { get; set; }
+
+    public async Task FetchUser()
     {
-        return "";
+        UserDto = await User.ToEntityAsync(a => new User
+        {
+            ID = a.ID,
+            AvatarUrl = a.AvatarUrl,
+            CountryCode = a.CountryCode,
+            Username = a.Username,
+            Discord = a.Discord,
+            JoinDate = a.JoinDate,
+            Badges = a.Badges,
+            Statistics = a.Statistics
+        });
     }
 }
