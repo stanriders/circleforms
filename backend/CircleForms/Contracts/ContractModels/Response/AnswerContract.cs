@@ -6,7 +6,7 @@ namespace CircleForms.Contracts.ContractModels.Response;
 
 public class AnswerContract
 {
-    [JsonProperty("answers")]
+    [JsonProperty("submissions")]
     public List<Submission> Submissions { get; set; }
 
     [JsonProperty("user")]
