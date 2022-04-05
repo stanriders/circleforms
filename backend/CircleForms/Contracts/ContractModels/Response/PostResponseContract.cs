@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using CircleForms.Models;
 using CircleForms.Models.Enums;
-using CircleForms.Models.Posts;
 using CircleForms.Models.Posts.Questions;
 using Newtonsoft.Json;
 
@@ -50,7 +49,7 @@ public class PostResponseContract
     public List<Question> Questions { get; set; }
 
     [JsonProperty("answers")]
-    public List<Answer> Answers { get; set; }
+    public List<AnswerContract> Answers { get; set; }
 
     [JsonProperty("publish_time")]
     public DateTime PublishTime { get; set; }
