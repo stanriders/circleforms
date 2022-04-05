@@ -1,5 +1,4 @@
 import Head from 'next/head'
-import { GetServerSidePropsContext } from 'next'
 import DefaultLayout from '../../layouts'
 import Form from '../../components/molecules/Form'
 import api from '../../libs/api'
@@ -23,12 +22,6 @@ export default function SingleForm({
   )
 }
 
-/**
- * Get form data
- *
- * @param {GetServerSidePropsContext} context
- * @returns
- */
 export async function getServerSideProps(context) {
   const { id } = context.params
 
