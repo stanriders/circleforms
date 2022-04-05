@@ -111,19 +111,13 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
-    ///     Unpublish a post. (Requires auth)
+    ///     Unpublish a post. (Requires auth. Required Admin,Moderator)
     /// </summary>
     [Authorize(Roles = "Admin,Moderator")]
     [HttpPost(ApiEndpoints.PostUnpublish)]
     public async Task<IActionResult> Unpublish(string id)
     {
-        var claim = HttpContext.User.Identity?.Name;
-        if (!ModelState.IsValid || string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
-        {
-            return Unauthorized();
-        }
-
-        var result = await _posts.Unpublish(id, claim);
+        var result = await _posts.Unpublish(id, _claim);
 
         return Map<Post, PostResponseContract>(result);
     }
@@ -131,19 +125,11 @@ public class PostsController : ControllerBase
     /// <summary>
     ///     Publish a post. (Requires auth)
     /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
     [Authorize]
     [HttpPost(ApiEndpoints.PostPublish)]
     public async Task<IActionResult> Publish(string id)
     {
-        var claim = HttpContext.User.Identity?.Name;
-        if (!ModelState.IsValid || string.IsNullOrEmpty(claim) || !long.TryParse(claim, out _))
-        {
-            return Unauthorized();
-        }
-
-        var result = await _posts.Publish(id, claim);
+        var result = await _posts.Publish(id, _claim);
 
         return Map<Post, PostResponseContract>(result);
     }
@@ -156,11 +142,6 @@ public class PostsController : ControllerBase
     [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
     public async Task<IActionResult> UpdatePost([FromBody] PostUpdateRequestContract updateContract, string id)
     {
-        if (string.IsNullOrEmpty(_claim) || !long.TryParse(_claim, out _))
-        {
-            return Unauthorized();
-        }
-
         var result = await _posts.UpdatePost(_claim, updateContract, id);
 
         return Map<Post, PostResponseContract>(result);

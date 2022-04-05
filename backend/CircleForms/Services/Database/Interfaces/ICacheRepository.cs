@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using CircleForms.Models.Posts;
+using CircleForms.Models.Users;
 
 namespace CircleForms.Services.Database.Interfaces;
 
@@ -12,7 +13,7 @@ public interface ICacheRepository
 
     Task Purge();
     Task<bool> UserExists(string id);
-    Task AddUserToUserIds(string id);
+    Task AddUser(User user);
 
     Task<PostRedis> AddOrUpdate(Post post);
     Task<PostRedis> GetPost(string id);
@@ -20,4 +21,5 @@ public interface ICacheRepository
     Task<PostRedis[]> GetDump();
     Task<int> GetAnswerCount(string id);
     Task<PostRedis[]> GetPage(int page, int pageSize, PostFilter filter);
+    Task RemoveUser(string userId);
 }
