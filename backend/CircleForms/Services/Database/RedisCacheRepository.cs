@@ -72,7 +72,7 @@ public class RedisCacheRepository : ICacheRepository
     {
         await _redis.SetAddAsync(_userIds, user.ID);
         var cachedUser = _mapper.Map<User, UserMinimalRedis>(user);
-        await _redis.StringSetAsync($"user:{user.ID}", JsonConvert.SerializeObject(cachedUser));
+        await _redis.StringSetAsync(user.ID.ToUserId(), JsonConvert.SerializeObject(cachedUser));
     }
 
     public async Task RemoveUser(string userId)
