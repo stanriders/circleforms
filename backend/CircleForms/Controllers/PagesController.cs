@@ -21,13 +21,13 @@ public class PagesController : ControllerBase
 {
     private readonly IMapper _mapper;
     private readonly PostsService _posts;
-    private readonly IUserRepository _users;
+    private readonly ICacheRepository _cache;
 
-    public PagesController(IMapper mapper, PostsService posts, IUserRepository users)
+    public PagesController(IMapper mapper, PostsService posts, ICacheRepository cache)
     {
         _mapper = mapper;
         _posts = posts;
-        _users = users;
+        _cache = cache;
     }
 
     //TODO: Move it to PostService
@@ -41,7 +41,7 @@ public class PagesController : ControllerBase
 
         var minimalAuthors =
             _mapper.Map<UserMinimalRedis[], UserMinimalResponseContract[]>(
-                await Task.WhenAll(authorIds.Select(x => _users.GetMinimal(x))));
+                await Task.WhenAll(authorIds.Select(x => _cache.GetMinimalUser(x))));
 
         for (var i = 0; i < minimalAuthors.Length; i++)
         {

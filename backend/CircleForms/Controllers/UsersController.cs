@@ -20,12 +20,14 @@ public class UsersController : ControllerBase
     private readonly ILogger<UsersController> _logger;
     private readonly IMapper _mapper;
     private readonly IUserRepository _usersService;
+    private readonly ICacheRepository _cache;
 
-    public UsersController(ILogger<UsersController> logger, IMapper mapper, IUserRepository usersService)
+    public UsersController(ILogger<UsersController> logger, IMapper mapper, IUserRepository usersService, ICacheRepository cache)
     {
         _logger = logger;
         _mapper = mapper;
         _usersService = usersService;
+        _cache = cache;
     }
 
     private string _claim => HttpContext.User.Identity!.Name;
@@ -55,7 +57,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMinimal([RegularExpression(@"^\d+$")] string id)
     {
-        var user = await _usersService.GetMinimal(id);
+        var user = await _cache.GetMinimalUser(id);
         if (user != null)
         {
             return Ok(_mapper.Map<UserMinimalResponseContract>(user));

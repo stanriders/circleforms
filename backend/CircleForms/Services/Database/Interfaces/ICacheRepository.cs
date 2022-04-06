@@ -12,8 +12,10 @@ public interface ICacheRepository
     Task Unpublish(string id);
 
     Task Purge();
+
     Task<bool> UserExists(string id);
     Task AddUser(User user);
+    Task<UserMinimalRedis> GetMinimalUser(string id);
 
     Task<PostRedis> AddOrUpdate(Post post);
     Task<PostRedis> GetPost(string id);
