@@ -104,7 +104,7 @@ public class PostsController : ControllerBase
         var result = await _posts.AddPost(_claim, post);
         if (!result.IsError)
         {
-            return CreatedAtAction("GetDetailed", new {id = result.Value.ID}, result.Value);
+            return CreatedAtAction("GetDetailed", new {id = result.Value.ID, key = result.Value.AccessKey}, result.Value);
         }
 
         return result.Map();
