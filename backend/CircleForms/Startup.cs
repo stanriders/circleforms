@@ -14,6 +14,8 @@ using CircleForms.Services.Interfaces;
 using CircleForms.Services.IO;
 using CircleForms.Services.Request;
 using FluentValidation.AspNetCore;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -71,12 +73,16 @@ public class Startup
 
                     return Task.CompletedTask;
                 };
-                options.Events.OnRedirectToLogin = context =>
+
+                static Task UnauthorizedRedirect(RedirectContext<CookieAuthenticationOptions> context)
                 {
                     context.Response.StatusCode = StatusCodes.Status401Unauthorized;
 
                     return Task.CompletedTask;
-                };
+                }
+
+                options.Events.OnRedirectToLogin = UnauthorizedRedirect;
+                options.Events.OnRedirectToAccessDenied = UnauthorizedRedirect;
             })
             .AddCookie("ExternalCookies")
             .AddOAuth("osu", options =>
