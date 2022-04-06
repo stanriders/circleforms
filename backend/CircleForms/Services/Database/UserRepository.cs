@@ -30,9 +30,7 @@ public class UserRepository : IUserRepository
     public async Task<User> Create(User user)
     {
         _logger.LogInformation("Creating a new user {User}", user.ID);
-
-        user.Posts = new List<Post>();
-        await DB.InsertAsync(user);
+        await user.SaveAsync();
 
         return user;
     }
@@ -42,29 +40,13 @@ public class UserRepository : IUserRepository
         _logger.LogInformation("Updating user {Id}", id);
         _logger.LogDebug("Updating user {Id} to {@User}", id, user);
 
-        var result = await DB.Replace<User>()
-            .MatchID(id)
-            .WithEntity(user)
-            .ExecuteAsync();
-        if (result.MatchedCount == 0)
-        {
-            _logger.LogWarning("No user {Id} was found to update", id);
-        }
-        else if (result.ModifiedCount == 0)
-        {
-            _logger.LogError("Could not update {Id} with {@User}", id, user);
-        }
+        user.ID = id;
+        await user.SaveAsync();
     }
 
     public async Task Remove(User user)
     {
         _logger.LogDebug("Removing user {User}", user);
-        await Remove(user.ID);
-    }
-
-    public async Task Remove(string id)
-    {
-        _logger.LogWarning("Removing user {User}", id);
-        await DB.DeleteAsync<User>(id);
+        await user.DeleteAsync();
     }
 }

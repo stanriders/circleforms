@@ -2,52 +2,58 @@
 using System.Collections.Generic;
 using CircleForms.Models.Enums;
 using CircleForms.Models.Posts.Questions;
+using CircleForms.Models.Users;
 using MongoDB.Entities;
-using Newtonsoft.Json;
 
 namespace CircleForms.Models.Posts;
 
+[Collection("posts")]
 public class Post : Entity
 {
-    [JsonProperty("author_id")]
-    public string AuthorId { get; set; }
+    public Post()
+    {
+        this.InitOneToMany(() => Answers);
+    }
 
-    [JsonProperty("is_active")]
+    [Field("author")]
+    public One<User> Author { get; set; }
+
+    [Field("is_active")]
     public bool IsActive { get; set; }
 
-    [JsonProperty("title")]
+    [Field("title")]
     public string Title { get; set; }
 
-    [JsonProperty("icon")]
+    [Field("icon")]
     public string Icon { get; set; }
 
-    [JsonProperty("banner")]
+    [Field("banner")]
     public string Banner { get; set; }
 
-    [JsonProperty("access_key")]
+    [Field("access_key")]
     public string AccessKey { get; set; }
 
-    [JsonProperty("description")]
+    [Field("description")]
     public string Description { get; set; }
 
-    [JsonProperty("excerpt")]
+    [Field("excerpt")]
     public string Excerpt { get; set; }
 
-    [JsonProperty("accessibility")]
+    [Field("accessibility")]
     public Accessibility Accessibility { get; set; }
 
-    [JsonProperty("limitations")]
+    [Field("limitations")]
     public Limitations Limitations { get; set; }
 
-    [JsonProperty("published")]
+    [Field("published")]
     public bool Published { get; set; }
 
-    [JsonProperty("questions")]
+    [Field("questions")]
     public List<Question> Questions { get; set; }
 
-    [JsonProperty("answers")]
-    public List<Answer> Answers { get; set; }
+    [Field("answers")]
+    public Many<Answer> Answers { get; set; }
 
-    [JsonProperty("publish_time")]
+    [Field("publish_time")]
     public DateTime PublishTime { get; set; }
 }

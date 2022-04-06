@@ -3,19 +3,22 @@ using System.Threading.Tasks;
 using CircleForms.Models.Posts.Questions.Submissions;
 using CircleForms.Models.Users;
 using MongoDB.Entities;
-using Newtonsoft.Json;
 
 namespace CircleForms.Models.Posts;
 
+[Collection("answers")]
 public class Answer : Entity
 {
-    [JsonProperty("answers")]
+    [Field("answers")]
     public List<Submission> Submissions { get; set; }
 
-    [JsonProperty("user")]
+    [Field("user")]
     public One<User> User { get; set; }
+    
+    [Field("post")]
+    public One<Post> Post { get; set; }
 
-    [JsonIgnore]
+    [Ignore]
     public User UserDto { get; set; }
 
     public async Task FetchUser()

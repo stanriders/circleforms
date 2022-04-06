@@ -10,8 +10,15 @@ namespace CircleForms.Models.Users;
 [Collection("users")]
 public class User : IEntity
 {
+    public User()
+    {
+        this.InitOneToMany(() => Posts);
+        this.InitOneToMany(() => Answers);
+    }
+
     public TokenResponse Token { get; set; }
-    public List<Post> Posts { get; set; }
+    public Many<Post> Posts { get; set; }
+    public Many<Answer> Answers { get; set; }
 
     public Uri AvatarUrl { get; set; }
 

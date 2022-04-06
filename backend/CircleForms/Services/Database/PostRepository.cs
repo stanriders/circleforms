@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using CircleForms.Controllers;
 using CircleForms.Models.Posts;
 using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
@@ -14,84 +16,50 @@ namespace CircleForms.Services.Database;
 public class PostRepository : IPostRepository
 {
     private readonly ILogger<PostRepository> _logger;
+    private readonly IUserRepository _users;
 
-    public PostRepository(ILogger<PostRepository> logger)
+    public PostRepository(ILogger<PostRepository> logger, IUserRepository users)
     {
         _logger = logger;
+        _users = users;
     }
 
-    public async Task<Post> Add(string id, Post post)
+    public async Task<Post> Add(string userId, Post post)
     {
+        post.Author = userId;
         post.PublishTime = DateTime.UtcNow;
-        post.Answers = new List<Answer>();
 
-        _logger.LogInformation("User {Id} created a new post", id);
-        _logger.LogDebug("User {Id} created a new post {@Post}", id, post);
+        _logger.LogInformation("User {Id} created a new post", userId);
+        _logger.LogDebug("User {Id} created a new post {@Post}", userId, post);
 
-        await DB.Update<User>()
-            .MatchID(id)
-            .Modify(v => v.AddToSet(f => f.Posts, post))
-            .ExecuteAsync();
+        await post.SaveAsync();
+
+        await DB.Entity<User>(userId).Posts.AddAsync(post);
 
         return post;
     }
 
     public async Task<List<Post>> Get()
     {
-        var filterDefinition = DB.Filter<User>()
-            .SizeGt(x => x.Posts, 0);
-
-        var postsDocuments = await DB.Find<User, List<Post>>()
-            .Match(filterDefinition)
-            .Project(a => a.Posts)
-            .ExecuteAsync();
-
-        return postsDocuments.SelectMany(x => x).ToList();
+        return await DB.Fluent<Post>().ToListAsync();
     }
 
     public async Task<Post> Get(string postId)
     {
-        var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, x => x.ID == postId);
-
-        var post = await DB.Find<User, Post>()
-            .Match(filter)
-            .Project(x => x.Posts.First(post => post.ID == postId))
-            .ExecuteFirstAsync();
-
-        return post;
+        return await DB.Find<Post>().OneAsync(postId);
     }
 
-    public async Task AddAnswer(string postId, Answer entry)
+    public async Task AddAnswer(Post post, Answer entry)
     {
-        var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, post => post.ID == postId);
-        var result = await DB.Update<User>()
-            .Match(filter)
-            .Modify(a => a.AddToSet(v => v.Posts[-1].Answers, entry))
-            .ExecuteAsync();
-        if (result.ModifiedCount != 1)
-        {
-            _logger.LogError("Could not add answer {@Entry} to {PostId}", entry, postId);
-        }
+        entry.Post = post;
+        //TODO: transactions
+        await entry.SaveAsync();
+        await post.Answers.AddAsync(entry);
+        await DB.Entity<User>(entry.User.ID).Answers.AddAsync(entry);
     }
 
-    public async Task Update(string id, Post post)
+    public async Task Update(Post post)
     {
-        var filter = Builders<User>.Filter.ElemMatch(x => x.Posts, x => x.ID == id);
-
-        var result = await DB.Update<User>()
-            .Match(filter)
-            .Modify(x => x.Set(v => v.Posts[-1], post))
-            .ExecuteAsync();
-        if (result.ModifiedCount == 0)
-        {
-            _logger.LogError("Post {@Post} with id {Id} modified 0 entities", post, id);
-
-            return;
-        }
-
-        if (result.ModifiedCount != 1)
-        {
-            _logger.LogError("Post {@Post} with id {Id} modified {Count} entities", post, id, result.ModifiedCount);
-        }
+        await post.SaveAsync();
     }
 }

@@ -6,9 +6,9 @@ namespace CircleForms.Services.Database.Interfaces;
 
 public interface IPostRepository
 {
-    Task<Post> Add(string id, Post post);
+    Task<Post> Add(string userId, Post post);
     Task<List<Post>> Get();
     Task<Post> Get(string postId);
-    Task Update(string id, Post post);
-    Task AddAnswer(string postId, Answer entry);
+    Task Update(Post post);
+    Task AddAnswer(Post postId, Answer entry);
 }

@@ -12,5 +12,4 @@ public interface IUserRepository
     Task<User> Create(User user);
     Task Update(string id, User user);
     Task Remove(User user);
-    Task Remove(string id);
 }
