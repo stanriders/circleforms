@@ -84,7 +84,7 @@ public class RedisCacheRepository : ICacheRepository
     public async Task RemoveUser(string userId)
     {
         var id = userId.ToUserId();
-        await Task.WhenAll(_redis.KeyDeleteAsync(id), _redis.SetRemoveAsync(_userIds, id));
+        await Task.WhenAll(_redis.KeyDeleteAsync(id), _redis.SetRemoveAsync(_userIds, userId));
     }
 
     public async Task Unpublish(string id)
