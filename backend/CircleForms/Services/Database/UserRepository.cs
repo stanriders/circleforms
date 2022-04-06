@@ -5,15 +5,12 @@ using CircleForms.Models.Users;
 using CircleForms.Services.Database.Interfaces;
 using Microsoft.Extensions.Logging;
 using MongoDB.Entities;
-using Newtonsoft.Json;
-using StackExchange.Redis;
 
 namespace CircleForms.Services.Database;
 
 public class UserRepository : IUserRepository
 {
     private readonly ILogger<UserRepository> _logger;
-    private readonly IDatabase _redis;
 
     public UserRepository(ILogger<UserRepository> logger)
     {
