@@ -90,7 +90,7 @@ public class PostsService
 
         if (!post.IsActive || !post.Published)
         {
-            return new Result<bool>(HttpStatusCode.BadRequest, "The post is inactive");
+            return new Result<bool>(HttpStatusCode.BadRequest, "The post is inactive or unpublished");
         }
 
         if (post.Answers.Any(x => x.ID == user))
