@@ -9,7 +9,6 @@ export default function Error404() {
   const t = useTranslations()
   const router = useRouter()
 
-  console.log(router)
   return (
     <DefaultLayout>
       <Head>
