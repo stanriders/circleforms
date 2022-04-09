@@ -235,4 +235,9 @@ svg {
 .fi {
   width: 42px;
   height: 29px;
+
+  &.small {
+    height: 15px;
+    width: 22px;
+  }
 }

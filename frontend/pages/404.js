@@ -23,3 +23,22 @@ export default function Error404() {
     </DefaultLayout>
   )
 }
+
+export async function getStaticProps({ locale }) {
+  const [translations, global] = await Promise.all([
+    import(`../messages/404/${locale}.json`),
+    import(`../messages/global/${locale}.json`),
+  ])
+
+
+  const messages = {
+    ...translations,
+    ...global
+  }
+
+  return {
+    props: {
+      messages
+    }
+  };
+}

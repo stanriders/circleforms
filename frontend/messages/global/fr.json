@@ -1,0 +1,16 @@
+{
+  "global": {
+    "navbar": {
+      "home": "Accueil",
+      "forms": "Formulaires",
+      "team": "Notre Équipe",
+      "dashboard": "Tableau de bord",
+      "settings": "Paramètres",
+      "logout": "Se déconnecter",
+      "login": "Se connecter"
+    },
+    "meta": {
+      "description": "CircleForms est une alternative à Google Forms, visant à une modération plus pratique et plus rapide de divers projets sur osu!, notamment l'inscription aux tournois et bien plus encore."
+    }
+  }
+}

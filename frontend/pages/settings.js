@@ -9,8 +9,10 @@ import UserContext from '../components/context/UserContext'
 import FormThumbnail from '../components/atoms/FormThumbnail'
 import useAuth from '../hooks/useAuth'
 import Unauthorized from '../components/pages/Unauthorized'
+import { useTranslations } from 'next-intl'
 
 export default function Settings() {
+  const t = useTranslations()
   const { user } = useContext(UserContext)
   const { invalidateUserCache } = useAuth()
 
@@ -25,12 +27,12 @@ export default function Settings() {
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - Settings</title>
+        <title>CircleForms - { t('title') }</title>
       </Head>
 
-      <Title title="SETTINGS">
+      <Title title={t('subtitle')}>
         <p className="text-2xl mt-2">
-          Link your accounts and edit recently submitted forms.
+          { t('description') }
         </p>
       </Title>
 
@@ -45,12 +47,16 @@ export default function Settings() {
                 alt={user.username} />
               <div className="pl-3">
                 <h2 className="font-bold text-3xl">osu!</h2>
-                <p className="text-sm">osu! integration for CircleForms</p>
+                <p className="text-sm">{ t('integrations.osu.description') }</p>
               </div>
             </div>
             <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
-              <p>Connected to {user.id} ({user.username})</p>
-              <p>with {user.posts.length} submitted forms</p>
+              <p>{ t('integrations.osu.connectedTo') } {user.id} ({user.username})</p>
+              <p>
+                { t('integrations.osu.withForms', {
+                  count: user.posts.length
+                }) }
+              </p>
             </div>
           </div>
 
@@ -64,18 +70,37 @@ export default function Settings() {
               </div>
               <div className="pl-3">
                 <h2 className="font-bold text-3xl">Discord</h2>
-                <p className="text-sm">Discord integration for CircleForms</p>
+                <p className="text-sm">{ t('integrations.discord.description') }</p>
               </div>
             </div>
             <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
               <Button disabled style={{
                 outlineColor: '#5865F2',
                 color: '#5865F2'
-              }}>Connect</Button>
+              }}>{ t('connect') }</Button>
             </div>
           </div>
         </div>
       </section>
     </DefaultLayout>
   )
+}
+
+export async function getStaticProps({ locale }) {
+  const [translations, global] = await Promise.all([
+    import(`../messages/settings/${locale}.json`),
+    import(`../messages/global/${locale}.json`),
+  ])
+
+
+  const messages = {
+    ...translations,
+    ...global
+  }
+
+  return {
+    props: {
+      messages
+    }
+  };
 }

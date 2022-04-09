@@ -83,7 +83,6 @@ export default createPreset({
   style: (node) => toNode('span', toStyle(getStyleFromAttrs(node.attrs)), node.content),
   list: (node) => {
     const type = getUniqAttr(node.attrs)
-    console.log(type)
     const types = {
       1: 'decimal',
       a: 'lower-alpha',

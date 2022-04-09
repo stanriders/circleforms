@@ -19,3 +19,22 @@ export default function Privacy() {
     </DefaultLayout>
   )
 }
+
+export async function getStaticProps({ locale }) {
+  const [translations, global] = await Promise.all([
+    import(`../messages/privacy/${locale}.json`),
+    import(`../messages/global/${locale}.json`),
+  ])
+
+
+  const messages = {
+    ...translations,
+    ...global
+  }
+
+  return {
+    props: {
+      messages
+    }
+  };
+}
