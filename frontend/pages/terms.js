@@ -15,7 +15,7 @@ export default function Terms() {
       <Hero>
         <div className="flex flex-col justify-center items-center py-16 md:py-32 lg:pt-52 lg:pb-72">
           <p className="text-4xl lg:-mt-10 text-center">
-            // TODO
+            TODO
           </p>
         </div>
       </Hero>
