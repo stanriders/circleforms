@@ -85,36 +85,19 @@ public class OAuthController : ControllerBase
 
         var user = _mapper.Map<OsuUser, User>(osuUser);
 
-        var userId = osuUser.Id;
-        if (!await _cache.UserExists(user.ID))
-        {
-            if (await _usersRepository.Get(user.ID) == null)
-            {
-                if (_superAdminsId.Contains(userId))
-                {
-                    user.Roles = Roles.SuperAdmin | Roles.Admin | Roles.Moderator;
-                }
-
-                _logger.LogInformation("Adding user {Id} - {Username} to the database", user.ID, user.Username);
-                await _usersRepository.Create(user);
-            }
-            else
-            {
-                _logger.LogWarning("User {Id} - {Username} found in the database but was not cached", user.ID,
-                    user.Username);
-            }
-        }
-
         var dbUser = await _usersRepository.Get(user.ID);
+
         if (dbUser is null)
         {
-            _logger.LogError("Something went horribly wrong. User is not in the database. User: {@User}", user);
-            await HttpContext.SignOutAsync("InternalCookies");
-            await HttpContext.SignOutAsync("ExternalCookies");
+            if (_superAdminsId.Contains(osuUser.Id))
+            {
+                user.Roles = Roles.SuperAdmin | Roles.Admin | Roles.Moderator;
+            }
 
-            await _cache.RemoveUser(user.ID);
-
-            return StatusCode(500);
+            _logger.LogInformation("Adding user {Id} - {Username} to the database", user.ID, user.Username);
+            await _usersRepository.Create(user);
+            
+            dbUser = user;
         }
 
         user = TransferMutableData(dbUser, user);
@@ -134,7 +117,7 @@ public class OAuthController : ControllerBase
             new(ClaimTypes.Role, "User")
         };
 
-        if (_superAdminsId.Contains(userId))
+        if (_superAdminsId.Contains(osuUser.Id))
         {
             claims.Add(new Claim(ClaimTypes.Role, "SuperAdmin"));
             claims.Add(new Claim(ClaimTypes.Role, "Admin"));
