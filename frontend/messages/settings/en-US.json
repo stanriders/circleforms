@@ -1,0 +1,16 @@
+{
+  "title": "Settings",
+  "subtitle": "SETTINGS",
+  "description": "Link your accounts.",
+  "integrations": {
+    "osu": {
+      "description": "osu! integration for CircleForms",
+      "connectedTo": "Connected to",
+      "withForms": "with {count} submitted forms"
+    },
+    "discord": {
+      "description": "Discord integration for CircleForms"
+    }
+  },
+  "connect": "Connect"
+}

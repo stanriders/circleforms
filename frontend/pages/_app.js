@@ -5,6 +5,7 @@ import useAuth from '../hooks/useAuth'
 import NextNProgress from "nextjs-progressbar";
 import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from '../components/pages/ErrorFallback'
+import { NextIntlProvider } from 'next-intl'
 
 import '../styles/globals.scss'
 
@@ -12,15 +13,17 @@ function MyApp({ Component, pageProps }) {
   const { user } = useAuth()
 
   return (
-    <UserContext.Provider value={{ user }}>
-      <NextNProgress
-        color="#FF66AA"
-      />
-      <ErrorBoundary
-        FallbackComponent={ErrorFallback}>
-        <Component {...pageProps} />
-      </ErrorBoundary>
-    </UserContext.Provider>
+    <NextIntlProvider messages={pageProps.messages}>
+      <UserContext.Provider value={{ user }}>
+        <NextNProgress
+          color="#FF66AA"
+        />
+        <ErrorBoundary
+          FallbackComponent={ErrorFallback}>
+          <Component {...pageProps} />
+        </ErrorBoundary>
+      </UserContext.Provider>
+    </NextIntlProvider>
   )
 }
 

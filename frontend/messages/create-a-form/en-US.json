@@ -1,0 +1,10 @@
+{
+  "title": "Create a form",
+  "subtitle": "CREATE FORM",
+  "createYour": "Create your",
+  "tabs": {
+    "design": "Design",
+    "answers": "Answers",
+    "options": "Options"
+  }
+}

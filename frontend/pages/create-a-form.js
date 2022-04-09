@@ -11,6 +11,7 @@ import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import classNames from 'classnames'
 import InputFile from '../components/atoms/InputFile'
 import Unauthorized from '../components/pages/Unauthorized'
+import { useTranslations } from 'next-intl'
 
 const types = {
   SET_ICON: "SET_ICON",
@@ -40,6 +41,7 @@ function reducer(state, action) {
 };
 
 export default function Dashboard() {
+  const t = useTranslations()
   const { user } = useContext(UserContext)
   const [state, dispatch] = useReducer(reducer, initialState)
 
@@ -50,20 +52,20 @@ export default function Dashboard() {
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - Create a form</title>
+        <title>CircleForms - { t('title') }</title>
       </Head>
 
-      <Title title="CREATE FORM">
-        Create your "<span className="text-pink">CircleForms</span>".
+      <Title title={t('subtitle')}>
+        { t('createYour') } "<span className="text-pink">CircleForms</span>".
       </Title>
 
       <div className="space-y-9 px-4">
         <section className="container transition-opacity ease-out-cubic">
           <Tabs>
             <TabList>
-              <Tab>Design</Tab>
-              <Tab>Questions</Tab>
-              <Tab>Options</Tab>
+              <Tab>{ t('tabs.design') }</Tab>
+              <Tab>{ t('tabs.answers') }</Tab>
+              <Tab>{ t('tabs.options') }</Tab>
             </TabList>
 
             <TabPanels className="bg-black-lightest px-8 py-5 rounded-b-3xl">
@@ -109,4 +111,23 @@ export default function Dashboard() {
 
     </DefaultLayout>
   )
+}
+
+export async function getStaticProps({ locale }) {
+  const [translations, global] = await Promise.all([
+    import(`../messages/create-a-form/${locale}.json`),
+    import(`../messages/global/${locale}.json`),
+  ])
+
+
+  const messages = {
+    ...translations,
+    ...global
+  }
+
+  return {
+    props: {
+      messages
+    }
+  };
 }

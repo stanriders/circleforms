@@ -9,17 +9,19 @@ import FormEntry from '../components/atoms/FormEntry'
 import useSWR from 'swr'
 import api from '../libs/api'
 import Loading from '../components/atoms/Loading'
+import { useTranslations } from 'next-intl'
 
 export default function Home() {
   const { data, error, isValidating } = useSWR(
     `/posts/page/1?pageSize=4&filter=Active`,
     api
   )
+  const t = useTranslations()
 
   return (
     <DefaultLayout classname="">
       <Head>
-        <title>CircleForms - Home</title>
+        <title>CircleForms - { t('title') }</title>
       </Head>
 
       <div className="flex flex-col justify-center items-center min-h-screen">
@@ -28,26 +30,28 @@ export default function Home() {
           src="/svg/logo.svg"
           alt="CircleForms" />
           <p className="font-museo lg:text-4xl mt-4 text-center">
-            an innovative solution for your osu! projects.
+            { t('description') }
           </p>
           <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
-            <Button theme="secondary" large>Create form!</Button>
-            <Button theme="tertiary" large>Read more</Button>
+            <Button theme="secondary" large>{ t('createForm') }</Button>
+            <Button theme="tertiary" large>{ t('readMore') }</Button>
           </div>
       </div>
 
       <div className="bg-black-darker w-full py-32">
         <section className="small-container">
           <div className="flex flex-col lg:flex-row justify-between items-center mb-8">
-            <h2 className="text-6xl uppercase font-semibold">About project</h2>
+            <h2 className="text-6xl uppercase font-semibold">
+              { t('about.title') }
+            </h2>
             <SVG className="h-8 lg:h-11 lg:-ml-8" src="/svg/circles-sliders.svg" />
           </div>
           <div className="flex flex-col lg:flex-row gap-8 text-xl font-medium">
             <p className="lg:flex-1">
-              CircleForms is an alternative to google forms, aimed at more convenient and faster moderation of various projects on osu!, including registration for tournaments and much more.
+              { t('about.first') }
             </p>
             <p className="lg:flex-1">
-              We are not associated with osu! staff in any way, this is only a community project. Furthermore, we haven't taken assets from osu!, nor we are making profit from this project. It is something we created in our free time, for the people.
+              { t('about.second') }
             </p>
           </div>
         </section>
@@ -56,8 +60,12 @@ export default function Home() {
       <div className="bg-black w-full py-24">
         <section className="container">
           <div className="mb-8 text-center">
-            <h2 className="type-h1 uppercase">Recently created forms</h2>
-            <p className="text-white text-opacity-50 text-2xl">See the latest projects from the community hosts!</p>
+            <h2 className="type-h1 uppercase">
+              { t('recentForms.title') }
+            </h2>
+            <p className="text-white text-opacity-50 text-2xl">
+              { t('recentForms.description') }
+            </p>
           </div>
           <div className="rounded-3xl bg-black-darker p-6">
             <div className="flex flex-col gap-y-2 z-10 relative">
@@ -73,8 +81,7 @@ export default function Home() {
 
                 {data && data.length === 0 && (
                   <p className="font-semibold text-center">
-                    No found forms.<br/>
-                    Come back later!
+                    { t('noForms') }
                   </p>
                 )}
 
@@ -88,7 +95,7 @@ export default function Home() {
             </div>
             <div className="flex justify-center mt-4">
               <Button href="/forms" theme="secondary">
-                Show more!
+                { t('showMore') }
               </Button>
             </div>
           </div>
@@ -96,4 +103,22 @@ export default function Home() {
       </div>
     </DefaultLayout>
   )
+}
+
+export async function getStaticProps({ locale }) {
+  const [translations, global] = await Promise.all([
+    import(`../messages/index/${locale}.json`),
+    import(`../messages/global/${locale}.json`),
+  ])
+
+  const messages = {
+    ...translations,
+    ...global
+  }
+
+  return {
+    props: {
+      messages
+    }
+  };
 }
