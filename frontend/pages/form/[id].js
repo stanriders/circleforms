@@ -22,25 +22,15 @@ export default function SingleForm({
   )
 }
 
-export async function getServerSideProps(context) {
-  const { id } = context.params
+export async function getServerSideProps({ params, locale }) {
+  const { id } = params
 
-  const form = await api(`/posts/${id}`)
-  const author = await api(`/users/${form.author_id}/minimal`)
-
-  return {
-    props: {
-      form,
-      author
-    }
-  }
-}
-
-export async function getStaticProps({ locale }) {
-  const [translations, global] = await Promise.all([
-    import(`../messages/single-form/${locale}.json`),
-    import(`../messages/global/${locale}.json`),
+  const [form, translations, global] = await Promise.all([
+    await api(`/posts/${id}`),
+    import(`../../messages/single-form/${locale}.json`),
+    import(`../../messages/global/${locale}.json`),
   ])
+  const author = await api(`/users/${form.author_id}/minimal`)
 
 
   const messages = {
@@ -50,7 +40,9 @@ export async function getStaticProps({ locale }) {
 
   return {
     props: {
+      form,
+      author,
       messages
     }
-  };
+  }
 }

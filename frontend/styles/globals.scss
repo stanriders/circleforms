@@ -241,3 +241,7 @@ svg {
     width: 22px;
   }
 }
+
+.inline-link {
+  @apply text-blue underline hover:no-underline;
+}

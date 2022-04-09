@@ -2,8 +2,14 @@ import Head from 'next/head'
 import Hero from '../components/Hero'
 import DefaultLayout from '../layouts'
 import Button from '../components/atoms/Button'
+import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/router'
 
 export default function Error404() {
+  const t = useTranslations()
+  const router = useRouter()
+
+  console.log(router)
   return (
     <DefaultLayout>
       <Head>
@@ -12,11 +18,16 @@ export default function Error404() {
 
       <Hero>
         <div className="flex flex-col justify-center items-center py-16 md:py-32 lg:pt-52 lg:pb-72">
-            <p className="text-4xl lg:-mt-10 text-center">
-              There's nothing here.
-            </p>
+            <h3 className="text-4xl lg:-mt-10 text-center">
+              { t('subtitle') }
+            </h3>
+            <code className="mt-2 p-2 bg-black-lightest">
+              { router.asPath }
+            </code>
             <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
-              <Button theme="secondary" large href="/">Go back!</Button>
+              <Button theme="secondary" large href="/">
+                { t('goBack') }
+              </Button>
             </div>
         </div>
       </Hero>
