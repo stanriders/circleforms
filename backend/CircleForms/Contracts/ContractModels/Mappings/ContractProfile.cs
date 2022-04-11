@@ -32,7 +32,8 @@ public class ContractProfile : Profile
         CreateMap<Statistics, Response.Statistics>();
 
         CreateMap<Post, PostMinimalResponseContract>()
-            .ForMember(x => x.AuthorId, x => x.MapFrom(v => v.AuthorRelation.ID));
+            .ForMember(x => x.AuthorId, x => x.MapFrom(v => v.AuthorRelation.ID))
+            .ForMember(x => x.AnswerCount, x => x.MapFrom(v => v.Answers.Count));
         CreateMap<Post, PostResponseContract>()
             .ForMember(x => x.AuthorId, x => x.MapFrom(v => v.AuthorRelation.ID));
         CreateMap<PostRedis, PostMinimalResponseContract>();
