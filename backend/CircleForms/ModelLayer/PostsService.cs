@@ -40,12 +40,6 @@ public class PostsService
         _answer = answer;
     }
 
-
-    public async Task<Result> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
-    {
-        return await _answer.Answer(user, id, answerContracts);
-    }
-
     private static string GenerateAccessKey(byte size)
     {
         const string chars =
@@ -339,6 +333,4 @@ public class PostsService
 
         return posts;
     }
-
-
 }

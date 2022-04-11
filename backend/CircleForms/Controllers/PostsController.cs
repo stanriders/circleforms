@@ -2,12 +2,13 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.ModelLayer;
+using CircleForms.ModelLayer.Answers;
+using CircleForms.ModelLayer.Publish;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -20,23 +21,21 @@ namespace CircleForms.Controllers;
 public class PostsController : ControllerBase
 {
     private static readonly string[] _imageUploadExtensions = {".jpg", ".png"};
+    private readonly IAnswerService _answer;
     private readonly ILogger<PostsController> _logger;
-    private readonly IMapper _mapper;
     private readonly PostsService _posts;
+    private readonly IPublishService _publish;
 
-    public PostsController(ILogger<PostsController> logger, PostsService posts, IMapper mapper)
+    public PostsController(ILogger<PostsController> logger, PostsService posts, IAnswerService answer,
+        IPublishService publish)
     {
         _logger = logger;
         _posts = posts;
-        _mapper = mapper;
+        _answer = answer;
+        _publish = publish;
     }
 
     private string _claim => HttpContext.User.Identity!.Name;
-
-    private IActionResult Map<T, TR>(Result<T> result)
-    {
-        return result.Map(arg => _mapper.Map<TR>(arg));
-    }
 
     /// <summary>
     ///     Add answer to a question. (Requires auth)
@@ -49,7 +48,7 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Answer(string id, [FromBody] List<SubmissionContract> answerContracts)
     {
-        var postResult = await _posts.Answer(_claim, id, answerContracts);
+        var postResult = await _answer.Answer(_claim, id, answerContracts);
 
         return postResult.Map();
     }
@@ -112,7 +111,7 @@ public class PostsController : ControllerBase
     [HttpPost(ApiEndpoints.PostUnpublish)]
     public async Task<IActionResult> Unpublish(string id)
     {
-        var result = await _posts.Unpublish(id, _claim);
+        var result = await _publish.Unpublish(id, _claim);
 
         return result.Unwrap();
     }
@@ -124,7 +123,7 @@ public class PostsController : ControllerBase
     [HttpPost(ApiEndpoints.PostPublish)]
     public async Task<IActionResult> Publish(string id)
     {
-        var result = await _posts.Publish(id, _claim);
+        var result = await _publish.Publish(id, _claim);
 
         return result.Unwrap();
     }
