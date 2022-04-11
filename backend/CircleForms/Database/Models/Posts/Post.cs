@@ -10,16 +10,11 @@ namespace CircleForms.Database.Models.Posts;
 [Collection("posts")]
 public class Post : Entity
 {
-    public Post()
-    {
-        this.InitOneToMany(() => AnswersRelation);
-    }
-
     [Field("author")]
     public One<User> AuthorRelation { get; set; }
 
     [Field("answers")]
-    public Many<Answer> AnswersRelation { get; set; }
+    public List<Answer> Answers { get; set; }
 
     [Field("is_active")]
     public bool IsActive { get; set; }

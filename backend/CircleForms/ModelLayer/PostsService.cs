@@ -92,7 +92,7 @@ public class PostsService
             return new Result<bool>(HttpStatusCode.BadRequest, "The post is inactive or unpublished");
         }
 
-        if (post.AnswersRelation.Any(x => x.ID == user))
+        if (post.Answers.Any(x => x.ID == user))
         {
             return new Result<bool>(HttpStatusCode.Conflict, "You already voted");
         }
@@ -291,7 +291,7 @@ public class PostsService
             return await DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
         }
 
-        var answerTask = post.AnswersRelation.Select(x => x.FetchUser());
+        var answerTask = post.Answers.Select(x => x.FetchUser());
         await Task.WhenAll(answerTask);
 
         return post; //If author requests post

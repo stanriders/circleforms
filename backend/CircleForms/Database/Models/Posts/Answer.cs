@@ -6,7 +6,6 @@ using MongoDB.Entities;
 
 namespace CircleForms.Database.Models.Posts;
 
-[Collection("answers")]
 public class Answer : Entity
 {
     [Field("answers")]
@@ -14,9 +13,6 @@ public class Answer : Entity
 
     [Field("user")]
     public One<User> User { get; set; }
-
-    [Field("post")]
-    public One<Post> Post { get; set; }
 
     [Ignore]
     public User UserDto { get; set; }
