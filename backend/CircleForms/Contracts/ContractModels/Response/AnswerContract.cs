@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using CircleForms.Models.Posts.Questions.Submissions;
+using CircleForms.Database.Models.Posts.Questions.Submissions;
 using Newtonsoft.Json;
 
 namespace CircleForms.Contracts.ContractModels.Response;

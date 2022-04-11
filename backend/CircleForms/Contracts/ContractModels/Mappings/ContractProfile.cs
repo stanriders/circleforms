@@ -1,16 +1,16 @@
 ﻿using AutoMapper;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
-using CircleForms.Models.Posts;
-using CircleForms.Models.Posts.Questions;
-using CircleForms.Models.Posts.Questions.Submissions;
-using CircleForms.Models.Users;
-using GradeCounts = CircleForms.Models.Users.GradeCounts;
-using Level = CircleForms.Models.Users.Level;
-using MonthlyPlaycount = CircleForms.Models.Users.MonthlyPlaycount;
-using RankHistory = CircleForms.Models.Users.RankHistory;
-using Statistics = CircleForms.Models.Users.Statistics;
-using UserBadge = CircleForms.Models.Users.UserBadge;
+using CircleForms.Database.Models.Posts;
+using CircleForms.Database.Models.Posts.Questions;
+using CircleForms.Database.Models.Posts.Questions.Submissions;
+using CircleForms.Database.Models.Users;
+using GradeCounts = CircleForms.Database.Models.Users.GradeCounts;
+using Level = CircleForms.Database.Models.Users.Level;
+using MonthlyPlaycount = CircleForms.Database.Models.Users.MonthlyPlaycount;
+using RankHistory = CircleForms.Database.Models.Users.RankHistory;
+using Statistics = CircleForms.Database.Models.Users.Statistics;
+using UserBadge = CircleForms.Database.Models.Users.UserBadge;
 
 namespace CircleForms.Contracts.ContractModels.Mappings;
 

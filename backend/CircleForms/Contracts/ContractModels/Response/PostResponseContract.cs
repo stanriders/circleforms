@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using CircleForms.Models;
-using CircleForms.Models.Enums;
-using CircleForms.Models.Posts.Questions;
+using CircleForms.Database.Models.Posts.Enums;
+using CircleForms.Database.Models.Posts.Questions;
 using Newtonsoft.Json;
 
 namespace CircleForms.Contracts.ContractModels.Response;
