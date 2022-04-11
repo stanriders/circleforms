@@ -16,6 +16,7 @@ using CircleForms.IO.FileIO.Abstract;
 using CircleForms.IO.FileIO.Configuration;
 using CircleForms.ModelLayer;
 using CircleForms.ModelLayer.Answers;
+using CircleForms.ModelLayer.Publish;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -108,6 +109,7 @@ public class Startup
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IPostRepository, PostRepository>();
         services.AddTransient<IAnswerService, AnswerService>();
+        services.AddTransient<IPublishService, PublishService>();
         services.AddTransient<PostsService>();
         services.AddTransient<ICacheRepository, RedisCacheRepository>();
         services.AddTransient<IStaticFilesService, StaticFilesService>();
