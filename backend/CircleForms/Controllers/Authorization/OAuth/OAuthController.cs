@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 
 namespace CircleForms.Controllers.Authorization.OAuth;
 
@@ -84,6 +85,7 @@ public class OAuthController : ControllerBase
         }
 
         var user = _mapper.Map<OsuUser, User>(osuUser);
+        user.Osu = osuUser.ToBsonDocument();
 
         var dbUser = await _usersRepository.Get(user.ID);
 
@@ -173,7 +175,6 @@ public class OAuthController : ControllerBase
 
     private static User TransferMutableData(User dbUser, User osuUser)
     {
-        osuUser.Discord = dbUser.Discord;
         osuUser.PostsRelation = dbUser.PostsRelation;
         osuUser.Roles = dbUser.Roles;
 
