@@ -291,9 +291,7 @@ public class PostsService
             return await DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
         }
 
-        var answerTask = post.Answers.Select(x => x.FetchUser());
-        await Task.WhenAll(answerTask);
-
+        //TODO: answer's user fetching
         return post; //If author requests post
     }
 
