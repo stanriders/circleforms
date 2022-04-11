@@ -4,15 +4,15 @@ module.exports = {
   },
   navLinks: [
     {
-      label: 'Home',
+      id: 'home',
       href: '/'
     },
     {
-      label: 'Forms List',
+      id: 'forms',
       href: '/forms'
     },
     {
-      label: 'Our Team',
+      id: 'team',
       href: '/our-team'
     },
   ],

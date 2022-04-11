@@ -1,0 +1,16 @@
+{
+  "title": "Formulaires",
+  "subtitle": "Liste de formulaires",
+  "description": "Participez aux activités communautaires !",
+  "page": "page",
+  "filters": {
+    "title": "FILTRES",
+    "all": "Tous",
+    "active": "Actif",
+    "inactive": "Inactif"
+  },
+  "pinnedForms": "Formulaires épinglés",
+  "noForms": "Aucun formulaire trouvé. Revenez plus tard !",
+  "prev": "Précédent",
+  "next": "Suivant"
+}

@@ -1,4 +1,8 @@
+import { useTranslations } from "next-intl"
+
 export default function Player() {
+  const t = useTranslations('Player')
+
   return (
     <div className="bg-gradient w-full rounded-14 flex justify-between items-center pr-4">
       <div className="flex items-center gap-x-3">
@@ -12,11 +16,11 @@ export default function Player() {
 
       <div className="flex">
         <p className="flex flex-col items-end">
-          <span className="text-xs">Global Ranking</span>
+          <span className="text-xs">{ t('globalRanking') }</span>
           <span className="text-2xl font-bold">#6</span>
         </p>
         <p className="flex flex-col items-end lg:ml-6">
-          <span className="text-xs">Country Ranking</span>
+          <span className="text-xs">{ t('countryRanking') }</span>
           <span className="text-2xl font-bold">#1</span>
         </p>
         <p className="flex flex-col items-end lg:ml-20">

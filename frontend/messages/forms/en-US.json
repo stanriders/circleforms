@@ -1,0 +1,16 @@
+{
+  "title": "Forms",
+  "subtitle": "Forms list",
+  "description": "Get involved in community activities!",
+  "page": "page",
+  "filters": {
+    "title": "FILTERS",
+    "all": "All",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "pinnedForms": "Pinned Forms",
+  "noForms": "No found forms. Come back later!",
+  "prev": "PREV",
+  "next": "NEXT"
+}

@@ -6,16 +6,19 @@ import constants, { team } from '../constants'
 import SVG from 'react-inlinesvg'
 import { Fragment } from 'react'
 import classNames from 'classnames'
+import { useTranslations } from 'next-intl'
 
 export default function OurTeam() {
+  const t = useTranslations()
+
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - Our Team</title>
+        <title>CircleForms - { t('title') }</title>
       </Head>
 
       <Title
-        title="OUR TEAM"
+        title={t('subtitle')}
         Decoration={Decoration} />
 
       <div className="grid grid-cols-1 mt-4 gap-y-4 mx-4 mb-4 lg:grid-cols-4 lg:gap-0 lg:m-0">
@@ -91,4 +94,23 @@ function Decoration() {
   return (
     <img src="/images/team-decoration.png" className="absolute -ml-32" alt="team" />
   )
+}
+
+export async function getStaticProps({ locale }) {
+  const [translations, global] = await Promise.all([
+    import(`../messages/our-team/${locale}.json`),
+    import(`../messages/global/${locale}.json`),
+  ])
+
+
+  const messages = {
+    ...translations,
+    ...global
+  }
+
+  return {
+    props: {
+      messages
+    }
+  };
 }

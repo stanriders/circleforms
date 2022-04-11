@@ -15,9 +15,11 @@ import api from '../libs/api'
 import Loading from '../components/atoms/Loading'
 import { useRouter } from 'next/router'
 import FormEntrySkeletonList from '../components/molecules/FormEntrySkeletonList'
+import { useTranslations } from 'next-intl'
 
 export default function FormsList() {
   const router = useRouter()
+  const t = useTranslations()
   const [filter, setFilter] = useState('Both')
   const [page, setPage] = useState(1)
 
@@ -79,7 +81,7 @@ export default function FormsList() {
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - Forms (page {page})</title>
+        <title>CircleForms - { t('title') } ({ t('page') } {page})</title>
       </Head>
 
       <section className="container max-height">
@@ -87,12 +89,16 @@ export default function FormsList() {
           <div className="h-full">
             <div className="flex flex-col lg:flex-row justify-between bg-black-lighter rounded-full">
               <div className="pl-20 pt-7 pb-4">
-                <h2 className="uppercase text-5xl font-bold">Forms list</h2>
-                <p className="text-white text-opacity-50">Get involved in community activities!</p>
+                <h2 className="uppercase text-5xl font-bold">
+                  { t('subtitle') }
+                </h2>
+                <p className="text-white text-opacity-50">
+                  { t('description') }
+                </p>
               </div>
               <div className="flex flex-col items-center justify-center bg-black-lightest h-auto rounded-full px-8">
                 <h3 className="text-3xl font-medium flex gap-x-2 mb-1">
-                  FILTERS
+                  { t('filters.title') }
                   <svg width="145" height="23" viewBox="0 0 145 23" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <rect x="122" width="23" height="23" rx="11.5" fill="white"/>
                     <rect width="118" height="23" rx="11.5" fill="white"/>
@@ -104,7 +110,7 @@ export default function FormsList() {
                     value="Both"
                     onClick={e => handleFilterClick(e.target.value)}
                     active={'Both' === filter}>
-                    All
+                    { t('filters.all') }
                   </Radio>
                   <Radio
                     name="filter"
@@ -112,7 +118,7 @@ export default function FormsList() {
                     color="bg-green"
                     onClick={e => handleFilterClick(e.target.value)}
                     active={'Active' === filter}>
-                    Active
+                    { t('filters.active') }
                   </Radio>
                   <Radio
                     name="filter"
@@ -120,7 +126,7 @@ export default function FormsList() {
                     color="bg-red"
                     onClick={e => handleFilterClick(e.target.value)}
                     active={'Inactive' === filter}>
-                    Inactive
+                    { t('filters.inactive') }
                   </Radio>
                 </div>
               </div>
@@ -128,7 +134,7 @@ export default function FormsList() {
             <div className="mt-6 px-7">
               {pinnedForms && pinnedForms.posts.length > 0 && (
                 <Fragment>
-                  <SubTitle>Pinned Forms</SubTitle>
+                  <SubTitle>{ t('pinnedForms') }</SubTitle>
                   <div className="flex flex-col gap-y-3">
                     {pinnedForms && pinnedForms.posts.length > 0 && pinnedForms.posts.map(form => (
                       <FormEntry
@@ -140,15 +146,14 @@ export default function FormsList() {
                 </Fragment>
               )}
 
-              <SubTitle>Forms</SubTitle>
+              <SubTitle>{ t('title') }</SubTitle>
               <div className="flex flex-col gap-y-3 relative">
                 {!data && isValidating && (
                   <FormEntrySkeletonList length={10} />
                 )}
                 {data && data.posts.length === 0 && (
                   <p className="font-semibold text-center">
-                    No found forms.<br/>
-                    Come back later!
+                    { t('noForms') }
                   </p>
                 )}
                 {data && data.posts.length > 0 && data.posts.map(form => (
@@ -161,12 +166,38 @@ export default function FormsList() {
             </div>
           </div>
           <div className="flex justify-center gap-x-6 py-8">
-            <Button theme="grey" onClick={handlePrevClick}>PREV</Button>
-            <Button theme="grey" rounded active>{page}</Button>
-            <Button theme="grey" onClick={() => setPage(page + 1)}>NEXT</Button>
+            <Button theme="grey" onClick={handlePrevClick}>
+              { t('prev') }
+            </Button>
+
+            <Button theme="grey" rounded active classname="cursor-default">
+              {page}
+            </Button>
+
+            <Button theme="grey" onClick={() => setPage(page + 1)}>
+              { t('next') }
+            </Button>
           </div>
         </div>
       </section>
     </DefaultLayout>
   )
+}
+
+export async function getStaticProps({ locale }) {
+  const [translations, global] = await Promise.all([
+    import(`../messages/forms/${locale}.json`),
+    import(`../messages/global/${locale}.json`),
+  ])
+
+  const messages = {
+    ...translations,
+    ...global
+  }
+
+  return {
+    props: {
+      messages
+    }
+  };
 }

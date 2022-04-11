@@ -12,8 +12,10 @@ import classNames from 'classnames'
 import useAuth from '../hooks/useAuth'
 import Link from 'next/link'
 import Unauthorized from '../components/pages/Unauthorized'
+import { useTranslations } from 'next-intl'
 
 export default function Dashboard() {
+  const t = useTranslations()
   const { user } = useContext(UserContext)
   const { invalidateUserCache } = useAuth()
   const [forms, setForms] = useState(Array.from({ length: 11 }))
@@ -40,11 +42,11 @@ export default function Dashboard() {
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - Dashboard</title>
+        <title>CircleForms - { t('title') }</title>
       </Head>
 
-      <Title title="DASHBOARD">
-        The place where your forms are stored.
+      <Title title={t('subtitle')}>
+        { t('description') }
       </Title>
 
       <section className="container bg-black-lightest rounded-40 px-8 py-5">
@@ -66,4 +68,23 @@ export default function Dashboard() {
 
     </DefaultLayout>
   )
+}
+
+export async function getStaticProps({ locale }) {
+  const [translations, global] = await Promise.all([
+    import(`../messages/dashboard/${locale}.json`),
+    import(`../messages/global/${locale}.json`),
+  ])
+
+
+  const messages = {
+    ...translations,
+    ...global
+  }
+
+  return {
+    props: {
+      messages
+    }
+  };
 }
