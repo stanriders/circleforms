@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,7 +6,6 @@ using AutoMapper;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
-using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.ModelLayer;
 using Microsoft.AspNetCore.Authorization;
@@ -96,17 +94,15 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Post(PostRequestContract postContract)
     {
-        var post = _mapper.Map<Post>(postContract);
-
-        _logger.LogInformation("User {User} posts a post {PostId}", _claim, post.ID);
-
-        var result = await _posts.AddPost(_claim, post);
+        var result = await _posts.AddPost(_claim, postContract);
         if (!result.IsError)
         {
-            return CreatedAtAction("GetDetailed", new {id = result.Value.ID}, result.Value);
+            _logger.LogInformation("User {User} posts a post {PostId}", _claim, result.Value.Id);
+
+            return CreatedAtAction("GetDetailed", new {id = result.Value.Id}, result.Value);
         }
 
-        return result.Map();
+        return result.Unwrap();
     }
 
     /// <summary>
@@ -118,7 +114,7 @@ public class PostsController : ControllerBase
     {
         var result = await _posts.Unpublish(id, _claim);
 
-        return Map<Post, PostResponseContract>(result);
+        return result.Unwrap();
     }
 
     /// <summary>
@@ -130,7 +126,7 @@ public class PostsController : ControllerBase
     {
         var result = await _posts.Publish(id, _claim);
 
-        return Map<Post, PostResponseContract>(result);
+        return result.Unwrap();
     }
 
     /// <summary>
@@ -143,7 +139,7 @@ public class PostsController : ControllerBase
     {
         var result = await _posts.UpdatePost(_claim, updateContract, id);
 
-        return Map<Post, PostResponseContract>(result);
+        return result.Unwrap();
     }
 
     /// <summary>
@@ -157,15 +153,7 @@ public class PostsController : ControllerBase
     {
         var result = await _posts.GetDetailedPost(_claim, id, key);
 
-        return result.Map<object>(v =>
-        {
-            return v switch
-            {
-                PostRedis postRedis => _mapper.Map<PostDetailedResponseContract>(postRedis),
-                Post post => _mapper.Map<PostResponseContract>(post),
-                _ => throw new ArgumentOutOfRangeException(nameof(v), v, null)
-            };
-        });
+        return result.Unwrap();
     }
 
     #region Mongo
@@ -182,7 +170,7 @@ public class PostsController : ControllerBase
 
         var result = await _posts.Get(id);
 
-        return Map<Post, PostResponseContract>(result);
+        return result.Unwrap();
     }
 
     /// <summary>
@@ -194,7 +182,9 @@ public class PostsController : ControllerBase
     {
         _logger.LogInformation("User {User} requested database posts dump", _claim);
 
-        return _mapper.Map<List<Post>, List<PostResponseContract>>(await _posts.GetAll());
+        var result = await _posts.GetAll();
+
+        return result;
     }
     #endregion
 
@@ -208,7 +198,9 @@ public class PostsController : ControllerBase
     {
         _logger.LogInformation("User {User} requested posts cache dump", _claim);
 
-        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _posts.GetAllCached());
+        var result = await _posts.GetAllCached();
+
+        return result;
     }
 
     /// <summary>
@@ -222,7 +214,7 @@ public class PostsController : ControllerBase
     {
         var post = await _posts.GetCachedPost(id);
 
-        return Map<PostRedis, PostMinimalResponseContract>(post);
+        return post.Unwrap();
     }
     #endregion
 }

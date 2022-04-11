@@ -32,7 +32,7 @@ public class PagesController : ControllerBase
 
     //TODO: Move it to PostService
     private async Task<PageResponseContract> FillResponseContract(PageResponseContract responseContract,
-        PostRedis[] posts)
+        PostMinimalResponseContract[] posts)
     {
         var authorIds = posts
             .Select(x => x.AuthorId)
@@ -48,8 +48,7 @@ public class PagesController : ControllerBase
             responseContract.Authors[authorIds[i]] = minimalAuthors[i];
         }
 
-        var postsMinimal = _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(posts);
-        responseContract.Posts = postsMinimal;
+        responseContract.Posts = posts;
 
         return responseContract;
     }

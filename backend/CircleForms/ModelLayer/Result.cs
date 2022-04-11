@@ -48,6 +48,11 @@ public class Result<T>
         return !IsError ? new OkResult() : Map(_ => _);
     }
 
+    public IActionResult Unwrap()
+    {
+        return Map(_ => _);
+    }
+
     public IActionResult Map<TR>(Func<T, TR> mapOk)
     {
         if (!IsError)

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using CircleForms.Contracts.ContractModels.Request;
+using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Controllers;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Posts.Enums;
@@ -136,8 +137,9 @@ public class PostsService
         return result.ToString();
     }
 
-    public async Task<Result<Post>> AddPost(string userId, Post post)
+    public async Task<Result<PostDetailedResponseContract>> AddPost(string userId, PostRequestContract postRequest)
     {
+        var post = _mapper.Map<Post>(postRequest);
         post.AuthorRelation = userId;
         post.IsActive = true;
         if (post.Accessibility == Accessibility.Link)
@@ -158,22 +160,23 @@ public class PostsService
         var result = await _postRepository.Add(userId, post);
 
         return result is null
-            ? new Result<Post>(HttpStatusCode.InternalServerError, "Can't add new post :/")
-            : new Result<Post>(post);
+            ? new Result<PostDetailedResponseContract>(HttpStatusCode.InternalServerError, "Can't add new post :/")
+            : new Result<PostDetailedResponseContract>(_mapper.Map<PostDetailedResponseContract>(result));
     }
 
 
-    public async Task<Result<Post>> UpdatePost(string userId, PostUpdateRequestContract updateContract, string id)
+    public async Task<Result<PostDetailedResponseContract>> UpdatePost(string userId,
+        PostUpdateRequestContract updateContract, string id)
     {
         var post = await _postRepository.Get(id);
         if (post.AuthorRelation.ID != userId)
         {
-            return new Result<Post>(HttpStatusCode.Unauthorized, "You can't update this post");
+            return new Result<PostDetailedResponseContract>(HttpStatusCode.Unauthorized, "You can't update this post");
         }
 
         if (post.Published && updateContract.Questions is not null)
         {
-            return new Result<Post>("Question change is not allowed in published posts");
+            return new Result<PostDetailedResponseContract>("Question change is not allowed in published posts");
         }
 
         _logger.LogInformation("User {Claim} updated the post {Id}", userId, post.ID);
@@ -190,7 +193,7 @@ public class PostsService
                     var question = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
                     if (question is null)
                     {
-                        return new Result<Post>($"Question {updatedPostQuestion} is not found");
+                        return new Result<PostDetailedResponseContract>($"Question {updatedPostQuestion} is not found");
                     }
 
                     questions.Remove(question);
@@ -211,7 +214,7 @@ public class PostsService
                 var postToUpdate = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
                 if (postToUpdate is null)
                 {
-                    return new Result<Post>($"Question {updatedPostQuestion.Id} is not found");
+                    return new Result<PostDetailedResponseContract>($"Question {updatedPostQuestion.Id} is not found");
                 }
 
                 questions.Remove(postToUpdate);
@@ -228,7 +231,7 @@ public class PostsService
             await _cache.Publish(post);
         }
 
-        return new Result<Post>(post);
+        return new Result<PostDetailedResponseContract>(_mapper.Map<PostDetailedResponseContract>(post));
     }
 
     private async Task<Result<object>> DetailedPostResponseForNonAuthor(PostRedis post, string key,
@@ -238,13 +241,13 @@ public class PostsService
         {
             if (prefetchedPost is null)
             {
-                var privatePost = await Get(post.Id);
-                if (privatePost.IsError)
+                var privatePost = await _postRepository.Get(post.Id);
+                if (privatePost is null)
                 {
-                    return privatePost.Error();
+                    return Result<object>.NotFound(post.Id);
                 }
 
-                prefetchedPost = privatePost.Value;
+                prefetchedPost = privatePost;
             }
 
             if (prefetchedPost.AccessKey != key || !prefetchedPost.Published)
@@ -252,67 +255,18 @@ public class PostsService
                 return Result<object>.NotFound(post.Id);
             }
 
-            return post;
+            return _mapper.Map<PostMinimalResponseContract>(post);
         }
 
         if (post.Accessibility == Accessibility.Public)
         {
-            return post;
+            return _mapper.Map<PostMinimalResponseContract>(post);
         }
 
         return null;
     }
 
-    public async Task<Result<object>> GetDetailedPost(string claim, string id, string key)
-    {
-        var cachedResult = await GetCachedPost(id);
-        var cached = cachedResult.Value;
-
-        if (!cachedResult.IsError) //If post in cache (it means the post is public)
-        {
-            if (cached.AuthorId != claim)
-            {
-                return await DetailedPostResponseForNonAuthor(cached, key);
-            }
-        }
-
-        //The post isn't public or author requests it
-        var postResult = await Get(id);
-        var post = postResult.Value;
-
-        if (postResult.IsError)
-        {
-            return postResult.Error();
-        }
-
-        //If post isn't public and non-author requests it
-        if (post.AuthorRelation.ID != claim)
-        {
-            return await DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
-        }
-
-        //TODO: answer's user fetching
-        return post; //If author requests post
-    }
-
-    public async Task<Result<Post>> Get(string id)
-    {
-        var post = await _postRepository.Get(id);
-
-        return post ?? Result<Post>.NotFound(id);
-    }
-
-    public async Task<List<Post>> GetAll()
-    {
-        return await _postRepository.Get();
-    }
-
-    public async Task<PostRedis[]> GetAllCached()
-    {
-        return await MapWithAnswerCounts(await _cache.GetDump());
-    }
-
-    public async Task<Result<PostRedis>> GetCachedPost(string id)
+    private async Task<Result<PostRedis>> GetCachedPostPrivate(string id)
     {
         var post = await _cache.GetPost(id);
         if (post is null)
@@ -325,11 +279,73 @@ public class PostsService
         return post;
     }
 
-    public async Task<PostRedis[]> GetPage(int page, int pageSize, PostFilter filter)
+    //Produces: PostMinimalResponseContract | PostResponseContract
+    public async Task<Result<object>> GetDetailedPost(string claim, string id, string key)
+    {
+        var cachedResult = await GetCachedPostPrivate(id);
+        var cached = cachedResult.Value;
+
+        if (!cachedResult.IsError) //If post in cache (it means the post is public)
+        {
+            if (cached.AuthorId != claim)
+            {
+                return await DetailedPostResponseForNonAuthor(cached, key);
+            }
+        }
+
+        //The post isn't public or author requests it
+        var post = await _postRepository.Get(id);
+        if (post is null)
+        {
+            return Result<object>.NotFound(id);
+        }
+
+        //If post isn't public and non-author requests it
+        if (post.AuthorRelation.ID != claim)
+        {
+            return await DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
+        }
+
+        //TODO: answer's user fetching
+        return _mapper.Map<PostResponseContract>(post); //If author requests post
+    }
+
+    public async Task<Result<PostResponseContract>> Get(string id)
+    {
+        var post = await _postRepository.Get(id);
+
+        return _mapper.Map<PostResponseContract>(post) ?? Result<PostResponseContract>.NotFound(id);
+    }
+
+    public async Task<List<PostResponseContract>> GetAll()
+    {
+        var posts = await _postRepository.Get();
+
+        return _mapper.Map<List<Post>, List<PostResponseContract>>(posts);
+    }
+
+    public async Task<PostMinimalResponseContract[]> GetAllCached()
+    {
+        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(
+            await MapWithAnswerCounts(await _cache.GetDump()));
+    }
+
+    public async Task<Result<PostMinimalResponseContract>> GetCachedPost(string id)
+    {
+        var post = await GetCachedPostPrivate(id);
+        if (post.IsError)
+        {
+            return new Result<PostMinimalResponseContract>(post.StatusCode, post.Message);
+        }
+
+        return _mapper.Map<PostMinimalResponseContract>(post);
+    }
+
+    public async Task<PostMinimalResponseContract[]> GetPage(int page, int pageSize, PostFilter filter)
     {
         var posts = await _cache.GetPage(page, pageSize, filter);
 
-        return await MapWithAnswerCounts(posts);
+        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await MapWithAnswerCounts(posts));
     }
 
     public async Task<Result<string>> SaveImage(string claim, string id, IFormFile image, ImageQuery query)
@@ -372,16 +388,10 @@ public class PostsService
         return !result ? Result<bool>.NotFound(postId) : true;
     }
 
-    public async Task<PostRedis[]> GetPinned()
+    public async Task<PostMinimalResponseContract[]> GetPinned()
     {
-        return await MapWithAnswerCounts(await _cache.GetPinnedPosts());
-    }
-
-    private async Task<PostRedis> MapWithAnswerCounts(PostRedis post)
-    {
-        post.AnswerCount = await _cache.GetAnswerCount(post.Id);
-
-        return post;
+        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(
+            await MapWithAnswerCounts(await _cache.GetPinnedPosts()));
     }
 
     private async Task<PostRedis[]> MapWithAnswerCounts(PostRedis[] posts)
@@ -402,18 +412,18 @@ public class PostsService
         return posts;
     }
 
-    public async Task<Result<Post>> Publish(string id, string claim)
+    public async Task<Result<PostResponseContract>> Publish(string id, string claim)
     {
         var postResult = await GetAndValidate(id, claim);
         if (postResult.IsError)
         {
-            return postResult;
+            return new Result<PostResponseContract>(postResult.StatusCode, postResult.Message);
         }
 
         var post = postResult.Value;
         if (post.Published)
         {
-            return post;
+            return _mapper.Map<PostResponseContract>(post);
         }
 
         post.Published = true;
@@ -424,40 +434,34 @@ public class PostsService
             await _cache.Publish(post);
         }
 
-        return post;
+        return _mapper.Map<PostResponseContract>(post);
     }
 
-    public async Task<Result<Post>> Unpublish(string id, string claim)
+    public async Task<Result<PostResponseContract>> Unpublish(string id, string claim)
     {
         var postResult = await GetAndValidate(id, claim);
         if (postResult.IsError)
         {
-            return postResult;
+            return new Result<PostResponseContract>(postResult.StatusCode, postResult.Message);
         }
 
         var post = postResult.Value;
         if (!post.Published)
         {
-            return post;
+            return _mapper.Map<PostResponseContract>(post);
         }
 
         post.Published = false;
         await _postRepository.Update(post);
         await _cache.Unpublish(post.ID);
 
-        return post;
+        return _mapper.Map<PostResponseContract>(post);
     }
 
     private async Task<Result<Post>> GetAndValidate(string id, string claim)
     {
-        var postResult = await Get(id);
-        if (postResult.IsError)
-        {
-            return postResult;
-        }
-
-        var post = postResult.Value;
-        if (post.AuthorRelation.ID != claim)
+        var post = await _postRepository.Get(id);
+        if (post is null || post.AuthorRelation.ID != claim)
         {
             return Result<Post>.NotFound(id);
         }

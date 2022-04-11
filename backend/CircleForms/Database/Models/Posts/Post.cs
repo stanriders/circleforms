@@ -14,7 +14,7 @@ public class Post : Entity
     public One<User> AuthorRelation { get; set; }
 
     [Field("answers")]
-    public List<Answer> Answers { get; set; }
+    public List<Answer> Answers { get; set; } = new();
 
     [Field("is_active")]
     public bool IsActive { get; set; }
