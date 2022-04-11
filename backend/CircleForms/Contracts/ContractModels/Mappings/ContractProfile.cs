@@ -37,8 +37,7 @@ public class ContractProfile : Profile
         CreateMap<PostRedis, PostDetailedResponseContract>();
         CreateMap<Post, PostDetailedResponseContract>();
 
-        CreateMap<Answer, AnswerContract>()
-            .ForMember(x => x.User, x => x.MapFrom(v => v.UserDto));
+        CreateMap<Answer, AnswerContract>();
         CreateMap<PostRequestContract, Post>();
         CreateMap<SubmissionContract, Submission>();
         CreateMap<Post, PostRedis>()

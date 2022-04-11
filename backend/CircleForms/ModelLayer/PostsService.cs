@@ -92,7 +92,7 @@ public class PostsService
             return new Result<bool>(HttpStatusCode.BadRequest, "The post is inactive or unpublished");
         }
 
-        if (post.Answers.Any(x => x.User.ID == user))
+        if (post.Answers.Any(x => x.UserRelation.ID == user))
         {
             return new Result<bool>(HttpStatusCode.Conflict, "You already voted");
         }
@@ -108,7 +108,7 @@ public class PostsService
         var answer = new Answer
         {
             Submissions = submissions,
-            User = user
+            UserRelation = user
         };
 
         await _postRepository.AddAnswer(post, answer);

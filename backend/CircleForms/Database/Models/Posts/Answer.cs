@@ -11,5 +11,5 @@ public class Answer
     public List<Submission> Submissions { get; set; }
 
     [Field("user")]
-    public One<User> User { get; set; }
+    public One<User> UserRelation { get; set; }
 }
