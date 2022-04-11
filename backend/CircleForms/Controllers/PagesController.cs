@@ -19,9 +19,9 @@ namespace CircleForms.Controllers;
 [Route("[controller]")]
 public class PagesController : ControllerBase
 {
+    private readonly ICacheRepository _cache;
     private readonly IMapper _mapper;
     private readonly PostsService _posts;
-    private readonly ICacheRepository _cache;
 
     public PagesController(IMapper mapper, PostsService posts, ICacheRepository cache)
     {

@@ -78,6 +78,7 @@ public class RedisCacheRepository : ICacheRepository
     public async Task<UserMinimalRedis> GetMinimalUser(string id)
     {
         var userJson = await _redis.StringGetAsync(id.ToUserId());
+
         return !userJson.HasValue ? null : JsonConvert.DeserializeObject<UserMinimalRedis>(userJson);
     }
 
@@ -233,6 +234,5 @@ public class RedisCacheRepository : ICacheRepository
 
         return await Map(ids);
     }
-
     #endregion
 }

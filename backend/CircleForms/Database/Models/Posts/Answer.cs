@@ -14,7 +14,7 @@ public class Answer : Entity
 
     [Field("user")]
     public One<User> User { get; set; }
-    
+
     [Field("post")]
     public One<Post> Post { get; set; }
 

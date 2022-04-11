@@ -15,8 +15,10 @@ public class OsuApiProvider : IOsuApiProvider
     private const string _osuBase = "https://osu.ppy.sh/";
     private const string _apiMeLink = "api/v2/me";
     private const string _apiTokenLink = "oauth/token";
+
     private readonly RestClient _client = new RestClient(_osuBase)
         .UseNewtonsoftJson();
+
     private readonly OsuApiConfig _config;
     private readonly IMapper _mapper;
 
@@ -37,7 +39,7 @@ public class OsuApiProvider : IOsuApiProvider
         {
             HttpStatusCode.OK => new Result<OsuUser>(response.Data),
             HttpStatusCode.Unauthorized => new Result<OsuUser>(HttpStatusCode.Unauthorized, null),
-            _ => new Result<OsuUser>(response.StatusCode, "An error occured on osu! user request"),
+            _ => new Result<OsuUser>(response.StatusCode, "An error occured on osu! user request")
         };
     }
 

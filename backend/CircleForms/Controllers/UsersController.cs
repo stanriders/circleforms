@@ -17,12 +17,13 @@ namespace CircleForms.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
+    private readonly ICacheRepository _cache;
     private readonly ILogger<UsersController> _logger;
     private readonly IMapper _mapper;
     private readonly IUserRepository _usersService;
-    private readonly ICacheRepository _cache;
 
-    public UsersController(ILogger<UsersController> logger, IMapper mapper, IUserRepository usersService, ICacheRepository cache)
+    public UsersController(ILogger<UsersController> logger, IMapper mapper, IUserRepository usersService,
+        ICacheRepository cache)
     {
         _logger = logger;
         _mapper = mapper;
