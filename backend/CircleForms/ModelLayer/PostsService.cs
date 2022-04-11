@@ -12,9 +12,9 @@ using CircleForms.Controllers;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
-using CircleForms.Database.Models.Posts.Questions.Submissions;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.IO.FileIO.Abstract;
+using CircleForms.ModelLayer.Answers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -22,6 +22,7 @@ namespace CircleForms.ModelLayer;
 
 public class PostsService
 {
+    private readonly IAnswerService _answer;
     private readonly ICacheRepository _cache;
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
@@ -29,93 +30,20 @@ public class PostsService
     private readonly IStaticFilesService _staticFilesService;
 
     public PostsService(ILogger<PostsController> logger, IStaticFilesService staticFilesService,
-        IPostRepository postRepository, IMapper mapper, ICacheRepository cache)
+        IPostRepository postRepository, IMapper mapper, ICacheRepository cache, IAnswerService answer)
     {
         _logger = logger;
         _staticFilesService = staticFilesService;
         _postRepository = postRepository;
         _mapper = mapper;
         _cache = cache;
-    }
-
-    private Result<List<Submission>> ProcessAnswer(Post post,
-        IEnumerable<SubmissionContract> answers)
-    {
-        var questions = post.Questions.ToDictionary(x => x.Id);
-        var answersDictionary = answers.ToDictionary(x => x.QuestionId);
-
-        //If any required fields doesn't filled
-        if (post.Questions.Where(question => !question.Optional)
-            .Any(question => !answersDictionary.ContainsKey(question.Id)))
-        {
-            return new Result<List<Submission>>("One or more required fields doesn't filled");
-        }
-
-        var resultingAnswers = new List<Submission>();
-        foreach (var (key, value) in answersDictionary)
-        {
-            //If question with id doesn't exist or answer was not provided
-            if (!questions.TryGetValue(key, out var question))
-            {
-                return new Result<List<Submission>>($"Question with id {key} does not exist");
-            }
-
-            if (question.QuestionType == QuestionType.Choice)
-            {
-                var choice = int.Parse(value.Answer);
-
-                if (choice >= question.QuestionInfo.Count)
-                {
-                    return new Result<List<Submission>>($"Choice for {key} is not in the range of choice ids");
-                }
-            }
-
-            var answer = _mapper.Map<Submission>(value);
-
-            resultingAnswers.Add(answer);
-        }
-
-        return new Result<List<Submission>>(resultingAnswers);
+        _answer = answer;
     }
 
 
-    public async Task<Result<bool>> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
+    public async Task<Result> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
     {
-        var post = await _postRepository.Get(id);
-
-        if (post is null)
-        {
-            return new Result<bool>(HttpStatusCode.BadRequest, "Could not find post with this id");
-        }
-
-        if (!post.IsActive || !post.Published)
-        {
-            return new Result<bool>(HttpStatusCode.BadRequest, "The post is inactive or unpublished");
-        }
-
-        if (post.Answers.Any(x => x.UserRelation.ID == user))
-        {
-            return new Result<bool>(HttpStatusCode.Conflict, "You already voted");
-        }
-
-        var result = ProcessAnswer(post, answerContracts);
-        if (result.IsError)
-        {
-            return new Result<bool>(result.StatusCode, result.Message);
-        }
-
-        var submissions = result.Value;
-
-        var answer = new Answer
-        {
-            Submissions = submissions,
-            UserRelation = user
-        };
-
-        await _postRepository.AddAnswer(post, answer);
-        await _cache.IncrementAnswers(post.ID);
-
-        return new Result<bool>(true);
+        return await _answer.Answer(user, id, answerContracts);
     }
 
     private static string GenerateAccessKey(byte size)

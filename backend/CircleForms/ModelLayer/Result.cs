@@ -4,6 +4,21 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CircleForms.ModelLayer;
 
+public class Result : Result<object>
+{
+    public Result() : base(null)
+    {
+    }
+
+    public Result(HttpStatusCode code, string message) : base(code, message)
+    {
+    }
+
+    public Result(string message) : base(message)
+    {
+    }
+}
+
 public class Result<T>
 {
     public Result(T value)
