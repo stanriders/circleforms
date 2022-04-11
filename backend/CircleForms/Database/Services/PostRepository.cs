@@ -13,12 +13,10 @@ namespace CircleForms.Database.Services;
 public class PostRepository : IPostRepository
 {
     private readonly ILogger<PostRepository> _logger;
-    private readonly IUserRepository _users;
 
-    public PostRepository(ILogger<PostRepository> logger, IUserRepository users)
+    public PostRepository(ILogger<PostRepository> logger)
     {
         _logger = logger;
-        _users = users;
     }
 
     public async Task<Post> Add(string userId, Post post)
