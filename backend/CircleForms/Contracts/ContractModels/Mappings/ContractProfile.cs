@@ -31,16 +31,20 @@ public class ContractProfile : Profile
         CreateMap<Level, Response.Level>();
         CreateMap<Statistics, Response.Statistics>();
 
-        CreateMap<Post, PostMinimalResponseContract>();
-        CreateMap<Post, PostResponseContract>();
+        CreateMap<Post, PostMinimalResponseContract>()
+            .ForMember(x => x.AuthorId, x => x.MapFrom(v => v.AuthorRelation.ID));
+        CreateMap<Post, PostResponseContract>()
+            .ForMember(x => x.AuthorId, x => x.MapFrom(v => v.AuthorRelation.ID));
         CreateMap<PostRedis, PostMinimalResponseContract>();
         CreateMap<PostRedis, PostDetailedResponseContract>();
-        CreateMap<Post, PostDetailedResponseContract>();
+        CreateMap<Post, PostDetailedResponseContract>()
+            .ForMember(x => x.AuthorId, x => x.MapFrom(v => v.AuthorRelation.ID));
 
         CreateMap<Answer, AnswerContract>();
         CreateMap<PostRequestContract, Post>();
         CreateMap<SubmissionContract, Submission>();
         CreateMap<Post, PostRedis>()
+            .ForMember(x => x.AuthorId, x => x.MapFrom(v => v.AuthorRelation.ID))
             .ForMember(x => x.Id, x => x.MapFrom(v => v.ID.ToString()));
 
         CreateMap<PostUpdateRequestContract, Post>()
