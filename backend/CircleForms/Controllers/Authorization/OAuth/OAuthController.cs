@@ -174,7 +174,7 @@ public class OAuthController : ControllerBase
     private static User TransferMutableData(User dbUser, User osuUser)
     {
         osuUser.Discord = dbUser.Discord;
-        osuUser.Posts = dbUser.Posts;
+        osuUser.PostsRelation = dbUser.PostsRelation;
         osuUser.Roles = dbUser.Roles;
 
         return osuUser;
