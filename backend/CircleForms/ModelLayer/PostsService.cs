@@ -92,7 +92,7 @@ public class PostsService
             return new Result<bool>(HttpStatusCode.BadRequest, "The post is inactive or unpublished");
         }
 
-        if (post.Answers.Any(x => x.ID == user))
+        if (post.AnswersRelation.Any(x => x.ID == user))
         {
             return new Result<bool>(HttpStatusCode.Conflict, "You already voted");
         }
@@ -138,7 +138,7 @@ public class PostsService
 
     public async Task<Result<Post>> AddPost(string userId, Post post)
     {
-        post.Author = userId;
+        post.AuthorRelation = userId;
         post.IsActive = true;
         if (post.Accessibility == Accessibility.Link)
         {
@@ -166,7 +166,7 @@ public class PostsService
     public async Task<Result<Post>> UpdatePost(string userId, PostUpdateRequestContract updateContract, string id)
     {
         var post = await _postRepository.Get(id);
-        if (post.Author.ID != userId)
+        if (post.AuthorRelation.ID != userId)
         {
             return new Result<Post>(HttpStatusCode.Unauthorized, "You can't update this post");
         }
@@ -286,12 +286,12 @@ public class PostsService
         }
 
         //If post isn't public and non-author requests it
-        if (post.Author.ID != claim)
+        if (post.AuthorRelation.ID != claim)
         {
             return await DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
         }
 
-        var answerTask = post.Answers.Select(x => x.FetchUser());
+        var answerTask = post.AnswersRelation.Select(x => x.FetchUser());
         await Task.WhenAll(answerTask);
 
         return post; //If author requests post
@@ -337,7 +337,7 @@ public class PostsService
     public async Task<Result<string>> SaveImage(string claim, string id, IFormFile image, ImageQuery query)
     {
         var post = await _postRepository.Get(id);
-        if (post.Author.ID != claim)
+        if (post.AuthorRelation.ID != claim)
         {
             _logger.LogWarning("User {User} tries to upload an image to {Post} as non-author", claim, post.ID);
 
@@ -459,7 +459,7 @@ public class PostsService
         }
 
         var post = postResult.Value;
-        if (post.Author.ID != claim)
+        if (post.AuthorRelation.ID != claim)
         {
             return Result<Post>.NotFound(id);
         }

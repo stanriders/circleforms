@@ -23,7 +23,7 @@ public class PostRepository : IPostRepository
 
     public async Task<Post> Add(string userId, Post post)
     {
-        post.Author = userId;
+        post.AuthorRelation = userId;
         post.PublishTime = DateTime.UtcNow;
 
         _logger.LogInformation("User {Id} created a new post", userId);
@@ -31,7 +31,7 @@ public class PostRepository : IPostRepository
 
         await post.SaveAsync();
 
-        await DB.Entity<User>(userId).Posts.AddAsync(post);
+        await DB.Entity<User>(userId).PostsRelation.AddAsync(post);
 
         return post;
     }
@@ -51,8 +51,8 @@ public class PostRepository : IPostRepository
         entry.Post = post;
         //TODO: transactions
         await entry.SaveAsync();
-        await post.Answers.AddAsync(entry);
-        await DB.Entity<User>(entry.User.ID).Answers.AddAsync(entry);
+        await post.AnswersRelation.AddAsync(entry);
+        await DB.Entity<User>(entry.User.ID).AnswerRelation.AddAsync(entry);
     }
 
     public async Task Update(Post post)
