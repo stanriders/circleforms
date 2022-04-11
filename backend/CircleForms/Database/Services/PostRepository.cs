@@ -48,11 +48,9 @@ public class PostRepository : IPostRepository
 
     public async Task AddAnswer(Post post, Answer entry)
     {
-        entry.Post = post;
         //TODO: transactions
-        await entry.SaveAsync();
-        await post.AnswersRelation.AddAsync(entry);
-        await DB.Entity<User>(entry.User.ID).AnswerRelation.AddAsync(entry);
+        post.Answers.Add(entry);
+        await post.SaveAsync();
     }
 
     public async Task Update(Post post)

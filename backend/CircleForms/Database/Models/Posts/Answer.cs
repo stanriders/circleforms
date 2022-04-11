@@ -5,7 +5,7 @@ using MongoDB.Entities;
 
 namespace CircleForms.Database.Models.Posts;
 
-public class Answer : Entity
+public class Answer
 {
     [Field("answers")]
     public List<Submission> Submissions { get; set; }

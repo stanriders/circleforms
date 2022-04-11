@@ -13,12 +13,10 @@ public class User : IEntity
     public User()
     {
         this.InitOneToMany(() => PostsRelation);
-        this.InitOneToMany(() => AnswerRelation);
     }
 
     public TokenResponse Token { get; set; }
     public Many<Post> PostsRelation { get; set; }
-    public Many<Answer> AnswerRelation { get; set; }
 
     public Uri AvatarUrl { get; set; }
 
