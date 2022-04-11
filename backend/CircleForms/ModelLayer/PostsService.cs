@@ -14,7 +14,6 @@ using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.IO.FileIO.Abstract;
-using CircleForms.ModelLayer.Answers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -22,7 +21,6 @@ namespace CircleForms.ModelLayer;
 
 public class PostsService
 {
-    private readonly IAnswerService _answer;
     private readonly ICacheRepository _cache;
     private readonly ILogger<PostsController> _logger;
     private readonly IMapper _mapper;
@@ -30,14 +28,13 @@ public class PostsService
     private readonly IStaticFilesService _staticFilesService;
 
     public PostsService(ILogger<PostsController> logger, IStaticFilesService staticFilesService,
-        IPostRepository postRepository, IMapper mapper, ICacheRepository cache, IAnswerService answer)
+        IPostRepository postRepository, IMapper mapper, ICacheRepository cache)
     {
         _logger = logger;
         _staticFilesService = staticFilesService;
         _postRepository = postRepository;
         _mapper = mapper;
         _cache = cache;
-        _answer = answer;
     }
 
     private static string GenerateAccessKey(byte size)
