@@ -46,7 +46,6 @@ public class PostRepository : IPostRepository
 
     public async Task AddAnswer(Post post, Answer entry)
     {
-        //TODO: transactions
         post.Answers.Add(entry);
         await post.SaveAsync();
     }
