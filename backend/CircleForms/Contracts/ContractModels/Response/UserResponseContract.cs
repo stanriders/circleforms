@@ -6,7 +6,7 @@ namespace CircleForms.Contracts.ContractModels.Response;
 public class UserResponseContract
 {
     [JsonProperty("id")]
-    public string Id { get; set; }
+    public string ID { get; set; }
 
     [JsonProperty("posts")]
     public List<PostMinimalResponseContract> Posts { get; set; }
@@ -18,5 +18,5 @@ public class UserResponseContract
     public string Discord { get; set; }
 
     [JsonProperty("osu")]
-    public Dictionary<string, object> Osu { get; set; }
+    public object Osu { get; set; }
 }

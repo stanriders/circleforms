@@ -9,10 +9,10 @@ namespace CircleForms.Contracts.ContractModels.Response;
 public class PostResponseContract
 {
     [JsonProperty("id")]
-    public string Id { get; set; }
+    public string ID { get; set; }
 
-    [JsonProperty("author_id")]
-    public string AuthorId { get; set; }
+    [JsonProperty("author")]
+    public UserAnswerContract Author { get; set; }
 
     [JsonProperty("is_active")]
     public bool IsActive { get; set; }

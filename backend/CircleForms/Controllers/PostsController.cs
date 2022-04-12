@@ -96,9 +96,9 @@ public class PostsController : ControllerBase
         var result = await _posts.AddPost(_claim, postContract);
         if (!result.IsError)
         {
-            _logger.LogInformation("User {User} posts a post {PostId}", _claim, result.Value.Id);
+            _logger.LogInformation("User {User} posts a post {PostId}", _claim, result.Value.ID);
 
-            return CreatedAtAction("GetDetailed", new {id = result.Value.Id}, result.Value);
+            return CreatedAtAction("GetDetailed", new {id = result.Value.ID}, result.Value);
         }
 
         return result.Unwrap();

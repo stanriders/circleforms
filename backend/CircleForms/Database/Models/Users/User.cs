@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts;
 using CircleForms.ExternalAPI.OsuApi.Contracts;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 using MongoDB.Entities;
 
 namespace CircleForms.Database.Models.Users;
@@ -20,6 +23,9 @@ public class User : IEntity
 
     [Field("posts")]
     public Many<Post> PostsRelation { get; set; }
+
+    [Ignore]
+    public Task<List<Post>> Posts => PostsRelation.ChildrenFluent().ToListAsync();
 
     [Field("username")]
     public string Username { get; set; }
