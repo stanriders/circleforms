@@ -7,7 +7,7 @@ namespace CircleForms.Contracts.ContractModels.Response;
 public class PostMinimalResponseContract
 {
     [JsonProperty("id")]
-    public string Id { get; set; }
+    public string ID { get; set; }
 
     [JsonProperty("author_id")]
     public string AuthorId { get; set; }

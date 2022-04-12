@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
+using CircleForms.Contracts.ContractModels.Response.UserInfoContracts;
 using CircleForms.Database.Models.Posts.Enums;
+using CircleForms.Database.Services.Abstract;
 using CircleForms.ModelLayer;
 using CircleForms.ModelLayer.Answers;
 using CircleForms.ModelLayer.Publish;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,14 +28,17 @@ public class PostsController : ControllerBase
     private readonly ILogger<PostsController> _logger;
     private readonly PostsService _posts;
     private readonly IPublishService _publish;
+    private readonly IUserRepository _users;
 
-    public PostsController(ILogger<PostsController> logger, PostsService posts, IAnswerService answer,
-        IPublishService publish)
+    public PostsController(ILogger<PostsController> logger, PostsService posts,
+        IAnswerService answer,
+        IPublishService publish, IUserRepository users)
     {
         _logger = logger;
         _posts = posts;
         _answer = answer;
         _publish = publish;
+        _users = users;
     }
 
     private string _claim => HttpContext.User.Identity!.Name;
@@ -96,9 +102,9 @@ public class PostsController : ControllerBase
         var result = await _posts.AddPost(_claim, postContract);
         if (!result.IsError)
         {
-            _logger.LogInformation("User {User} posts a post {PostId}", _claim, result.Value.Id);
+            _logger.LogInformation("User {User} posts a post {PostId}", _claim, result.Value.ID);
 
-            return CreatedAtAction("GetDetailed", new {id = result.Value.Id}, result.Value);
+            return CreatedAtAction("GetDetailed", new {id = result.Value.ID}, result.Value);
         }
 
         return result.Unwrap();
@@ -145,12 +151,28 @@ public class PostsController : ControllerBase
     ///     Get full info about a page if you are the creator of the page, otherwise return cached version
     /// </summary>
     [HttpGet(ApiEndpoints.PostsDetailedPost)]
-    [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(PostUserAnswerResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(typeof(PostDetailedResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {
         var result = await _posts.GetDetailedPost(_claim, id, key);
+        if (result.IsError)
+        {
+            return result.Map();
+        }
+
+        var value = result.Value;
+        if (value is PostResponseContract prc)
+        {
+            var response = new PostUserAnswerResponseContract();
+            response.Posts = prc;
+            response.Users =
+                (await _users.Get(prc.Answers.Select(x => x.UserId).Append(prc.AuthorId).Distinct().ToList()))
+                .Adapt<List<UserAnswerContract>>();
+
+            return Ok(response);
+        }
 
         return result.Unwrap();
     }

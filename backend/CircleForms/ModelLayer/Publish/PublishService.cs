@@ -1,18 +1,18 @@
 using System;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Services.Abstract;
+using MapsterMapper;
 
 namespace CircleForms.ModelLayer.Publish;
 
 public class PublishService : IPublishService
 {
+    private readonly ICacheRepository _cache;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
-    private readonly ICacheRepository _cache;
 
     public PublishService(IMapper mapper, IPostRepository postRepository, ICacheRepository cache)
     {

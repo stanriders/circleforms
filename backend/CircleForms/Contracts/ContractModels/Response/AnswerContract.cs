@@ -10,5 +10,5 @@ public class AnswerContract
     public List<Submission> Submissions { get; set; }
 
     [JsonProperty("user")]
-    public UserAnswerContract User { get; set; }
+    public string UserId { get; set; }
 }

@@ -13,6 +13,9 @@ public class Post : Entity
     [Field("author")]
     public One<User> AuthorRelation { get; set; }
 
+    [Ignore]
+    public string AuthorId => AuthorRelation.ID;
+
     [Field("answers")]
     public List<Answer> Answers { get; set; } = new();
 

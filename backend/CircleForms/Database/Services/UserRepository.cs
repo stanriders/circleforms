@@ -26,6 +26,11 @@ public class UserRepository : IUserRepository
         return await DB.Find<User>().OneAsync(id);
     }
 
+    public async Task<List<User>> Get(List<string> ids)
+    {
+        return await DB.Find<User>().ManyAsync(x => ids.Contains(x.ID));
+    }
+
     public async Task<User> Create(User user)
     {
         _logger.LogInformation("Creating a new user {User}", user.ID);

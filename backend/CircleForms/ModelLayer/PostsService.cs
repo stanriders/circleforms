@@ -5,7 +5,6 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Controllers;
@@ -14,6 +13,7 @@ using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.IO.FileIO.Abstract;
+using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -226,16 +226,6 @@ public class PostsService
         }
 
         var contract = _mapper.Map<PostResponseContract>(post); //If author requests post
-        contract.Answers = new List<AnswerContract>();
-        foreach (var answer in post.Answers)
-        {
-            contract.Answers.Add(new AnswerContract
-            {
-                Submissions = answer.Submissions,
-                //TODO: Use projections
-                User = _mapper.Map<UserAnswerContract>(await answer.UserRelation.ToEntityAsync())
-            });
-        }
 
         return contract;
     }
