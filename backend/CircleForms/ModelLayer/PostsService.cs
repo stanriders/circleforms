@@ -226,7 +226,7 @@ public class PostsService
             return await DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
         }
 
-        var contract = await post.BuildAdapter().AdaptToAsync(new PostResponseContract()); //If author requests post
+        var contract = await _mapper.From(post).AdaptToTypeAsync<PostResponseContract>();
 
         return contract;
     }

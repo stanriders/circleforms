@@ -21,7 +21,7 @@ public class ContractProfile : IRegister
             {
                 dto.Author = (await poco.Author).Adapt<UserAnswerContract>();
                 dto.Answers = await poco.Answers.BuildAdapter()
-                    .AdaptToAsync(new List<AnswerContract>());
+                    .AdaptToTypeAsync<List<AnswerContract>>();
             });
         config.ForType<Answer, AnswerContract>()
             .AfterMappingAsync(async (poco, dto) =>
