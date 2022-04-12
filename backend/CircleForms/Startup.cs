@@ -30,6 +30,7 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using MongoDB.Entities;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using StackExchange.Redis;
 
 namespace CircleForms;
@@ -120,7 +121,18 @@ public class Startup
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);
 
         services.AddControllers()
-            .AddNewtonsoftJson(opts => opts.SerializerSettings.Converters.Add(new StringEnumConverter()));
+            .AddNewtonsoftJson(opts =>
+            {
+                opts.SerializerSettings.Converters.Add(new StringEnumConverter());
+                opts.SerializerSettings.ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new SnakeCaseNamingStrategy
+                    {
+                        ProcessDictionaryKeys = true,
+                        ProcessExtensionDataNames = true
+                    }
+                };
+            });
 
         services.AddSwaggerGen(c =>
         {
