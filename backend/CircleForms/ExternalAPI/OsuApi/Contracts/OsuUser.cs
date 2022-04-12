@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
 
 namespace CircleForms.ExternalAPI.OsuApi.Contracts;
@@ -205,15 +206,6 @@ public class RankHistory
     public List<int> Data { get; set; }
 }
 
-public class RankHistory2
-{
-    [JsonProperty("mode")]
-    public string Mode { get; set; }
-
-    [JsonProperty("data")]
-    public List<int> Data { get; set; }
-}
-
 public class OsuUser
 {
     [JsonProperty("avatar_url")]
@@ -222,9 +214,6 @@ public class OsuUser
     [JsonProperty("country_code")]
     public string CountryCode { get; set; }
 
-    [JsonProperty("default_group")]
-    public string DefaultGroup { get; set; }
-
     [JsonProperty("id")]
     public int Id { get; set; }
 
@@ -232,13 +221,12 @@ public class OsuUser
     public bool IsActive { get; set; }
 
     [JsonProperty("is_bot")]
+    [BsonIgnore]
     public bool IsBot { get; set; }
 
     [JsonProperty("is_deleted")]
+    [BsonIgnore]
     public bool IsDeleted { get; set; }
-
-    [JsonProperty("is_online")]
-    public bool IsOnline { get; set; }
 
     [JsonProperty("is_supporter")]
     public bool IsSupporter { get; set; }
@@ -249,23 +237,11 @@ public class OsuUser
     [JsonProperty("pm_friends_only")]
     public bool PmFriendsOnly { get; set; }
 
-    [JsonProperty("profile_colour")]
-    public string ProfileColour { get; set; }
-
     [JsonProperty("username")]
     public string Username { get; set; }
 
-    [JsonProperty("cover_url")]
-    public string CoverUrl { get; set; }
-
     [JsonProperty("discord")]
     public string Discord { get; set; }
-
-    [JsonProperty("has_supported")]
-    public bool HasSupported { get; set; }
-
-    [JsonProperty("interests")]
-    public string Interests { get; set; }
 
     [JsonProperty("join_date")]
     public DateTime JoinDate { get; set; }
@@ -273,29 +249,11 @@ public class OsuUser
     [JsonProperty("kudosu")]
     public Kudosu Kudosu { get; set; }
 
-    [JsonProperty("location")]
-    public string Location { get; set; }
-
-    [JsonProperty("max_blocks")]
-    public int MaxBlocks { get; set; }
-
-    [JsonProperty("max_friends")]
-    public int MaxFriends { get; set; }
-
-    [JsonProperty("occupation")]
-    public string Occupation { get; set; }
-
     [JsonProperty("playmode")]
     public string Playmode { get; set; }
 
     [JsonProperty("playstyle")]
     public List<string> Playstyle { get; set; }
-
-    [JsonProperty("post_count")]
-    public int PostCount { get; set; }
-
-    [JsonProperty("profile_order")]
-    public List<string> ProfileOrder { get; set; }
 
     [JsonProperty("title")]
     public string Title { get; set; }
@@ -303,62 +261,24 @@ public class OsuUser
     [JsonProperty("title_url")]
     public string TitleUrl { get; set; }
 
-    [JsonProperty("twitter")]
-    public string Twitter { get; set; }
-
-    [JsonProperty("website")]
-    public string Website { get; set; }
-
-    [JsonProperty("country")]
-    public Country Country { get; set; }
-
-    [JsonProperty("cover")]
-    public Cover Cover { get; set; }
-
     [JsonProperty("is_restricted")]
+    [BsonIgnore]
     public bool IsRestricted { get; set; }
 
     [JsonProperty("account_history")]
     public List<AccountHistory> AccountHistory { get; set; }
 
-    [JsonProperty("active_tournament_banner")]
-    public ProfileBanner ActiveTournamentBanner { get; set; }
-
     [JsonProperty("badges")]
     public List<UserBadge> Badges { get; set; }
-
-    [JsonProperty("beatmap_playcounts_count")]
-    public int BeatmapPlaycountsCount { get; set; }
-
-    [JsonProperty("comments_count")]
-    public int CommentsCount { get; set; }
-
-    [JsonProperty("favourite_beatmapset_count")]
-    public int FavouriteBeatmapsetCount { get; set; }
 
     [JsonProperty("follower_count")]
     public int FollowerCount { get; set; }
 
-    [JsonProperty("graveyard_beatmapset_count")]
-    public int GraveyardBeatmapsetCount { get; set; }
-
-    [JsonProperty("groups")]
-    public List<object> Groups { get; set; }
-
     [JsonProperty("loved_beatmapset_count")]
     public int LovedBeatmapsetCount { get; set; }
 
-    [JsonProperty("mapping_follower_count")]
-    public int MappingFollowerCount { get; set; }
-
     [JsonProperty("monthly_playcounts")]
     public List<MonthlyPlaycount> MonthlyPlaycounts { get; set; }
-
-    [JsonProperty("page")]
-    public Page Page { get; set; }
-
-    [JsonProperty("pending_beatmapset_count")]
-    public int PendingBeatmapsetCount { get; set; }
 
     [JsonProperty("previous_usernames")]
     public List<string> PreviousUsernames { get; set; }
@@ -366,36 +286,12 @@ public class OsuUser
     [JsonProperty("ranked_beatmapset_count")]
     public int RankedBeatmapsetCount { get; set; }
 
-    [JsonProperty("replays_watched_counts")]
-    public List<ReplaysWatchedCount> ReplaysWatchedCounts { get; set; }
-
-    [JsonProperty("scores_best_count")]
-    public int ScoresBestCount { get; set; }
-
-    [JsonProperty("scores_first_count")]
-    public int ScoresFirstCount { get; set; }
-
-    [JsonProperty("scores_pinned_count")]
-    public int ScoresPinnedCount { get; set; }
-
-    [JsonProperty("scores_recent_count")]
-    public int ScoresRecentCount { get; set; }
-
     [JsonProperty("statistics")]
     public Statistics Statistics { get; set; }
-
-    [JsonProperty("support_level")]
-    public int SupportLevel { get; set; }
-
-    [JsonProperty("user_achievements")]
-    public List<UserAchievement> UserAchievements { get; set; }
 
     [JsonProperty("rank_history")]
     public RankHistory RankHistory { get; set; }
 
     [JsonProperty("ranked_and_approved_beatmapset_count")]
     public int RankedAndApprovedBeatmapsetCount { get; set; }
-
-    [JsonProperty("unranked_beatmapset_count")]
-    public int UnrankedBeatmapsetCount { get; set; }
 }
