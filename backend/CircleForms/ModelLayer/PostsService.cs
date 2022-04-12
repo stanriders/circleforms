@@ -13,7 +13,6 @@ using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.IO.FileIO.Abstract;
-using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -226,7 +225,17 @@ public class PostsService
             return await DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
         }
 
-        var contract = await _mapper.From(post).AdaptToTypeAsync<PostResponseContract>();
+        var contract = _mapper.Map<PostResponseContract>(post); //If author requests post
+        contract.Answers = new List<AnswerContract>();
+        foreach (var answer in post.Answers)
+        {
+            contract.Answers.Add(new AnswerContract
+            {
+                Submissions = answer.Submissions,
+                //TODO: Use projections
+                User = _mapper.Map<UserAnswerContract>(await answer.UserRelation.ToEntityAsync())
+            });
+        }
 
         return contract;
     }

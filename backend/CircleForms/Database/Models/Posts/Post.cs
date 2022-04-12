@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
 using CircleForms.Database.Models.Users;
@@ -13,9 +12,6 @@ public class Post : Entity
 {
     [Field("author")]
     public One<User> AuthorRelation { get; set; }
-
-    [Ignore]
-    public Task<User> Author => AuthorRelation.ToEntityAsync();
 
     [Field("answers")]
     public List<Answer> Answers { get; set; } = new();

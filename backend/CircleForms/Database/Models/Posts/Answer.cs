@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts.Questions.Submissions;
 using CircleForms.Database.Models.Users;
 using MongoDB.Entities;
@@ -13,7 +12,4 @@ public class Answer
 
     [Field("user")]
     public One<User> UserRelation { get; set; }
-
-    [Ignore]
-    public Task<User> User => UserRelation.ToEntityAsync();
 }
