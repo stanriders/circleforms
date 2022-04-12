@@ -226,16 +226,6 @@ public class PostsService
         }
 
         var contract = _mapper.Map<PostResponseContract>(post); //If author requests post
-        contract.Answers = new List<AnswerContract>();
-        foreach (var answer in post.Answers)
-        {
-            contract.Answers.Add(new AnswerContract
-            {
-                Submissions = answer.Submissions,
-                //TODO: Use projections
-                User = _mapper.Map<UserAnswerContract>(await answer.UserRelation.ToEntityAsync())
-            });
-        }
 
         return contract;
     }

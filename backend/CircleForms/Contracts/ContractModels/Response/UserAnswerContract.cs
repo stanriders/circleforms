@@ -6,7 +6,7 @@ namespace CircleForms.Contracts.ContractModels.Response;
 public class UserAnswerContract
 {
     [JsonProperty("id")]
-    public string Id { get; set; }
+    public string ID { get; set; }
 
     [JsonProperty("username")]
     public string Username { get; set; }
