@@ -14,6 +14,7 @@ using CircleForms.IO.FileIO.Configuration;
 using CircleForms.ModelLayer;
 using CircleForms.ModelLayer.Answers;
 using CircleForms.ModelLayer.Publish;
+using FastExpressionCompiler;
 using FluentValidation.AspNetCore;
 using Mapster;
 using MapsterMapper;
@@ -55,6 +56,7 @@ public class Startup
         services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
 
         TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetEntryAssembly()!);
+        TypeAdapterConfig.GlobalSettings.Compiler = x => x.CompileFast();
         services.AddTransient<IMapper, Mapper>();
 
         services.AddAuthentication("InternalCookies")
