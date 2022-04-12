@@ -20,18 +20,6 @@ public class UserBadge
     public string Url { get; set; }
 }
 
-public class ProfileBanner
-{
-    [JsonProperty("id")]
-    public int Id { get; set; }
-
-    [JsonProperty("tournament_id")]
-    public int TournamentId { get; set; }
-
-    [JsonProperty("image")]
-    public string Image { get; set; }
-}
-
 public class Kudosu
 {
     [JsonProperty("total")]
@@ -39,27 +27,6 @@ public class Kudosu
 
     [JsonProperty("available")]
     public int Available { get; set; }
-}
-
-public class Country
-{
-    [JsonProperty("code")]
-    public string Code { get; set; }
-
-    [JsonProperty("name")]
-    public string Name { get; set; }
-}
-
-public class Cover
-{
-    [JsonProperty("custom_url")]
-    public string CustomUrl { get; set; }
-
-    [JsonProperty("url")]
-    public string Url { get; set; }
-
-    [JsonProperty("id")]
-    public object Id { get; set; }
 }
 
 public class AccountHistory
@@ -84,24 +51,6 @@ public class MonthlyPlaycount
 {
     [JsonProperty("start_date")]
     public DateTime StartDate { get; set; }
-
-    [JsonProperty("count")]
-    public int Count { get; set; }
-}
-
-public class Page
-{
-    [JsonProperty("html")]
-    public string Html { get; set; }
-
-    [JsonProperty("raw")]
-    public string Raw { get; set; }
-}
-
-public class ReplaysWatchedCount
-{
-    [JsonProperty("start_date")]
-    public string StartDate { get; set; }
 
     [JsonProperty("count")]
     public int Count { get; set; }
@@ -186,15 +135,6 @@ public class Statistics
 
     [JsonProperty("rank")]
     public Rank Rank { get; set; }
-}
-
-public class UserAchievement
-{
-    [JsonProperty("achieved_at")]
-    public DateTime AchievedAt { get; set; }
-
-    [JsonProperty("achievement_id")]
-    public int AchievementId { get; set; }
 }
 
 public class RankHistory
