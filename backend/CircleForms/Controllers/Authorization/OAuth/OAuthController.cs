@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.Contracts;
 using CircleForms.Controllers.Authorization.Configuration;
 using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.ExternalAPI.OsuApi;
 using CircleForms.ExternalAPI.OsuApi.Contracts;
+using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

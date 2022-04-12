@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.Database.Services.Extensions;
+using MapsterMapper;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using StackExchange.Redis;

@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using AutoMapper;
-using CircleForms.Contracts.ContractModels.Mappings;
 using CircleForms.Controllers.Authorization.Configuration;
 using CircleForms.Database.Services;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.ExternalAPI.OsuApi;
 using CircleForms.ExternalAPI.OsuApi.Configurations;
-using CircleForms.ExternalAPI.OsuApi.Mapping;
 using CircleForms.IO.FileIO;
 using CircleForms.IO.FileIO.Abstract;
 using CircleForms.IO.FileIO.Configuration;
@@ -18,6 +15,8 @@ using CircleForms.ModelLayer;
 using CircleForms.ModelLayer.Answers;
 using CircleForms.ModelLayer.Publish;
 using FluentValidation.AspNetCore;
+using Mapster;
+using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -53,9 +52,9 @@ public class Startup
         services.Configure<StaticFilesConfig>(Configuration.GetSection("StaticFiles"));
 
         services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
-        services.AddAutoMapper(x =>
-            x.AddProfiles(new Profile[] {new ContractProfile(), new OsuApiMapper()}));
 
+        TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetEntryAssembly()!);
+        services.AddTransient<IMapper, Mapper>();
 
         services.AddAuthentication("InternalCookies")
             .AddCookie("InternalCookies", options =>

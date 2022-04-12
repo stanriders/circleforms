@@ -1,9 +1,9 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.ExternalAPI.OsuApi.Configurations;
 using CircleForms.ExternalAPI.OsuApi.Contracts;
 using CircleForms.ModelLayer;
+using MapsterMapper;
 using Microsoft.Extensions.Options;
 using RestSharp;
 using RestSharp.Serializers.NewtonsoftJson;

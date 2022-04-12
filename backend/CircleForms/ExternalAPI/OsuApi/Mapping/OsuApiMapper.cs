@@ -1,17 +1,14 @@
-﻿using AutoMapper;
-using CircleForms.Database.Models.Users;
-using CircleForms.ExternalAPI.OsuApi.Configurations;
+﻿using CircleForms.Database.Models.Users;
 using CircleForms.ExternalAPI.OsuApi.Contracts;
+using Mapster;
 
 namespace CircleForms.ExternalAPI.OsuApi.Mapping;
 
-public class OsuApiMapper : Profile
+public class OsuApiMapper : IRegister
 {
-    public OsuApiMapper()
+    public void Register(TypeAdapterConfig config)
     {
-        CreateMap<OsuUser, User>()
-            .ForMember(x => x.ID,
-                x => x.MapFrom(v => v.Id.ToString()));
-        CreateMap<OsuApiConfig, RefreshTokenRequest>();
+        config.NewConfig<OsuUser, User>()
+            .Map(x => x.ID, x => x.Id.ToString());
     }
 }

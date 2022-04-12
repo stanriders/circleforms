@@ -5,7 +5,6 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Controllers;
@@ -14,6 +13,7 @@ using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.IO.FileIO.Abstract;
+using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
