@@ -84,25 +84,23 @@ public class OAuthController : ControllerBase
             return Forbid();
         }
 
-        var user = _mapper.Map<OsuUser, User>(osuUser);
-        user.Osu = osuUser.ToBsonDocument();
+        var userId = osuUser.Id.ToString();
 
-        var dbUser = await _usersRepository.Get(user.ID);
-
-        if (dbUser is null)
+        var user = await _usersRepository.Get(userId);
+        if (user is null)
         {
+            user = _mapper.Map<OsuUser, User>(osuUser);
             if (_superAdminsId.Contains(osuUser.Id))
             {
                 user.Roles = Roles.SuperAdmin | Roles.Admin | Roles.Moderator;
             }
 
             _logger.LogInformation("Adding user {Id} - {Username} to the database", user.ID, osuUser.Username);
-            await _usersRepository.Create(user);
 
-            dbUser = user;
+            await _usersRepository.Create(user);
         }
 
-        user = TransferMutableData(dbUser, user);
+        user.Osu = osuUser.ToBsonDocument();
 
         user.Token = new TokenResponse
         {
@@ -171,13 +169,5 @@ public class OAuthController : ControllerBase
 
         // FIXME: better redirects
         return Redirect("https://circleforms.net/");
-    }
-
-    private static User TransferMutableData(User dbUser, User osuUser)
-    {
-        osuUser.PostsRelation = dbUser.PostsRelation;
-        osuUser.Roles = dbUser.Roles;
-
-        return osuUser;
     }
 }
