@@ -6,7 +6,7 @@ namespace CircleForms.ModelLayer;
 
 public class Result : Result<object>
 {
-    public Result() : base(null)
+    public Result() : base(value: null)
     {
     }
 
