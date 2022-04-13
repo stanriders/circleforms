@@ -8,9 +8,6 @@ public class UserResponseContract
     [JsonProperty("id")]
     public string ID { get; set; }
 
-    [JsonProperty("posts")]
-    public List<PostMinimalResponseContract> Posts { get; set; }
-
     [JsonProperty("username")]
     public string Username { get; set; }
 

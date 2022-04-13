@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
-using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
 using MapsterMapper;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using MongoDB.Driver;
 
 namespace CircleForms.Controllers;
 
@@ -122,8 +120,6 @@ public class UsersController : ControllerBase
         if (user != null)
         {
             var result = _mapper.Map<UserResponseContract>(user);
-            var posts = await user.PostsRelation.ChildrenFluent().ToListAsync();
-            result.Posts = _mapper.Map<List<Post>, List<PostMinimalResponseContract>>(posts);
 
             return Ok(result);
         }
