@@ -43,20 +43,20 @@ export default function Settings() {
             <div className="flex items-center">
               <img
                 className="h-28 w-28 rounded-full"
-                src={user.avatar_url}
-                alt={user.username} />
+                src={user.osu.avatar_url}
+                alt={user.osu.username} />
               <div className="pl-3">
                 <h2 className="font-bold text-3xl">osu!</h2>
                 <p className="text-sm">{ t('integrations.osu.description') }</p>
               </div>
             </div>
             <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
-              <p>{ t('integrations.osu.connectedTo') } {user.id} ({user.username})</p>
-              <p>
+              <p>{ t('integrations.osu.connectedTo') } {user.id} ({user.osu.username})</p>
+              {/* <p>
                 { t('integrations.osu.withForms', {
                   count: user.posts.length
                 }) }
-              </p>
+              </p> */}
             </div>
           </div>
 

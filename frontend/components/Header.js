@@ -64,11 +64,11 @@ export default function Header() {
           <Menu>
             <MenuButton>
               <div className="flex items-center gap-x-2 pl-4 bg-black border-2 border-pink rounded-70 font-bold">
-                <span>{user.username}</span>
+                <span>{user.osu.username}</span>
                 <img
                   className="h-9 w-9 rounded-70 m-1"
-                  src={user.avatar_url}
-                  alt={user.username} />
+                  src={user.osu.avatar_url}
+                  alt={user.osu.username} />
               </div>
             </MenuButton>
             <MenuList className="slide-down">
@@ -91,7 +91,7 @@ export default function Header() {
 
           <Menu>
             <MenuButton>
-              <div className="flex items-center justify-center rounded-7 bg-black-lightest px-2 py-1">
+              <div className="flex items-center justify-center rounded-7 bg-black-lightest px-2 py-2">
                 <Flag locale={router.locale} />
               </div>
             </MenuButton>

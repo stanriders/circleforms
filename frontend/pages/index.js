@@ -85,12 +85,15 @@ export default function Home() {
                   </p>
                 )}
 
-                {data && data.posts.length > 0 && data.posts.map(form => (
-                  <FormEntry
-                    key={form.id}
-                    author={data.authors[form.author_id]}
-                    {...form} />
-                ))}
+                {data && data.posts.length > 0 && data.posts.map(form => {
+                  const user = data.users.find(user => user.id === form.author_id)
+                  return (
+                    <FormEntry
+                      key={form.id}
+                      user={user}
+                      {...form} />
+                  )
+                })}
               </div>
             </div>
             <div className="flex justify-center mt-4">

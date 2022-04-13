@@ -19,6 +19,10 @@ export default async function api (endpoint, options) {
       return mocks.userMinimal
     }
 
+    if (endpoint === '/me/posts') {
+      return mocks.mePosts
+    }
+
     if (endpoint === '/me') {
       return mocks.me
     }

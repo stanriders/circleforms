@@ -136,12 +136,15 @@ export default function FormsList() {
                 <Fragment>
                   <SubTitle>{ t('pinnedForms') }</SubTitle>
                   <div className="flex flex-col gap-y-3">
-                    {pinnedForms && pinnedForms.posts.length > 0 && pinnedForms.posts.map(form => (
-                      <FormEntry
-                        key={form.id}
-                        author={pinnedForms.authors[form.author_id]}
-                        {...form} />
-                    ))}
+                    {pinnedForms && pinnedForms.posts.length > 0 && pinnedForms.posts.map(form => {
+                      const user = pinnedForms.users.find(user => user.id === form.author_id)
+                      return (
+                        <FormEntry
+                          key={form.id}
+                          user={user}
+                          {...form} />
+                      )
+                    })}
                   </div>
                 </Fragment>
               )}
@@ -156,12 +159,15 @@ export default function FormsList() {
                     { t('noForms') }
                   </p>
                 )}
-                {data && data.posts.length > 0 && data.posts.map(form => (
-                  <FormEntry
-                    key={form.id}
-                    author={data.authors[form.author_id]}
-                    {...form} />
-                ))}
+                {data && data.posts.length > 0 && data.posts.map(form => {
+                  const user = data.users.find(user => user.id === form.author_id)
+                  return (
+                    <FormEntry
+                      key={form.id}
+                      user={user}
+                      {...form} />
+                  )
+                })}
               </div>
             </div>
           </div>

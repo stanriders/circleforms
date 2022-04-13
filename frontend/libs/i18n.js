@@ -14,7 +14,7 @@ const LOCALES = {
     name: 'Français',
     locale: 'fr',
   },
-  'de': {
+  /* 'de': {
     flag: 'de',
     name: 'Deutsch',
     locale: 'de',
@@ -23,7 +23,7 @@ const LOCALES = {
     flag: 'jp',
     name: '日本語',
     locale: 'ja',
-  },
+  }, */
 }
 
 export default LOCALES

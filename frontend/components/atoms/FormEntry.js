@@ -4,7 +4,7 @@ import getImage from '../../utils/getImage';
 
 export default function FormEntry({
   id,
-  author,
+  user,
   author_id,
   is_active,
   icon,
@@ -40,14 +40,14 @@ export default function FormEntry({
           </div>
           <div className="flex items-center">
             <div className="flex flex-col text-xs mr-2 text-right">
-              <span className="font-semibold">posted by <span className="font-bold">{author?.username}</span></span>
+              <span className="font-semibold">posted by <span className="font-bold">{user?.username}</span></span>
               <span className="text-green">
                 {timeago.format(publish_time)}
               </span>
             </div>
             <img
               className="h-10 w-10 rounded-full"
-              src={author?.avatar_url}
+              src={user?.avatar_url}
               alt="Profile user {name}" />
           </div>
         </div>

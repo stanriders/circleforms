@@ -10,13 +10,11 @@ export default function SingleForm({
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - {form.title}</title>
+        <title>CircleForms - {form.posts.title}</title>
       </Head>
 
       <section className="container mb-12">
-        <Form
-          author={author}
-          {...form} />
+        <Form {...form} />
       </section>
     </DefaultLayout>
   )
@@ -30,8 +28,6 @@ export async function getServerSideProps({ params, locale }) {
     import(`../../messages/single-form/${locale}.json`),
     import(`../../messages/global/${locale}.json`),
   ])
-  const author = await api(`/users/${form.author_id}/minimal`)
-
 
   const messages = {
     ...translations,
@@ -41,7 +37,6 @@ export async function getServerSideProps({ params, locale }) {
   return {
     props: {
       form,
-      author,
       messages
     }
   }
