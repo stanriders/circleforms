@@ -156,6 +156,15 @@ public class Startup
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                Secure = CookieSecurePolicy.None,
+                MinimumSameSitePolicy = SameSiteMode.None
+            });
+        }
+
+        if (env.IsDevelopment() || env.IsStaging())
+        {
             app.UseSwagger(c =>
             {
                 c.RouteTemplate = "swagger/{documentName}/swagger.json";
@@ -166,14 +175,9 @@ public class Startup
                 });
             });
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CircleForms v1"));
-
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                Secure = CookieSecurePolicy.None,
-                MinimumSameSitePolicy = SameSiteMode.None
-            });
         }
-        else
+
+        if (env.IsStaging() || env.IsProduction())
         {
             app.Use((context, next) =>
             {
