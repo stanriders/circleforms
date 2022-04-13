@@ -170,8 +170,9 @@ public class Startup
                 c.RouteTemplate = "swagger/{documentName}/swagger.json";
                 c.PreSerializeFilters.Add((swaggerDoc, httpReq) =>
                 {
+                    var scheme = env.IsStaging() ? "https" : httpReq.Scheme;
                     swaggerDoc.Servers = new List<OpenApiServer>
-                        {new() {Url = $"{httpReq.Scheme}://{httpReq.Host.Value}{basePath}"}};
+                        {new() {Url = $"{scheme}://{httpReq.Host.Value}{basePath}"}};
                 });
             });
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CircleForms v1"));
