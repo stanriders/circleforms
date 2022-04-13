@@ -10,6 +10,9 @@ public class UserMinimalResponseContract
     [JsonProperty("avatar_url")]
     public string AvatarUrl { get; set; }
 
+    [JsonProperty("discord")]
+    public string Discord { get; set; }
+
     [JsonProperty("username")]
     public string Username { get; set; }
 }
