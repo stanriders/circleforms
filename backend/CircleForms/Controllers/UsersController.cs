@@ -107,6 +107,9 @@ public class UsersController : ControllerBase
         return Ok(_mapper.Map<UserResponseContract>(user));
     }
 
+    /// <summary>
+    ///     Get user's posts. (Requires auth)
+    /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMePosts)]
     [ProducesResponseType(typeof(UserPostsResponseContract), StatusCodes.Status200OK, "application/json")]
