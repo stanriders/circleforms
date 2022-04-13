@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 
 namespace CircleForms.Controllers;
 
@@ -104,6 +105,28 @@ public class UsersController : ControllerBase
         await _usersService.Update(id, user);
 
         return Ok(_mapper.Map<UserResponseContract>(user));
+    }
+
+    [Authorize]
+    [HttpGet(ApiEndpoints.UsersGetMePosts)]
+    [ProducesResponseType(typeof(UserPostsResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetMePosts()
+    {
+        var user = await _usersService.Get(_claim);
+        if (user != null)
+        {
+            var posts = await user.PostsRelation.ChildrenFluent()
+                .ToListAsync();
+
+            return Ok(_mapper.Map<List<UserPostsResponseContract>>(posts));
+        }
+
+        _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", _claim);
+
+        await HttpContext.SignOutAsync("InternalCookies");
+
+        return Unauthorized();
     }
 
     /// <summary>
