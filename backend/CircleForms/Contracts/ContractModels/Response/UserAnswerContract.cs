@@ -7,6 +7,9 @@ public class UserAnswerContract
     [JsonProperty("id")]
     public string ID { get; set; }
 
+    [JsonProperty("avatar_url")]
+    public string AvatarUrl { get; set; }
+
     [JsonProperty("username")]
     public string Username { get; set; }
 
