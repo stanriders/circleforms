@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
-using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
 using MapsterMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -108,6 +108,31 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
+    ///     Get user's posts. (Requires auth)
+    /// </summary>
+    [Authorize]
+    [HttpGet(ApiEndpoints.UsersGetMePosts)]
+    [ProducesResponseType(typeof(List<PostMinimalResponseContract>), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> GetMePosts()
+    {
+        var user = await _usersService.Get(_claim);
+        if (user != null)
+        {
+            var posts = await user.PostsRelation.ChildrenFluent()
+                .ToListAsync();
+
+            return Ok(_mapper.Map<List<PostMinimalResponseContract>>(posts));
+        }
+
+        _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", _claim);
+
+        await HttpContext.SignOutAsync("InternalCookies");
+
+        return Unauthorized();
+    }
+
+    /// <summary>
     ///     Get data for current user. (Requires auth)
     /// </summary>
     [Authorize]
@@ -122,14 +147,14 @@ public class UsersController : ControllerBase
         if (user != null)
         {
             var result = _mapper.Map<UserResponseContract>(user);
-            var posts = await user.PostsRelation.ChildrenFluent().ToListAsync();
-            result.Posts = _mapper.Map<List<Post>, List<PostMinimalResponseContract>>(posts);
 
             return Ok(result);
         }
 
         _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", _claim);
 
-        return NotFound();
+        await HttpContext.SignOutAsync("InternalCookies");
+
+        return Unauthorized();
     }
 }
