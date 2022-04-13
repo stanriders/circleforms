@@ -21,12 +21,6 @@ public class User : IEntity
     [Field("posts")]
     public Many<Post> PostsRelation { get; set; }
 
-    [Field("avatar_url")]
-    public string AvatarUrl { get; set; }
-
-    [Field("username")]
-    public string Username { get; set; }
-
     [Field("discord")]
     public string Discord { get; set; }
 

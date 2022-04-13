@@ -96,7 +96,7 @@ public class OAuthController : ControllerBase
                 user.Roles = Roles.SuperAdmin | Roles.Admin | Roles.Moderator;
             }
 
-            _logger.LogInformation("Adding user {Id} - {Username} to the database", user.ID, user.Username);
+            _logger.LogInformation("Adding user {Id} - {Username} to the database", user.ID, osuUser.Username);
             await _usersRepository.Create(user);
 
             dbUser = user;
@@ -153,7 +153,7 @@ public class OAuthController : ControllerBase
         await HttpContext.SignInAsync("InternalCookies", new ClaimsPrincipal(id), authProperties);
         await HttpContext.SignOutAsync("ExternalCookies");
 
-        _logger.LogDebug("User {Username} logged in", user.Username);
+        _logger.LogDebug("User {Username} logged in", osuUser.Username);
 
         // FIXME: better redirects
         return Redirect("https://circleforms.net/");
