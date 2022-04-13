@@ -163,6 +163,7 @@ public class PostsController : ControllerBase
         }
 
         var value = result.Value;
+
         if (value is PostResponseContract prc)
         {
             var response = new PostUserAnswerResponseContract();
@@ -170,6 +171,15 @@ public class PostsController : ControllerBase
             response.Users =
                 (await _users.Get(prc.Answers.Select(x => x.UserId).Append(prc.AuthorId).Distinct().ToList()))
                 .Adapt<List<UserAnswerContract>>();
+
+            return Ok(response);
+        }
+
+        if (value is PostDetailedResponseContract pdrc)
+        {
+            var response = new PostDetailedUserAnswerResponseContract();
+            response.Posts = pdrc;
+            response.Users = (await _users.Get(pdrc.AuthorId)).Adapt<UserAnswerContract>();
 
             return Ok(response);
         }
