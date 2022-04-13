@@ -28,6 +28,7 @@ public static class ApiEndpoints
     #region Users endpoints for users
     public const string UsersGetUser = "/users/{id}";
     public const string UsersGetMe = "/me";
+    public const string UsersGetMePosts = "/me/posts";
     public const string UsersGetMinimalUser = "/users/{id}/minimal";
     #endregion
 
