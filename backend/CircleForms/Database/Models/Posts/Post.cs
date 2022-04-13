@@ -19,6 +19,9 @@ public class Post : Entity
     [Field("answers")]
     public List<Answer> Answers { get; set; } = new();
 
+    [Ignore]
+    public int AnswerCount => Answers.Count;
+
     [Field("is_active")]
     public bool IsActive { get; set; }
 
