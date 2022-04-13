@@ -91,7 +91,12 @@ public class PagesController : ControllerBase
     {
         var posts = await _posts.GetPinned();
 
-        var response = new PageResponseContract();
+        var response = new PageResponseContract
+        {
+            Authors = new Dictionary<string, UserMinimalResponseContract>(),
+            Posts = Array.Empty<PostMinimalResponseContract>()
+        };
+
         if (posts.Length == 0)
         {
             return response;
