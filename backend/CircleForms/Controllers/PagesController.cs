@@ -91,7 +91,13 @@ public class PagesController : ControllerBase
     {
         var posts = await _posts.GetPinned();
 
-        return await FillResponseContract(new PageResponseContract(), posts);
+        var response = new PageResponseContract();
+        if (posts.Length == 0)
+        {
+            return response;
+        }
+
+        return await FillResponseContract(response, posts);
     }
 
     /// <summary>
