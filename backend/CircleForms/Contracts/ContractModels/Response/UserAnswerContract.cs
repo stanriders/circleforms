@@ -7,12 +7,6 @@ public class UserAnswerContract
     [JsonProperty("id")]
     public string ID { get; set; }
 
-    [JsonProperty("avatar_url")]
-    public string AvatarUrl { get; set; }
-
-    [JsonProperty("username")]
-    public string Username { get; set; }
-
     [JsonProperty("discord")]
     public string Discord { get; set; }
 
@@ -22,6 +16,8 @@ public class UserAnswerContract
 
 public class OsuAnswerContract
 {
+    public string AvatarUrl { get; set; }
+    public string Username { get; set; }
     public object Statistics { get; set; }
     public object CountryCode { get; set; }
 }

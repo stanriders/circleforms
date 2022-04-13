@@ -77,32 +77,30 @@ public class OAuthController : ControllerBase
         }
 
         var osuUser = osuUserResult.Value;
-        if (osuUser.IsRestricted)
+        if (osuUser.IsRestricted || osuUser.IsBot || osuUser.IsDeleted)
         {
-            _logger.LogInformation("User {User} tried logging in, but they are restricted!", osuUser.Id);
+            _logger.LogInformation("User {User} tried logging in, but they are restricted (or bot)!", osuUser.Id);
 
             return Forbid();
         }
 
-        var user = _mapper.Map<OsuUser, User>(osuUser);
-        user.Osu = osuUser.ToBsonDocument();
+        var userId = osuUser.Id.ToString();
 
-        var dbUser = await _usersRepository.Get(user.ID);
-
-        if (dbUser is null)
+        var user = await _usersRepository.Get(userId);
+        if (user is null)
         {
+            user = _mapper.Map<OsuUser, User>(osuUser);
             if (_superAdminsId.Contains(osuUser.Id))
             {
                 user.Roles = Roles.SuperAdmin | Roles.Admin | Roles.Moderator;
             }
 
-            _logger.LogInformation("Adding user {Id} - {Username} to the database", user.ID, user.Username);
-            await _usersRepository.Create(user);
+            _logger.LogInformation("Adding user {Id} - {Username} to the database", user.ID, osuUser.Username);
 
-            dbUser = user;
+            await _usersRepository.Create(user);
         }
 
-        user = TransferMutableData(dbUser, user);
+        user.Osu = osuUser.ToBsonDocument();
 
         user.Token = new TokenResponse
         {
@@ -153,7 +151,7 @@ public class OAuthController : ControllerBase
         await HttpContext.SignInAsync("InternalCookies", new ClaimsPrincipal(id), authProperties);
         await HttpContext.SignOutAsync("ExternalCookies");
 
-        _logger.LogDebug("User {Username} logged in", user.Username);
+        _logger.LogDebug("User {Username} logged in", osuUser.Username);
 
         // FIXME: better redirects
         return Redirect("https://circleforms.net/");
@@ -171,13 +169,5 @@ public class OAuthController : ControllerBase
 
         // FIXME: better redirects
         return Redirect("https://circleforms.net/");
-    }
-
-    private static User TransferMutableData(User dbUser, User osuUser)
-    {
-        osuUser.PostsRelation = dbUser.PostsRelation;
-        osuUser.Roles = dbUser.Roles;
-
-        return osuUser;
     }
 }

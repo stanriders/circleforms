@@ -14,6 +14,10 @@ public class ContractProfile : IRegister
             .Map(x => x.Osu, x => BsonSerializer.Deserialize<object>(x.Osu, default));
         config.NewConfig<User, UserAnswerContract>()
             .Map(x => x.Osu, x => BsonSerializer.Deserialize<OsuAnswerContract>(x.Osu, default));
+        config.NewConfig<User, UserMinimalRedis>()
+            .Map(x => x.Username, x => x.Osu["Username"])
+            .Map(x => x.AvatarUrl, x => x.Osu["AvatarUrl"]);
+
         config.NewConfig<Answer, AnswerContract>()
             .Map(x => x.UserId, x => x.UserRelation.ID);
     }

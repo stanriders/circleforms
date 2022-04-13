@@ -7,6 +7,7 @@ using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Contracts.ContractModels.Response.UserInfoContracts;
 using CircleForms.Database.Models.Posts.Enums;
+using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.ModelLayer;
 using CircleForms.ModelLayer.Answers;
@@ -25,6 +26,7 @@ public class PostsController : ControllerBase
 {
     private static readonly string[] _imageUploadExtensions = {".jpg", ".png"};
     private readonly IAnswerService _answer;
+    private readonly ICacheRepository _cache;
     private readonly ILogger<PostsController> _logger;
     private readonly PostsService _posts;
     private readonly IPublishService _publish;
@@ -32,13 +34,14 @@ public class PostsController : ControllerBase
 
     public PostsController(ILogger<PostsController> logger, PostsService posts,
         IAnswerService answer,
-        IPublishService publish, IUserRepository users)
+        IPublishService publish, IUserRepository users, ICacheRepository cache)
     {
         _logger = logger;
         _posts = posts;
         _answer = answer;
         _publish = publish;
         _users = users;
+        _cache = cache;
     }
 
     private string _claim => HttpContext.User.Identity!.Name;
@@ -169,7 +172,7 @@ public class PostsController : ControllerBase
             var response = new PostUserAnswerResponseContract();
             response.Posts = prc;
             response.Users =
-                (await _users.Get(prc.Answers.Select(x => x.UserId).Append(prc.AuthorId).Distinct().ToList()))
+                (await _users.Get(prc.Answers.Select(x => x.UserId).Distinct().ToList()))
                 .Adapt<List<UserAnswerContract>>();
 
             return Ok(response);
@@ -179,7 +182,8 @@ public class PostsController : ControllerBase
         {
             var response = new PostDetailedUserAnswerResponseContract();
             response.Posts = pdrc;
-            response.Users = (await _users.Get(pdrc.AuthorId)).Adapt<UserAnswerContract>();
+            response.Users = new List<UserMinimalRedis> {await _cache.GetMinimalUser(pdrc.AuthorId)}
+                .Adapt<List<UserMinimalResponseContract>>();
 
             return Ok(response);
         }

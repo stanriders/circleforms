@@ -1,13 +1,9 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using CircleForms.Contracts.ContractModels.Response.UserInfoContracts.Abstract;
 
 namespace CircleForms.Contracts.ContractModels.Response;
 
-public class PageResponseContract
+public class PageResponseContract :
+    UserInfoResponseContract<List<UserMinimalResponseContract>, PostMinimalResponseContract[]>
 {
-    [JsonProperty("authors")]
-    public Dictionary<string, UserMinimalResponseContract> Authors { get; set; }
-
-    [JsonProperty("posts")]
-    public PostMinimalResponseContract[] Posts { get; set; }
 }
