@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
-using CircleForms.Models;
-using CircleForms.Models.Enums;
-using CircleForms.Models.Posts;
-using CircleForms.Services;
+using CircleForms.Contracts.ContractModels.Response.UserInfoContracts;
+using CircleForms.Database.Models.Posts.Enums;
+using CircleForms.Database.Services.Abstract;
+using CircleForms.ModelLayer;
+using CircleForms.ModelLayer.Answers;
+using CircleForms.ModelLayer.Publish;
+using Mapster;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -23,23 +24,24 @@ namespace CircleForms.Controllers;
 public class PostsController : ControllerBase
 {
     private static readonly string[] _imageUploadExtensions = {".jpg", ".png"};
+    private readonly IAnswerService _answer;
     private readonly ILogger<PostsController> _logger;
-    private readonly IMapper _mapper;
     private readonly PostsService _posts;
+    private readonly IPublishService _publish;
+    private readonly IUserRepository _users;
 
-    public PostsController(ILogger<PostsController> logger, PostsService posts, IMapper mapper)
+    public PostsController(ILogger<PostsController> logger, PostsService posts,
+        IAnswerService answer,
+        IPublishService publish, IUserRepository users)
     {
         _logger = logger;
         _posts = posts;
-        _mapper = mapper;
+        _answer = answer;
+        _publish = publish;
+        _users = users;
     }
 
     private string _claim => HttpContext.User.Identity!.Name;
-
-    private IActionResult Map<T, TR>(Result<T> result)
-    {
-        return result.Map(arg => _mapper.Map<TR>(arg));
-    }
 
     /// <summary>
     ///     Add answer to a question. (Requires auth)
@@ -52,7 +54,7 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Answer(string id, [FromBody] List<SubmissionContract> answerContracts)
     {
-        var postResult = await _posts.Answer(_claim, id, answerContracts);
+        var postResult = await _answer.Answer(_claim, id, answerContracts);
 
         return postResult.Map();
     }
@@ -97,17 +99,15 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Post(PostRequestContract postContract)
     {
-        var post = _mapper.Map<Post>(postContract);
-
-        _logger.LogInformation("User {User} posts a post {PostId}", _claim, post.ID);
-
-        var result = await _posts.AddPost(_claim, post);
+        var result = await _posts.AddPost(_claim, postContract);
         if (!result.IsError)
         {
+            _logger.LogInformation("User {User} posts a post {PostId}", _claim, result.Value.ID);
+
             return CreatedAtAction("GetDetailed", new {id = result.Value.ID}, result.Value);
         }
 
-        return result.Map();
+        return result.Unwrap();
     }
 
     /// <summary>
@@ -117,9 +117,9 @@ public class PostsController : ControllerBase
     [HttpPost(ApiEndpoints.PostUnpublish)]
     public async Task<IActionResult> Unpublish(string id)
     {
-        var result = await _posts.Unpublish(id, _claim);
+        var result = await _publish.Unpublish(id, _claim);
 
-        return Map<Post, PostResponseContract>(result);
+        return result.Unwrap();
     }
 
     /// <summary>
@@ -129,9 +129,9 @@ public class PostsController : ControllerBase
     [HttpPost(ApiEndpoints.PostPublish)]
     public async Task<IActionResult> Publish(string id)
     {
-        var result = await _posts.Publish(id, _claim);
+        var result = await _publish.Publish(id, _claim);
 
-        return Map<Post, PostResponseContract>(result);
+        return result.Unwrap();
     }
 
     /// <summary>
@@ -144,29 +144,47 @@ public class PostsController : ControllerBase
     {
         var result = await _posts.UpdatePost(_claim, updateContract, id);
 
-        return Map<Post, PostResponseContract>(result);
+        return result.Unwrap();
     }
 
     /// <summary>
     ///     Get full info about a page if you are the creator of the page, otherwise return cached version
     /// </summary>
     [HttpGet(ApiEndpoints.PostsDetailedPost)]
-    [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(PostUserAnswerResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(typeof(PostDetailedResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {
         var result = await _posts.GetDetailedPost(_claim, id, key);
-
-        return result.Map<object>(v =>
+        if (result.IsError)
         {
-            return v switch
-            {
-                PostRedis postRedis => _mapper.Map<PostDetailedResponseContract>(postRedis),
-                Post post => _mapper.Map<PostResponseContract>(post),
-                _ => throw new ArgumentOutOfRangeException(nameof(v), v, null)
-            };
-        });
+            return result.Map();
+        }
+
+        var value = result.Value;
+
+        if (value is PostResponseContract prc)
+        {
+            var response = new PostUserAnswerResponseContract();
+            response.Posts = prc;
+            response.Users =
+                (await _users.Get(prc.Answers.Select(x => x.UserId).Append(prc.AuthorId).Distinct().ToList()))
+                .Adapt<List<UserAnswerContract>>();
+
+            return Ok(response);
+        }
+
+        if (value is PostDetailedResponseContract pdrc)
+        {
+            var response = new PostDetailedUserAnswerResponseContract();
+            response.Posts = pdrc;
+            response.Users = (await _users.Get(pdrc.AuthorId)).Adapt<UserAnswerContract>();
+
+            return Ok(response);
+        }
+
+        return result.Unwrap();
     }
 
     #region Mongo
@@ -183,7 +201,7 @@ public class PostsController : ControllerBase
 
         var result = await _posts.Get(id);
 
-        return Map<Post, PostResponseContract>(result);
+        return result.Unwrap();
     }
 
     /// <summary>
@@ -195,7 +213,9 @@ public class PostsController : ControllerBase
     {
         _logger.LogInformation("User {User} requested database posts dump", _claim);
 
-        return _mapper.Map<List<Post>, List<PostResponseContract>>(await _posts.GetAll());
+        var result = await _posts.GetAll();
+
+        return result;
     }
     #endregion
 
@@ -209,7 +229,9 @@ public class PostsController : ControllerBase
     {
         _logger.LogInformation("User {User} requested posts cache dump", _claim);
 
-        return _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(await _posts.GetAllCached());
+        var result = await _posts.GetAllCached();
+
+        return result;
     }
 
     /// <summary>
@@ -223,7 +245,7 @@ public class PostsController : ControllerBase
     {
         var post = await _posts.GetCachedPost(id);
 
-        return Map<PostRedis, PostMinimalResponseContract>(post);
+        return post.Unwrap();
     }
     #endregion
 }

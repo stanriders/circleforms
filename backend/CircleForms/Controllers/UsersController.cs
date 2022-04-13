@@ -1,15 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
-using CircleForms.Models.Users;
-using CircleForms.Services.Database.Interfaces;
+using CircleForms.Database.Models.Posts;
+using CircleForms.Database.Models.Users;
+using CircleForms.Database.Services.Abstract;
+using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 
 namespace CircleForms.Controllers;
 
@@ -17,15 +19,18 @@ namespace CircleForms.Controllers;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
+    private readonly ICacheRepository _cache;
     private readonly ILogger<UsersController> _logger;
     private readonly IMapper _mapper;
     private readonly IUserRepository _usersService;
 
-    public UsersController(ILogger<UsersController> logger, IMapper mapper, IUserRepository usersService)
+    public UsersController(ILogger<UsersController> logger, IMapper mapper, IUserRepository usersService,
+        ICacheRepository cache)
     {
         _logger = logger;
         _mapper = mapper;
         _usersService = usersService;
+        _cache = cache;
     }
 
     private string _claim => HttpContext.User.Identity!.Name;
@@ -55,7 +60,7 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMinimal([RegularExpression(@"^\d+$")] string id)
     {
-        var user = await _usersService.GetMinimal(id);
+        var user = await _cache.GetMinimalUser(id);
         if (user != null)
         {
             return Ok(_mapper.Map<UserMinimalResponseContract>(user));
@@ -116,7 +121,11 @@ public class UsersController : ControllerBase
         var user = await _usersService.Get(_claim);
         if (user != null)
         {
-            return Ok(_mapper.Map<UserResponseContract>(user));
+            var result = _mapper.Map<UserResponseContract>(user);
+            var posts = await user.PostsRelation.ChildrenFluent().ToListAsync();
+            result.Posts = _mapper.Map<List<Post>, List<PostMinimalResponseContract>>(posts);
+
+            return Ok(result);
         }
 
         _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", _claim);

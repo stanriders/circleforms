@@ -1,19 +1,20 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.Contracts;
-using CircleForms.Models.Configurations;
-using CircleForms.Models.OsuContracts;
-using CircleForms.Models.Users;
-using CircleForms.Services.Database.Interfaces;
-using CircleForms.Services.Interfaces;
+using CircleForms.Controllers.Authorization.Configuration;
+using CircleForms.Database.Models.Users;
+using CircleForms.Database.Services.Abstract;
+using CircleForms.ExternalAPI.OsuApi;
+using CircleForms.ExternalAPI.OsuApi.Contracts;
+using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using MongoDB.Bson;
 
 namespace CircleForms.Controllers.Authorization.OAuth;
 
@@ -84,6 +85,7 @@ public class OAuthController : ControllerBase
         }
 
         var user = _mapper.Map<OsuUser, User>(osuUser);
+        user.Osu = osuUser.ToBsonDocument();
 
         var dbUser = await _usersRepository.Get(user.ID);
 
@@ -96,7 +98,7 @@ public class OAuthController : ControllerBase
 
             _logger.LogInformation("Adding user {Id} - {Username} to the database", user.ID, user.Username);
             await _usersRepository.Create(user);
-            
+
             dbUser = user;
         }
 
@@ -173,8 +175,7 @@ public class OAuthController : ControllerBase
 
     private static User TransferMutableData(User dbUser, User osuUser)
     {
-        osuUser.Discord = dbUser.Discord;
-        osuUser.Posts = dbUser.Posts;
+        osuUser.PostsRelation = dbUser.PostsRelation;
         osuUser.Roles = dbUser.Roles;
 
         return osuUser;

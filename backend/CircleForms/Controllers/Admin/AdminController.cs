@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using CircleForms.Models.Enums;
-using CircleForms.Services.Database.Interfaces;
+using CircleForms.Database.Models.Posts.Enums;
+using CircleForms.Database.Services.Abstract;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

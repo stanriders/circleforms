@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
-using CircleForms.Models.Posts;
-using CircleForms.Models.Users;
-using CircleForms.Services;
-using CircleForms.Services.Database.Interfaces;
+using CircleForms.Database.Models.Posts;
+using CircleForms.Database.Models.Users;
+using CircleForms.Database.Services.Abstract;
+using CircleForms.ModelLayer;
+using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,20 +19,20 @@ namespace CircleForms.Controllers;
 [Route("[controller]")]
 public class PagesController : ControllerBase
 {
+    private readonly ICacheRepository _cache;
     private readonly IMapper _mapper;
     private readonly PostsService _posts;
-    private readonly IUserRepository _users;
 
-    public PagesController(IMapper mapper, PostsService posts, IUserRepository users)
+    public PagesController(IMapper mapper, PostsService posts, ICacheRepository cache)
     {
         _mapper = mapper;
         _posts = posts;
-        _users = users;
+        _cache = cache;
     }
 
     //TODO: Move it to PostService
     private async Task<PageResponseContract> FillResponseContract(PageResponseContract responseContract,
-        PostRedis[] posts)
+        PostMinimalResponseContract[] posts)
     {
         var authorIds = posts
             .Select(x => x.AuthorId)
@@ -41,15 +41,14 @@ public class PagesController : ControllerBase
 
         var minimalAuthors =
             _mapper.Map<UserMinimalRedis[], UserMinimalResponseContract[]>(
-                await Task.WhenAll(authorIds.Select(x => _users.GetMinimal(x))));
+                await Task.WhenAll(authorIds.Select(x => _cache.GetMinimalUser(x))));
 
         for (var i = 0; i < minimalAuthors.Length; i++)
         {
             responseContract.Authors[authorIds[i]] = minimalAuthors[i];
         }
 
-        var postsMinimal = _mapper.Map<PostRedis[], PostMinimalResponseContract[]>(posts);
-        responseContract.Posts = postsMinimal;
+        responseContract.Posts = posts;
 
         return responseContract;
     }

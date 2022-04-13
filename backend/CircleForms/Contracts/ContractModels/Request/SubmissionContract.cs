@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CircleForms.Models.Posts.Questions;
+using CircleForms.Database.Models.Posts.Questions;
 using Newtonsoft.Json;
 
 namespace CircleForms.Contracts.ContractModels.Request;

@@ -3,17 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using AutoMapper;
-using CircleForms.Contracts.ContractModels.Mappings;
-using CircleForms.Models.Configurations;
-using CircleForms.Models.OsuContracts;
-using CircleForms.Services;
-using CircleForms.Services.Database;
-using CircleForms.Services.Database.Interfaces;
-using CircleForms.Services.Interfaces;
-using CircleForms.Services.IO;
-using CircleForms.Services.Request;
+using CircleForms.Controllers.Authorization.Configuration;
+using CircleForms.Database.Services;
+using CircleForms.Database.Services.Abstract;
+using CircleForms.ExternalAPI.OsuApi;
+using CircleForms.ExternalAPI.OsuApi.Configurations;
+using CircleForms.IO.FileIO;
+using CircleForms.IO.FileIO.Abstract;
+using CircleForms.IO.FileIO.Configuration;
+using CircleForms.ModelLayer;
+using CircleForms.ModelLayer.Answers;
+using CircleForms.ModelLayer.Publish;
+using FastExpressionCompiler;
 using FluentValidation.AspNetCore;
+using Mapster;
+using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -27,6 +31,7 @@ using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using MongoDB.Entities;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using StackExchange.Redis;
 
 namespace CircleForms;
@@ -49,9 +54,10 @@ public class Startup
         services.Configure<StaticFilesConfig>(Configuration.GetSection("StaticFiles"));
 
         services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
-        services.AddAutoMapper(x =>
-            x.AddProfiles(new Profile[] {new ContractProfile(), new OsuApiMapper()}));
 
+        TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetEntryAssembly()!);
+        TypeAdapterConfig.GlobalSettings.Compiler = x => x.CompileFast();
+        services.AddTransient<IMapper, Mapper>();
 
         services.AddAuthentication("InternalCookies")
             .AddCookie("InternalCookies", options =>
@@ -104,6 +110,8 @@ public class Startup
         services.AddSingleton<IOsuApiProvider, OsuApiProvider>();
         services.AddTransient<IUserRepository, UserRepository>();
         services.AddTransient<IPostRepository, PostRepository>();
+        services.AddTransient<IAnswerService, AnswerService>();
+        services.AddTransient<IPublishService, PublishService>();
         services.AddTransient<PostsService>();
         services.AddTransient<ICacheRepository, RedisCacheRepository>();
         services.AddTransient<IStaticFilesService, StaticFilesService>();
@@ -115,7 +123,18 @@ public class Startup
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);
 
         services.AddControllers()
-            .AddNewtonsoftJson(opts => opts.SerializerSettings.Converters.Add(new StringEnumConverter()));
+            .AddNewtonsoftJson(opts =>
+            {
+                opts.SerializerSettings.Converters.Add(new StringEnumConverter());
+                opts.SerializerSettings.ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new SnakeCaseNamingStrategy
+                    {
+                        ProcessDictionaryKeys = true,
+                        ProcessExtensionDataNames = true
+                    }
+                };
+            });
 
         services.AddSwaggerGen(c =>
         {
