@@ -155,6 +155,7 @@ public class OsuUser
     public string CountryCode { get; set; }
 
     [JsonProperty("id")]
+    [BsonIgnore]
     public int Id { get; set; }
 
     [JsonProperty("is_active")]
