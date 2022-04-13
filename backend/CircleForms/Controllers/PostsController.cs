@@ -7,6 +7,7 @@ using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Contracts.ContractModels.Response.UserInfoContracts;
 using CircleForms.Database.Models.Posts.Enums;
+using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.ModelLayer;
 using CircleForms.ModelLayer.Answers;
@@ -181,7 +182,8 @@ public class PostsController : ControllerBase
         {
             var response = new PostDetailedUserAnswerResponseContract();
             response.Posts = pdrc;
-            response.Users = (await _cache.GetMinimalUser(pdrc.AuthorId)).Adapt<UserMinimalResponseContract>();
+            response.Users = new List<UserMinimalRedis> {await _cache.GetMinimalUser(pdrc.AuthorId)}
+                .Adapt<List<UserMinimalResponseContract>>();
 
             return Ok(response);
         }
