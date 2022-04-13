@@ -77,9 +77,9 @@ public class OAuthController : ControllerBase
         }
 
         var osuUser = osuUserResult.Value;
-        if (osuUser.IsRestricted)
+        if (osuUser.IsRestricted || osuUser.IsBot || osuUser.IsDeleted)
         {
-            _logger.LogInformation("User {User} tried logging in, but they are restricted!", osuUser.Id);
+            _logger.LogInformation("User {User} tried logging in, but they are restricted (or bot)!", osuUser.Id);
 
             return Forbid();
         }
