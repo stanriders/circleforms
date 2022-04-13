@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Database.Models.Posts;
-using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.ModelLayer;
 using MapsterMapper;
@@ -34,20 +33,14 @@ public class PagesController : ControllerBase
     private async Task<PageResponseContract> FillResponseContract(PageResponseContract responseContract,
         PostMinimalResponseContract[] posts)
     {
-        var authorIds = posts
+        var authorIdsTasks = posts
             .Select(x => x.AuthorId)
             .Distinct()
-            .ToArray();
+            .Select(x => _cache.GetMinimalUser(x));
 
-        var minimalAuthors =
-            _mapper.Map<UserMinimalRedis[], UserMinimalResponseContract[]>(
-                await Task.WhenAll(authorIds.Select(x => _cache.GetMinimalUser(x))));
+        var authors = await Task.WhenAll(authorIdsTasks);
 
-        for (var i = 0; i < minimalAuthors.Length; i++)
-        {
-            responseContract.Authors[authorIds[i]] = minimalAuthors[i];
-        }
-
+        responseContract.Users = _mapper.Map<List<UserMinimalResponseContract>>(authors);
         responseContract.Posts = posts;
 
         return responseContract;
@@ -69,7 +62,7 @@ public class PagesController : ControllerBase
 
         var responseContract = new PageResponseContract
         {
-            Authors = new Dictionary<string, UserMinimalResponseContract>(),
+            Users = new List<UserMinimalResponseContract>(),
             Posts = Array.Empty<PostMinimalResponseContract>()
         };
 
@@ -93,7 +86,7 @@ public class PagesController : ControllerBase
 
         var response = new PageResponseContract
         {
-            Authors = new Dictionary<string, UserMinimalResponseContract>(),
+            Users = new List<UserMinimalResponseContract>(),
             Posts = Array.Empty<PostMinimalResponseContract>()
         };
 
