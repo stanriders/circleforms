@@ -6,6 +6,7 @@ using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
 using MapsterMapper;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -126,6 +127,8 @@ public class UsersController : ControllerBase
 
         _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", _claim);
 
-        return NotFound();
+        await HttpContext.SignOutAsync("InternalCookies");
+
+        return Unauthorized();
     }
 }
