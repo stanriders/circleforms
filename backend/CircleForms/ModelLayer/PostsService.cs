@@ -160,10 +160,10 @@ public class PostsService
         {
             if (prefetchedPost is null)
             {
-                var privatePost = await _postRepository.Get(post.Id);
+                var privatePost = await _postRepository.Get(post.ID);
                 if (privatePost is null)
                 {
-                    return Result<object>.NotFound(post.Id);
+                    return Result<object>.NotFound(post.ID);
                 }
 
                 prefetchedPost = privatePost;
@@ -171,15 +171,15 @@ public class PostsService
 
             if (prefetchedPost.AccessKey != key || !prefetchedPost.Published)
             {
-                return Result<object>.NotFound(post.Id);
+                return Result<object>.NotFound(post.ID);
             }
 
-            return _mapper.Map<PostMinimalResponseContract>(post);
+            return _mapper.Map<PostDetailedResponseContract>(post);
         }
 
         if (post.Accessibility == Accessibility.Public)
         {
-            return _mapper.Map<PostMinimalResponseContract>(post);
+            return _mapper.Map<PostDetailedResponseContract>(post);
         }
 
         return null;
@@ -198,7 +198,7 @@ public class PostsService
         return post;
     }
 
-    //Produces: PostMinimalResponseContract | PostResponseContract
+    //Produces: PostDetailedResponseContract | PostResponseContract
     public async Task<Result<object>> GetDetailedPost(string claim, string id, string key)
     {
         var cachedResult = await GetCachedPostPrivate(id);
@@ -319,7 +319,7 @@ public class PostsService
         var tasks = new Task<int>[posts.Length];
         for (var i = 0; i < posts.Length; i++)
         {
-            tasks[i] = _cache.GetAnswerCount(posts[i].Id);
+            tasks[i] = _cache.GetAnswerCount(posts[i].ID);
         }
 
         var answerCounts = await Task.WhenAll(tasks);

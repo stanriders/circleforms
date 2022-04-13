@@ -9,7 +9,7 @@ namespace CircleForms.Database.Models.Posts;
 public class PostRedis
 {
     [JsonProperty("id")]
-    public string Id { get; set; }
+    public string ID { get; set; }
 
     [JsonProperty("is_active")]
     public bool IsActive { get; set; }
