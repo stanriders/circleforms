@@ -7,31 +7,44 @@ import Button from '../atoms/Button';
 import { useRouter } from 'next/router';
 import Player from '../atoms/Player';
 import InputRadio from '../atoms/InputRadio';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import bbobHTML from '@bbob/html'
 import bbcodePreset from '../../libs/bbcode'
 import { useTranslations } from 'next-intl';
+import UserContext from '../context/UserContext';
 
 export default function Form({
-  id,
-  author,
-  author_id,
-  is_active,
-  icon,
-  banner,
-  title,
-  description,
-  publish_time,
-  accessibility,
-  limitations,
-  answer_count,
-  answers,
+  posts,
+  users
 }) {
+  const {
+    accessibility,
+    answer_count,
+    author_id,
+    banner,
+    description,
+    excerpt,
+    icon,
+    id,
+    is_active,
+    limitations,
+    publish_time,
+    questions,
+    title
+  } = posts
+  const { user } = useContext(UserContext)
   const t = useTranslations()
   const router = useRouter()
   const [sort, setSort] = useState('rank')
+  const [primaryAuthor, setPrimaryAuthor] = useState(users[0])
   const bannerImg = getImage({ id, banner, type: 'banner' })
   const iconImg = getImage({ id, icon, type: 'icon' })
+
+  useEffect(() => {
+    if (!primaryAuthor) {
+      setPrimaryAuthor(user.osu)
+    }
+  }, [])
 
   return (
     <div>
@@ -54,14 +67,14 @@ export default function Form({
                 alt={`${title}'s thumbnail`} />
               <img
                 className="h-10 w-10 rounded-full absolute bottom-0 right-0"
-                src={author.avatar_url}
-                alt={`${author.username}'s avatar`} />
+                src={primaryAuthor.avatar_url}
+                alt={`${primaryAuthor.username}'s avatar`} />
             </div>
 
             <div>
               <h1 className="text-4xl font-bold">{title}</h1>
               <p className="text-white text-opacity-50 text-2xl">
-                {answer_count ?? answers.length} { t('answersCount') }
+                {answer_count ?? posts.answers.length} { t('answersCount') }
               </p>
             </div>
           </div>

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "62573bb5f24fd68d3e2117f8",
+    "author_id": "5914915",
+    "is_active": true,
+    "icon": null,
+    "banner": null,
+    "title": "string",
+    "description": "string",
+    "excerpt": "string",
+    "publish_time": "2022-04-13T21:08:05.221Z",
+    "accessibility": "Public",
+    "limitations": {
+      "rank": {
+        "start": 0,
+        "end": 0
+      },
+      "pp": {
+        "start": 0,
+        "end": 0
+      },
+      "gamemode": "Standard"
+    },
+    "answer_count": 0
+  }
+]

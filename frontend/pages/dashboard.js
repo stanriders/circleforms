@@ -13,26 +13,24 @@ import useAuth from '../hooks/useAuth'
 import Link from 'next/link'
 import Unauthorized from '../components/pages/Unauthorized'
 import { useTranslations } from 'next-intl'
+import useSWR from 'swr'
+import api from '../libs/api'
 
 export default function Dashboard() {
   const t = useTranslations()
   const { user } = useContext(UserContext)
-  const { invalidateUserCache } = useAuth()
   const [forms, setForms] = useState(Array.from({ length: 11 }))
+  const { data: posts } = useSWR('/me/posts', api)
 
   useEffect(() => {
-    invalidateUserCache()
-  }, [])
-
-  useEffect(() => {
-    if (user?.posts.length) {
+    if (posts && posts.length > 0) {
       const newForms = [...forms]
-      user.posts.forEach((el, index) => {
+      posts.forEach((el, index) => {
         newForms.splice(index, 1, el)
       })
       setForms(newForms)
     }
-  }, [user])
+  }, [posts])
 
 
   if (!user) {
