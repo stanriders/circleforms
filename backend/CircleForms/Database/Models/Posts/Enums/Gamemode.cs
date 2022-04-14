@@ -1,9 +1,10 @@
-﻿namespace CircleForms.Database.Models.Posts.Enums;
+﻿// ReSharper disable InconsistentNaming
+namespace CircleForms.Database.Models.Posts.Enums;
 
 public enum Gamemode
 {
-    Standard,
-    Taiko,
-    Catch,
-    Mania
+    osu,
+    taiko,
+    fruits,
+    mania
 }
