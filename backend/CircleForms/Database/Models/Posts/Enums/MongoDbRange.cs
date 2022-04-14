@@ -10,4 +10,9 @@ public class MongoDbRange
 
     public int Start { get; set; }
     public int End { get; set; }
+
+    public bool IsInRange(int val)
+    {
+        return Start <= val && val <= End;
+    }
 }

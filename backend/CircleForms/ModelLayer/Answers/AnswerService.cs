@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -14,14 +15,16 @@ namespace CircleForms.ModelLayer.Answers;
 public class AnswerService : IAnswerService
 {
     private readonly ICacheRepository _cache;
+    private readonly IGamemodeService _gamemodeService;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
 
-    public AnswerService(IMapper mapper, IPostRepository postRepository, ICacheRepository cache)
+    public AnswerService(IMapper mapper, IPostRepository postRepository, ICacheRepository cache, IGamemodeService gamemodeService)
     {
         _mapper = mapper;
         _postRepository = postRepository;
         _cache = cache;
+        _gamemodeService = gamemodeService;
     }
 
     public async Task<Result> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
@@ -41,6 +44,31 @@ public class AnswerService : IAnswerService
         if (post.Answers.Any(x => x.UserRelation.ID == user))
         {
             return new Result(HttpStatusCode.Conflict, "You already voted");
+        }
+
+        var gamemode = post.Gamemode;
+        if (gamemode is not null)
+        {
+            var statistics = await _gamemodeService.GetStatistics(user, gamemode.Value);
+            if (statistics.IsError)
+            {
+                return new Result(statistics.StatusCode, statistics.Message);
+            }
+
+            if (post.Limitations is not null)
+            {
+                if (post.Limitations.Pp is not null &&
+                    !post.Limitations.Pp.IsInRange((int)Math.Round(statistics.Value["Pp"].AsDouble)))
+                {
+                    return new Result(HttpStatusCode.Conflict, "Your pp is not in the allowed range of this post!");
+                }
+
+                if (post.Limitations.Rank is not null &&
+                    !post.Limitations.Rank.IsInRange(statistics.Value["GlobalRank"].AsInt32))
+                {
+                    return new Result(HttpStatusCode.Conflict, "Your rank is not in the allowed range of this post!");
+                }
+            }
         }
 
         var result = ProcessAnswer(post, answerContracts);
