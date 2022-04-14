@@ -35,6 +35,9 @@ public class PostRedis
     [JsonProperty("publish_time")]
     public DateTime PublishTime { get; set; }
 
+    [JsonProperty("gamemode")]
+    public Gamemode? Gamemode { get; set; }
+
     [JsonProperty("accessibility")]
     public Accessibility Accessibility { get; set; }
 

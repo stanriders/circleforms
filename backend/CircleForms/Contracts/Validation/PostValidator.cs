@@ -14,6 +14,11 @@ public class PostValidator : AbstractValidator<Post>
             {
                 x.SetValidator(new QuestionValidator());
             });
+
+        When(x => x.Limitations is not null, () =>
+        {
+            RuleFor(x => x.Gamemode).NotNull();
+        });
     }
 }
 
@@ -26,5 +31,10 @@ public class PostUpdateRequestContractValidator : AbstractValidator<PostUpdateRe
             {
                 x.SetValidator(new QuestionUpdateContractValidator());
             });
+
+        When(x => x.Limitations is not null, () =>
+        {
+            RuleFor(x => x.Gamemode).NotNull();
+        });
     }
 }
