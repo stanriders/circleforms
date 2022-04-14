@@ -33,9 +33,9 @@ public class OsuApiProvider : IOsuApiProvider
         _logger = logger;
     }
 
-    public async Task<Result<OsuUser>> GetUser(string token, Gamemode mode = Gamemode.osu)
+    public async Task<Result<OsuUser>> GetUser(string token, Gamemode mode = Gamemode.Osu)
     {
-        var request = new RestRequest(_apiMeLink + Enum.GetName(mode))
+        var request = new RestRequest(_apiMeLink + Enum.GetName(mode)?.ToLower())
             .AddHeader("Authorization", $"Bearer {token}");
 
         var response = await _client.ExecuteGetAsync<OsuUser>(request);
