@@ -15,6 +15,7 @@ import Unauthorized from '../components/pages/Unauthorized'
 import { useTranslations } from 'next-intl'
 import toast, { Toaster } from 'react-hot-toast'
 import Switch from 'react-switch'
+import Wysiwyg from '../components/molecules/Wysiwyg'
 import {
   Listbox,
   ListboxOption,
@@ -486,6 +487,9 @@ export default function Dashboard() {
   )
 }
 
+/**
+ *  Choice
+ */
 function CreateChoice({
   title,
   type,
@@ -502,17 +506,14 @@ function CreateChoice({
   t,
 }) {
   return (
-    <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 px-14 pb-4">
-      <input
-        className="input--inline"
-        type="text"
-        placeholder={t(`placeholders.${type}`)}
-        value={title}
-        onChange={(e) => onEditTitle(e.target.value)}
-      />
+    <Question
+      title={title}
+      type={type}
+      onEditTitle={onEditTitle}
+      t={t}>
       {question_info.map((info, index) => (
         <div key={`${title}-${index}`} className="flex gap-x-2 items-center">
-          <div className="h-4 w-4 rounded-full border-2" />
+          <div className="h-6 w-6 rounded-full border-2" />
           <input
             className="input--inline"
             type="text"
@@ -526,22 +527,15 @@ function CreateChoice({
         </div>
       ))}
       <div className="flex gap-x-2 items-center">
-        <div className="h-4 w-4 rounded-full border-2" />
+        <div className="h-6 w-6 rounded-full border-2" />
         <input
-          className="input--inline"
+          className="input--inline input--static"
           type="text"
           defaultValue={t('addChoice')}
           readOnly
           onClick={onAdd}
         />
       </div>
-      <button
-        title={t('removeQuestion')}
-        className="button--icon"
-        onClick={onRemove}>
-        <span className="sr-only">{t('removeQuestion')}</span>
-        <MdDeleteOutline className="h-6 w-6" />
-      </button>
       <QuestionActions
         type={type}
         onDuplicate={onDuplicate}
@@ -551,10 +545,13 @@ function CreateChoice({
         isOptional={is_optional}
         t={t}
       />
-    </div>
+    </Question>
   )
 }
 
+/**
+ *  Checkbox
+ */
 function CreateCheckbox({
   title,
   type,
@@ -571,17 +568,14 @@ function CreateCheckbox({
   t,
 }) {
   return (
-    <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14">
-      <input
-        className="input--inline"
-        type="text"
-        value={title}
-        placeholder={t(`placeholders.${type}`)}
-        onChange={(e) => onEditTitle(e.target.value)}
-      />
+    <Question
+      title={title}
+      type={type}
+      onEditTitle={onEditTitle}
+      t={t}>
       {question_info.map((info, index) => (
         <div key={`${title}-${index}`} className="flex gap-x-2 items-center">
-          <div className="h-4 w-4 border-2" />
+          <div className="h-6 w-6 border-2" />
           <input
             className="input--inline"
             type="text"
@@ -595,22 +589,15 @@ function CreateCheckbox({
         </div>
       ))}
       <div className="flex gap-x-2 items-center">
-        <div className="h-4 w-4 border-2" />
+        <div className="h-6 w-6 border-2" />
         <input
-          className="input--inline"
+          className="input--inline input--static w-36"
           type="text"
           defaultValue={t('addChoice')}
           readOnly
           onClick={onAdd}
         />
       </div>
-      <button
-        title={t('removeQuestion')}
-        className="button--icon"
-        onClick={onRemove}>
-        <span className="sr-only">{t('removeQuestion')}</span>
-        <MdDeleteOutline className="h-6 w-6" />
-      </button>
       <QuestionActions
         type={type}
         onDuplicate={onDuplicate}
@@ -620,10 +607,13 @@ function CreateCheckbox({
         isOptional={is_optional}
         t={t}
       />
-    </div>
+    </Question>
   )
 }
 
+/**
+ *  Freeform
+ */
 function CreateFreeform({
   title,
   type,
@@ -639,24 +629,14 @@ function CreateFreeform({
   t,
 }) {
   return (
-    <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14">
-      <input
-        className="input--inline"
-        type="text"
-        value={title}
-        placeholder={t(`placeholders.${type}`)}
-        onChange={(e) => onEditTitle(e.target.value)}
-      />
-      <p className="border-b border-dotted pb-2 select-none">
+    <Question
+      title={title}
+      type={type}
+      onEditTitle={onEditTitle}
+      t={t}>
+      <p className="text-2xl text-white text-opacity-50 border-b border-dotted pb-2 select-none">
         {t(`${type}.description`)}
       </p>
-      <button
-        title={t('removeQuestion')}
-        className="button--icon"
-        onClick={onRemove}>
-        <span className="sr-only">{t('removeQuestion')}</span>
-        <MdDeleteOutline className="h-6 w-6" />
-      </button>
       <QuestionActions
         type={type}
         onDuplicate={onDuplicate}
@@ -666,10 +646,13 @@ function CreateFreeform({
         isOptional={is_optional}
         t={t}
       />
-    </div>
+    </Question>
   )
 }
 
+/**
+ *  Question Actions (Footer)
+ */
 function QuestionActions({
   onEditQuestionType,
   onEditQuestionOptional,
@@ -682,7 +665,7 @@ function QuestionActions({
   const Icon = QUESTIONS_ICONS[type]
 
   return (
-    <div className="flex justify-between border-t-2 border-white border-opacity-5 pt-4">
+    <div className="flex justify-between border-t-2 border-white border-opacity-5 pt-4 mt-14">
       <Select
         onChange={onEditQuestionType}
         Icon={Icon}
@@ -698,6 +681,7 @@ function QuestionActions({
           <MdContentCopy className="h-8 w-8" />
         </button>
         <button onClick={onRemove} className="button--icon mr-4">
+          <span className="sr-only">{t('removeQuestion')}</span>
           <MdDeleteOutline className="h-8 w-8" />
         </button>
         <label className="flex items-center gap-x-4 text-2xl font-medium border-l-2 border-white border-opacity-5 pl-8">
@@ -721,6 +705,32 @@ function QuestionActions({
           <MdMoreVert className="h-8 w-8" />
         </button>
       </div>
+    </div>
+  )
+}
+
+/**
+ *  Question Wrapper for style
+ */
+function Question({
+  children,
+  title,
+  type,
+  onEditTitle,
+  t,
+}) {
+  return (
+    <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14 relative overflow-clip">
+      <div
+        className="absolute left-0 top-0 bg-pink h-full w-2"
+      />
+
+      <Wysiwyg
+        value={title}
+        onChange={onEditTitle}
+        placeholder={t(`placeholders.${type}`)} />
+
+      {children}
     </div>
   )
 }

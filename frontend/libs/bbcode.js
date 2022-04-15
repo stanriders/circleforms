@@ -1,3 +1,4 @@
+import bbobHTML from '@bbob/html'
 import { createPreset } from '@bbob/preset'
 import { getUniqAttr, isStringNode, isTagNode } from '@bbob/plugin-helper'
 import TagNode from '@bbob/plugin-helper/lib/TagNode'
@@ -67,7 +68,7 @@ const toNode = (tag, attrs, content) => ({
 
 const toStyle = (style) => ({ style })
 
-export default createPreset({
+const preset = createPreset({
   b: (node) => toNode('span', toStyle('font-weight: bold'), node.content),
   i: (node) => toNode('span', toStyle('font-style: italic'), node.content),
   u: (node) => toNode('span', toStyle('text-decoration: underline'), node.content),
@@ -137,6 +138,10 @@ export default createPreset({
     content: node.content
   }),
 })
+
+export default function bbcode(value) {
+  return bbobHTML(value, preset())
+}
 
 /**
  * Unsupported osu! BBCode (https://osu.ppy.sh/wiki/en/BBCode)

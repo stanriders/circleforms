@@ -8,8 +8,7 @@ import { useRouter } from 'next/router';
 import Player from '../atoms/Player';
 import InputRadio from '../atoms/InputRadio';
 import { useContext, useEffect, useState } from 'react';
-import bbobHTML from '@bbob/html'
-import bbcodePreset from '../../libs/bbcode'
+import bbcode from '../../libs/bbcode'
 import { useTranslations } from 'next-intl';
 import UserContext from '../context/UserContext';
 
@@ -98,7 +97,7 @@ export default function Form({
               <div
                 className="bbcode"
                 dangerouslySetInnerHTML={{
-                  __html: bbobHTML(description, bbcodePreset())
+                  __html: bbcode(description)
                 }} />
             </TabPanel>
             <TabPanel>
