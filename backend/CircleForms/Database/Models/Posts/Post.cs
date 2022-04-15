@@ -44,7 +44,7 @@ public class Post : Entity
     public string Excerpt { get; set; }
 
     [Field("gamemode")]
-    public Gamemode? Gamemode { get; set; }
+    public Gamemode Gamemode { get; set; }
 
     [Field("accessibility")]
     public Accessibility Accessibility { get; set; }

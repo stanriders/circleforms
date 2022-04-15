@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Services.Abstract;
@@ -22,6 +23,11 @@ public class GamemodeService : IGamemodeService
 
     public async Task<Result<BsonDocument>> GetStatistics(string userId, Gamemode mode)
     {
+        if (mode is Gamemode.None)
+        {
+            return new Result<BsonDocument>(HttpStatusCode.BadRequest, "Tried fetching statistics for None gamemode!");
+        }
+
         var user = await _usersService.Get(userId);
         if (user is null)
         {

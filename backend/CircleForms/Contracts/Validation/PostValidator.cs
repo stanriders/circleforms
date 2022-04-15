@@ -1,5 +1,6 @@
 ﻿using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Database.Models.Posts;
+using CircleForms.Database.Models.Posts.Enums;
 using FluentValidation;
 
 namespace CircleForms.Contracts.Validation;
@@ -17,7 +18,7 @@ public class PostValidator : AbstractValidator<Post>
 
         When(x => x.Limitations is not null, () =>
         {
-            RuleFor(x => x.Gamemode).NotNull();
+            RuleFor(x => x.Gamemode).NotEqual(Gamemode.None);
         });
     }
 }
@@ -34,7 +35,7 @@ public class PostUpdateRequestContractValidator : AbstractValidator<PostUpdateRe
 
         When(x => x.Limitations is not null, () =>
         {
-            RuleFor(x => x.Gamemode).NotNull();
+            RuleFor(x => x.Gamemode).NotEqual(Gamemode.None);
         });
     }
 }

@@ -36,7 +36,7 @@ public class PostResponseContract
     public string Excerpt { get; set; }
 
     [JsonProperty("gamemode")]
-    public Gamemode? Gamemode { get; set; }
+    public Gamemode Gamemode { get; set; }
 
     [JsonProperty("accessibility")]
     public Accessibility Accessibility { get; set; }

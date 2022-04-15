@@ -2,6 +2,7 @@
 
 public enum Gamemode
 {
+    None,
     Osu,
     Taiko,
     Fruits,

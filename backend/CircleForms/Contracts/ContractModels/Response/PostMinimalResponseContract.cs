@@ -31,7 +31,7 @@ public class PostMinimalResponseContract
     public string Excerpt { get; set; }
 
     [JsonProperty("gamemode")]
-    public Gamemode? Gamemode { get; set; }
+    public Gamemode Gamemode { get; set; }
 
     [JsonProperty("publish_time")]
     public DateTime PublishTime { get; set; }
