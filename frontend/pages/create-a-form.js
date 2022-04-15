@@ -10,6 +10,7 @@ import UserContext from '../components/context/UserContext'
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import classNames from 'classnames'
 import InputFile from '../components/atoms/InputFile'
+import Select from '../components/atoms/Select'
 import Unauthorized from '../components/pages/Unauthorized'
 import { useTranslations } from 'next-intl'
 import toast, { Toaster } from 'react-hot-toast'
@@ -24,7 +25,9 @@ import {
   MdDeleteOutline,
   MdRadioButtonChecked,
   MdCheckBox,
-  MdShortText
+  MdShortText,
+  MdContentCopy,
+  MdMoreVert
 } from 'react-icons/md'
 
 const COMPONENTS_TYPES = {
@@ -61,6 +64,7 @@ const types = {
   ADD_QUESTION: "ADD_QUESTION",
   REMOVE_QUESTION: "REMOVE_QUESTION",
   ADD_QUESTION_INFO: "ADD_QUESTION_INFO",
+  SET_QUESTION_TYPE: "SET_QUESTION_TYPE",
   REMOVE_QUESTION_INFO: "REMOVE_QUESTION_INFO",
   EDIT_QUESTION_TITLE: "EDIT_QUESTION_TITLE",
   EDIT_QUESTION_INFO: "EDIT_QUESTION_INFO",
@@ -117,6 +121,20 @@ function reducer(state, action) {
                 ...question.question_info,
                 `Option ${question.question_info.length + 1}`
               ]
+            }
+          }
+          return question
+        })
+      }
+    case types.SET_QUESTION_TYPE:
+      return {
+        ...state,
+        questions: state.questions.map((question, index) => {
+          if (index === action.value.index) {
+            return {
+              ...question,
+              question_info: action.value.type === 'Freeform' ? [] : question.question_info,
+              type: action.value.type
             }
           }
           return question
@@ -191,6 +209,7 @@ export default function Dashboard() {
   const { user } = useContext(UserContext)
   const [state, dispatch] = useReducer(reducer, initialState)
   const [errors, setErrors] = useState([])
+  const [submitting, setSubmitting] = useState(false)
 
   if (!user) {
     return <Unauthorized />
@@ -238,18 +257,26 @@ export default function Dashboard() {
   }
 
   async function handleSubmit() {
+    setSubmitting(true)
+
     if (errors.length > 0) {
       return toast.error(t('toast.userError'))
     }
 
-    toast.promise(
-      submit(),
-      {
-        loading: t('toast.loading'),
-        success: t('toast.success'),
-        error: t('toast.error')
-      }
-    )
+    try {
+      await toast.promise(
+        submit(),
+        {
+          loading: t('toast.loading'),
+          success: t('toast.success'),
+          error: t('toast.error')
+        }
+      )
+    } catch (error) {
+      console.error(error)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -384,6 +411,10 @@ export default function Dashboard() {
                         type: types.REMOVE_QUESTION_INFO,
                         value: { index, infoIndex }
                       })}
+                      onEditQuestionType={(type) => dispatch({
+                        type: types.SET_QUESTION_TYPE,
+                        value: { index, type }
+                      })}
                       onEditTitle={(newTitle) => dispatch({
                         type: types.EDIT_QUESTION_TITLE,
                         value: { index, title: newTitle }
@@ -400,26 +431,23 @@ export default function Dashboard() {
             </TabPanel>
             {/* Options */}
             <TabPanel>
-              <Listbox
+              <Select
                 onChange={(accessibility) => dispatch({
                   type: types.SET_ACCESSIBILITY,
                   value: { accessibility }
                 })}
-                defaultValue={ACCESSIBILITY_OPTIONS[0]}>
-                {ACCESSIBILITY_OPTIONS.map((option) => (
-                  <ListboxOption
-                    key={option}
-                    value={option}>
-                    {t(`accessibility.${option}`)}
-                  </ListboxOption>
-                ))}
-              </Listbox>
+                defaultValue={ACCESSIBILITY_OPTIONS[0]}
+                options={ACCESSIBILITY_OPTIONS.map(option => ({
+                  value: option,
+                  label: t(`accessibility.${option}`)
+                }))}
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>
 
         <div className="flex justify-center">
-          <Button onClick={handleSubmit}>
+          <Button onClick={handleSubmit} disabled={submitting}>
             { t('createForm') }
           </Button>
         </div>
@@ -437,12 +465,13 @@ function CreateChoice({
   onAdd,
   onRemove,
   onRemoveInfo,
+  onEditQuestionType,
   onEditTitle,
   onEdit,
   t,
 }) {
   return (
-    <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14">
+    <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 px-14 pb-4">
       <input
         className="input--inline"
         type="text"
@@ -482,6 +511,12 @@ function CreateChoice({
         <span className="sr-only">{t('removeQuestion')}</span>
         <MdDeleteOutline className="h-6 w-6" />
       </button>
+      <QuestionActions
+        type={type}
+        onRemove={onRemove}
+        onEditQuestionType={onEditQuestionType}
+        t={t}
+      />
     </div>
   )
 }
@@ -494,6 +529,7 @@ function CreateCheckbox({
   onAdd,
   onRemove,
   onRemoveInfo,
+  onEditQuestionType,
   onEditTitle,
   onEdit,
   t,
@@ -539,6 +575,12 @@ function CreateCheckbox({
         <span className="sr-only">{t('removeQuestion')}</span>
         <MdDeleteOutline className="h-6 w-6" />
       </button>
+      <QuestionActions
+        type={type}
+        onRemove={onRemove}
+        onEditQuestionType={onEditQuestionType}
+        t={t}
+      />
     </div>
   )
 }
@@ -550,6 +592,7 @@ function CreateFreeform({
   question_info,
   onAdd,
   onRemove,
+  onEditQuestionType,
   onEditTitle,
   onEdit,
   t,
@@ -573,6 +616,47 @@ function CreateFreeform({
         <span className="sr-only">{t('removeQuestion')}</span>
         <MdDeleteOutline className="h-6 w-6" />
       </button>
+      <QuestionActions
+        type={type}
+        onRemove={onRemove}
+        onEditQuestionType={onEditQuestionType}
+        t={t}
+      />
+    </div>
+  )
+}
+
+function QuestionActions({
+  onEditQuestionType,
+  type,
+  onRemove,
+  t
+}) {
+  const Icon = QUESTIONS_ICONS[type]
+
+  return (
+    <div className="flex justify-between border-t-2 border-white border-opacity-5 pt-4">
+      <Select
+        onChange={onEditQuestionType}
+        Icon={Icon}
+        defaultValue={type}
+        options={QUESTIONS_TYPES.map(type => ({
+          value: type,
+          label: t(`inputs.${type}`)
+        }))}
+      />
+
+      <div className="flex gap-x-2">
+        <button className="button--icon">
+          <MdContentCopy className="h-8 w-8" />
+        </button>
+        <button onClick={onRemove} className="button--icon">
+          <MdDeleteOutline className="h-8 w-8" />
+        </button>
+        <button className="button--icon">
+          <MdMoreVert className="h-8 w-8" />
+        </button>
+      </div>
     </div>
   )
 }

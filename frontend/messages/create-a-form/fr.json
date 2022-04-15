@@ -38,7 +38,7 @@
   },
   "add": "Ajouter",
   "createForm": "Créer le formulaire",
-  "addChoice": "Ajouter une option...",
+  "addChoice": "Ajouter une option",
   "removeQuestion": "Supprimer la question",
   "removeOption": "Supprimer l'option"
 }
