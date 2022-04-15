@@ -2,6 +2,7 @@
 using System.Net;
 using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts.Enums;
+using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.ExternalAPI.OsuApi;
 using CircleForms.ModelLayer;
@@ -22,7 +23,7 @@ public class GamemodeService : IGamemodeService
         _osuApiProvider = osuApiProvider;
     }
 
-    public async Task<Result<BsonDocument>> GetStatistics(string userId, Gamemode mode)
+    public async Task<Result<BsonDocument>> GetOrAddStatistics(string userId, Gamemode mode)
     {
         if (mode is Gamemode.None)
         {
@@ -37,15 +38,41 @@ public class GamemodeService : IGamemodeService
 
         var modeName = Enum.GetName(mode);
 
+        if (user.Osu.Contains(_statisticsKey))
+        {
+            var statisticsList = user.Osu[_statisticsKey].AsBsonDocument;
+            if (statisticsList.Contains(modeName))
+            {
+                return statisticsList[modeName].AsBsonDocument;
+            }
+        }
+
+        return await UpdateStatisticsInternal(user, mode);
+    }
+
+    public async Task<Result<BsonDocument>> UpdateStatistics(string userId, Gamemode mode)
+    {
+        if (mode is Gamemode.None)
+        {
+            return new Result<BsonDocument>(HttpStatusCode.BadRequest, "Tried updating statistics for None gamemode!");
+        }
+
+        var user = await _usersService.Get(userId);
+        if (user is null)
+        {
+            return Result<BsonDocument>.NotFound(userId);
+        }
+
+        return await UpdateStatisticsInternal(user, mode);
+    }
+
+    private async Task<Result<BsonDocument>> UpdateStatisticsInternal(User user, Gamemode mode)
+    {
+        var modeName = Enum.GetName(mode);
+
         if (!user.Osu.Contains(_statisticsKey))
         {
             user.Osu.Add(new BsonElement(_statisticsKey, new BsonDocument()));
-        }
-
-        var statisticsList = user.Osu[_statisticsKey].AsBsonDocument;
-        if (statisticsList.Contains(modeName))
-        {
-            return statisticsList[modeName].AsBsonDocument;
         }
 
         var osuUserResult = await _osuApiProvider.GetUser(user.Token.AccessToken, mode);
@@ -55,12 +82,19 @@ public class GamemodeService : IGamemodeService
         }
 
         var statictics = osuUserResult.Value.Statistics.ToBsonDocument();
-        statisticsList.Add(modeName, statictics);
 
-        await _usersService.Update(userId, user);
+        var statisticsList = user.Osu[_statisticsKey].AsBsonDocument;
+        if (statisticsList.Contains(modeName))
+        {
+            statisticsList[modeName] = statictics;
+        }
+        else
+        {
+            statisticsList.Add(modeName, statictics);
+        }
+
+        await _usersService.Update(user.ID, user);
 
         return statictics;
     }
-
-    // TODO: statistics update
 }

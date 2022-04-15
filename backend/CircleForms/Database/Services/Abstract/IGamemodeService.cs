@@ -7,5 +7,6 @@ namespace CircleForms.Database.Services.Abstract;
 
 public interface IGamemodeService
 {
-    Task<Result<BsonDocument>> GetStatistics(string userId, Gamemode mode);
+    Task<Result<BsonDocument>> GetOrAddStatistics(string userId, Gamemode mode);
+    Task<Result<BsonDocument>> UpdateStatistics(string userId, Gamemode mode);
 }

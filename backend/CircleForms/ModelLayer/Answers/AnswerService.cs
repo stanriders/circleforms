@@ -122,7 +122,7 @@ public class AnswerService : IAnswerService
             return new Result();
         }
 
-        var statistics = await _gamemodeService.GetStatistics(userId, gamemode);
+        var statistics = await _gamemodeService.GetOrAddStatistics(userId, gamemode);
         if (statistics.IsError)
         {
             return new Result(statistics.StatusCode, statistics.Message);
