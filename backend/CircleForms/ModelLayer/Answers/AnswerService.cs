@@ -9,6 +9,7 @@ using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
 using CircleForms.Database.Models.Posts.Questions.Submissions;
 using CircleForms.Database.Services.Abstract;
+using CircleForms.Database.Services.Extensions;
 using MapsterMapper;
 
 namespace CircleForms.ModelLayer.Answers;
@@ -129,14 +130,15 @@ public class AnswerService : IAnswerService
 
         if (post.Limitations is not null)
         {
-            if (post.Limitations.Pp is not null &&
-                !post.Limitations.Pp.IsInRange((int) Math.Round(statistics.Value["Pp"].AsDouble)))
+            var pp = (int) Math.Round(statistics.Value["Pp"].AsDouble);
+            var rank = statistics.Value["GlobalRank"].AsInt32;
+
+            if (post.Limitations.Pp is not null && !pp.IsInRange(post.Limitations.Pp))
             {
                 return new Result(HttpStatusCode.Conflict, "Your pp is not in the allowed range of this post!");
             }
 
-            if (post.Limitations.Rank is not null &&
-                !post.Limitations.Rank.IsInRange(statistics.Value["GlobalRank"].AsInt32))
+            if (post.Limitations.Rank is not null && !rank.IsInRange(post.Limitations.Rank))
             {
                 return new Result(HttpStatusCode.Conflict, "Your rank is not in the allowed range of this post!");
             }
