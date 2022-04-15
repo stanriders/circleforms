@@ -14,6 +14,7 @@ import Select from '../components/atoms/Select'
 import Unauthorized from '../components/pages/Unauthorized'
 import { useTranslations } from 'next-intl'
 import toast, { Toaster } from 'react-hot-toast'
+import Switch from 'react-switch'
 import {
   Listbox,
   ListboxOption,
@@ -62,11 +63,13 @@ const types = {
   SET_ACCESSIBILITY: "SET_ACCESSIBILITY",
   SET_LIMITATIONS: "SET_LIMITATIONS",
   ADD_QUESTION: "ADD_QUESTION",
+  DUPLICATE_QUESTION: "DUPLICATE_QUESTION",
   REMOVE_QUESTION: "REMOVE_QUESTION",
   ADD_QUESTION_INFO: "ADD_QUESTION_INFO",
   SET_QUESTION_TYPE: "SET_QUESTION_TYPE",
   REMOVE_QUESTION_INFO: "REMOVE_QUESTION_INFO",
   EDIT_QUESTION_TITLE: "EDIT_QUESTION_TITLE",
+  EDIT_QUESTION_OPTIONAL: "EDIT_QUESTION_OPTIONAL",
   EDIT_QUESTION_INFO: "EDIT_QUESTION_INFO",
   SET_ICON: "SET_ICON",
   SET_BANNER: "SET_BANNER",
@@ -104,6 +107,11 @@ function reducer(state, action) {
       return {
         ...state,
         questions: [...state.questions, action.value]
+      }
+    case types.DUPLICATE_QUESTION:
+      return {
+        ...state,
+        questions: [...state.questions, action.value.question]
       }
     case types.REMOVE_QUESTION:
       return {
@@ -161,6 +169,19 @@ function reducer(state, action) {
             return {
               ...question,
               title: action.value.title
+            }
+          }
+          return question
+        })
+      }
+    case types.EDIT_QUESTION_OPTIONAL:
+      return {
+        ...state,
+        questions: state.questions.map((question, index) => {
+          if (index === action.value.index) {
+            return {
+              ...question,
+              is_optional: action.value.is_optional
             }
           }
           return question
@@ -403,6 +424,10 @@ export default function Dashboard() {
                         type: types.ADD_QUESTION_INFO,
                         value: { index }
                       })}
+                      onDuplicate={() => dispatch({
+                        type: types.DUPLICATE_QUESTION,
+                        value: { question }
+                      })}
                       onRemove={() => dispatch({
                         type: types.REMOVE_QUESTION,
                         value: { index }
@@ -418,6 +443,10 @@ export default function Dashboard() {
                       onEditTitle={(newTitle) => dispatch({
                         type: types.EDIT_QUESTION_TITLE,
                         value: { index, title: newTitle }
+                      })}
+                      onEditQuestionOptional={(isOptional) => dispatch({
+                        type: types.EDIT_QUESTION_OPTIONAL,
+                        value: { index, is_optional: isOptional }
                       })}
                       onEdit={(infoIndex, value) => dispatch({
                         type: types.EDIT_QUESTION_INFO,
@@ -463,9 +492,11 @@ function CreateChoice({
   is_optional,
   question_info,
   onAdd,
+  onDuplicate,
   onRemove,
   onRemoveInfo,
   onEditQuestionType,
+  onEditQuestionOptional,
   onEditTitle,
   onEdit,
   t,
@@ -513,8 +544,11 @@ function CreateChoice({
       </button>
       <QuestionActions
         type={type}
+        onDuplicate={onDuplicate}
         onRemove={onRemove}
         onEditQuestionType={onEditQuestionType}
+        onEditQuestionOptional={onEditQuestionOptional}
+        isOptional={is_optional}
         t={t}
       />
     </div>
@@ -527,9 +561,11 @@ function CreateCheckbox({
   is_optional,
   question_info,
   onAdd,
+  onDuplicate,
   onRemove,
   onRemoveInfo,
   onEditQuestionType,
+  onEditQuestionOptional,
   onEditTitle,
   onEdit,
   t,
@@ -577,8 +613,11 @@ function CreateCheckbox({
       </button>
       <QuestionActions
         type={type}
+        onDuplicate={onDuplicate}
         onRemove={onRemove}
         onEditQuestionType={onEditQuestionType}
+        onEditQuestionOptional={onEditQuestionOptional}
+        isOptional={is_optional}
         t={t}
       />
     </div>
@@ -591,8 +630,10 @@ function CreateFreeform({
   is_optional,
   question_info,
   onAdd,
+  onDuplicate,
   onRemove,
   onEditQuestionType,
+  onEditQuestionOptional,
   onEditTitle,
   onEdit,
   t,
@@ -618,8 +659,11 @@ function CreateFreeform({
       </button>
       <QuestionActions
         type={type}
+        onDuplicate={onDuplicate}
         onRemove={onRemove}
         onEditQuestionType={onEditQuestionType}
+        onEditQuestionOptional={onEditQuestionOptional}
+        isOptional={is_optional}
         t={t}
       />
     </div>
@@ -628,8 +672,11 @@ function CreateFreeform({
 
 function QuestionActions({
   onEditQuestionType,
+  onEditQuestionOptional,
   type,
+  onDuplicate,
   onRemove,
+  isOptional,
   t
 }) {
   const Icon = QUESTIONS_ICONS[type]
@@ -647,12 +694,29 @@ function QuestionActions({
       />
 
       <div className="flex gap-x-2">
-        <button className="button--icon">
+        <button onClick={onDuplicate} className="button--icon">
           <MdContentCopy className="h-8 w-8" />
         </button>
-        <button onClick={onRemove} className="button--icon">
+        <button onClick={onRemove} className="button--icon mr-4">
           <MdDeleteOutline className="h-8 w-8" />
         </button>
+        <label className="flex items-center gap-x-4 text-2xl font-medium border-l-2 border-white border-opacity-5 pl-8">
+          <span>Required</span>
+          <Switch
+            onChange={(e) => onEditQuestionOptional(!e)}
+            checked={!isOptional}
+            offColor="#0c0c0c"
+            onColor="#0c0c0c"
+            onHandleColor="#FF66AA"
+            handleDiameter={26}
+            uncheckedIcon={false}
+            checkedIcon={false}
+            boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+            activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+            height={32}
+            width={58}
+          />
+        </label>
         <button className="button--icon">
           <MdMoreVert className="h-8 w-8" />
         </button>
