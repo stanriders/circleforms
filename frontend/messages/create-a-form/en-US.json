@@ -30,7 +30,7 @@
   "toast": {
     "userError": "Fill all required fields first!",
     "error": "There was an error creating your CircleForm",
-    "sucess": "Your CircleForm has been created!",
+    "success": "Your CircleForm has been created!",
     "loading": "Creating your CircleForm..."
   },
   "Freeform": {

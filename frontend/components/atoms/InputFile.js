@@ -1,4 +1,5 @@
 import classNames from "classnames"
+import { useTranslations } from "next-intl"
 import { Fragment, useRef, useState } from "react"
 import Button from "./Button"
 
@@ -11,6 +12,7 @@ export default function InputFile({
   classname,
   onChange = noop
 }) {
+  const t = useTranslations('global.inputs')
   const [dragOver, setDragOver] = useState(false)
   const input = useRef()
 
@@ -64,13 +66,17 @@ export default function InputFile({
           </div>
         ) || (
           <Fragment>
-            <p className="font-semibold text-xl mb-1 select-none">Drag image here</p>
-            <p className="font-medium text-xs text-white text-opacity-20 select-none">or press the button</p>
+            <p className="font-semibold text-xl mb-1 select-none">
+              {t('file.dragImageHere')}
+            </p>
+            <p className="font-medium text-xs text-white text-opacity-20 select-none">
+              {t('file.orPressButton')}
+            </p>
             <Button
               onClick={() => input.current.click()}
               theme="secondary"
               classname="my-2" >
-              Choose file
+              {t('file.chooseFile')}
             </Button>
           </Fragment>
         )}

@@ -18,7 +18,14 @@ import {
   ListboxOption,
 } from "@reach/listbox";
 import api from '../libs/api'
-import { MdAddCircleOutline, MdClose, MdDeleteOutline } from 'react-icons/md'
+import {
+  MdAddCircleOutline,
+  MdClose,
+  MdDeleteOutline,
+  MdRadioButtonChecked,
+  MdCheckBox,
+  MdShortText
+} from 'react-icons/md'
 
 const COMPONENTS_TYPES = {
   'Choice': CreateChoice,
@@ -31,6 +38,12 @@ const QUESTIONS_TYPES = [
   'Freeform',
   'Choice'
 ]
+
+const QUESTIONS_ICONS = {
+  'Checkbox': MdCheckBox,
+  'Freeform': MdShortText,
+  'Choice': MdRadioButtonChecked,
+}
 
 const ACCESSIBILITY_OPTIONS = [
   'Public',
@@ -216,11 +229,10 @@ export default function Dashboard() {
 
   async function submit() {
     const data = await submitForm()
-    console.log('Submitted')
-    console.log(data)
-    // Get id from freshly created form to upload images
+
     console.log('Uploading images')
     await submitImages(data.id)
+
     console.log('Done')
     // Redirection to single form?
   }
@@ -291,12 +303,36 @@ export default function Dashboard() {
             <TabPanel className="relative">
               <div className="
                 absolute -right-28 top-0
-                rounded-35 bg-pink py-8 px-2
+                rounded-35 bg-black-lightest py-8 px-2
                 flex flex-col items-center
               ">
                 <button className="button--icon">
                   <MdAddCircleOutline className="w-10 h-10" />
                 </button>
+
+                {QUESTIONS_TYPES.map(type => {
+                  const Icon = QUESTIONS_ICONS[type]
+
+                  return (
+                    <button
+                      key={type}
+                      className="button--icon"
+                      onClick={() => dispatch({
+                      type: types.ADD_QUESTION,
+                      value: {
+                        title: '',
+                        type,
+                        is_optional: false,
+                        question_info: []
+                      }
+                    })}>
+                      <span className="sr-only">
+                        {t('add')} {t(`inputs.${type}`)}
+                      </span>
+                      <Icon className="w-10 h-10" />
+                    </button>
+                  )
+                })}
               </div>
               <div className="flex flex-col gap-y-4">
                 <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-5 pb-8 px-14 relative overflow-clip">
@@ -328,22 +364,6 @@ export default function Dashboard() {
                       value: e.target.value
                     })}></textarea>
                 </div>
-
-                {QUESTIONS_TYPES.map(type => (
-                  <Button
-                    key={type}
-                    onClick={() => dispatch({
-                    type: types.ADD_QUESTION,
-                    value: {
-                      title: '',
-                      type,
-                      is_optional: false,
-                      question_info: []
-                    }
-                  })}>
-                    {t('add')} {t(`inputs.${type}`)}
-                  </Button>
-                ))}
 
                 {state.questions.map((question, index) => {
                   const Component = COMPONENTS_TYPES[question.type]
@@ -431,7 +451,7 @@ function CreateChoice({
         onChange={(e) => onEditTitle(e.target.value)}
       />
       {question_info.map((info, index) => (
-        <div key={`${title}-${type}-${info}-${index}`} className="flex gap-x-2 items-center">
+        <div key={`${title}-${index}`} className="flex gap-x-2 items-center">
           <div className="h-4 w-4 rounded-full border-2" />
           <input
             className="input--inline"

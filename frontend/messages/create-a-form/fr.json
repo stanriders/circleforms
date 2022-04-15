@@ -14,6 +14,7 @@
   },
   "placeholders": {
     "title": "Le titre de votre formulaire",
+    "titleValue": "Formulaire sans nom",
     "excerpt": "Une brève description de votre formulaire",
     "description": "Vous pouvez écrire du BBCode ici :)",
     "Checkbox": "Question",
@@ -29,7 +30,7 @@
   "toast": {
     "userError": "Veuillez remplir tous les champs requis.",
     "error": "Il y a eu une erreur lors de la création du formulaire.",
-    "sucess": "Votre formulaire a été créé avec succès !",
+    "success": "Votre formulaire a été créé avec succès !",
     "loading": "Création de votre formulaire..."
   },
   "Freeform": {
