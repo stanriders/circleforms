@@ -5,6 +5,7 @@ using System.Net;
 using System.Threading.Tasks;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Database.Models.Posts;
+using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
 using CircleForms.Database.Models.Posts.Questions.Submissions;
 using CircleForms.Database.Services.Abstract;
@@ -46,29 +47,10 @@ public class AnswerService : IAnswerService
             return new Result(HttpStatusCode.Conflict, "You already voted");
         }
 
-        var gamemode = post.Gamemode;
-        if (gamemode is not null)
+        var limitationsResult = await ProcessLimitations(post, user);
+        if (limitationsResult.IsError)
         {
-            var statistics = await _gamemodeService.GetStatistics(user, gamemode.Value);
-            if (statistics.IsError)
-            {
-                return new Result(statistics.StatusCode, statistics.Message);
-            }
-
-            if (post.Limitations is not null)
-            {
-                if (post.Limitations.Pp is not null &&
-                    !post.Limitations.Pp.IsInRange((int)Math.Round(statistics.Value["Pp"].AsDouble)))
-                {
-                    return new Result(HttpStatusCode.Conflict, "Your pp is not in the allowed range of this post!");
-                }
-
-                if (post.Limitations.Rank is not null &&
-                    !post.Limitations.Rank.IsInRange(statistics.Value["GlobalRank"].AsInt32))
-                {
-                    return new Result(HttpStatusCode.Conflict, "Your rank is not in the allowed range of this post!");
-                }
-            }
+            return new Result(limitationsResult.StatusCode, limitationsResult.Message);
         }
 
         var result = ProcessAnswer(post, answerContracts);
@@ -129,5 +111,37 @@ public class AnswerService : IAnswerService
         }
 
         return new Result<List<Submission>>(resultingAnswers);
+    }
+
+    private async Task<Result> ProcessLimitations(Post post, string userId)
+    {
+        var gamemode = post.Gamemode;
+        if (gamemode is Gamemode.None)
+        {
+            return new Result();
+        }
+
+        var statistics = await _gamemodeService.GetStatistics(userId, gamemode);
+        if (statistics.IsError)
+        {
+            return new Result(statistics.StatusCode, statistics.Message);
+        }
+
+        if (post.Limitations is not null)
+        {
+            if (post.Limitations.Pp is not null &&
+                !post.Limitations.Pp.IsInRange((int) Math.Round(statistics.Value["Pp"].AsDouble)))
+            {
+                return new Result(HttpStatusCode.Conflict, "Your pp is not in the allowed range of this post!");
+            }
+
+            if (post.Limitations.Rank is not null &&
+                !post.Limitations.Rank.IsInRange(statistics.Value["GlobalRank"].AsInt32))
+            {
+                return new Result(HttpStatusCode.Conflict, "Your rank is not in the allowed range of this post!");
+            }
+        }
+
+        return new Result();
     }
 }
