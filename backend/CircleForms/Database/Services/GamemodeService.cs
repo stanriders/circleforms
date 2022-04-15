@@ -4,9 +4,10 @@ using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.ExternalAPI.OsuApi;
+using CircleForms.ModelLayer;
 using MongoDB.Bson;
 
-namespace CircleForms.ModelLayer;
+namespace CircleForms.Database.Services;
 
 public class GamemodeService : IGamemodeService
 {
