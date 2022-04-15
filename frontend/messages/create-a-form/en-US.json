@@ -14,6 +14,7 @@
   },
   "placeholders": {
     "title": "The form title",
+    "titleValue": "Untitled form",
     "excerpt": "A short description",
     "description": "Write some BBCode in there :)",
     "Checkbox": "Question",
@@ -36,5 +37,8 @@
     "description": "Answer text"
   },
   "add": "Add",
-  "createForm": "Create form"
+  "createForm": "Create form",
+  "addChoice": "Add choice...",
+  "removeQuestion": "Remove question",
+  "removeOption": "Remove option"
 }

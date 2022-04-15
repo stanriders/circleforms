@@ -124,6 +124,14 @@ svg {
   }
 }
 
+.button--icon {
+  @apply inline-block p-2 transition-colors ease-out-cubic rounded-full;
+
+  &:hover {
+    @apply bg-white bg-opacity-10;
+  }
+}
+
 .container {
   @apply w-full mx-auto px-4;
   max-width: 1172px;

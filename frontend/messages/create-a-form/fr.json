@@ -12,11 +12,32 @@
     "Freeform": "Paragraphe",
     "Choice": "Choix multiples"
   },
+  "placeholders": {
+    "title": "Le titre de votre formulaire",
+    "excerpt": "Une brève description de votre formulaire",
+    "description": "Vous pouvez écrire du BBCode ici :)",
+    "Checkbox": "Question",
+    "Freeform": "Question",
+    "Choice": "Question"
+  },
   "accessibility": {
     "Public": "Public",
     "Link": "Lien",
     "FriendsOnly": "Amis seulement",
     "Whitelist": "Whitelist"
   },
-  "add": "Ajouter"
+  "toast": {
+    "userError": "Veuillez remplir tous les champs requis.",
+    "error": "Il y a eu une erreur lors de la création du formulaire.",
+    "sucess": "Votre formulaire a été créé avec succès !",
+    "loading": "Création de votre formulaire..."
+  },
+  "Freeform": {
+    "description": "Réponse libre"
+  },
+  "add": "Ajouter",
+  "createForm": "Créer le formulaire",
+  "addChoice": "Ajouter une option...",
+  "removeQuestion": "Supprimer la question",
+  "removeOption": "Supprimer l'option"
 }

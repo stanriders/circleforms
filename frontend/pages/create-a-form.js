@@ -288,28 +288,47 @@ export default function Dashboard() {
               </div>
             </TabPanel>
             {/* Questions */}
-            <TabPanel>
+            <TabPanel className="relative">
+              <div className="
+                absolute -right-28 top-0
+                rounded-35 bg-pink py-8 px-2
+                flex flex-col items-center
+              ">
+                <button className="button--icon">
+                  <MdAddCircleOutline className="w-10 h-10" />
+                </button>
+              </div>
               <div className="flex flex-col gap-y-4">
-                <input
-                  type="text"
-                  placeholder={t('placeholders.title')}
-                  onChange={(e) => dispatch({
-                    type: types.SET_TITLE,
-                    value: e.target.value
-                  })} />
-                <input
-                  type="text"
-                  placeholder={t('placeholders.excerpt')}
-                  onChange={(e) => dispatch({
-                    type: types.SET_EXCERPT,
-                    value: e.target.value
-                  })} />
-                <textarea
-                  placeholder={t('placeholders.description')}
-                  onChange={(e) => dispatch({
-                    type: types.SET_DESCRIPTION,
-                    value: e.target.value
-                  })}></textarea>
+                <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-5 pb-8 px-14 relative overflow-clip">
+                  <div
+                    className="absolute left-0 top-0 bg-pink h-2 w-full"
+                  />
+                  <input
+                    className="input--inline input--title"
+                    type="text"
+                    placeholder={t('placeholders.title')}
+                    defaultValue={t('placeholders.titleValue')}
+                    onChange={(e) => dispatch({
+                      type: types.SET_TITLE,
+                      value: e.target.value
+                    })} />
+                  <input
+                    className="input--inline"
+                    type="text"
+                    placeholder={t('placeholders.excerpt')}
+                    onChange={(e) => dispatch({
+                      type: types.SET_EXCERPT,
+                      value: e.target.value
+                    })} />
+                  <textarea
+                    className="input--inline"
+                    placeholder={t('placeholders.description')}
+                    onChange={(e) => dispatch({
+                      type: types.SET_DESCRIPTION,
+                      value: e.target.value
+                    })}></textarea>
+                </div>
+
                 {QUESTIONS_TYPES.map(type => (
                   <Button
                     key={type}
@@ -403,8 +422,9 @@ function CreateChoice({
   t,
 }) {
   return (
-    <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-4">
+    <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14">
       <input
+        className="input--inline"
         type="text"
         placeholder={t(`placeholders.${type}`)}
         value={title}
@@ -414,24 +434,32 @@ function CreateChoice({
         <div key={`${title}-${type}-${info}-${index}`} className="flex gap-x-2 items-center">
           <div className="h-4 w-4 rounded-full border-2" />
           <input
+            className="input--inline"
             type="text"
             value={info}
             onChange={(e) => onEdit(index, e.target.value)}
           />
-          <button onClick={() => onRemoveInfo(index)}>Remove</button>
+          <button className="button--icon" title={t('removeOption')} onClick={() => onRemoveInfo(index)}>
+            <span className="sr-only">{t('removeOption')}</span>
+            <MdClose />
+          </button>
         </div>
       ))}
       <div className="flex gap-x-2 items-center">
         <div className="h-4 w-4 rounded-full border-2" />
         <input
+          className="input--inline"
           type="text"
-          value="Add choice..."
+          defaultValue={t('addChoice')}
           readOnly
           onClick={onAdd}
         />
       </div>
-      <button onClick={onRemove}>
-        <span className="sr-only">Remove question</span>
+      <button
+        title={t('removeQuestion')}
+        className="button--icon"
+        onClick={onRemove}>
+        <span className="sr-only">{t('removeQuestion')}</span>
         <MdDeleteOutline className="h-6 w-6" />
       </button>
     </div>
@@ -451,8 +479,9 @@ function CreateCheckbox({
   t,
 }) {
   return (
-    <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-4">
+    <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14">
       <input
+        className="input--inline"
         type="text"
         value={title}
         placeholder={t(`placeholders.${type}`)}
@@ -462,24 +491,32 @@ function CreateCheckbox({
         <div key={`${title}-${index}`} className="flex gap-x-2 items-center">
           <div className="h-4 w-4 border-2" />
           <input
+            className="input--inline"
             type="text"
             value={info}
             onChange={(e) => onEdit(index, e.target.value)}
           />
-          <button onClick={() => onRemoveInfo(index)}>Remove</button>
+          <button className="button--icon" title={t('removeOption')} onClick={() => onRemoveInfo(index)}>
+            <span className="sr-only">{t('removeOption')}</span>
+            <MdClose />
+          </button>
         </div>
       ))}
       <div className="flex gap-x-2 items-center">
         <div className="h-4 w-4 border-2" />
         <input
+          className="input--inline"
           type="text"
-          defaultValue="Add choice..."
+          defaultValue={t('addChoice')}
           readOnly
           onClick={onAdd}
         />
       </div>
-      <button onClick={onRemove}>
-        <span className="sr-only">Remove question</span>
+      <button
+        title={t('removeQuestion')}
+        className="button--icon"
+        onClick={onRemove}>
+        <span className="sr-only">{t('removeQuestion')}</span>
         <MdDeleteOutline className="h-6 w-6" />
       </button>
     </div>
@@ -498,8 +535,9 @@ function CreateFreeform({
   t,
 }) {
   return (
-    <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-4">
+    <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14">
       <input
+        className="input--inline"
         type="text"
         value={title}
         placeholder={t(`placeholders.${type}`)}
@@ -508,8 +546,11 @@ function CreateFreeform({
       <p className="border-b border-dotted pb-2 select-none">
         {t(`${type}.description`)}
       </p>
-      <button onClick={onRemove}>
-        <span className="sr-only">Remove question</span>
+      <button
+        title={t('removeQuestion')}
+        className="button--icon"
+        onClick={onRemove}>
+        <span className="sr-only">{t('removeQuestion')}</span>
         <MdDeleteOutline className="h-6 w-6" />
       </button>
     </div>
