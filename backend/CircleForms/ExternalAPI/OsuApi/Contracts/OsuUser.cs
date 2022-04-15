@@ -228,6 +228,7 @@ public class OsuUser
     public int RankedBeatmapsetCount { get; set; }
 
     [JsonProperty("statistics")]
+    [BsonIgnore]
     public Statistics Statistics { get; set; }
 
     [JsonProperty("rank_history")]

@@ -19,6 +19,9 @@ public class PostUpdateRequestContract
     [JsonProperty("is_active")]
     public bool IsActive { get; set; }
 
+    [JsonProperty("gamemode")]
+    public Gamemode Gamemode { get; set; }
+
     [JsonProperty("limitations")]
     public Limitations Limitations { get; set; }
 

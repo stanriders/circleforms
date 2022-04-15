@@ -1,12 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Database.Models.Posts;
+using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
 using CircleForms.Database.Models.Posts.Questions.Submissions;
 using CircleForms.Database.Services.Abstract;
+using CircleForms.Database.Services.Extensions;
 using MapsterMapper;
 
 namespace CircleForms.ModelLayer.Answers;
@@ -14,14 +17,16 @@ namespace CircleForms.ModelLayer.Answers;
 public class AnswerService : IAnswerService
 {
     private readonly ICacheRepository _cache;
+    private readonly IGamemodeService _gamemodeService;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
 
-    public AnswerService(IMapper mapper, IPostRepository postRepository, ICacheRepository cache)
+    public AnswerService(IMapper mapper, IPostRepository postRepository, ICacheRepository cache, IGamemodeService gamemodeService)
     {
         _mapper = mapper;
         _postRepository = postRepository;
         _cache = cache;
+        _gamemodeService = gamemodeService;
     }
 
     public async Task<Result> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
@@ -41,6 +46,12 @@ public class AnswerService : IAnswerService
         if (post.Answers.Any(x => x.UserRelation.ID == user))
         {
             return new Result(HttpStatusCode.Conflict, "You already voted");
+        }
+
+        var limitationsResult = await ProcessLimitations(post, user);
+        if (limitationsResult.IsError)
+        {
+            return new Result(limitationsResult.StatusCode, limitationsResult.Message);
         }
 
         var result = ProcessAnswer(post, answerContracts);
@@ -101,5 +112,40 @@ public class AnswerService : IAnswerService
         }
 
         return new Result<List<Submission>>(resultingAnswers);
+    }
+
+    private async Task<Result> ProcessLimitations(Post post, string userId)
+    {
+        var gamemode = post.Gamemode;
+        if (gamemode is Gamemode.None)
+        {
+            return new Result();
+        }
+
+        var statistics = await _gamemodeService.GetOrAddStatistics(userId, gamemode);
+        if (statistics.IsError)
+        {
+            return new Result(statistics.StatusCode, statistics.Message);
+        }
+
+        if (post.Limitations is null)
+        {
+            return new Result();
+        }
+
+        var pp = (int) Math.Round(statistics.Value["Pp"].AsDouble);
+        var rank = statistics.Value["GlobalRank"].AsInt32;
+
+        if (post.Limitations.Pp is not null && !pp.IsInRange(post.Limitations.Pp))
+        {
+            return new Result(HttpStatusCode.Conflict, "Your pp is not in the allowed range of this post!");
+        }
+
+        if (post.Limitations.Rank is not null && !rank.IsInRange(post.Limitations.Rank))
+        {
+            return new Result(HttpStatusCode.Conflict, "Your rank is not in the allowed range of this post!");
+        }
+
+        return new Result();
     }
 }

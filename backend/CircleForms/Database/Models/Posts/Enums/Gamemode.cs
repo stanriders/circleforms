@@ -2,8 +2,9 @@
 
 public enum Gamemode
 {
-    Standard,
+    None,
+    Osu,
     Taiko,
-    Catch,
+    Fruits,
     Mania
 }
