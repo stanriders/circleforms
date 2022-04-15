@@ -4,7 +4,19 @@
   "createYour": "Créer votre",
   "tabs": {
     "design": "Design",
-    "answers": "Réponses",
+    "questions": "Questions",
     "options": "Options"
-  }
+  },
+  "inputs": {
+    "Checkbox": "Cases à cocher",
+    "Freeform": "Paragraphe",
+    "Choice": "Choix multiples"
+  },
+  "accessibility": {
+    "Public": "Public",
+    "Link": "Lien",
+    "FriendsOnly": "Amis seulement",
+    "Whitelist": "Whitelist"
+  },
+  "add": "Ajouter"
 }

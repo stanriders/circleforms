@@ -135,3 +135,11 @@
   border-radius: 5px;
   animation: slide-down 0.2s ease;
 }
+
+[data-reach-listbox-popover] {
+  background-color: theme('colors.black.darker') !important;
+}
+
+[data-reach-listbox-option] {
+  @apply bg-black-darker;
+}

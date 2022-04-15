@@ -16,3 +16,11 @@ label {
     @apply scale-100;
   }
 }
+
+input[type="text"], textarea {
+  @apply bg-black-darker text-white border-b border-dotted border-white p-2;
+
+  &::placeholder {
+    @apply text-white text-opacity-30;
+  }
+}

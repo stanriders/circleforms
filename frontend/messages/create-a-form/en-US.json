@@ -4,7 +4,37 @@
   "createYour": "Create your",
   "tabs": {
     "design": "Design",
-    "answers": "Answers",
+    "questions": "Questions",
     "options": "Options"
-  }
+  },
+  "inputs": {
+    "Checkbox": "Checkboxes",
+    "Freeform": "Paragraph",
+    "Choice": "Multiple choice"
+  },
+  "placeholders": {
+    "title": "The form title",
+    "excerpt": "A short description",
+    "description": "Write some BBCode in there :)",
+    "Checkbox": "Question",
+    "Freeform": "Question",
+    "Choice": "Question"
+  },
+  "accessibility": {
+    "Public": "Public",
+    "Link": "Link",
+    "FriendsOnly": "Friends only",
+    "Whitelist": "Whitelist"
+  },
+  "toast": {
+    "userError": "Fill all required fields first!",
+    "error": "There was an error creating your CircleForm",
+    "sucess": "Your CircleForm has been created!",
+    "loading": "Creating your CircleForm..."
+  },
+  "Freeform": {
+    "description": "Answer text"
+  },
+  "add": "Add",
+  "createForm": "Create form"
 }

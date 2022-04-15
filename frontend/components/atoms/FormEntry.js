@@ -11,6 +11,7 @@ export default function FormEntry({
   banner,
   title,
   description,
+  excerpt,
   publish_time,
   accessibility,
   limitations,
@@ -35,7 +36,7 @@ export default function FormEntry({
               { title }
             </h3>
             <p className="text-xs text-white text-opacity-50 -mt-1 truncate max-w-sm">
-              { description }
+              { excerpt }
             </p>
           </div>
           <div className="flex items-center">
