@@ -128,20 +128,22 @@ public class AnswerService : IAnswerService
             return new Result(statistics.StatusCode, statistics.Message);
         }
 
-        if (post.Limitations is not null)
+        if (post.Limitations is null)
         {
-            var pp = (int) Math.Round(statistics.Value["Pp"].AsDouble);
-            var rank = statistics.Value["GlobalRank"].AsInt32;
+            return new Result();
+        }
 
-            if (post.Limitations.Pp is not null && !pp.IsInRange(post.Limitations.Pp))
-            {
-                return new Result(HttpStatusCode.Conflict, "Your pp is not in the allowed range of this post!");
-            }
+        var pp = (int) Math.Round(statistics.Value["Pp"].AsDouble);
+        var rank = statistics.Value["GlobalRank"].AsInt32;
 
-            if (post.Limitations.Rank is not null && !rank.IsInRange(post.Limitations.Rank))
-            {
-                return new Result(HttpStatusCode.Conflict, "Your rank is not in the allowed range of this post!");
-            }
+        if (post.Limitations.Pp is not null && !pp.IsInRange(post.Limitations.Pp))
+        {
+            return new Result(HttpStatusCode.Conflict, "Your pp is not in the allowed range of this post!");
+        }
+
+        if (post.Limitations.Rank is not null && !rank.IsInRange(post.Limitations.Rank))
+        {
+            return new Result(HttpStatusCode.Conflict, "Your rank is not in the allowed range of this post!");
         }
 
         return new Result();
