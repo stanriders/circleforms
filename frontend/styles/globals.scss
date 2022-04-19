@@ -125,7 +125,7 @@ svg {
 }
 
 .button--icon {
-  @apply inline-block p-2 transition-colors ease-out-cubic rounded-full;
+  @apply inline-flex items-center gap-x-2 p-2 transition-colors ease-out-cubic rounded-full;
 
   &:hover {
     @apply bg-white bg-opacity-10;

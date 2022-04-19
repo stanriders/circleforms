@@ -17,6 +17,10 @@
         "dragImageHere": "Glisser une image ici",
         "orPressButton": "ou cliquer sur le bouton",
         "chooseFile": "Choisir un fichier"
+      },
+      "wysiwyg": {
+        "preview": "Aperçu",
+        "write": "Écrire"
       }
     }
   }

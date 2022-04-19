@@ -405,13 +405,13 @@ export default function Dashboard() {
                       type: types.SET_EXCERPT,
                       value: e.target.value
                     })} />
-                  <textarea
-                    className="input--inline"
+                  <Wysiwyg
+                    value={state.description}
                     placeholder={t('placeholders.description')}
-                    onChange={(e) => dispatch({
+                    onChange={(value) => dispatch({
                       type: types.SET_DESCRIPTION,
-                      value: e.target.value
-                    })}></textarea>
+                      value
+                    })} />
                 </div>
 
                 {state.questions.map((question, index) => {
@@ -591,7 +591,7 @@ function CreateCheckbox({
       <div className="flex gap-x-2 items-center">
         <div className="h-6 w-6 border-2" />
         <input
-          className="input--inline input--static w-36"
+          className="input--inline input--static"
           type="text"
           defaultValue={t('addChoice')}
           readOnly

@@ -17,6 +17,10 @@
         "dragImageHere": "Drag image here",
         "orPressButton": "or press the button",
         "chooseFile": "Choose file"
+      },
+      "wysiwyg": {
+        "preview": "Preview",
+        "write": "Write"
       }
     }
   }
