@@ -7,6 +7,7 @@ import { ErrorBoundary } from 'react-error-boundary'
 import ErrorFallback from '../components/pages/ErrorFallback'
 import { NextIntlProvider } from 'next-intl'
 
+import "@reach/listbox/styles.css";
 import '../styles/globals.scss'
 
 function MyApp({ Component, pageProps }) {

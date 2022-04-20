@@ -135,3 +135,24 @@
   border-radius: 5px;
   animation: slide-down 0.2s ease;
 }
+
+[data-reach-listbox-button] {
+  @apply rounded-14 bg-black-lightest border-none;
+  min-width: 300px;
+}
+
+[data-reach-listbox-popover] {
+  background-color: theme('colors.black.darker') !important;
+}
+
+[data-reach-listbox-option] {
+  @apply bg-black-darker rounded;
+
+  &[data-current-nav] {
+    @apply bg-grey-dark;
+  }
+
+  &[data-current-selected] {
+    @apply text-pink;
+  }
+}

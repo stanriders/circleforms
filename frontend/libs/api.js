@@ -1,3 +1,10 @@
+/**
+ * Api
+ *
+ * @param {string} endpoint
+ * @param {RequestInit} options
+ * @returns
+ */
 export default async function api (endpoint, options) {
   if (process.env.NODE_ENV === 'development') {
     const mocks = await import('../mocks')

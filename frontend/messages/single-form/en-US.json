@@ -15,7 +15,7 @@
   },
   "active": "Active",
   "inactive": "Inactive",
-  "mistakeNotice": "Do you think that your or someone else's answer was not counted? Please text us in <a className='inline-link' href='https://discord.com/invite/rx9RKQsy9H'>#reports</a> channel!",
+  "mistakeNotice": "Do you think that your or someone else's answer was not counted? Please text us in <a class='inline-link' href='https://discord.com/invite/rx9RKQsy9H'>#reports</a> channel!",
   "back": "Back",
   "answer": "Answer",
   "Player": {
