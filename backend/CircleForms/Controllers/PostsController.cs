@@ -116,7 +116,7 @@ public class PostsController : ControllerBase
     /// <summary>
     ///     Unpublish a post. (Requires auth. Required Admin,Moderator)
     /// </summary>
-    [Authorize(Roles = "Admin,Moderator")]
+    [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator}")]
     [HttpPost(ApiEndpoints.PostUnpublish)]
     public async Task<IActionResult> Unpublish(string id)
     {
@@ -190,66 +190,4 @@ public class PostsController : ControllerBase
 
         return result.Unwrap();
     }
-
-    #region Mongo
-    /// <summary>
-    ///     Get uncached post. (Requires auth, Requires Admin role)
-    /// </summary>
-    [Authorize(Roles = "Admin")]
-    [HttpGet(ApiEndpoints.PostsOneDatabasePost)]
-    [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> Get(string id)
-    {
-        _logger.LogInformation("User {User} requested a post from the database", _claim);
-
-        var result = await _posts.Get(id);
-
-        return result.Unwrap();
-    }
-
-    /// <summary>
-    ///     Get all uncached posts. (Requires auth, Requires Admin role)
-    /// </summary>
-    [Authorize(Roles = "Admin")]
-    [HttpGet(ApiEndpoints.PostsAllDatabasePosts)]
-    public async Task<List<PostResponseContract>> Get()
-    {
-        _logger.LogInformation("User {User} requested database posts dump", _claim);
-
-        var result = await _posts.GetAll();
-
-        return result;
-    }
-    #endregion
-
-    #region Cache
-    /// <summary>
-    ///     Get all posts. (Requires auth, Requires Admin/Moderator role)
-    /// </summary>
-    [Authorize(Roles = "Admin,Moderator")]
-    [HttpGet(ApiEndpoints.PostsAllCachedPosts)]
-    public async Task<PostMinimalResponseContract[]> GetCached()
-    {
-        _logger.LogInformation("User {User} requested posts cache dump", _claim);
-
-        var result = await _posts.GetAllCached();
-
-        return result;
-    }
-
-    /// <summary>
-    ///     Get a post.
-    /// </summary>
-    [Authorize(Roles = "Admin,Moderator")]
-    [HttpGet(ApiEndpoints.PostsOneCachedPost)]
-    [ProducesResponseType(typeof(PostMinimalResponseContract), StatusCodes.Status200OK, "application/json")]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> GetCachedPost(string id)
-    {
-        var post = await _posts.GetCachedPost(id);
-
-        return post.Unwrap();
-    }
-    #endregion
 }

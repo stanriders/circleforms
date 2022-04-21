@@ -7,8 +7,16 @@ public static class ApiEndpoints
     public const string OAuthSignOut = "/OAuth/signout";
     #endregion
 
+    #region Admin
+    public const string PostsOneCachedPost = "posts/cached/{id}";
+    public const string PostsAllCachedPosts = "posts/cached";
+    public const string PostsOneDatabasePost = "posts/mongo/{id}";
+    public const string PostsAllDatabasePosts = "posts/mongo";
+    public const string UsersGetAllUsers = "users";
+    public const string UsersEscalateUserPrivileges = "users";
+    #endregion
+
     #region Posts
-    #region Post endpoints for users
     public const string PostsAnswer = "/posts/{id}/answers";
     public const string PostsAddPost = "/posts";
     public const string PostsDetailedPost = "/posts/{id}";
@@ -18,22 +26,11 @@ public static class ApiEndpoints
     public const string PostUnpublish = "/posts/{id}/unpublish";
     #endregion
 
-    public const string PostsOneCachedPost = "/posts/cached/{id}";
-    public const string PostsAllCachedPosts = "/posts/cached";
-    public const string PostsOneDatabasePost = "/posts/mongo/{id}";
-    public const string PostsAllDatabasePosts = "/posts/mongo";
-    #endregion
-
     #region Users
-    #region Users endpoints for users
     public const string UsersGetUser = "/users/{id}";
     public const string UsersGetMe = "/me";
     public const string UsersGetMePosts = "/me/posts";
     public const string UsersGetMinimalUser = "/users/{id}/minimal";
-    #endregion
-
-    public const string UsersGetAllUsers = "/users";
-    public const string UsersEscalateUserPrivileges = "/users";
     #endregion
 
     #region Pages
