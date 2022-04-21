@@ -15,7 +15,7 @@ using MongoDB.Driver;
 namespace CircleForms.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("users")]
 public class UsersController : ControllerBase
 {
     private readonly ICacheRepository _cache;

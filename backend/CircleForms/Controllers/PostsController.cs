@@ -21,7 +21,7 @@ using Microsoft.Extensions.Logging;
 namespace CircleForms.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("posts")]
 public class PostsController : ControllerBase
 {
     private static readonly string[] _imageUploadExtensions = {".jpg", ".png"};
