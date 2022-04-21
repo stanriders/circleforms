@@ -119,21 +119,21 @@ public class OAuthController : ControllerBase
 
         if (_superAdminsId.Contains(osuUser.Id))
         {
-            claims.Add(new Claim(ClaimTypes.Role, "SuperAdmin"));
-            claims.Add(new Claim(ClaimTypes.Role, "Admin"));
-            claims.Add(new Claim(ClaimTypes.Role, "Moderator"));
+            claims.Add(new Claim(ClaimTypes.Role, RoleConstants.SuperAdmin));
+            claims.Add(new Claim(ClaimTypes.Role, RoleConstants.Admin));
+            claims.Add(new Claim(ClaimTypes.Role, RoleConstants.Moderator));
         }
         else
         {
             //TODO: rewrite it
             if (user.Roles.HasFlag(Roles.Admin))
             {
-                claims.Add(new Claim(ClaimTypes.Role, "Admin"));
+                claims.Add(new Claim(ClaimTypes.Role, RoleConstants.Admin));
             }
 
             if (user.Roles.HasFlag(Roles.Moderator))
             {
-                claims.Add(new Claim(ClaimTypes.Role, "Moderator"));
+                claims.Add(new Claim(ClaimTypes.Role, RoleConstants.Moderator));
             }
         }
 

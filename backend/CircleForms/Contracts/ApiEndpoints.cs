@@ -7,33 +7,30 @@ public static class ApiEndpoints
     public const string OAuthSignOut = "/OAuth/signout";
     #endregion
 
-    #region Posts
-    #region Post endpoints for users
-    public const string PostsAnswer = "/posts/{id}/answers";
-    public const string PostsAddPost = "/posts";
-    public const string PostsDetailedPost = "/posts/{id}";
-    public const string PostsUpdatePost = "/posts/{id}";
-    public const string PostsUploadImage = "/posts/{id}/files";
-    public const string PostPublish = "/posts/{id}/publish";
-    public const string PostUnpublish = "/posts/{id}/unpublish";
+    #region Admin
+    public const string PostsOneCachedPost = "posts/cached/{id}";
+    public const string PostsAllCachedPosts = "posts/cached";
+    public const string PostsOneDatabasePost = "posts/mongo/{id}";
+    public const string PostsAllDatabasePosts = "posts/mongo";
+    public const string UsersGetAllUsers = "users";
+    public const string UsersEscalateUserPrivileges = "users";
     #endregion
 
-    public const string PostsOneCachedPost = "/posts/cached/{id}";
-    public const string PostsAllCachedPosts = "/posts/cached";
-    public const string PostsOneDatabasePost = "/posts/mongo/{id}";
-    public const string PostsAllDatabasePosts = "/posts/mongo";
+    #region Posts
+    public const string PostsAnswer = "{id}/answers";
+    public const string PostsAddPost = "";
+    public const string PostsDetailedPost = "{id}";
+    public const string PostsUpdatePost = "{id}";
+    public const string PostsUploadImage = "{id}/files";
+    public const string PostPublish = "{id}/publish";
+    public const string PostUnpublish = "{id}/unpublish";
     #endregion
 
     #region Users
-    #region Users endpoints for users
-    public const string UsersGetUser = "/users/{id}";
+    public const string UsersGetUser = "{id}";
     public const string UsersGetMe = "/me";
     public const string UsersGetMePosts = "/me/posts";
-    public const string UsersGetMinimalUser = "/users/{id}/minimal";
-    #endregion
-
-    public const string UsersGetAllUsers = "/users";
-    public const string UsersEscalateUserPrivileges = "/users";
+    public const string UsersGetMinimalUser = "{id}/minimal";
     #endregion
 
     #region Pages
