@@ -6,5 +6,5 @@ namespace CircleForms.ModelLayer.Answers;
 
 public interface IAnswerService
 {
-    public Task<Result> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts);
+    public Task<Error> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts);
 }

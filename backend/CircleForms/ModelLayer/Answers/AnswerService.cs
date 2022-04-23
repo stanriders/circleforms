@@ -29,49 +29,41 @@ public class AnswerService : IAnswerService
         _gamemodeService = gamemodeService;
     }
 
-    public async Task<Result> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
+    public async Task<Error> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
     {
         var post = await _postRepository.Get(id);
 
         if (post is null)
         {
-            return new Result(HttpStatusCode.BadRequest, "Could not find post with this id");
+            return new Error(HttpStatusCode.BadRequest, "Could not find post with this id");
         }
 
         if (!post.IsActive || !post.Published)
         {
-            return new Result(HttpStatusCode.BadRequest, "The post is inactive or unpublished");
+            return new Error(HttpStatusCode.BadRequest, "The post is inactive or unpublished");
         }
 
         if (post.Answers.Any(x => x.UserRelation.ID == user))
         {
-            return new Result(HttpStatusCode.Conflict, "You already voted");
+            return new Error(HttpStatusCode.Conflict, "You already voted");
         }
 
         var limitationsResult = await ProcessLimitations(post, user);
         if (limitationsResult.IsError)
         {
-            return new Result(limitationsResult.StatusCode, limitationsResult.Message);
+            return limitationsResult;
         }
 
         var result = ProcessAnswer(post, answerContracts);
         if (result.IsError)
         {
-            return new Result(result.StatusCode, result.Message);
+            return result.Error();
         }
 
-        var submissions = result.Value;
-
-        var answer = new Answer
-        {
-            Submissions = submissions,
-            UserRelation = user
-        };
-
-        await _postRepository.AddAnswer(post, answer);
+        await _postRepository.AddAnswer(post, result.Value, user);
         await _cache.IncrementAnswers(post.ID);
 
-        return new Result();
+        return new Error();
     }
 
     private Result<List<Submission>> ProcessAnswer(Post post,
@@ -114,23 +106,23 @@ public class AnswerService : IAnswerService
         return new Result<List<Submission>>(resultingAnswers);
     }
 
-    private async Task<Result> ProcessLimitations(Post post, string userId)
+    private async Task<Error> ProcessLimitations(Post post, string userId)
     {
         var gamemode = post.Gamemode;
         if (gamemode is Gamemode.None)
         {
-            return new Result();
+            return new Error();
         }
 
         var statistics = await _gamemodeService.GetOrAddStatistics(userId, gamemode);
         if (statistics.IsError)
         {
-            return new Result(statistics.StatusCode, statistics.Message);
+            return new Error(statistics.StatusCode, statistics.Message);
         }
 
         if (post.Limitations is null)
         {
-            return new Result();
+            return new Error();
         }
 
         var pp = (int) Math.Round(statistics.Value["Pp"].AsDouble);
@@ -138,14 +130,14 @@ public class AnswerService : IAnswerService
 
         if (post.Limitations.Pp is not null && !pp.IsInRange(post.Limitations.Pp))
         {
-            return new Result(HttpStatusCode.Conflict, "Your pp is not in the allowed range of this post!");
+            return new Error(HttpStatusCode.Conflict, "Your pp is not in the allowed range of this post!");
         }
 
         if (post.Limitations.Rank is not null && !rank.IsInRange(post.Limitations.Rank))
         {
-            return new Result(HttpStatusCode.Conflict, "Your rank is not in the allowed range of this post!");
+            return new Error(HttpStatusCode.Conflict, "Your rank is not in the allowed range of this post!");
         }
 
-        return new Result();
+        return new Error();
     }
 }
