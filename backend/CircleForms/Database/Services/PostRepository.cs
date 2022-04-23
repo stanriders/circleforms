@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts;
+using CircleForms.Database.Models.Posts.Questions.Submissions;
 using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
 using Microsoft.Extensions.Logging;
@@ -44,10 +45,20 @@ public class PostRepository : IPostRepository
         return await DB.Find<Post>().OneAsync(postId);
     }
 
-    public async Task AddAnswer(Post post, Answer entry)
+    public async Task<Answer> AddAnswer(Post post, List<Submission> submissions, string user)
     {
-        post.Answers.Add(entry);
-        await post.SaveAsync();
+        var answer = new Answer
+        {
+            Submissions = submissions,
+            UserRelation = user,
+            PostRelation = post
+        };
+
+        await answer.SaveAsync();
+        await DB.Entity<User>(user).Answers.AddAsync(answer);
+        await post.Answers.AddAsync(answer);
+
+        return answer;
     }
 
     public async Task Update(Post post)

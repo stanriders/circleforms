@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
 using CircleForms.Database.Models.Users;
@@ -10,6 +11,11 @@ namespace CircleForms.Database.Models.Posts;
 [Collection("posts")]
 public class Post : Entity
 {
+    public Post()
+    {
+        this.InitOneToMany(() => Answers);
+    }
+
     [Field("author")]
     public One<User> AuthorRelation { get; set; }
 
@@ -17,10 +23,10 @@ public class Post : Entity
     public string AuthorId => AuthorRelation.ID;
 
     [Field("answers")]
-    public List<Answer> Answers { get; set; } = new();
+    public Many<Answer> Answers { get; set; }
 
     [Ignore]
-    public int AnswerCount => Answers.Count;
+    public int AnswerCount => Answers.Count();
 
     [Field("is_active")]
     public bool IsActive { get; set; }
