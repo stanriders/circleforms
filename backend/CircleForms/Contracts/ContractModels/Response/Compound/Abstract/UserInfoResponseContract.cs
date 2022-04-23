@@ -1,4 +1,4 @@
-namespace CircleForms.Contracts.ContractModels.Response.UserInfoContracts.Abstract;
+namespace CircleForms.Contracts.ContractModels.Response.Compound.Abstract;
 
 public class UserInfoResponseContract<TUser, TPost>
 {

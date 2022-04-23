@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
-using CircleForms.Contracts.ContractModels.Response.UserInfoContracts;
+using CircleForms.Contracts.ContractModels.Response.Compound;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
