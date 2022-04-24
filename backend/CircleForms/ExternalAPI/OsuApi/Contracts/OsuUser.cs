@@ -83,12 +83,6 @@ public class GradeCounts
     public int A { get; set; }
 }
 
-public class Rank
-{
-    [JsonProperty("country")]
-    public int Country { get; set; }
-}
-
 public class Statistics
 {
     [JsonProperty("level")]
@@ -132,9 +126,6 @@ public class Statistics
 
     [JsonProperty("country_rank")]
     public int CountryRank { get; set; }
-
-    [JsonProperty("rank")]
-    public Rank Rank { get; set; }
 }
 
 public class RankHistory
