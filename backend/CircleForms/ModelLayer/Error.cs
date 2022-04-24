@@ -49,6 +49,11 @@ public class Result<T>
         return new Result<T>(HttpStatusCode.NotFound, $"Entity {id} is not found");
     }
 
+    public static Result<T> Forbidden()
+    {
+        return new Result<T>(HttpStatusCode.Forbidden, "You're not allowed to access that resource");
+    }
+
     public Error Error()
     {
         return new Error(StatusCode, Message);

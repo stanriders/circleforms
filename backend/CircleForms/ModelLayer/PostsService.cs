@@ -16,18 +16,19 @@ using CircleForms.IO.FileIO.Abstract;
 using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 
 namespace CircleForms.ModelLayer;
 
 public class PostsService
 {
     private readonly ICacheRepository _cache;
-    private readonly ILogger<PostsController> _logger;
+    private readonly ILogger<PostsService> _logger;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
     private readonly IStaticFilesService _staticFilesService;
 
-    public PostsService(ILogger<PostsController> logger, IStaticFilesService staticFilesService,
+    public PostsService(ILogger<PostsService> logger, IStaticFilesService staticFilesService,
         IPostRepository postRepository, IMapper mapper, ICacheRepository cache)
     {
         _logger = logger;
@@ -99,7 +100,7 @@ public class PostsService
         }
 
         _logger.LogInformation("User {Claim} updated the post {Id}", userId, post.ID);
-        _logger.LogDebug("User {Claim} updated the post {Id} with {Contract}", userId, post.ID, updateContract);
+        _logger.LogDebug("User {Claim} updated the post {Id} with {@Contract}", userId, post.ID, updateContract);
 
         var questions = post.Questions;
         var updatedPost = _mapper.Map(updateContract, post);
@@ -330,5 +331,21 @@ public class PostsService
         }
 
         return posts;
+    }
+
+    public async Task<Result<List<Answer>>> GetAnswers(string claim, string id)
+    {
+        var post = await _postRepository.Get(id);
+        if (post is null)
+        {
+            return Result<List<Answer>>.NotFound(id);
+        }
+
+        if (post.AuthorId != claim)
+        {
+            return Result<List<Answer>>.Forbidden();
+        }
+
+        return new Result<List<Answer>>(await post.Answers.ChildrenFluent().ToListAsync());
     }
 }

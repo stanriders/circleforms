@@ -154,40 +154,36 @@ public class PostsController : ControllerBase
     ///     Get full info about a page if you are the creator of the page, otherwise return cached version
     /// </summary>
     [HttpGet(ApiEndpoints.PostsDetailedPost)]
-    [ProducesResponseType(typeof(PostUserAnswerResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(typeof(PostDetailedResponseContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {
         var result = await _posts.GetDetailedPost(_claim, id, key);
+
+        return result.Unwrap();
+    }
+
+    /// <summary>
+    ///     Get posts' answers. (Requires auth)
+    /// </summary>
+    [Authorize]
+    [HttpGet(ApiEndpoints.PostsAnswer)]
+    [ProducesResponseType(typeof(AnswersUsersResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetAnswers(string id)
+    {
+        var result = await _posts.GetAnswers(_claim, id);
         if (result.IsError)
         {
             return result.Map();
         }
 
-        var value = result.Value;
+        var contract = new AnswersUsersResponseContract();
+        contract.Answers = result.Value.Adapt<List<AnswerContract>>();
+        contract.Users = (await Task.WhenAll(result.Value.Select(x => x.UserRelation.ToEntityAsync())))
+            .Adapt<List<UserAnswerContract>>();
 
-        if (value is PostResponseContract prc)
-        {
-            var response = new PostUserAnswerResponseContract();
-            response.Posts = prc;
-            response.Users =
-                (await _users.Get(prc.Answers.Select(x => x.UserId).Distinct().ToList()))
-                .Adapt<List<UserAnswerContract>>();
-
-            return Ok(response);
-        }
-
-        if (value is PostDetailedResponseContract pdrc)
-        {
-            var response = new PostDetailedUserAnswerResponseContract();
-            response.Posts = pdrc;
-            response.Users = new List<UserMinimalRedis> {await _cache.GetMinimalUser(pdrc.AuthorId)}
-                .Adapt<List<UserMinimalResponseContract>>();
-
-            return Ok(response);
-        }
-
-        return result.Unwrap();
+        return Ok(contract);
     }
 }
