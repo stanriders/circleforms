@@ -39,6 +39,36 @@ public class PostsService
         _cache = cache;
     }
 
+    private static void ValidateQuestionOrder(IReadOnlyList<Question> questions)
+    {
+        var set = questions.Select(x => x.Order).ToHashSet();
+        var min = set.Min();
+
+        bool Validate()
+        {
+            for (var i = min; i < min + set.Count; i++)
+            {
+                if (!set.Contains(i))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+
+        if (Validate())
+        {
+            return;
+        }
+
+        for (int i = 0; i < questions.Count; i++)
+        {
+            questions[i].Order = i;
+        }
+    }
+
     private static string GenerateAccessKey(byte size)
     {
         const string chars =
@@ -76,6 +106,8 @@ public class PostsService
                 question.QuestionInfo = new List<string>();
             }
         }
+
+        ValidateQuestionOrder(post.Questions);
 
         var result = await _postRepository.Add(userId, post);
 
@@ -148,6 +180,7 @@ public class PostsService
             }
         }
 
+        ValidateQuestionOrder(questions);
         updatedPost.Questions = questions;
 
         await _postRepository.Update(post);
@@ -189,7 +222,7 @@ public class PostsService
             return _mapper.Map<PostDetailedResponseContract>(post);
         }
 
-        return null;
+        return Result<object>.NotFound(post.ID);
     }
 
     private async Task<Result<PostRedis>> GetCachedPostPrivate(string id)
