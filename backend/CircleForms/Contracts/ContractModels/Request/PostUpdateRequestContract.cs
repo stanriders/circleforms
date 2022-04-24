@@ -32,13 +32,16 @@ public class PostUpdateRequestContract
 public class QuestionUpdateContract
 {
     [JsonProperty("id")]
-    public int? Id { get; set; }
+    public string Id { get; set; }
 
     [JsonProperty("delete")]
     public bool Delete { get; set; }
 
+    [JsonProperty("order")]
+    public int Order { get; set; }
+
     [JsonProperty("type")]
-    public QuestionType QuestionType { get; set; }
+    public QuestionType? QuestionType { get; set; }
 
     [JsonProperty("title")]
     public string Title { get; set; }

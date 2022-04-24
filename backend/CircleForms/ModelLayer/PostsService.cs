@@ -16,6 +16,7 @@ using CircleForms.IO.FileIO.Abstract;
 using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace CircleForms.ModelLayer;
@@ -67,10 +68,9 @@ public class PostsService
             post.AccessKey = GenerateAccessKey(6);
         }
 
-        for (var i = 0; i < post.Questions.Count; i++)
+        foreach (var question in post.Questions)
         {
-            var question = post.Questions[i];
-            question.Id = i;
+            question.Id = ObjectId.GenerateNewId().ToString();
             if (question.QuestionType != QuestionType.Choice)
             {
                 question.QuestionInfo = new List<string>();
@@ -122,15 +122,21 @@ public class PostsService
                 }
 
                 var newQuestion = _mapper.Map<Question>(updatedPostQuestion);
+                //New question
                 if (updatedPostQuestion.Id is null)
                 {
-                    var newPostId = questions.Max(x => x.Id) + 1;
-                    newQuestion.Id = newPostId;
+                    newQuestion.Id = ObjectId.GenerateNewId().ToString();
+                    if (newQuestion.QuestionType != QuestionType.Choice)
+                    {
+                        newQuestion.QuestionInfo = new List<string>();
+                    }
+
                     questions.Add(newQuestion);
 
                     continue;
                 }
 
+                //Update question
                 var postToUpdate = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
                 if (postToUpdate is null)
                 {

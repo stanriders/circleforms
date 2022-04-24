@@ -4,12 +4,14 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using CircleForms.Contracts.ContractModels.Request;
+using CircleForms.Contracts.Validation;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
 using CircleForms.Database.Models.Posts.Questions.Submissions;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.Database.Services.Extensions;
+using Mapster;
 using MapsterMapper;
 
 namespace CircleForms.ModelLayer.Answers;
@@ -54,7 +56,7 @@ public class AnswerService : IAnswerService
             return limitationsResult;
         }
 
-        var result = ProcessAnswer(post, answerContracts);
+        var result = await ProcessAnswer(post, answerContracts);
         if (result.IsError)
         {
             return result.Error();
@@ -66,44 +68,33 @@ public class AnswerService : IAnswerService
         return new Error();
     }
 
-    private Result<List<Submission>> ProcessAnswer(Post post,
+    private async Task<Result<List<Submission>>> ProcessAnswer(Post post,
         IEnumerable<SubmissionContract> answers)
     {
         var questions = post.Questions.ToDictionary(x => x.Id);
-        var answersDictionary = answers.ToDictionary(x => x.QuestionId);
+        var required = post.Questions.Where(x => !x.Optional).Select(x => x.Id).ToHashSet();
 
-        //If any required fields doesn't filled
-        if (post.Questions.Where(question => !question.Optional)
-            .Any(question => !answersDictionary.ContainsKey(question.Id)))
+        foreach (var answer in answers)
         {
-            return new Result<List<Submission>>("One or more required fields doesn't filled");
-        }
-
-        var resultingAnswers = new List<Submission>();
-        foreach (var (key, value) in answersDictionary)
-        {
-            //If question with id doesn't exist or answer was not provided
-            if (!questions.TryGetValue(key, out var question))
+            if (!questions.ContainsKey(answer.QuestionId))
             {
-                return new Result<List<Submission>>($"Question with id {key} does not exist");
+                return new Result<List<Submission>>($"Question with id {answer.QuestionId} is not found");
             }
 
-            if (question.QuestionType == QuestionType.Choice)
-            {
-                var choice = int.Parse(value.Answer);
+            var question = questions[answer.QuestionId];
 
-                if (choice >= question.QuestionInfo.Count)
-                {
-                    return new Result<List<Submission>>($"Choice for {key} is not in the range of choice ids");
-                }
-            }
-
-            var answer = _mapper.Map<Submission>(value);
-
-            resultingAnswers.Add(answer);
+            var validator = new SubmissionContractValidator();
+            await validator.ValidateAsync((question, answer));
+            required.Remove(answer.QuestionId);
         }
 
-        return new Result<List<Submission>>(resultingAnswers);
+        if (required.Count != 0)
+        {
+            return new Result<List<Submission>>(
+                $"Following required questions are not filled: {string.Join(", ", required)}");
+        }
+
+        return new Result<List<Submission>>(answers.Adapt<List<Submission>>());
     }
 
     private async Task<Error> ProcessLimitations(Post post, string userId)

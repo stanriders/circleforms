@@ -9,7 +9,10 @@ public class Question
 {
     [JsonProperty("question_id")]
     [SwaggerSchema(ReadOnly = true)]
-    public int Id { get; set; }
+    public string Id { get; set; }
+
+    [JsonProperty("order")]
+    public int Order { get; set; }
 
     [Required]
     [JsonProperty("type")]
