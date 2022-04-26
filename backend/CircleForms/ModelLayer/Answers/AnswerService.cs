@@ -84,7 +84,13 @@ public class AnswerService : IAnswerService
             var question = questions[answer.QuestionId];
 
             var validator = new SubmissionContractValidator();
-            await validator.ValidateAsync((question, answer));
+            var validationResult = await validator.ValidateAsync((question, answer));
+            if (!validationResult.IsValid)
+            {
+                return new Result<List<Submission>>(string.Join(", ",
+                    validationResult.Errors.Select(x => x.ErrorMessage)));
+            }
+
             required.Remove(answer.QuestionId);
         }
 
