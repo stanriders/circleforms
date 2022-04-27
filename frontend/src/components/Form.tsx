@@ -1,6 +1,6 @@
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import { useRouter } from "next/router";
-import { useContext, useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import getImage from "../utils/getImage";
 import Tag from "./Tag";
@@ -9,36 +9,55 @@ import Player from "./Player";
 import Button from "./Button";
 import bbcode from "../libs/bbcode";
 import UserContext from "../context/UserContext";
+import { MinimalUserResponse, PostResponse } from "../types/common-types";
+import { dynamicSort } from "../utils/objectSort";
 
-export default function Form({ posts, users }) {
-  const {
-    accessibility,
-    answer_count,
-    author_id,
-    banner,
-    description,
-    excerpt,
-    icon,
-    id,
-    is_active,
-    limitations,
-    publish_time,
-    questions,
-    title
-  } = posts;
+interface IFromProps {
+  posts: PostResponse;
+  users: MinimalUserResponse[];
+}
+
+const TempPlayers = [
+  { name: "Varvalian", ranking: 14, countryRanking: 1, discordTag: "Varvalian#948" },
+  { name: "Alumetri", ranking: 47, countryRanking: 3, discordTag: "Alumetri#836" },
+  { name: "sakamata1", ranking: 1, countryRanking: 1, discordTag: "sakamata1#1337" },
+  { name: "badeu", ranking: 38, countryRanking: 1, discordTag: "badeu#1114" },
+  { name: "WhiteCat", ranking: 4, countryRanking: 1, discordTag: "WhiteCat#1076" }
+];
+
+export default function Form({ posts, users }: IFromProps) {
+  const { banner, description, icon, id, is_active, answers, title } = posts;
   const { user } = useContext(UserContext);
+  const osuUser = user?.osu;
+
+  const [sort, setSort] = useState("rank");
+  const [sortedPlayers, setSortedPlayers] = useState(TempPlayers);
+
+  const [primaryAuthor, setPrimaryAuthor] = useState(users[0]);
+
   const t = useTranslations();
   const router = useRouter();
-  const [sort, setSort] = useState("rank");
-  const [primaryAuthor, setPrimaryAuthor] = useState(users[0]);
+
   const bannerImg = getImage({ id, banner, type: "banner" });
   const iconImg = getImage({ id, icon, type: "icon" });
 
+  const answerCount = answers?.length;
+
+  useEffect(() => {
+    if (sort === "rank") {
+      let sorted = [...TempPlayers];
+      dynamicSort(sorted, "-ranking", "-countryRanking");
+      setSortedPlayers(sorted.reverse());
+    } else {
+      setSortedPlayers(TempPlayers);
+    }
+  }, [sort]);
+
   useEffect(() => {
     if (!primaryAuthor) {
-      setPrimaryAuthor(user.osu);
+      setPrimaryAuthor(osuUser as MinimalUserResponse);
     }
-  }, []);
+  }, [primaryAuthor, osuUser]);
 
   return (
     <div>
@@ -58,15 +77,15 @@ export default function Form({ posts, users }) {
               <img className="h-20 w-20 rounded-full" src={iconImg} alt={`${title}'s thumbnail`} />
               <img
                 className="h-10 w-10 rounded-full absolute bottom-0 right-0"
-                src={primaryAuthor.avatar_url}
-                alt={`${primaryAuthor.username}'s avatar`}
+                src={primaryAuthor?.avatar_url as string}
+                alt={`${primaryAuthor?.username}'s avatar`}
               />
             </div>
 
             <div>
               <h1 className="text-4xl font-bold">{title}</h1>
               <p className="text-white text-opacity-50 text-2xl">
-                {answer_count ?? posts.answers.length} {t("answersCount")}
+                {answerCount ?? posts?.answers?.length} {t("answersCount")}
               </p>
             </div>
           </div>
@@ -96,20 +115,26 @@ export default function Form({ posts, users }) {
               />
             </TabPanel>
             <TabPanel>
-              <div className="flex flex-col">
-                <InputRadio name="sort" value="rank" label={t("sort.rank")} onChange={setSort} />
-                <InputRadio name="sort" value="date" label={t("sort.date")} onChange={setSort} />
+              <div
+                onChange={(e: ChangeEvent<HTMLInputElement>) => setSort(e.target.value)}
+                className="flex flex-col"
+              >
+                <InputRadio name="sort" value="rank" label={t("sort.rank")} />
+                <InputRadio name="sort" value="date" label={t("sort.date")} />
               </div>
 
               <div className="text-center text-pink w-full border-4 border-pink rounded-14 py-2 mt-11 mb-10">
                 <p dangerouslySetInnerHTML={{ __html: t.raw("mistakeNotice") }} />
               </div>
-
-              <Player />
-              <Player />
-              <Player />
-              <Player />
-              <Player />
+              {sortedPlayers.map((player) => (
+                <Player
+                  key={player.name}
+                  name={player.name}
+                  countryRanking={player.countryRanking}
+                  discordTag={player.discordTag}
+                  ranking={player.ranking}
+                />
+              ))}
             </TabPanel>
           </TabPanels>
         </Tabs>
@@ -119,7 +144,9 @@ export default function Form({ posts, users }) {
             {t("back")}
           </Button>
 
-          <Button theme="secondary">{t("answer")}</Button>
+          <Button onClick={() => {}} theme="secondary">
+            {t("answer")}
+          </Button>
         </div>
       </div>
     </div>
