@@ -1,6 +1,13 @@
 import { useTranslations } from "next-intl";
 
-export default function Player() {
+export interface IPlayerProps {
+  name: string;
+  ranking: number;
+  countryRanking: number;
+  discordTag: string;
+}
+
+export default function Player({ name, ranking, countryRanking, discordTag = "" }: IPlayerProps) {
   const t = useTranslations("Player");
 
   return (
@@ -12,21 +19,21 @@ export default function Player() {
           alt="{player name}'s avatar"
         />
         <span className="fi fi-pe"></span>
-        <span className="text-2xl font-bold">Arnold24x24</span>
+        <span className="text-2xl font-bold">{name}</span>
       </div>
 
       <div className="flex">
         <p className="flex flex-col items-end">
           <span className="text-xs">{t("globalRanking")}</span>
-          <span className="text-2xl font-bold">#6</span>
+          <span className="text-2xl font-bold">{ranking}</span>
         </p>
         <p className="flex flex-col items-end lg:ml-6">
           <span className="text-xs">{t("countryRanking")}</span>
-          <span className="text-2xl font-bold">#1</span>
+          <span className="text-2xl font-bold">{countryRanking}</span>
         </p>
         <p className="flex flex-col items-end lg:ml-20">
           <span className="text-xs">Discord</span>
-          <span className="text-2xl font-bold">Arnold#0000</span>
+          <span className="text-2xl font-bold">{discordTag}</span>
         </p>
       </div>
     </div>
