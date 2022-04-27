@@ -1,4 +1,5 @@
-﻿using CircleForms.Contracts.ContractModels.Response;
+﻿using CircleForms.Contracts.ContractModels.Request;
+using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Users;
 using Mapster;
@@ -20,5 +21,8 @@ public class ContractProfile : IRegister
 
         config.NewConfig<Answer, AnswerContract>()
             .Map(x => x.UserId, x => x.UserRelation.ID);
+
+        config.NewConfig<PostUpdateRequestContract, Post>()
+            .IgnoreNullValues(true);
     }
 }
