@@ -1,14 +1,14 @@
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs"
-import { useRouter } from "next/router"
-import { useContext, useEffect, useState } from "react"
-import { useTranslations } from "next-intl"
-import getImage from "../utils/getImage"
-import Tag from "./Tag"
-import InputRadio from "./InputRadio"
-import Player from "./Player"
-import Button from "./Button"
-import bbcode from "../libs/bbcode"
-import UserContext from "../context/UserContext"
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
+import { useRouter } from "next/router";
+import { useContext, useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import getImage from "../utils/getImage";
+import Tag from "./Tag";
+import InputRadio from "./InputRadio";
+import Player from "./Player";
+import Button from "./Button";
+import bbcode from "../libs/bbcode";
+import UserContext from "../context/UserContext";
 
 export default function Form({ posts, users }) {
   const {
@@ -24,21 +24,21 @@ export default function Form({ posts, users }) {
     limitations,
     publish_time,
     questions,
-    title,
-  } = posts
-  const { user } = useContext(UserContext)
-  const t = useTranslations()
-  const router = useRouter()
-  const [sort, setSort] = useState("rank")
-  const [primaryAuthor, setPrimaryAuthor] = useState(users[0])
-  const bannerImg = getImage({ id, banner, type: "banner" })
-  const iconImg = getImage({ id, icon, type: "icon" })
+    title
+  } = posts;
+  const { user } = useContext(UserContext);
+  const t = useTranslations();
+  const router = useRouter();
+  const [sort, setSort] = useState("rank");
+  const [primaryAuthor, setPrimaryAuthor] = useState(users[0]);
+  const bannerImg = getImage({ id, banner, type: "banner" });
+  const iconImg = getImage({ id, icon, type: "icon" });
 
   useEffect(() => {
     if (!primaryAuthor) {
-      setPrimaryAuthor(user.osu)
+      setPrimaryAuthor(user.osu);
     }
-  }, [])
+  }, []);
 
   return (
     <div>
@@ -48,7 +48,7 @@ export default function Form({ posts, users }) {
           backgroundImage: `
             linear-gradient(180deg, rgba(19, 19, 19, 0) -35.06%, #0F0F0F 100%),
             url('${bannerImg}')
-          `,
+          `
         }}
       />
       <div className="bg-black-dark2 p-16 relative rounded-b-70">
@@ -91,7 +91,7 @@ export default function Form({ posts, users }) {
               <div
                 className="bbcode"
                 dangerouslySetInnerHTML={{
-                  __html: bbcode(description),
+                  __html: bbcode(description)
                 }}
               />
             </TabPanel>
@@ -123,5 +123,5 @@ export default function Form({ posts, users }) {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,71 +1,71 @@
-import bbobHTML from "@bbob/html"
-import { createPreset } from "@bbob/preset"
-import { getUniqAttr, isStringNode, isTagNode } from "@bbob/plugin-helper"
-import TagNode from "@bbob/plugin-helper/lib/TagNode"
+import bbobHTML from "@bbob/html";
+import { createPreset } from "@bbob/preset";
+import { getUniqAttr, isStringNode, isTagNode } from "@bbob/plugin-helper";
+import TagNode from "@bbob/plugin-helper/lib/TagNode";
 
-const isStartsWith = (node, type) => node[0] === type
+const isStartsWith = (node, type) => node[0] === type;
 
 const styleMap = {
   color: (val) => `color:${val}`,
-  size: (val) => `font-size:${val}`,
-}
+  size: (val) => `font-size:${val}`
+};
 
 const getStyleFromAttrs = (attrs) =>
   Object.keys(attrs)
     .reduce((acc, key) => (styleMap[key] ? acc.concat(styleMap[key](attrs[key])) : acc), [])
-    .join(" ")
+    .join(" ");
 
 const asListItems = (content) => {
-  let listIdx = 0
-  const listItems = []
+  let listIdx = 0;
+  const listItems = [];
 
-  const createItemNode = () => TagNode.create("li")
+  const createItemNode = () => TagNode.create("li");
   const ensureListItem = (val) => {
-    listItems[listIdx] = listItems[listIdx] || val
-  }
+    listItems[listIdx] = listItems[listIdx] || val;
+  };
   const addItem = (val) => {
     if (listItems[listIdx] && listItems[listIdx].content) {
-      listItems[listIdx].content = listItems[listIdx].content.concat(val)
+      listItems[listIdx].content = listItems[listIdx].content.concat(val);
     } else {
-      listItems[listIdx] = listItems[listIdx].concat(val)
+      listItems[listIdx] = listItems[listIdx].concat(val);
     }
-  }
+  };
 
   content.forEach((el) => {
     if (isStringNode(el) && isStartsWith(el, "*")) {
       if (listItems[listIdx]) {
-        listIdx++
+        listIdx++;
       }
-      ensureListItem(createItemNode())
-      addItem(el.substr(1))
+      ensureListItem(createItemNode());
+      addItem(el.substr(1));
     } else if (isTagNode(el) && TagNode.isOf(el, "*")) {
       if (listItems[listIdx]) {
-        listIdx++
+        listIdx++;
       }
-      ensureListItem(createItemNode())
+      ensureListItem(createItemNode());
     } else if (!isTagNode(listItems[listIdx])) {
-      listIdx++
-      ensureListItem(el)
+      listIdx++;
+      ensureListItem(el);
     } else if (listItems[listIdx]) {
-      addItem(el)
+      addItem(el);
     } else {
-      ensureListItem(el)
+      ensureListItem(el);
     }
-  })
+  });
 
-  return [].concat(listItems)
-}
+  return [].concat(listItems);
+};
 
 const renderUrl = (node, render) =>
-  getUniqAttr(node.attrs) ? getUniqAttr(node.attrs) : render(node.content)
+  getUniqAttr(node.attrs) ? getUniqAttr(node.attrs) : render(node.content);
 
 const toNode = (tag, attrs, content) => ({
   tag,
   attrs,
-  content,
-})
+  content
+});
 
-const toStyle = (style) => ({ style })
+const toStyle = (style) => ({ style });
 
 const preset = createPreset({
   b: (node) => toNode("span", toStyle("font-weight: bold"), node.content),
@@ -76,7 +76,7 @@ const preset = createPreset({
     toNode(
       "a",
       {
-        href: renderUrl(node, render, options),
+        href: renderUrl(node, render, options)
       },
       node.content
     ),
@@ -84,7 +84,7 @@ const preset = createPreset({
     toNode(
       "img",
       {
-        src: render(node.content),
+        src: render(node.content)
       },
       null
     ),
@@ -92,22 +92,22 @@ const preset = createPreset({
   code: (node) => toNode("pre", {}, node.content),
   style: (node) => toNode("span", toStyle(getStyleFromAttrs(node.attrs)), node.content),
   list: (node) => {
-    const type = getUniqAttr(node.attrs)
+    const type = getUniqAttr(node.attrs);
     const types = {
       1: "decimal",
       a: "lower-alpha",
       A: "upper-alpha",
       i: "lower-roman",
-      I: "upper-roman",
-    }
+      I: "upper-roman"
+    };
 
     return toNode(
       "ol",
       {
-        style: `list-style-type: ${types[type] || "decimal"}`,
+        style: `list-style-type: ${types[type] || "decimal"}`
       },
       asListItems(node.content)
-    )
+    );
   },
   centre: (node) => ({
     tag: "center",
@@ -116,46 +116,46 @@ const preset = createPreset({
       {
         tag: "p",
         attrs: {},
-        content: node.content,
-      },
-    ],
+        content: node.content
+      }
+    ]
   }),
   color: (node) => ({
     tag: "span",
     attrs: {
-      style: `color: ${Object.keys(node.attrs)[0]};`,
+      style: `color: ${Object.keys(node.attrs)[0]};`
     },
-    content: node.content,
+    content: node.content
   }),
   size: (node) => ({
     tag: "span",
     attrs: {
-      style: `font-size: ${Object.keys(node.attrs)[0]}px;`,
+      style: `font-size: ${Object.keys(node.attrs)[0]}px;`
     },
-    content: node.content,
+    content: node.content
   }),
   spoilerbox: (node) => ({
     tag: "span",
     attrs: {
-      style: `background-color: #FFFFFF;`,
+      style: `background-color: #FFFFFF;`
     },
-    content: node.content,
+    content: node.content
   }),
   heading: (node) => ({
     tag: "h3",
-    content: node.content,
+    content: node.content
   }),
   notice: (node) => ({
     tag: "div",
     attrs: {
-      class: "notice",
+      class: "notice"
     },
-    content: node.content,
-  }),
-})
+    content: node.content
+  })
+});
 
 export default function bbcode(value) {
-  return bbobHTML(value, preset())
+  return bbobHTML(value, preset());
 }
 
 /**

@@ -1,5 +1,5 @@
-import { Fragment } from "react"
-import FormEntrySkeleton from "./FormEntrySkeleton"
+import { Fragment } from "react";
+import FormEntrySkeleton from "./FormEntrySkeleton";
 
 export default function FormEntrySkeletonList({ length = 10 }) {
   return (
@@ -8,5 +8,5 @@ export default function FormEntrySkeletonList({ length = 10 }) {
         <FormEntrySkeleton key={index} />
       ))}
     </Fragment>
-  )
+  );
 }

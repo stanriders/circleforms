@@ -1,0 +1,25 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+echo 'Running checks before committing'
+
+cd frontend
+npm run format
+
+# Enable all checks below after fixing all type errors
+
+# Check ESLint Standards
+# npm run lint ||
+#   (
+#     echo '😤 ESLint Check Failed. 😤 
+#     Make the required changes listed above, add changes and try to commit again.'
+#     false
+#   )
+
+# Check tsconfig standards
+# npm run check-types ||
+#   (
+#     echo '❌ Failed Type check.❌
+#     Make the changes required above.'
+#     false
+#   )

@@ -14,9 +14,7 @@
         "type": "Checkbox",
         "title": "string",
         "is_optional": true,
-        "question_info": [
-
-        ]
+        "question_info": []
       }
     ],
     "id": "62571392c41a85f75fd57d5f",

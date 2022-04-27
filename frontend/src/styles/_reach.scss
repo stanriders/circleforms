@@ -37,7 +37,7 @@
 
     &:hover,
     &:focus {
-      @apply bg-grey-dark
+      @apply bg-grey-dark;
     }
   }
 }
@@ -65,14 +65,14 @@
 
 [data-reach-menu-popover] {
   @apply mt-4 rounded-14 bg-black-darker p-2;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5)
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.5);
 }
 
 [data-reach-menu-list] {
   width: 140px;
   @apply flex flex-col gap-y-2;
 
-  >* {
+  > * {
     @apply text-sm text-center font-semibold py-1 px-4 text-white w-full rounded-7 transition ease-out-cubic cursor-pointer;
 
     &:not(.danger) {
@@ -142,7 +142,7 @@
 }
 
 [data-reach-listbox-popover] {
-  background-color: theme('colors.black.darker') !important;
+  background-color: theme("colors.black.darker") !important;
 }
 
 [data-reach-listbox-option] {

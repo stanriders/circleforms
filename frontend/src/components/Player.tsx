@@ -1,7 +1,7 @@
-import { useTranslations } from "next-intl"
+import { useTranslations } from "next-intl";
 
 export default function Player() {
-  const t = useTranslations("Player")
+  const t = useTranslations("Player");
 
   return (
     <div className="bg-gradient w-full rounded-14 flex justify-between items-center pr-4">
@@ -30,5 +30,5 @@ export default function Player() {
         </p>
       </div>
     </div>
-  )
+  );
 }

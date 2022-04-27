@@ -1,29 +1,29 @@
-import Head from "next/head"
+import Head from "next/head";
 
-import DefaultLayout from "../layouts"
+import DefaultLayout from "../layouts";
 
-import { useContext, useEffect } from "react"
-import SVG from "react-inlinesvg"
+import { useContext, useEffect } from "react";
+import SVG from "react-inlinesvg";
 
-import useAuth from "../hooks/useAuth"
+import useAuth from "../hooks/useAuth";
 
-import { useTranslations } from "next-intl"
-import UserContext from "../context/UserContext"
-import Unauthorized from "../components/Unauthorized"
-import Title from "../components/Title"
-import Button from "../components/Button"
+import { useTranslations } from "next-intl";
+import UserContext from "../context/UserContext";
+import Unauthorized from "../components/Unauthorized";
+import Title from "../components/Title";
+import Button from "../components/Button";
 
 export default function Settings() {
-  const t = useTranslations()
-  const { user } = useContext(UserContext)
-  const { invalidateUserCache } = useAuth()
+  const t = useTranslations();
+  const { user } = useContext(UserContext);
+  const { invalidateUserCache } = useAuth();
 
   useEffect(() => {
-    invalidateUserCache()
-  }, [])
+    invalidateUserCache();
+  }, []);
 
   if (!user) {
-    return <Unauthorized />
+    return <Unauthorized />;
   }
 
   return (
@@ -79,8 +79,9 @@ export default function Settings() {
                 disabled
                 style={{
                   outlineColor: "#5865F2",
-                  color: "#5865F2",
-                }}>
+                  color: "#5865F2"
+                }}
+              >
                 {t("connect")}
               </Button>
             </div>
@@ -88,23 +89,23 @@ export default function Settings() {
         </div>
       </section>
     </DefaultLayout>
-  )
+  );
 }
 
 export async function getStaticProps({ locale }) {
   const [translations, global] = await Promise.all([
     import(`../messages/settings/${locale}.json`),
-    import(`../messages/global/${locale}.json`),
-  ])
+    import(`../messages/global/${locale}.json`)
+  ]);
 
   const messages = {
     ...translations,
-    ...global,
-  }
+    ...global
+  };
 
   return {
     props: {
-      messages,
-    },
-  }
+      messages
+    }
+  };
 }

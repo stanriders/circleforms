@@ -1,6 +1,6 @@
-import Link from "next/link"
-import * as timeago from "timeago.js"
-import getImage from "../utils/getImage"
+import Link from "next/link";
+import * as timeago from "timeago.js";
+import getImage from "../utils/getImage";
 
 export default function FormEntry({
   id,
@@ -14,9 +14,9 @@ export default function FormEntry({
   excerpt,
   publish_time,
   accessibility,
-  limitations,
+  limitations
 }) {
-  const bannerImg = getImage({ banner, id, type: "banner" })
+  const bannerImg = getImage({ banner, id, type: "banner" });
 
   return (
     <Link href={`/form/${id}`}>
@@ -27,7 +27,7 @@ export default function FormEntry({
             backgroundImage: `
               linear-gradient(270deg, #131313 2.39%, rgba(17, 17, 17, 0) 98.16%),
               url('${bannerImg}')
-            `,
+            `
           }}
         />
         <div className="flex-1 flex justify-between py-5 pr-5">
@@ -51,5 +51,5 @@ export default function FormEntry({
         </div>
       </a>
     </Link>
-  )
+  );
 }

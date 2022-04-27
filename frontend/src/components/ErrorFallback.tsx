@@ -1,5 +1,5 @@
-import Head from "next/head"
-import DefaultLayout from "../layouts"
+import Head from "next/head";
+import DefaultLayout from "../layouts";
 
 export default function ErrorFallback({ error, resetErrorBoundary }) {
   return (
@@ -13,5 +13,5 @@ export default function ErrorFallback({ error, resetErrorBoundary }) {
         <pre>{error.toString()}</pre>
       </div>
     </DefaultLayout>
-  )
+  );
 }

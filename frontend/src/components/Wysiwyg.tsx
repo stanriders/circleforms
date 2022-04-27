@@ -1,7 +1,7 @@
-import autosize from "autosize"
-import classNames from "classnames"
-import { useTranslations } from "next-intl"
-import { useEffect, useRef, useState } from "react"
+import autosize from "autosize";
+import classNames from "classnames";
+import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
 import {
   MdFormatBold,
   MdFormatItalic,
@@ -9,9 +9,9 @@ import {
   MdLink,
   MdImage,
   MdEdit,
-  MdPreview,
-} from "react-icons/md"
-import bbcode from "../libs/bbcode"
+  MdPreview
+} from "react-icons/md";
+import bbcode from "../libs/bbcode";
 
 /**
  *
@@ -19,9 +19,9 @@ import bbcode from "../libs/bbcode"
  * @param {string} type
  */
 function insertAtCaret(input, type) {
-  const selected = input.value.slice(input.selectionStart, input.selectionEnd)
+  const selected = input.value.slice(input.selectionStart, input.selectionEnd);
 
-  let rangeText = ""
+  let rangeText = "";
 
   switch (type) {
     case "b":
@@ -29,45 +29,46 @@ function insertAtCaret(input, type) {
     case "s":
     case "url":
     case "img":
-      rangeText = `[${type}]${selected}[/${type}]`
-      break
+      rangeText = `[${type}]${selected}[/${type}]`;
+      break;
 
     default:
-      break
+      break;
   }
 
-  input.setRangeText(rangeText)
-  input.focus()
-  input.dispatchEvent(new Event("input"))
+  input.setRangeText(rangeText);
+  input.focus();
+  input.dispatchEvent(new Event("input"));
 }
 
 function Wysiwyg({
   value = "",
   placeholder = "Placeholder",
   onChange,
-  toolbarItems = ["b", "i", "s", "url", "img"],
+  toolbarItems = ["b", "i", "s", "url", "img"]
 }) {
-  const textarea = useRef()
-  const t = useTranslations("global.inputs.wysiwyg")
-  const [preview, setPreview] = useState(bbcode(value))
-  const [hasPreview, setHasPreview] = useState(false)
+  const textarea = useRef();
+  const t = useTranslations("global.inputs.wysiwyg");
+  const [preview, setPreview] = useState(bbcode(value));
+  const [hasPreview, setHasPreview] = useState(false);
 
   useEffect(() => {
-    autosize(textarea.current)
-  }, [])
+    autosize(textarea.current);
+  }, []);
 
   useEffect(() => {
     if (hasPreview) {
-      setPreview(bbcode(value))
+      setPreview(bbcode(value));
     }
-  }, [hasPreview])
+  }, [hasPreview]);
 
   return (
     <div className="relative overflow-clip">
       <button
         onClick={() => setHasPreview(!hasPreview)}
         className="button--icon mb-2"
-        title={hasPreview ? t("write") : t("preview")}>
+        title={hasPreview ? t("write") : t("preview")}
+      >
         <span className="sr-only">{hasPreview ? t("write") : t("preview")}</span>
         {hasPreview ? <MdEdit className="w-8 h-8" /> : <MdPreview className="w-8 h-8" />}
       </button>
@@ -77,18 +78,21 @@ function Wysiwyg({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
-          className="w-full bg-black-lightest border-b-2 border-white pl-3 pt-2 text-2xl font-medium"></textarea>
+          className="w-full bg-black-lightest border-b-2 border-white pl-3 pt-2 text-2xl font-medium"
+        ></textarea>
       )) || (
         <div
           className="w-full bg-black-lightest border-b-2 border-white p-4"
-          dangerouslySetInnerHTML={{ __html: preview }}></div>
+          dangerouslySetInnerHTML={{ __html: preview }}
+        ></div>
       )}
 
       <div
         className={classNames(
           "absolute -right-4 bottom-2 inline-flex items-center pl-6 pr-5 bg-white rounded-tl-35 text-black transition-opacity ease-out-cubic",
           hasPreview ? "opacity-0" : "opacity-100"
-        )}>
+        )}
+      >
         {toolbarItems.map((type, i) => (
           <ToolbarItem
             key={`toolbar--item--${type}-${i}`}
@@ -98,7 +102,7 @@ function Wysiwyg({
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 const TOOLBAR_ICONS = {
@@ -106,17 +110,17 @@ const TOOLBAR_ICONS = {
   i: MdFormatItalic,
   s: MdStrikethroughS,
   url: MdLink,
-  img: MdImage,
-}
+  img: MdImage
+};
 
 function ToolbarItem({ type, onClick }) {
-  const Icon = TOOLBAR_ICONS[type]
+  const Icon = TOOLBAR_ICONS[type];
 
   return (
     <button onClick={onClick} className="button--icon">
       <Icon className="w-8 h-8" />
     </button>
-  )
+  );
 }
 
-export default Wysiwyg
+export default Wysiwyg;

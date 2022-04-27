@@ -1,49 +1,49 @@
-import Head from "next/head"
-import DefaultLayout from "../layouts"
-import { Fragment, useEffect, useState } from "react"
-import useSWR from "swr"
-import api from "../libs/api"
+import Head from "next/head";
+import DefaultLayout from "../layouts";
+import { Fragment, useEffect, useState } from "react";
+import useSWR from "swr";
+import api from "../libs/api";
 
-import { useRouter } from "next/router"
+import { useRouter } from "next/router";
 
-import { useTranslations } from "next-intl"
-import Radio from "../components/Radio"
-import SubTitle from "../components/SubTitle"
-import FormEntrySkeletonList from "../components/FormEntrySkeletonList"
-import FormEntry from "../components/FormEntry"
-import Button from "../components/Button"
+import { useTranslations } from "next-intl";
+import Radio from "../components/Radio";
+import SubTitle from "../components/SubTitle";
+import FormEntrySkeletonList from "../components/FormEntrySkeletonList";
+import FormEntry from "../components/FormEntry";
+import Button from "../components/Button";
 
 export default function FormsList() {
-  const router = useRouter()
-  const t = useTranslations()
-  const [filter, setFilter] = useState("Both")
-  const [page, setPage] = useState(1)
+  const router = useRouter();
+  const t = useTranslations();
+  const [filter, setFilter] = useState("Both");
+  const [page, setPage] = useState(1);
 
   const {
     data: pinnedForms,
     error: pinnedError,
-    isValidating: pinnedValidating,
-  } = useSWR(`/posts/page/pinned`, api)
+    isValidating: pinnedValidating
+  } = useSWR(`/posts/page/pinned`, api);
 
   const { data, error, isValidating } = useSWR(
     `/posts/page/${page}?filter=${filter}&pageSize=10`,
     api
-  )
+  );
 
   // Handle direct link to page and/or filter
   useEffect(() => {
-    const qs = new URLSearchParams(window.location.search)
-    const qsPage = Number(qs.get("page"))
-    const qsFilter = qs.get("filter")
+    const qs = new URLSearchParams(window.location.search);
+    const qsPage = Number(qs.get("page"));
+    const qsFilter = qs.get("filter");
 
     if (qsPage > 0) {
-      setPage(qsPage)
+      setPage(qsPage);
     }
 
     if (["Both", "Active", "Inactive"].includes(qsFilter)) {
-      setFilter(qsFilter)
+      setFilter(qsFilter);
     }
-  }, [])
+  }, []);
 
   // Update history and url when filter/page changesp
   useEffect(() => {
@@ -51,27 +51,27 @@ export default function FormsList() {
       {
         query: {
           page,
-          filter,
-        },
+          filter
+        }
       },
       undefined,
       {
-        scroll: false,
+        scroll: false
       }
-    )
-  }, [filter, page])
+    );
+  }, [filter, page]);
 
   function handlePrevClick() {
     if (page > 1) {
-      setPage(page - 1)
+      setPage(page - 1);
     }
   }
 
   function handleFilterClick(value) {
-    setFilter(value)
+    setFilter(value);
 
-    if (page === 1) return
-    setPage(1)
+    if (page === 1) return;
+    setPage(1);
   }
 
   return (
@@ -98,7 +98,8 @@ export default function FormsList() {
                     height="23"
                     viewBox="0 0 145 23"
                     fill="none"
-                    xmlns="http://www.w3.org/2000/svg">
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
                     <rect x="122" width="23" height="23" rx="11.5" fill="white" />
                     <rect width="118" height="23" rx="11.5" fill="white" />
                   </svg>
@@ -108,7 +109,8 @@ export default function FormsList() {
                     name="filter"
                     value="Both"
                     onClick={(e) => handleFilterClick(e.target.value)}
-                    active={"Both" === filter}>
+                    active={"Both" === filter}
+                  >
                     {t("filters.all")}
                   </Radio>
                   <Radio
@@ -116,7 +118,8 @@ export default function FormsList() {
                     value="Active"
                     color="bg-green"
                     onClick={(e) => handleFilterClick(e.target.value)}
-                    active={"Active" === filter}>
+                    active={"Active" === filter}
+                  >
                     {t("filters.active")}
                   </Radio>
                   <Radio
@@ -124,7 +127,8 @@ export default function FormsList() {
                     value="Inactive"
                     color="bg-red"
                     onClick={(e) => handleFilterClick(e.target.value)}
-                    active={"Inactive" === filter}>
+                    active={"Inactive" === filter}
+                  >
                     {t("filters.inactive")}
                   </Radio>
                 </div>
@@ -138,8 +142,8 @@ export default function FormsList() {
                     {pinnedForms &&
                       pinnedForms.posts.length > 0 &&
                       pinnedForms.posts.map((form) => {
-                        const user = pinnedForms.users.find((user) => user.id === form.author_id)
-                        return <FormEntry key={form.id} user={user} {...form} />
+                        const user = pinnedForms.users.find((user) => user.id === form.author_id);
+                        return <FormEntry key={form.id} user={user} {...form} />;
                       })}
                   </div>
                 </Fragment>
@@ -154,8 +158,8 @@ export default function FormsList() {
                 {data &&
                   data.posts.length > 0 &&
                   data.posts.map((form) => {
-                    const user = data.users.find((user) => user.id === form.author_id)
-                    return <FormEntry key={form.id} user={user} {...form} />
+                    const user = data.users.find((user) => user.id === form.author_id);
+                    return <FormEntry key={form.id} user={user} {...form} />;
                   })}
               </div>
             </div>
@@ -176,23 +180,23 @@ export default function FormsList() {
         </div>
       </section>
     </DefaultLayout>
-  )
+  );
 }
 
 export async function getStaticProps({ locale }) {
   const [translations, global] = await Promise.all([
     import(`../messages/forms/${locale}.json`),
-    import(`../messages/global/${locale}.json`),
-  ])
+    import(`../messages/global/${locale}.json`)
+  ]);
 
   const messages = {
     ...translations,
-    ...global,
-  }
+    ...global
+  };
 
   return {
     props: {
-      messages,
-    },
-  }
+      messages
+    }
+  };
 }

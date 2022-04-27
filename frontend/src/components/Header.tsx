@@ -1,39 +1,39 @@
-import SVG from "react-inlinesvg"
-import Link from "next/link"
-import { useRouter } from "next/router"
-import classNames from "classnames"
-import { useContext } from "react"
-import { Menu, MenuList, MenuButton, MenuItem } from "@reach/menu-button"
-import useAuth from "../hooks/useAuth"
-import Cookies from "js-cookie"
-import i18n from "../libs/i18n"
-import { useTranslations } from "next-intl"
-import UserContext from "../context/UserContext"
-import Button from "./Button"
-import { navLinks } from "../constants"
-import Flag from "./Flag"
+import SVG from "react-inlinesvg";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import classNames from "classnames";
+import { useContext } from "react";
+import { Menu, MenuList, MenuButton, MenuItem } from "@reach/menu-button";
+import useAuth from "../hooks/useAuth";
+import Cookies from "js-cookie";
+import i18n from "../libs/i18n";
+import { useTranslations } from "next-intl";
+import UserContext from "../context/UserContext";
+import Button from "./Button";
+import { navLinks } from "../constants";
+import Flag from "./Flag";
 
-const languages = Object.values(i18n)
+const languages = Object.values(i18n);
 
 export default function Header() {
-  const t = useTranslations("global")
-  const router = useRouter()
-  const { user } = useContext(UserContext)
-  const { logout } = useAuth()
+  const t = useTranslations("global");
+  const router = useRouter();
+  const { user } = useContext(UserContext);
+  const { logout } = useAuth();
 
   function changeLocale(locale) {
     router.push(
       {
         pathname: router.pathname,
-        query: router.query,
+        query: router.query
       },
       router.asPath,
       { locale }
-    )
+    );
 
     // Override the accept language header to persist chosen language
     // @see https://nextjs.org/docs/advanced-features/i18n-routing#leveraging-the-next_locale-cookie
-    Cookies.set("NEXT_LOCALE", locale)
+    Cookies.set("NEXT_LOCALE", locale);
   }
 
   return (
@@ -94,7 +94,8 @@ export default function Header() {
               <MenuItem
                 className="menu-language__item group"
                 key={language.locale}
-                onSelect={() => changeLocale(language.locale)}>
+                onSelect={() => changeLocale(language.locale)}
+              >
                 <div
                   className={classNames("pill", language.locale === router.locale ? "active" : "")}
                 />
@@ -106,5 +107,5 @@ export default function Header() {
         </Menu>
       </div>
     </header>
-  )
+  );
 }

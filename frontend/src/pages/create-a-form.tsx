@@ -1,11 +1,11 @@
-import Head from "next/head"
-import DefaultLayout from "../layouts"
-import { useContext, useEffect, useReducer, useState } from "react"
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs"
-import { useTranslations } from "next-intl"
-import toast, { Toaster } from "react-hot-toast"
-import Switch from "react-switch"
-import api from "../libs/api"
+import Head from "next/head";
+import DefaultLayout from "../layouts";
+import { useContext, useEffect, useReducer, useState } from "react";
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
+import { useTranslations } from "next-intl";
+import toast, { Toaster } from "react-hot-toast";
+import Switch from "react-switch";
+import api from "../libs/api";
 import {
   MdAddCircleOutline,
   MdClose,
@@ -14,31 +14,31 @@ import {
   MdCheckBox,
   MdShortText,
   MdContentCopy,
-  MdMoreVert,
-} from "react-icons/md"
-import Title from "../components/Title"
-import InputFile from "../components/InputFile"
-import Wysiwyg from "../components/Wysiwyg"
-import Select from "../components/Select"
-import Button from "../components/Button"
-import UserContext from "../context/UserContext"
-import Unauthorized from "../components/Unauthorized"
+  MdMoreVert
+} from "react-icons/md";
+import Title from "../components/Title";
+import InputFile from "../components/InputFile";
+import Wysiwyg from "../components/Wysiwyg";
+import Select from "../components/Select";
+import Button from "../components/Button";
+import UserContext from "../context/UserContext";
+import Unauthorized from "../components/Unauthorized";
 
 const COMPONENTS_TYPES = {
   Choice: CreateChoice,
   Checkbox: CreateCheckbox,
-  Freeform: CreateFreeform,
-}
+  Freeform: CreateFreeform
+};
 
-const QUESTIONS_TYPES = ["Checkbox", "Freeform", "Choice"]
+const QUESTIONS_TYPES = ["Checkbox", "Freeform", "Choice"];
 
 const QUESTIONS_ICONS = {
   Checkbox: MdCheckBox,
   Freeform: MdShortText,
-  Choice: MdRadioButtonChecked,
-}
+  Choice: MdRadioButtonChecked
+};
 
-const ACCESSIBILITY_OPTIONS = ["Public", "Link", "FriendsOnly", "Whitelist"]
+const ACCESSIBILITY_OPTIONS = ["Public", "Link", "FriendsOnly", "Whitelist"];
 
 const types = {
   SET_TITLE: "SET_TITLE",
@@ -56,8 +56,8 @@ const types = {
   EDIT_QUESTION_OPTIONAL: "EDIT_QUESTION_OPTIONAL",
   EDIT_QUESTION_INFO: "EDIT_QUESTION_INFO",
   SET_ICON: "SET_ICON",
-  SET_BANNER: "SET_BANNER",
-}
+  SET_BANNER: "SET_BANNER"
+};
 
 const initialState = {
   title: "",
@@ -67,41 +67,41 @@ const initialState = {
   limitations: null,
   questions: [],
   icon: [],
-  banner: [],
-}
+  banner: []
+};
 
 function reducer(state, action) {
   switch (action.type) {
     case types.SET_TITLE:
       return {
         ...state,
-        title: action.value,
-      }
+        title: action.value
+      };
     case types.SET_EXCERPT:
       return {
         ...state,
-        excerpt: action.value,
-      }
+        excerpt: action.value
+      };
     case types.SET_DESCRIPTION:
       return {
         ...state,
-        description: action.value,
-      }
+        description: action.value
+      };
     case types.ADD_QUESTION:
       return {
         ...state,
-        questions: [...state.questions, action.value],
-      }
+        questions: [...state.questions, action.value]
+      };
     case types.DUPLICATE_QUESTION:
       return {
         ...state,
-        questions: [...state.questions, action.value.question],
-      }
+        questions: [...state.questions, action.value.question]
+      };
     case types.REMOVE_QUESTION:
       return {
         ...state,
-        questions: state.questions.filter((question, index) => index !== action.value.index),
-      }
+        questions: state.questions.filter((question, index) => index !== action.value.index)
+      };
     case types.ADD_QUESTION_INFO:
       return {
         ...state,
@@ -111,13 +111,13 @@ function reducer(state, action) {
               ...question,
               question_info: [
                 ...question.question_info,
-                `Option ${question.question_info.length + 1}`,
-              ],
-            }
+                `Option ${question.question_info.length + 1}`
+              ]
+            };
           }
-          return question
-        }),
-      }
+          return question;
+        })
+      };
     case types.SET_QUESTION_TYPE:
       return {
         ...state,
@@ -126,12 +126,12 @@ function reducer(state, action) {
             return {
               ...question,
               question_info: action.value.type === "Freeform" ? [] : question.question_info,
-              type: action.value.type,
-            }
+              type: action.value.type
+            };
           }
-          return question
-        }),
-      }
+          return question;
+        })
+      };
     case types.REMOVE_QUESTION_INFO:
       return {
         ...state,
@@ -141,12 +141,12 @@ function reducer(state, action) {
               ...question,
               question_info: question.question_info.filter(
                 (info, index) => index !== action.value.infoIndex
-              ),
-            }
+              )
+            };
           }
-          return question
-        }),
-      }
+          return question;
+        })
+      };
     case types.EDIT_QUESTION_TITLE:
       return {
         ...state,
@@ -154,12 +154,12 @@ function reducer(state, action) {
           if (index === action.value.index) {
             return {
               ...question,
-              title: action.value.title,
-            }
+              title: action.value.title
+            };
           }
-          return question
-        }),
-      }
+          return question;
+        })
+      };
     case types.EDIT_QUESTION_OPTIONAL:
       return {
         ...state,
@@ -167,12 +167,12 @@ function reducer(state, action) {
           if (index === action.value.index) {
             return {
               ...question,
-              is_optional: action.value.is_optional,
-            }
+              is_optional: action.value.is_optional
+            };
           }
-          return question
-        }),
-      }
+          return question;
+        })
+      };
     case types.EDIT_QUESTION_INFO:
       return {
         ...state,
@@ -182,104 +182,104 @@ function reducer(state, action) {
               ...question,
               question_info: question.question_info.map((info, infoIndex) => {
                 if (infoIndex === action.value.infoIndex) {
-                  return action.value.value
+                  return action.value.value;
                 }
-                return info
-              }),
-            }
+                return info;
+              })
+            };
           }
-          return question
-        }),
-      }
+          return question;
+        })
+      };
     case types.SET_ACCESSIBILITY:
       return {
         ...state,
-        accessibility: action.value.accessibility,
-      }
+        accessibility: action.value.accessibility
+      };
     case types.SET_ICON:
       return {
         ...state,
-        icon: action.value,
-      }
+        icon: action.value
+      };
     case types.SET_BANNER:
       return {
         ...state,
-        banner: action.value,
-      }
+        banner: action.value
+      };
     default:
-      return state
+      return state;
   }
 }
 
 export default function Dashboard() {
-  const t = useTranslations()
-  const { user } = useContext(UserContext)
-  const [state, dispatch] = useReducer(reducer, initialState)
-  const [errors, setErrors] = useState([])
-  const [submitting, setSubmitting] = useState(false)
+  const t = useTranslations();
+  const { user } = useContext(UserContext);
+  const [state, dispatch] = useReducer(reducer, initialState);
+  const [errors, setErrors] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
 
   // TODO: most likely is a bug
   // https://www.joshwcomeau.com/react/the-perils-of-rehydration/
   if (!user) {
-    return <Unauthorized />
+    return <Unauthorized />;
   }
 
   async function submitForm() {
     const response = await api("/posts", {
       method: "POST",
-      body: JSON.stringify(state),
-    })
-    const data = await response.json()
-    return data
+      body: JSON.stringify(state)
+    });
+    const data = await response.json();
+    return data;
   }
 
   async function submitImages(id) {
     if (state.icon.length > 0) {
-      const body = new FormData().append("image", state.icon[0])
+      const body = new FormData().append("image", state.icon[0]);
 
       await api(`/posts/${id}/files?query=Icon`, {
         method: "PUT",
-        body,
-      })
+        body
+      });
     }
 
     if (state.banner.length > 0) {
-      const body = new FormData().append("image", state.banner[0])
+      const body = new FormData().append("image", state.banner[0]);
 
       await api(`/posts/${id}/files?query=Banner`, {
         method: "PUT",
-        body,
-      })
+        body
+      });
     }
   }
 
   async function submit() {
-    const data = await submitForm()
+    const data = await submitForm();
 
-    console.log("Uploading images")
-    await submitImages(data.id)
+    console.log("Uploading images");
+    await submitImages(data.id);
 
-    console.log("Done")
+    console.log("Done");
     // Redirection to single form?
   }
 
   async function handleSubmit() {
-    setSubmitting(true)
+    setSubmitting(true);
 
     if (errors.length > 0) {
-      return toast.error(t("toast.userError"))
+      return toast.error(t("toast.userError"));
     }
 
     try {
       await toast.promise(submit(), {
         loading: t("toast.loading"),
         success: t("toast.success"),
-        error: t("toast.error"),
-      })
+        error: t("toast.error")
+      });
     } catch (error) {
-      console.error(error)
+      console.error(error);
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
   }
 
@@ -316,7 +316,7 @@ export default function Dashboard() {
                     onChange={(files) =>
                       dispatch({
                         type: types.SET_ICON,
-                        value: files,
+                        value: files
                       })
                     }
                   />
@@ -329,7 +329,7 @@ export default function Dashboard() {
                     onChange={(files) =>
                       dispatch({
                         type: types.SET_BANNER,
-                        value: files,
+                        value: files
                       })
                     }
                   />
@@ -343,13 +343,14 @@ export default function Dashboard() {
                 absolute -right-28 top-0
                 rounded-35 bg-black-lightest py-8 px-2
                 flex flex-col items-center
-              ">
+              "
+              >
                 <button className="button--icon">
                   <MdAddCircleOutline className="w-10 h-10" />
                 </button>
 
                 {QUESTIONS_TYPES.map((type) => {
-                  const Icon = QUESTIONS_ICONS[type]
+                  const Icon = QUESTIONS_ICONS[type];
 
                   return (
                     <button
@@ -362,16 +363,17 @@ export default function Dashboard() {
                             title: "",
                             type,
                             is_optional: false,
-                            question_info: [],
-                          },
+                            question_info: []
+                          }
                         })
-                      }>
+                      }
+                    >
                       <span className="sr-only">
                         {t("add")} {t(`inputs.${type}`)}
                       </span>
                       <Icon className="w-10 h-10" />
                     </button>
-                  )
+                  );
                 })}
               </div>
               <div className="flex flex-col gap-y-4">
@@ -385,7 +387,7 @@ export default function Dashboard() {
                     onChange={(e) =>
                       dispatch({
                         type: types.SET_TITLE,
-                        value: e.target.value,
+                        value: e.target.value
                       })
                     }
                   />
@@ -396,7 +398,7 @@ export default function Dashboard() {
                     onChange={(e) =>
                       dispatch({
                         type: types.SET_EXCERPT,
-                        value: e.target.value,
+                        value: e.target.value
                       })
                     }
                   />
@@ -406,14 +408,14 @@ export default function Dashboard() {
                     onChange={(value) =>
                       dispatch({
                         type: types.SET_DESCRIPTION,
-                        value,
+                        value
                       })
                     }
                   />
                 </div>
 
                 {state.questions.map((question, index) => {
-                  const Component = COMPONENTS_TYPES[question.type]
+                  const Component = COMPONENTS_TYPES[question.type];
 
                   return (
                     <Component
@@ -422,54 +424,54 @@ export default function Dashboard() {
                       onAdd={() =>
                         dispatch({
                           type: types.ADD_QUESTION_INFO,
-                          value: { index },
+                          value: { index }
                         })
                       }
                       onDuplicate={() =>
                         dispatch({
                           type: types.DUPLICATE_QUESTION,
-                          value: { question },
+                          value: { question }
                         })
                       }
                       onRemove={() =>
                         dispatch({
                           type: types.REMOVE_QUESTION,
-                          value: { index },
+                          value: { index }
                         })
                       }
                       onRemoveInfo={(infoIndex) =>
                         dispatch({
                           type: types.REMOVE_QUESTION_INFO,
-                          value: { index, infoIndex },
+                          value: { index, infoIndex }
                         })
                       }
                       onEditQuestionType={(type) =>
                         dispatch({
                           type: types.SET_QUESTION_TYPE,
-                          value: { index, type },
+                          value: { index, type }
                         })
                       }
                       onEditTitle={(newTitle) =>
                         dispatch({
                           type: types.EDIT_QUESTION_TITLE,
-                          value: { index, title: newTitle },
+                          value: { index, title: newTitle }
                         })
                       }
                       onEditQuestionOptional={(isOptional) =>
                         dispatch({
                           type: types.EDIT_QUESTION_OPTIONAL,
-                          value: { index, is_optional: isOptional },
+                          value: { index, is_optional: isOptional }
                         })
                       }
                       onEdit={(infoIndex, value) =>
                         dispatch({
                           type: types.EDIT_QUESTION_INFO,
-                          value: { index, infoIndex, value },
+                          value: { index, infoIndex, value }
                         })
                       }
                       t={t}
                     />
-                  )
+                  );
                 })}
               </div>
             </TabPanel>
@@ -479,13 +481,13 @@ export default function Dashboard() {
                 onChange={(accessibility) =>
                   dispatch({
                     type: types.SET_ACCESSIBILITY,
-                    value: { accessibility },
+                    value: { accessibility }
                   })
                 }
                 defaultValue={ACCESSIBILITY_OPTIONS[0]}
                 options={ACCESSIBILITY_OPTIONS.map((option) => ({
                   value: option,
-                  label: t(`accessibility.${option}`),
+                  label: t(`accessibility.${option}`)
                 }))}
               />
             </TabPanel>
@@ -499,7 +501,7 @@ export default function Dashboard() {
         </div>
       </section>
     </DefaultLayout>
-  )
+  );
 }
 
 /**
@@ -518,7 +520,7 @@ function CreateChoice({
   onEditQuestionOptional,
   onEditTitle,
   onEdit,
-  t,
+  t
 }) {
   return (
     <Question title={title} type={type} onEditTitle={onEditTitle} t={t}>
@@ -534,7 +536,8 @@ function CreateChoice({
           <button
             className="button--icon"
             title={t("removeOption")}
-            onClick={() => onRemoveInfo(index)}>
+            onClick={() => onRemoveInfo(index)}
+          >
             <span className="sr-only">{t("removeOption")}</span>
             <MdClose />
           </button>
@@ -560,7 +563,7 @@ function CreateChoice({
         t={t}
       />
     </Question>
-  )
+  );
 }
 
 /**
@@ -579,7 +582,7 @@ function CreateCheckbox({
   onEditQuestionOptional,
   onEditTitle,
   onEdit,
-  t,
+  t
 }) {
   return (
     <Question title={title} type={type} onEditTitle={onEditTitle} t={t}>
@@ -595,7 +598,8 @@ function CreateCheckbox({
           <button
             className="button--icon"
             title={t("removeOption")}
-            onClick={() => onRemoveInfo(index)}>
+            onClick={() => onRemoveInfo(index)}
+          >
             <span className="sr-only">{t("removeOption")}</span>
             <MdClose />
           </button>
@@ -621,7 +625,7 @@ function CreateCheckbox({
         t={t}
       />
     </Question>
-  )
+  );
 }
 
 /**
@@ -639,7 +643,7 @@ function CreateFreeform({
   onEditQuestionOptional,
   onEditTitle,
   onEdit,
-  t,
+  t
 }) {
   return (
     <Question title={title} type={type} onEditTitle={onEditTitle} t={t}>
@@ -656,7 +660,7 @@ function CreateFreeform({
         t={t}
       />
     </Question>
-  )
+  );
 }
 
 /**
@@ -669,9 +673,9 @@ function QuestionActions({
   onDuplicate,
   onRemove,
   isOptional,
-  t,
+  t
 }) {
-  const Icon = QUESTIONS_ICONS[type]
+  const Icon = QUESTIONS_ICONS[type];
 
   return (
     <div className="flex justify-between border-t-2 border-white border-opacity-5 pt-4 mt-14">
@@ -681,7 +685,7 @@ function QuestionActions({
         defaultValue={type}
         options={QUESTIONS_TYPES.map((type) => ({
           value: type,
-          label: t(`inputs.${type}`),
+          label: t(`inputs.${type}`)
         }))}
       />
 
@@ -715,7 +719,7 @@ function QuestionActions({
         </button>
       </div>
     </div>
-  )
+  );
 }
 
 /**
@@ -730,23 +734,23 @@ function Question({ children, title, type, onEditTitle, t }) {
 
       {children}
     </div>
-  )
+  );
 }
 
 export async function getStaticProps({ locale }) {
   const [translations, global] = await Promise.all([
     import(`../messages/create-a-form/${locale}.json`),
-    import(`../messages/global/${locale}.json`),
-  ])
+    import(`../messages/global/${locale}.json`)
+  ]);
 
   const messages = {
     ...translations,
-    ...global,
-  }
+    ...global
+  };
 
   return {
     props: {
-      messages,
-    },
-  }
+      messages
+    }
+  };
 }

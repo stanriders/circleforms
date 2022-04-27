@@ -61,7 +61,7 @@ const Home: NextPage = () => {
               <div
                 className="absolute inset-0 z-20 pointer-events-none"
                 style={{
-                  background: `linear-gradient(rgba(12, 12, 12, 0) 22%, rgb(12, 12, 12) 113.44%)`,
+                  background: `linear-gradient(rgba(12, 12, 12, 0) 22%, rgb(12, 12, 12) 113.44%)`
                 }}
               ></div>
               <div className="relative space-y-3">
@@ -71,7 +71,9 @@ const Home: NextPage = () => {
                   </div>
                 )}
 
-                {data && data.length === 0 && <p className="font-semibold text-center">{t("noForms")}</p>}
+                {data && data.length === 0 && (
+                  <p className="font-semibold text-center">{t("noForms")}</p>
+                )}
 
                 {data &&
                   data.posts.length > 0 &&
@@ -96,18 +98,18 @@ const Home: NextPage = () => {
 export async function getStaticProps({ locale }) {
   const [translations, global] = await Promise.all([
     import(`../messages/index/${locale}.json`),
-    import(`../messages/global/${locale}.json`),
+    import(`../messages/global/${locale}.json`)
   ]);
 
   const messages = {
     ...translations,
-    ...global,
+    ...global
   };
 
   return {
     props: {
-      messages,
-    },
+      messages
+    }
   };
 }
 

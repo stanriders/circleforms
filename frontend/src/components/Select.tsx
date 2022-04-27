@@ -4,10 +4,10 @@ import {
   ListboxButton,
   ListboxPopover,
   ListboxList,
-  ListboxOption,
-} from "@reach/listbox"
-import { Fragment } from "react"
-import { AiFillCaretDown } from "react-icons/ai"
+  ListboxOption
+} from "@reach/listbox";
+import { Fragment } from "react";
+import { AiFillCaretDown } from "react-icons/ai";
 
 function Select({ Icon, options, defaultValue, onChange }) {
   return (
@@ -36,7 +36,7 @@ function Select({ Icon, options, defaultValue, onChange }) {
         </Fragment>
       )}
     </ListboxInput>
-  )
+  );
 }
 
-export default Select
+export default Select;
