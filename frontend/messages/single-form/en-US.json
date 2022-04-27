@@ -1,12 +1,12 @@
 {
   "status": "Status",
-  "answersCount": "answers submitted",
+  "answersCount": "responses submitted",
   "tabs": {
     "info": {
       "title": "Info"
     },
     "answers": {
-      "title": "Answers"
+      "title": "Responses"
     }
   },
   "sort": {
@@ -15,9 +15,9 @@
   },
   "active": "Active",
   "inactive": "Inactive",
-  "mistakeNotice": "Do you think that your or someone else's answer was not counted? Please text us in <a class='inline-link' href='https://discord.com/invite/rx9RKQsy9H'>#reports</a> channel!",
+  "mistakeNotice": "If a submitted response is missing, please send a message in the Discord's <a class='inline-link' href='https://discord.com/invite/rx9RKQsy9H'>#reports</a> channel!",
   "back": "Back",
-  "answer": "Answer",
+  "answer": "Respond",
   "Player": {
     "globalRanking": "Global Ranking",
     "countryRanking": "Country Ranking"
