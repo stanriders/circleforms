@@ -1,4 +1,4 @@
-import { FiUser } from "react-icons/fi"
+import { FiUser } from "react-icons/fi";
 
 export default function FormEntrySkeleton() {
   return (
@@ -7,5 +7,5 @@ export default function FormEntrySkeleton() {
         <FiUser className="text-white h-4 w-4" />
       </div>
     </div>
-  )
+  );
 }

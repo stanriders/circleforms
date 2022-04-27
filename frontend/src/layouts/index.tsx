@@ -1,12 +1,12 @@
-import Head from "next/head"
-import Header from "../components/Header"
-import Footer from "../components/Footer"
+import Head from "next/head";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 
-import classNames from "classnames"
-import { useTranslations } from "next-intl"
+import classNames from "classnames";
+import { useTranslations } from "next-intl";
 
 export default function DefaultLayout({ children, classname = "mt-28" }) {
-  const t = useTranslations("global")
+  const t = useTranslations("global");
 
   return (
     <div className="flex flex-col h-full">
@@ -23,5 +23,5 @@ export default function DefaultLayout({ children, classname = "mt-28" }) {
       <main className={classNames("flex-1", classname)}>{children}</main>
       <Footer />
     </div>
-  )
+  );
 }

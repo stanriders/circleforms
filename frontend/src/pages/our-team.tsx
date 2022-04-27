@@ -1,17 +1,17 @@
-import Head from "next/head"
-import Image from "next/image"
+import Head from "next/head";
+import Image from "next/image";
 
-import DefaultLayout from "../layouts"
+import DefaultLayout from "../layouts";
 
-import SVG from "react-inlinesvg"
-import { Fragment } from "react"
-import classNames from "classnames"
-import { useTranslations } from "next-intl"
-import { team } from "../constants"
-import Title from "../components/Title"
+import SVG from "react-inlinesvg";
+import { Fragment } from "react";
+import classNames from "classnames";
+import { useTranslations } from "next-intl";
+import { team } from "../constants";
+import Title from "../components/Title";
 
 export default function OurTeam() {
-  const t = useTranslations()
+  const t = useTranslations();
 
   return (
     <DefaultLayout>
@@ -26,7 +26,8 @@ export default function OurTeam() {
           const MemberImage = () => (
             <a
               href={`https://osu.ppy.sh/users/${member.osuId}`}
-              className="col-span-2 relative h-64 lg:h-[211px] transition hover:brightness-75 rounded-20 overflow-clip lg:rounded-none lg:col-span-1">
+              className="col-span-2 relative h-64 lg:h-[211px] transition hover:brightness-75 rounded-20 overflow-clip lg:rounded-none lg:col-span-1"
+            >
               <img
                 className="w-full h-full object-cover"
                 src={`/images/${member.name.toLowerCase()}.png`}
@@ -45,12 +46,13 @@ export default function OurTeam() {
                   member.name === "StanR"
                     ? "bg-pink text-pink-darker hover:bg-black-lightest hover:text-white"
                     : "bg-black-lightest text-white hover:bg-pink hover:text-pink-darker"
-                )}>
+                )}
+              >
                 <h2 className="font-bold text-xl lg:text-5xl ">{member.name}</h2>
                 <p className="font-light lg:text-2xl">{member.role}</p>
               </div>
             </a>
-          )
+          );
 
           return (
             <Fragment key={member.name}>
@@ -64,43 +66,45 @@ export default function OurTeam() {
                     ? "bg-pink text-pink-darker hover:bg-black-lightest hover:text-white"
                     : "bg-black-lightest text-white hover:bg-pink hover:text-pink-darker",
                   index >= 2 && index <= 3 ? "text-right" : ""
-                )}>
+                )}
+              >
                 <h2 className="font-bold text-xl lg:text-5xl ">{member.name}</h2>
                 <p className="font-light lg:text-2xl">{member.role}</p>
               </a>
               {index >= 2 && index <= 3 && <MemberImage />}
             </Fragment>
-          )
+          );
         })}
 
         <a
           href="https://discord.gg/rx9RKQsy9H"
-          className="flex justify-center items-center bg-blue-discord col-span-2 text-white focus:brightness-90 hover:brightness-75 transition py-16 rounded-20 lg:py-0 lg:rounded-none">
+          className="flex justify-center items-center bg-blue-discord col-span-2 text-white focus:brightness-90 hover:brightness-75 transition py-16 rounded-20 lg:py-0 lg:rounded-none"
+        >
           <SVG className="w-32" src="/svg/discord.svg" alt="Join our Discord" />
         </a>
       </div>
     </DefaultLayout>
-  )
+  );
 }
 
 function Decoration() {
-  return <img src="/images/team-decoration.png" className="absolute -ml-32" alt="team" />
+  return <img src="/images/team-decoration.png" className="absolute -ml-32" alt="team" />;
 }
 
 export async function getStaticProps({ locale }) {
   const [translations, global] = await Promise.all([
     import(`../messages/our-team/${locale}.json`),
-    import(`../messages/global/${locale}.json`),
-  ])
+    import(`../messages/global/${locale}.json`)
+  ]);
 
   const messages = {
     ...translations,
-    ...global,
-  }
+    ...global
+  };
 
   return {
     props: {
-      messages,
-    },
-  }
+      messages
+    }
+  };
 }

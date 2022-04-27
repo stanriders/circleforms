@@ -4,5 +4,5 @@ export default function Hero({ title, children }) {
       {title && <h2>{title}</h2>}
       {children}
     </section>
-  )
+  );
 }

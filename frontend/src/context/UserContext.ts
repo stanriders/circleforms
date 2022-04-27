@@ -1,8 +1,8 @@
-import React from "react"
+import React from "react";
 
 const UserContext = React.createContext({
-  user: null,
-})
-UserContext.displayName = "UserContext"
+  user: null
+});
+UserContext.displayName = "UserContext";
 
-export default UserContext
+export default UserContext;

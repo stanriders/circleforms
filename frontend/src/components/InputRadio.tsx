@@ -12,5 +12,5 @@ export default function InputRadio({ value, name, label, onChange = noop }) {
       />
       {label}
     </label>
-  )
+  );
 }

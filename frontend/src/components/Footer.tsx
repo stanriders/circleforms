@@ -1,4 +1,4 @@
-import Link from "next/link"
+import Link from "next/link";
 
 export default function Header() {
   return (
@@ -22,5 +22,5 @@ export default function Header() {
         <span className="text-xs text-white opacity-50 mt-1">© 2022 All Rights Reserved</span>
       </div>
     </footer>
-  )
+  );
 }

@@ -2,17 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700&family=MuseoModerno:wght@500&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700&family=MuseoModerno:wght@500&display=swap");
 
-@import '~flag-icons/sass/flag-icons';
-@import 'reach';
-@import 'inputs';
-@import 'bbcode';
+@import "~flag-icons/sass/flag-icons";
+@import "reach";
+@import "inputs";
+@import "bbcode";
 
 html,
 body {
   @apply p-0 m-0 bg-black text-white font-body h-full scroll-smooth;
-  background-image: url('/images/background-decorations.png');
+  background-image: url("/images/background-decorations.png");
   background-repeat: no-repeat;
   background-size: cover;
 }
@@ -43,7 +43,7 @@ body {
   @apply font-museo font-medium relative px-5 py-3;
 
   &::before {
-    content: '';
+    content: "";
     @apply w-full h-full opacity-0 rounded-3xl transition-opacity ease-out-cubic absolute inset-0;
     background-color: rgba(255, 102, 170, 0.2);
   }
@@ -222,8 +222,12 @@ svg {
 }
 
 .skeleton {
-  background-image:
-    linear-gradient(100deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.106) 200%, rgba(255, 255, 255, 0) 80%);
+  background-image: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.106) 200%,
+    rgba(255, 255, 255, 0) 80%
+  );
   background-repeat: repeat-y;
   background-size: 100px 200px;
   background-position: 0 0;
@@ -237,7 +241,7 @@ svg {
 }
 
 .bg-gradient {
-  background: linear-gradient(89.81deg, #0C0C0C 27.73%, #151515 46.49%, #0C0C0C 65.11%);
+  background: linear-gradient(89.81deg, #0c0c0c 27.73%, #151515 46.49%, #0c0c0c 65.11%);
 }
 
 .fi {

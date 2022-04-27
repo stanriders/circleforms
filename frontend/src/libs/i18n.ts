@@ -2,18 +2,18 @@ const LOCALES = {
   "en-US": {
     flag: "us",
     name: "English",
-    locale: "en-US",
+    locale: "en-US"
   },
   ru: {
     flag: "ru",
     name: "Русский",
-    locale: "ru",
+    locale: "ru"
   },
   fr: {
     flag: "fr",
     name: "Français",
-    locale: "fr",
-  },
+    locale: "fr"
+  }
   /* 'de': {
     flag: 'de',
     name: 'Deutsch',
@@ -24,6 +24,6 @@ const LOCALES = {
     name: '日本語',
     locale: 'ja',
   }, */
-}
+};
 
-export default LOCALES
+export default LOCALES;

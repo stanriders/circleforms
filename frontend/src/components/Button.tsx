@@ -1,5 +1,5 @@
-import classNames from "classnames"
-import Link from "next/link"
+import classNames from "classnames";
+import Link from "next/link";
 
 export default function Button({
   href,
@@ -19,7 +19,7 @@ export default function Button({
     large ? "button--large" : "",
     rounded ? "button--rounded" : "",
     active ? "active" : ""
-  )
+  );
 
   if (href) {
     return (
@@ -28,12 +28,12 @@ export default function Button({
           {children}
         </a>
       </Link>
-    )
+    );
   }
 
   return (
     <button {...props} className={classnames} onClick={onClick}>
       {children}
     </button>
-  )
+  );
 }

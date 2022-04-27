@@ -1,10 +1,10 @@
-import Head from "next/head"
-import DefaultLayout from "../layouts"
-import Hero from "./Hero"
+import Head from "next/head";
+import DefaultLayout from "../layouts";
+import Hero from "./Hero";
 
 export default function Unauthorized({
   title = "Not Authorized",
-  description = "You are not logged in.",
+  description = "You are not logged in."
 }) {
   return (
     <DefaultLayout>
@@ -18,5 +18,5 @@ export default function Unauthorized({
         </div>
       </Hero>
     </DefaultLayout>
-  )
+  );
 }
