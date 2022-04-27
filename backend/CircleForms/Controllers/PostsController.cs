@@ -173,7 +173,7 @@ public class PostsController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAnswers(string id)
     {
-        var result = await _posts.GetAnswers(_claim, id);
+        var result = await _answer.GetAnswers(_claim, id);
         if (result.IsError)
         {
             return result.Map();

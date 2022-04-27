@@ -7,12 +7,10 @@ using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.Validation;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Posts.Enums;
-using CircleForms.Database.Models.Posts.Questions;
 using CircleForms.Database.Models.Posts.Questions.Submissions;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.Database.Services.Extensions;
 using Mapster;
-using MapsterMapper;
 
 namespace CircleForms.ModelLayer.Answers;
 
@@ -20,15 +18,36 @@ public class AnswerService : IAnswerService
 {
     private readonly ICacheRepository _cache;
     private readonly IGamemodeService _gamemodeService;
-    private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
+    private readonly IAnswerRepository _answerRepository;
 
-    public AnswerService(IMapper mapper, IPostRepository postRepository, ICacheRepository cache, IGamemodeService gamemodeService)
+    public AnswerService(IPostRepository postRepository, IAnswerRepository answerRepository, ICacheRepository cache, IGamemodeService gamemodeService)
     {
-        _mapper = mapper;
         _postRepository = postRepository;
+        _answerRepository = answerRepository;
         _cache = cache;
         _gamemodeService = gamemodeService;
+    }
+
+    public async Task<Result<List<Answer>>> GetAnswers(string claim, string id)
+    {
+        var answersTask = _answerRepository.GetPostAnswers(id);
+        var post = await _postRepository.Get(id, x => new Post
+        {
+            AuthorRelation = x.AuthorRelation
+        });
+
+        if (post is null)
+        {
+            return Result<List<Answer>>.NotFound(id);
+        }
+
+        if (post.AuthorId != claim)
+        {
+            return Result<List<Answer>>.Forbidden();
+        }
+
+        return new Result<List<Answer>>(await answersTask);
     }
 
     public async Task<Error> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
@@ -62,7 +81,7 @@ public class AnswerService : IAnswerService
             return result.Error();
         }
 
-        await _postRepository.AddAnswer(post, result.Value, user);
+        await _answerRepository.Add(post.ID, result.Value, user);
         await _cache.IncrementAnswers(post.ID);
 
         return new Error();

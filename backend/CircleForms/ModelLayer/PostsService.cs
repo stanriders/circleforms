@@ -358,19 +358,5 @@ public class PostsService
         return posts;
     }
 
-    public async Task<Result<List<Answer>>> GetAnswers(string claim, string id)
-    {
-        var post = await _postRepository.Get(id);
-        if (post is null)
-        {
-            return Result<List<Answer>>.NotFound(id);
-        }
 
-        if (post.AuthorId != claim)
-        {
-            return Result<List<Answer>>.Forbidden();
-        }
-
-        return new Result<List<Answer>>(await post.Answers.ChildrenFluent().ToListAsync());
-    }
 }
