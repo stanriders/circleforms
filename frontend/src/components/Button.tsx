@@ -1,7 +1,19 @@
 import classNames from "classnames";
 import Link from "next/link";
+import { MouseEventHandler } from "react";
 
-export default function Button({
+interface IButton {
+  href: string;
+  children: React.ReactNode;
+  theme: string;
+  large: boolean;
+  rounded: boolean;
+  active: boolean;
+  onClick: MouseEventHandler<HTMLButtonElement>;
+  classname: string;
+}
+
+const Button = ({
   href,
   children,
   theme = "primary",
@@ -11,7 +23,7 @@ export default function Button({
   onClick,
   classname,
   ...props
-}) {
+}: IButton) => {
   const classnames = classNames(
     "button",
     theme,
@@ -36,4 +48,5 @@ export default function Button({
       {children}
     </button>
   );
-}
+};
+export default Button;
