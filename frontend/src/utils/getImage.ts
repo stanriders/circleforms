@@ -1,4 +1,11 @@
-export default function getImage({ id, banner, icon, type = "banner" }) {
+interface ImageProps {
+  type: string;
+  icon?: string | null;
+  id?: string | null;
+  banner?: string | null;
+}
+
+export default function getImage({ id, banner, icon, type = "banner" }: ImageProps) {
   if (!id) {
     throw new Error("getImage: id is required");
   }
