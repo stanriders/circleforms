@@ -1,8 +1,13 @@
 import React from "react";
+import { UserResponse } from "../types/common-types";
+import { OsuUser } from "../types/osu-user";
 
-const UserContext = React.createContext({
-  user: null
-});
+// I am not sure if the type should be UserResponse or OsuUser
+interface IUserContext {
+  user: OsuUser | null;
+}
+
+const UserContext = React.createContext({} as IUserContext);
 UserContext.displayName = "UserContext";
 
 export default UserContext;
