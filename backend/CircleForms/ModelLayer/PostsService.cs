@@ -41,31 +41,15 @@ public class PostsService
 
     private static void ValidateQuestionOrder(IReadOnlyList<Question> questions)
     {
-        var set = questions.Select(x => x.Order).ToHashSet();
-        var min = set.Min();
-
-        bool Validate()
+        var expected = questions[0].Order + 1;
+        for (var i = 1; i < questions.Count; i++)
         {
-            for (var i = min; i < min + set.Count; i++)
+            if (questions[i].Order != expected)
             {
-                if (!set.Contains(i))
-                {
-                    return false;
-                }
+                questions[i].Order = expected;
             }
 
-            return true;
-        }
-
-
-        if (Validate())
-        {
-            return;
-        }
-
-        for (int i = 0; i < questions.Count; i++)
-        {
-            questions[i].Order = i;
+            expected++;
         }
     }
 
@@ -179,6 +163,8 @@ public class PostsService
                 questions.Add(newQuestion);
             }
         }
+
+        questions.Sort((x, y) => x.Order.CompareTo(y.Order));
 
         ValidateQuestionOrder(questions);
         updatedPost.Questions = questions;
