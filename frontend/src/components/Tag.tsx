@@ -1,6 +1,11 @@
 import classNames from "classnames";
 
-export default function Tag({ label, theme = "success", small }) {
+interface ITagProps {
+  label: string;
+  theme: string;
+  small?: boolean;
+}
+export default function Tag({ label, theme = "success", small }: ITagProps) {
   return (
     <div
       className={classNames(
