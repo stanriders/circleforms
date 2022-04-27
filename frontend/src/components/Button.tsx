@@ -3,14 +3,14 @@ import Link from "next/link";
 import { MouseEventHandler } from "react";
 
 interface IButton {
-  href: string;
+  href?: string;
   children: React.ReactNode;
   theme: string;
-  large: boolean;
-  rounded: boolean;
-  active: boolean;
+  large?: boolean;
+  rounded?: boolean;
+  active?: boolean;
   onClick: MouseEventHandler<HTMLButtonElement>;
-  classname: string;
+  classname?: string;
 }
 
 const Button = ({
