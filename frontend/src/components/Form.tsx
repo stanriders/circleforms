@@ -9,12 +9,12 @@ import Player from "./Player";
 import Button from "./Button";
 import bbcode from "../libs/bbcode";
 import UserContext from "../context/UserContext";
-import { MinimalUserResponse, PostResponse } from "../types/common-types";
+import { PostResponse, User } from "../types/common-types";
 import { dynamicSort } from "../utils/objectSort";
 
 interface IFromProps {
   posts: PostResponse;
-  users: MinimalUserResponse[];
+  users: User[];
 }
 
 const TempPlayers = [
@@ -55,7 +55,7 @@ export default function Form({ posts, users }: IFromProps) {
 
   useEffect(() => {
     if (!primaryAuthor) {
-      setPrimaryAuthor(osuUser as MinimalUserResponse);
+      setPrimaryAuthor(osuUser as User);
     }
   }, [primaryAuthor, osuUser]);
 
