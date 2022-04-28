@@ -1,23 +1,34 @@
+import { InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import Form from "../../components/Form";
 import DefaultLayout from "../../layouts";
 import api from "../../libs/api";
+import { Locales } from "../../types/common-types";
 
-export default function SingleForm({ form, author }) {
+export default function SingleForm({
+  form,
+  author
+}: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <DefaultLayout>
       <Head>
+        {/* @ts-ignore */}
         <title>CircleForms - {form.posts.title}</title>
       </Head>
 
       <section className="container mb-12">
+        {/* @ts-ignore */}
         <Form {...form} />
       </section>
     </DefaultLayout>
   );
 }
 
-export async function getServerSideProps({ params, locale }) {
+interface Props {
+  params: { id: number };
+  locale: Locales;
+}
+export async function getServerSideProps({ params, locale }: Props) {
   const { id } = params;
 
   const [form, translations, global] = await Promise.all([

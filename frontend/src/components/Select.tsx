@@ -1,5 +1,4 @@
 import {
-  Listbox,
   ListboxInput,
   ListboxButton,
   ListboxPopover,
@@ -7,12 +6,19 @@ import {
   ListboxOption
 } from "@reach/listbox";
 import { Fragment } from "react";
+import { IconType } from "react-icons";
 import { AiFillCaretDown } from "react-icons/ai";
 
-function Select({ Icon, options, defaultValue, onChange }) {
+interface ISelectProps {
+  Icon: IconType;
+  options: { value: string; label: string }[];
+  defaultValue: string;
+  onChange: () => void;
+}
+function Select({ Icon, options, defaultValue, onChange }: ISelectProps) {
   return (
     <ListboxInput defaultValue={defaultValue} onChange={onChange}>
-      {({ value, valueLabel, isExpanded }) => (
+      {({ value, valueLabel }) => (
         <Fragment>
           <ListboxButton className="inline-flex pl-4 pr-3 py-2">
             <div className="inline-flex items-center gap-x-2">

@@ -14,7 +14,7 @@ export default async function api(endpoint: string, options?: RequestInit) {
     }
 
     if (endpoint.includes("/posts/")) {
-      return mocks.form as PostResponse;
+    return mocks.form as PostResponse;
     }
 
     if (endpoint.includes("/minimal")) {
