@@ -5,6 +5,7 @@ using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Services.Abstract;
+using CircleForms.ModelLayer.Jobs.Abstract;
 using MapsterMapper;
 
 namespace CircleForms.ModelLayer.Publish;
@@ -12,11 +13,13 @@ namespace CircleForms.ModelLayer.Publish;
 public class PublishService : IPublishService
 {
     private readonly ICacheRepository _cache;
+    private readonly IActivityJob _activity;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
 
-    public PublishService(IMapper mapper, IPostRepository postRepository, ICacheRepository cache)
+    public PublishService(IActivityJob activity, IMapper mapper, IPostRepository postRepository, ICacheRepository cache)
     {
+        _activity = activity;
         _mapper = mapper;
         _postRepository = postRepository;
         _cache = cache;
@@ -42,6 +45,7 @@ public class PublishService : IPublishService
         if (post.Accessibility == Accessibility.Public)
         {
             await _cache.Publish(post);
+            _activity.EnqueueSetInactive(post.ID, post.ActiveTo);
         }
 
         return _mapper.Map<FullPostContract>(post);
