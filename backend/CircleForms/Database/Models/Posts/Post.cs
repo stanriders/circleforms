@@ -28,8 +28,11 @@ public class Post : Entity
     [Ignore]
     public int AnswerCount => Answers.Count();
 
-    [Field("is_active")]
-    public bool IsActive { get; set; }
+    [Field("active_to")]
+    public DateTime ActiveTo { get; set; }
+
+    [Ignore]
+    public bool IsActive => Published && DateTime.UtcNow < ActiveTo;
 
     [Field("title")]
     public string Title { get; set; }

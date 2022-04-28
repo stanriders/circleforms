@@ -11,8 +11,8 @@ public class PostRedis
     [JsonProperty("id")]
     public string ID { get; set; }
 
-    [JsonProperty("is_active")]
-    public bool IsActive { get; set; }
+    [JsonProperty("active_to")]
+    public DateTime ActiveTo { get; set; }
 
     [JsonProperty("author_id")]
     public string AuthorId { get; set; }

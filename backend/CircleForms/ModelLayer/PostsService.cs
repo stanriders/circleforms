@@ -77,7 +77,6 @@ public class PostsService
     {
         var post = _mapper.Map<Post>(postRequest);
         post.AuthorRelation = userId;
-        post.IsActive = true;
         if (post.Accessibility == Accessibility.Link)
         {
             post.AccessKey = GenerateAccessKey(6);

@@ -14,8 +14,8 @@ public class FullPostContract
     [JsonProperty("author_id")]
     public string AuthorId { get; set; }
 
-    [JsonProperty("is_active")]
-    public bool IsActive { get; set; }
+    [JsonProperty("active_to")]
+    public DateTime ActiveTo { get; set; }
 
     [JsonProperty("icon")]
     public string Icon { get; set; }
