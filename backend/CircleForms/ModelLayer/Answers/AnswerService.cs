@@ -78,7 +78,7 @@ public class AnswerService : IAnswerService
         var result = await ProcessAnswer(post, answerContracts);
         if (result.IsError)
         {
-            return result.Error();
+            return result.ToError();
         }
 
         await _answerRepository.Add(post.ID, result.Value, user);

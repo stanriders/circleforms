@@ -54,7 +54,7 @@ public class Result<T>
         return new Result<T>(HttpStatusCode.Forbidden, "You're not allowed to access that resource");
     }
 
-    public Error Error()
+    public Error ToError()
     {
         return new Error(StatusCode, Message);
     }
