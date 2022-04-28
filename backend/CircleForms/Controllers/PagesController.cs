@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
+using CircleForms.Contracts.ContractModels.Response.Compound;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.ModelLayer;
