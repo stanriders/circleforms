@@ -31,8 +31,8 @@ public class PagesController : ControllerBase
     }
 
     //TODO: Move it to PostService
-    private async Task<PageResponseContract> FillResponseContract(PageResponseContract responseContract,
-        PostMinimalResponseContract[] posts)
+    private async Task<PageContract> FillResponseContract(PageContract responseContract,
+        PostMinimalContract[] posts)
     {
         var authorIdsTasks = posts
             .Select(x => x.AuthorId)
@@ -41,7 +41,7 @@ public class PagesController : ControllerBase
 
         var authors = await Task.WhenAll(authorIdsTasks);
 
-        responseContract.Users = _mapper.Map<List<UserMinimalResponseContract>>(authors);
+        responseContract.Users = _mapper.Map<List<UserMinimalContract>>(authors);
         responseContract.Posts = posts;
 
         return responseContract;
@@ -51,7 +51,7 @@ public class PagesController : ControllerBase
     ///     Get posts page.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsPage)]
-    [ProducesResponseType(typeof(PageResponseContract), 200)]
+    [ProducesResponseType(typeof(PageContract), 200)]
     [ProducesResponseType(400)]
     public async Task<IActionResult> GetPage(int page, [FromQuery] int pageSize = 50,
         [FromQuery] PostFilter filter = PostFilter.Both)
@@ -61,10 +61,10 @@ public class PagesController : ControllerBase
             return BadRequest("Too many elements requested");
         }
 
-        var responseContract = new PageResponseContract
+        var responseContract = new PageContract
         {
-            Users = new List<UserMinimalResponseContract>(),
-            Posts = Array.Empty<PostMinimalResponseContract>()
+            Users = new List<UserMinimalContract>(),
+            Posts = Array.Empty<PostMinimalContract>()
         };
 
         var postsRedis = await _posts.GetPage(page, pageSize, filter);
@@ -81,14 +81,14 @@ public class PagesController : ControllerBase
     ///     Get all pinned posts
     /// </summary>
     [HttpGet(ApiEndpoints.PostsPagePinned)]
-    public async Task<PageResponseContract> GetPinned()
+    public async Task<PageContract> GetPinned()
     {
         var posts = await _posts.GetPinned();
 
-        var response = new PageResponseContract
+        var response = new PageContract
         {
-            Users = new List<UserMinimalResponseContract>(),
-            Posts = Array.Empty<PostMinimalResponseContract>()
+            Users = new List<UserMinimalContract>(),
+            Posts = Array.Empty<PostMinimalContract>()
         };
 
         if (posts.Length == 0)

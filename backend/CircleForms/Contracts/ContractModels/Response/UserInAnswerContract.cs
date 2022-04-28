@@ -2,7 +2,7 @@
 
 namespace CircleForms.Contracts.ContractModels.Response;
 
-public class UserAnswerContract
+public class UserInAnswerContract
 {
     [JsonProperty("id")]
     public string ID { get; set; }

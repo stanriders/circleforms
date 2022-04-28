@@ -64,11 +64,11 @@ public class AdminController : ControllerBase
     ///     Get all users. (Requires auth, Requires Admin role)
     /// </summary>
     [HttpGet(ApiEndpoints.UsersGetAllUsers)]
-    public async Task<List<UserResponseContract>> GetAll()
+    public async Task<List<UserContract>> GetAll()
     {
         _logger.LogInformation("Admin {Admin} requests users from the database", _claim);
 
-        return _mapper.Map<List<User>, List<UserResponseContract>>(await _users.Get());
+        return _mapper.Map<List<User>, List<UserContract>>(await _users.Get());
     }
 
 
@@ -77,7 +77,7 @@ public class AdminController : ControllerBase
     /// </summary>
     [Authorize(Roles = RoleConstants.SuperAdmin)]
     [HttpPatch(ApiEndpoints.UsersEscalateUserPrivileges)]
-    [ProducesResponseType(typeof(UserResponseContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(UserContract), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> EscalatePrivileges([RegularExpression(@"^\d+$")] string id, int roles)
     {
@@ -95,7 +95,7 @@ public class AdminController : ControllerBase
 
         await _users.Update(id, user);
 
-        return Ok(_mapper.Map<UserResponseContract>(user));
+        return Ok(_mapper.Map<UserContract>(user));
     }
 
     #region Mongo
@@ -103,7 +103,7 @@ public class AdminController : ControllerBase
     ///     Get uncached post. (Requires auth, Requires Admin role)
     /// </summary>
     [HttpGet(ApiEndpoints.PostsOneDatabasePost)]
-    [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(string id)
     {
@@ -118,7 +118,7 @@ public class AdminController : ControllerBase
     ///     Get all uncached posts. (Requires auth, Requires Admin role)
     /// </summary>
     [HttpGet(ApiEndpoints.PostsAllDatabasePosts)]
-    public async Task<List<PostResponseContract>> Get()
+    public async Task<List<FullPostContract>> Get()
     {
         _logger.LogInformation("User {User} requested database posts dump", _claim);
 
@@ -133,7 +133,7 @@ public class AdminController : ControllerBase
     ///     Get all posts. (Requires auth, Requires Admin role)
     /// </summary>
     [HttpGet(ApiEndpoints.PostsAllCachedPosts)]
-    public async Task<PostMinimalResponseContract[]> GetCached()
+    public async Task<PostMinimalContract[]> GetCached()
     {
         _logger.LogInformation("User {User} requested posts cache dump", _claim);
 
@@ -146,7 +146,7 @@ public class AdminController : ControllerBase
     ///     Get a post.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsOneCachedPost)]
-    [ProducesResponseType(typeof(PostMinimalResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(PostMinimalContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCachedPost(string id)
     {

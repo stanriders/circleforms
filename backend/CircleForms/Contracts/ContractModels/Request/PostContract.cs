@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace CircleForms.Contracts.ContractModels.Request;
 
-public class PostRequestContract
+public class PostContract
 {
     [Required]
     [JsonProperty("title")]

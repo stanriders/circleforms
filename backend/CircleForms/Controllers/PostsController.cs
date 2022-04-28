@@ -97,10 +97,10 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPost(ApiEndpoints.PostsAddPost)]
-    [ProducesResponseType(typeof(PostMinimalResponseContract), StatusCodes.Status201Created, "application/json")]
+    [ProducesResponseType(typeof(PostMinimalContract), StatusCodes.Status201Created, "application/json")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Post(PostRequestContract postContract)
+    public async Task<IActionResult> Post(PostContract postContract)
     {
         var result = await _posts.AddPost(_claim, postContract);
         if (!result.IsError)
@@ -142,8 +142,8 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPatch(ApiEndpoints.PostsUpdatePost)]
-    [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
-    public async Task<IActionResult> UpdatePost([FromBody] PostUpdateRequestContract updateContract, string id)
+    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK, "application/json")]
+    public async Task<IActionResult> UpdatePost([FromBody] PostUpdateContract updateContract, string id)
     {
         var result = await _posts.UpdatePost(_claim, updateContract, id);
 
@@ -154,8 +154,8 @@ public class PostsController : ControllerBase
     ///     Get full info about a page if you are the creator of the page, otherwise return cached version
     /// </summary>
     [HttpGet(ApiEndpoints.PostsDetailedPost)]
-    [ProducesResponseType(typeof(PostResponseContract), StatusCodes.Status200OK, "application/json")]
-    [ProducesResponseType(typeof(PostDetailedResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(PostWithQuestionsContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {
@@ -169,7 +169,7 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.PostsAnswer)]
-    [ProducesResponseType(typeof(AnswersUsersResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(AnswersUsersContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAnswers(string id)
     {
@@ -179,10 +179,10 @@ public class PostsController : ControllerBase
             return result.Map();
         }
 
-        var contract = new AnswersUsersResponseContract();
+        var contract = new AnswersUsersContract();
         contract.Answers = result.Value.Adapt<List<AnswerContract>>();
         contract.Users = (await Task.WhenAll(result.Value.Select(x => x.UserRelation.ToEntityAsync())))
-            .Adapt<List<UserAnswerContract>>();
+            .Adapt<List<UserInAnswerContract>>();
 
         return Ok(contract);
     }

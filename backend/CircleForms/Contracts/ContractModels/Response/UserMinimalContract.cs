@@ -2,7 +2,7 @@
 
 namespace CircleForms.Contracts.ContractModels.Response;
 
-public class UserMinimalResponseContract
+public class UserMinimalContract
 {
     [JsonProperty]
     public string ID { get; set; }
