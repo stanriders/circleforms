@@ -1,37 +1,32 @@
-/**
- * Api
- *
- * @param {string} endpoint
- * @param {RequestInit} options
- * @returns
- */
-export default async function api(endpoint, options) {
+import { PinnedPosts, PostResponse, User, UserResponse } from "../types/common-types";
+
+export default async function api(endpoint: string, options?: RequestInit) {
   if (process.env.NODE_ENV === "development") {
     const mocks = await import("../mocks");
-    await wait(350);
+    await sleep(350);
 
     if (endpoint.includes("/posts/page/pinned")) {
-      return mocks.pinned;
+      return mocks.pinned as PinnedPosts;
     }
 
     if (endpoint.includes("/posts/page")) {
-      return mocks.forms;
+      return mocks.forms as PinnedPosts;
     }
 
     if (endpoint.includes("/posts/")) {
-      return mocks.form;
+      return mocks.form as PostResponse;
     }
 
     if (endpoint.includes("/minimal")) {
-      return mocks.userMinimal;
+      return mocks.userMinimal as User;
     }
 
     if (endpoint === "/me/posts") {
-      return mocks.mePosts;
+      return mocks.mePosts as PostResponse[];
     }
 
     if (endpoint === "/me") {
-      return mocks.me;
+      return mocks.me as UserResponse;
     }
   }
 
@@ -57,6 +52,6 @@ export default async function api(endpoint, options) {
   throw responseData;
 }
 
-function wait(ms) {
+function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
