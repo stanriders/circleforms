@@ -5,11 +5,11 @@ import { MouseEventHandler } from "react";
 interface IButton {
   href?: string;
   children: React.ReactNode;
-  theme: string;
+  theme?: string;
   large?: boolean;
   rounded?: boolean;
   active?: boolean;
-  onClick: MouseEventHandler<HTMLButtonElement>;
+  onClick?: MouseEventHandler<HTMLButtonElement>;
   classname?: string;
 }
 
