@@ -19,7 +19,16 @@
       "excerpt": "So important it's pinned!",
       "publish_time": "2022-04-13T18:03:39.585Z",
       "accessibility": "Public",
-      "limitations": null,
+      "limitations": {
+        "rank": {
+          "start": 0,
+          "end": 0
+        },
+        "pp": {
+          "start": 0,
+          "end": 0
+        }
+      },
       "answer_count": 1
     }
   ]

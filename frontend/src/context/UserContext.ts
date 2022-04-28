@@ -1,5 +1,4 @@
 import React from "react";
-import { UserResponse } from "../types/common-types";
 import { OsuUser } from "../types/osu-user";
 
 // I am not sure if the type should be UserResponse or OsuUser

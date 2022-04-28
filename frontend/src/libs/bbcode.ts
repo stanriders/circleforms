@@ -1,3 +1,7 @@
+// @ts-nocheck
+// bbobHTML doesnt have typescript types...
+// ggwp
+
 import bbobHTML from "@bbob/html";
 import { createPreset } from "@bbob/preset";
 import { getUniqAttr, isStringNode, isTagNode } from "@bbob/plugin-helper";

@@ -1,14 +1,13 @@
 import Head from "next/head";
-import Image from "next/image";
-
 import DefaultLayout from "../layouts";
-
 import SVG from "react-inlinesvg";
 import { Fragment } from "react";
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
 import { team } from "../constants";
 import Title from "../components/Title";
+import VisuallyHidden from "@reach/visually-hidden";
+import { Locales } from "../types/common-types";
 
 export default function OurTeam() {
   const t = useTranslations();
@@ -80,7 +79,8 @@ export default function OurTeam() {
           href="https://discord.gg/rx9RKQsy9H"
           className="flex justify-center items-center bg-blue-discord col-span-2 text-white focus:brightness-90 hover:brightness-75 transition py-16 rounded-20 lg:py-0 lg:rounded-none"
         >
-          <SVG className="w-32" src="/svg/discord.svg" alt="Join our Discord" />
+          <VisuallyHidden>Join our Discord</VisuallyHidden>
+          <SVG className="w-32" src="/svg/discord.svg" />
         </a>
       </div>
     </DefaultLayout>
@@ -91,7 +91,7 @@ function Decoration() {
   return <img src="/images/team-decoration.png" className="absolute -ml-32" alt="team" />;
 }
 
-export async function getStaticProps({ locale }) {
+export async function getStaticProps({ locale }: { locale: Locales }) {
   const [translations, global] = await Promise.all([
     import(`../messages/our-team/${locale}.json`),
     import(`../messages/global/${locale}.json`)

@@ -14,12 +14,13 @@ import Unauthorized from "../components/Unauthorized";
 import Title from "../components/Title";
 import FormCard from "../components/FormCard";
 import UserContext from "../context/UserContext";
+import { Locales, PostResponse } from "../types/common-types";
 
 export default function Dashboard() {
   const t = useTranslations();
   const { user } = useContext(UserContext);
   const [forms, setForms] = useState(Array.from({ length: 11 }));
-  const { data: posts } = useSWR("/me/posts", api);
+  const { data: posts } = useSWR<PostResponse[]>("/me/posts", api);
 
   useEffect(() => {
     if (posts && posts.length > 0) {
@@ -29,6 +30,8 @@ export default function Dashboard() {
       });
       setForms(newForms);
     }
+    //TODO FIXME
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [posts]);
 
   if (!user) {
@@ -53,7 +56,7 @@ export default function Dashboard() {
               <SVG src="/svg/plus.svg" />
             </a>
           </Link>
-          {forms.map((form, index) => (
+          {forms.map((form: any, index) => (
             <FormCard key={form?.id ? form.id : index} {...form} />
           ))}
         </div>
@@ -62,7 +65,7 @@ export default function Dashboard() {
   );
 }
 
-export async function getStaticProps({ locale }) {
+export async function getStaticProps({ locale }: { locale: Locales }) {
   const [translations, global] = await Promise.all([
     import(`../messages/dashboard/${locale}.json`),
     import(`../messages/global/${locale}.json`)

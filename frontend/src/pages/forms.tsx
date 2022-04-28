@@ -1,31 +1,29 @@
 import Head from "next/head";
-import DefaultLayout from "../layouts";
 import { Fragment, useEffect, useState } from "react";
 import useSWR from "swr";
+import { useRouter } from "next/router";
+import { useTranslations } from "next-intl";
+
 import api from "../libs/api";
 
-import { useRouter } from "next/router";
-
-import { useTranslations } from "next-intl";
+import DefaultLayout from "../layouts";
 import Radio from "../components/Radio";
 import SubTitle from "../components/SubTitle";
 import FormEntrySkeletonList from "../components/FormEntrySkeletonList";
 import FormEntry from "../components/FormEntry";
 import Button from "../components/Button";
 
+import { Locales, PinnedPosts, PostFilter, User } from "../types/common-types";
+
 export default function FormsList() {
   const router = useRouter();
   const t = useTranslations();
-  const [filter, setFilter] = useState("Both");
+  const [filter, setFilter] = useState<PostFilter>("Both");
   const [page, setPage] = useState(1);
 
-  const {
-    data: pinnedForms,
-    error: pinnedError,
-    isValidating: pinnedValidating
-  } = useSWR(`/posts/page/pinned`, api);
+  const { data: pinnedForms } = useSWR<PinnedPosts>(`/posts/page/pinned`, api);
 
-  const { data, error, isValidating } = useSWR(
+  const { data, isValidating } = useSWR<PinnedPosts>(
     `/posts/page/${page}?filter=${filter}&pageSize=10`,
     api
   );
@@ -34,14 +32,14 @@ export default function FormsList() {
   useEffect(() => {
     const qs = new URLSearchParams(window.location.search);
     const qsPage = Number(qs.get("page"));
-    const qsFilter = qs.get("filter");
+    const qsFilter = qs.get("filter") || "";
 
     if (qsPage > 0) {
       setPage(qsPage);
     }
 
     if (["Both", "Active", "Inactive"].includes(qsFilter)) {
-      setFilter(qsFilter);
+      setFilter(qsFilter as PostFilter);
     }
   }, []);
 
@@ -59,6 +57,9 @@ export default function FormsList() {
         scroll: false
       }
     );
+    // TODO fixme
+    // the fact that adding router as a missing dependency causes infinite rerenders is not good...
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, page]);
 
   function handlePrevClick() {
@@ -67,12 +68,15 @@ export default function FormsList() {
     }
   }
 
-  function handleFilterClick(value) {
+  function handleFilterClick(value: PostFilter) {
     setFilter(value);
 
     if (page === 1) return;
     setPage(1);
   }
+
+  const showPinnedPosts = pinnedForms && pinnedForms?.posts?.length! > 0;
+  const showFormEntries = data && data?.posts?.length! > 0;
 
   return (
     <DefaultLayout>
@@ -108,7 +112,7 @@ export default function FormsList() {
                   <Radio
                     name="filter"
                     value="Both"
-                    onClick={(e) => handleFilterClick(e.target.value)}
+                    onClick={(e) => handleFilterClick(e.currentTarget.value as PostFilter)}
                     active={"Both" === filter}
                   >
                     {t("filters.all")}
@@ -117,7 +121,7 @@ export default function FormsList() {
                     name="filter"
                     value="Active"
                     color="bg-green"
-                    onClick={(e) => handleFilterClick(e.target.value)}
+                    onClick={(e) => handleFilterClick(e.currentTarget.value as PostFilter)}
                     active={"Active" === filter}
                   >
                     {t("filters.active")}
@@ -126,7 +130,7 @@ export default function FormsList() {
                     name="filter"
                     value="Inactive"
                     color="bg-red"
-                    onClick={(e) => handleFilterClick(e.target.value)}
+                    onClick={(e) => handleFilterClick(e.currentTarget.value as PostFilter)}
                     active={"Inactive" === filter}
                   >
                     {t("filters.inactive")}
@@ -135,16 +139,14 @@ export default function FormsList() {
               </div>
             </div>
             <div className="mt-6 px-7">
-              {pinnedForms && pinnedForms.posts.length > 0 && (
+              {showPinnedPosts && (
                 <Fragment>
                   <SubTitle>{t("pinnedForms")}</SubTitle>
                   <div className="flex flex-col gap-y-3">
-                    {pinnedForms &&
-                      pinnedForms.posts.length > 0 &&
-                      pinnedForms.posts.map((form) => {
-                        const user = pinnedForms.users.find((user) => user.id === form.author_id);
-                        return <FormEntry key={form.id} user={user} {...form} />;
-                      })}
+                    {pinnedForms?.posts?.map((form) => {
+                      const user = pinnedForms?.users?.find((user) => user.id === form.author_id);
+                      return <FormEntry key={form.id} user={user as User} {...form} />;
+                    })}
                   </div>
                 </Fragment>
               )}
@@ -152,14 +154,11 @@ export default function FormsList() {
               <SubTitle>{t("title")}</SubTitle>
               <div className="flex flex-col gap-y-3 relative">
                 {!data && isValidating && <FormEntrySkeletonList length={10} />}
-                {data && data.posts.length === 0 && (
-                  <p className="font-semibold text-center">{t("noForms")}</p>
-                )}
-                {data &&
-                  data.posts.length > 0 &&
-                  data.posts.map((form) => {
-                    const user = data.users.find((user) => user.id === form.author_id);
-                    return <FormEntry key={form.id} user={user} {...form} />;
+                {!showFormEntries && <p className="font-semibold text-center">{t("noForms")}</p>}
+                {showFormEntries &&
+                  data?.posts?.map((form) => {
+                    const user = data?.users?.find((user) => user.id === form.author_id);
+                    return <FormEntry key={form.id} user={user as User} {...form} />;
                   })}
               </div>
             </div>
@@ -169,7 +168,7 @@ export default function FormsList() {
               {t("prev")}
             </Button>
 
-            <Button theme="grey" rounded active classname="cursor-default">
+            <Button theme="grey" rounded active onClick={() => {}} classname="cursor-default">
               {page}
             </Button>
 
@@ -183,7 +182,7 @@ export default function FormsList() {
   );
 }
 
-export async function getStaticProps({ locale }) {
+export async function getStaticProps({ locale }: { locale: Locales }) {
   const [translations, global] = await Promise.all([
     import(`../messages/forms/${locale}.json`),
     import(`../messages/global/${locale}.json`)

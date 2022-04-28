@@ -5,7 +5,11 @@ import Footer from "../components/Footer";
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
 
-export default function DefaultLayout({ children, classname = "mt-28" }) {
+interface IDefaultLayout {
+  children: React.ReactNode;
+  classname?: string;
+}
+export default function DefaultLayout({ children, classname = "mt-28" }: IDefaultLayout) {
   const t = useTranslations("global");
 
   return (

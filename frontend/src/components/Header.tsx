@@ -12,6 +12,8 @@ import UserContext from "../context/UserContext";
 import Button from "./Button";
 import { navLinks } from "../constants";
 import Flag from "./Flag";
+import { Locales } from "../types/common-types";
+import VisuallyHidden from "@reach/visually-hidden";
 
 const languages = Object.values(i18n);
 
@@ -21,7 +23,7 @@ export default function Header() {
   const { user } = useContext(UserContext);
   const { logout } = useAuth();
 
-  function changeLocale(locale) {
+  function changeLocale(locale: Locales) {
     router.push(
       {
         pathname: router.pathname,
@@ -41,7 +43,8 @@ export default function Header() {
       <div className="flex items-center">
         <Link href="/" passHref>
           <a>
-            <SVG className="h-12 mr-16" src="/svg/logo.svg" alt="CircleForms" />
+            <VisuallyHidden>Circle Forms</VisuallyHidden>
+            <SVG className="h-12 mr-16" src="/svg/logo.svg" />
           </a>
         </Link>
 
@@ -63,11 +66,11 @@ export default function Header() {
           <Menu>
             <MenuButton>
               <div className="flex items-center gap-x-2 pl-4 bg-black border-2 border-pink rounded-70 font-bold">
-                <span>{user.osu.username}</span>
+                <span>{user?.osu?.username}</span>
                 <img
                   className="h-9 w-9 rounded-70 m-1"
-                  src={user.osu.avatar_url}
-                  alt={user.osu.username}
+                  src={user?.osu?.avatar_url || ""}
+                  alt={user?.osu?.username}
                 />
               </div>
             </MenuButton>
@@ -81,12 +84,16 @@ export default function Header() {
               </MenuItem>
             </MenuList>
           </Menu>
-        )) || <Button href="/api/OAuth/auth">{t("navbar.login")}</Button>}
+        )) || (
+          <Button onClick={() => {}} href="/api/OAuth/auth">
+            {t("navbar.login")}
+          </Button>
+        )}
 
         <Menu>
           <MenuButton>
             <div className="flex items-center justify-center rounded-7 bg-black-lightest px-2 py-2">
-              <Flag locale={router.locale} />
+              <Flag locale={router.locale as Locales} />
             </div>
           </MenuButton>
           <MenuList className="slide-down">
@@ -94,7 +101,7 @@ export default function Header() {
               <MenuItem
                 className="menu-language__item group"
                 key={language.locale}
-                onSelect={() => changeLocale(language.locale)}
+                onSelect={() => changeLocale(language.locale as Locales)}
               >
                 <div
                   className={classNames("pill", language.locale === router.locale ? "active" : "")}

@@ -5,7 +5,8 @@ export interface OsuUser {
 }
 
 export interface Osu {
-  avatarURL?: string;
+  // not sure if it should be avatarlUrl or avatar_url
+  avatar_url?: string;
   countryCode?: string;
   defaultGroup?: string;
   id?: number;

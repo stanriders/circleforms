@@ -12,6 +12,7 @@ import UserContext from "../context/UserContext";
 import Unauthorized from "../components/Unauthorized";
 import Title from "../components/Title";
 import Button from "../components/Button";
+import { Locales } from "../types/common-types";
 
 export default function Settings() {
   const t = useTranslations();
@@ -20,6 +21,9 @@ export default function Settings() {
 
   useEffect(() => {
     invalidateUserCache();
+
+    //TODO fixme
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!user) {
@@ -43,8 +47,8 @@ export default function Settings() {
             <div className="flex items-center">
               <img
                 className="h-28 w-28 rounded-full"
-                src={user.osu.avatar_url}
-                alt={user.osu.username}
+                src={user.osu?.avatar_url}
+                alt={user.osu?.username}
               />
               <div className="pl-3">
                 <h2 className="font-bold text-3xl">osu!</h2>
@@ -53,7 +57,7 @@ export default function Settings() {
             </div>
             <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
               <p>
-                {t("integrations.osu.connectedTo")} {user.id} ({user.osu.username})
+                {t("integrations.osu.connectedTo")} {user.id} ({user.osu?.username})
               </p>
               {/* <p>
                 { t('integrations.osu.withForms', {
@@ -76,6 +80,7 @@ export default function Settings() {
             </div>
             <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
               <Button
+                // @ts-ignore
                 disabled
                 style={{
                   outlineColor: "#5865F2",
@@ -92,7 +97,7 @@ export default function Settings() {
   );
 }
 
-export async function getStaticProps({ locale }) {
+export async function getStaticProps({ locale }: { locale: Locales }) {
   const [translations, global] = await Promise.all([
     import(`../messages/settings/${locale}.json`),
     import(`../messages/global/${locale}.json`)

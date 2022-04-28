@@ -1,21 +1,20 @@
 import Head from "next/head";
-import Image from "next/image";
+import SVG from "react-inlinesvg";
+import { useTranslations } from "next-intl";
+import type { NextPage } from "next";
 
 import DefaultLayout from "../layouts";
-
-import SVG from "react-inlinesvg";
-
 import useSWR from "swr";
 import api from "../libs/api";
 
-import { useTranslations } from "next-intl";
-import type { NextPage } from "next";
 import Button from "../components/Button";
 import Loading from "../components/Loading";
 import FormEntry from "../components/FormEntry";
+import { Locales, PinnedPosts, User } from "../types/common-types";
+import VisuallyHidden from "@reach/visually-hidden";
 
 const Home: NextPage = () => {
-  const { data, error, isValidating } = useSWR(`/posts/page/1?pageSize=4&filter=Active`, api);
+  const { data, isValidating } = useSWR<PinnedPosts>(`/posts/page/1?pageSize=4&filter=Active`, api);
   const t = useTranslations();
 
   return (
@@ -25,7 +24,8 @@ const Home: NextPage = () => {
       </Head>
 
       <div className="flex flex-col justify-center items-center min-h-screen">
-        <SVG className="w-3/4 max-w-6xl" src="/svg/logo.svg" alt="CircleForms" />
+        <VisuallyHidden>Circle Forms</VisuallyHidden>
+        <SVG className="w-3/4 max-w-6xl" src="/svg/logo.svg" />
         <p className="font-museo lg:text-4xl mt-4 text-center">{t("description")}</p>
         <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
           <Button theme="secondary" large>
@@ -41,6 +41,7 @@ const Home: NextPage = () => {
         <section className="small-container">
           <div className="flex flex-col lg:flex-row justify-between items-center mb-8">
             <h2 className="text-6xl uppercase font-semibold">{t("about.title")}</h2>
+
             <SVG className="h-8 lg:h-11 lg:-ml-8" src="/svg/circles-sliders.svg" />
           </div>
           <div className="flex flex-col lg:flex-row gap-8 text-xl font-medium">
@@ -71,15 +72,15 @@ const Home: NextPage = () => {
                   </div>
                 )}
 
-                {data && data.length === 0 && (
+                {data && data?.posts?.length === 0 && (
                   <p className="font-semibold text-center">{t("noForms")}</p>
                 )}
 
                 {data &&
-                  data.posts.length > 0 &&
-                  data.posts.map((form) => {
-                    const user = data.users.find((user) => user.id === form.author_id);
-                    return <FormEntry key={form.id} user={user} {...form} />;
+                  data?.posts?.length! > 0 &&
+                  data.posts?.map((form) => {
+                    const user = data.users?.find((user) => user.id === form.author_id);
+                    return <FormEntry key={form.id} user={user as User} {...form} />;
                   })}
               </div>
             </div>
@@ -95,7 +96,7 @@ const Home: NextPage = () => {
   );
 };
 
-export async function getStaticProps({ locale }) {
+export async function getStaticProps({ locale }: { locale: Locales }) {
   const [translations, global] = await Promise.all([
     import(`../messages/index/${locale}.json`),
     import(`../messages/global/${locale}.json`)

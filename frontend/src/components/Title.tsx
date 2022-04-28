@@ -1,4 +1,12 @@
-export default function Title({ title, children, Decoration }) {
+import { ReactElement } from "react";
+
+interface ITitleProps {
+  title: string;
+  children?: React.ReactNode;
+  Decoration?: () => ReactElement<any, any>;
+}
+
+export default function Title({ title, children, Decoration }: ITitleProps) {
   return (
     <div className="flex justify-center relative py-6">
       {(Decoration && <Decoration />) || <DefaultDecoration />}

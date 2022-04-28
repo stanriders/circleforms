@@ -5,6 +5,7 @@ import DefaultLayout from "../layouts";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/router";
 import Button from "../components/Button";
+import { Locales } from "../types/common-types";
 
 export default function Error404() {
   const t = useTranslations();
@@ -31,7 +32,7 @@ export default function Error404() {
   );
 }
 
-export async function getStaticProps({ locale }) {
+export async function getStaticProps({ locale }: { locale: Locales }) {
   const [translations, global] = await Promise.all([
     import(`../messages/404/${locale}.json`),
     import(`../messages/global/${locale}.json`)

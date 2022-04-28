@@ -1,3 +1,4 @@
+import React from "react";
 import autosize from "autosize";
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
@@ -13,12 +14,16 @@ import {
 } from "react-icons/md";
 import bbcode from "../libs/bbcode";
 
-/**
- *
- * @param {HTMLTextAreaElement} input
- * @param {string} type
- */
-function insertAtCaret(input, type) {
+const TOOLBAR_ICONS = {
+  b: MdFormatBold,
+  i: MdFormatItalic,
+  s: MdStrikethroughS,
+  url: MdLink,
+  img: MdImage
+};
+
+type ToolbarIcon = keyof typeof TOOLBAR_ICONS;
+function insertAtCaret(input: HTMLTextAreaElement, type: ToolbarIcon) {
   const selected = input.value.slice(input.selectionStart, input.selectionEnd);
 
   let rangeText = "";
@@ -40,19 +45,25 @@ function insertAtCaret(input, type) {
   input.focus();
   input.dispatchEvent(new Event("input"));
 }
-
+interface IWysiwyg {
+  value: string;
+  placeholder: string;
+  onTextAreaChange: () => void;
+  toolbarItems: ToolbarIcon[];
+}
 function Wysiwyg({
   value = "",
   placeholder = "Placeholder",
-  onChange,
+  onTextAreaChange,
   toolbarItems = ["b", "i", "s", "url", "img"]
-}) {
-  const textarea = useRef();
+}: IWysiwyg) {
+  const textarea = useRef<HTMLTextAreaElement>(null);
   const t = useTranslations("global.inputs.wysiwyg");
   const [preview, setPreview] = useState(bbcode(value));
   const [hasPreview, setHasPreview] = useState(false);
 
   useEffect(() => {
+    // @ts-ignore
     autosize(textarea.current);
   }, []);
 
@@ -60,6 +71,7 @@ function Wysiwyg({
     if (hasPreview) {
       setPreview(bbcode(value));
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasPreview]);
 
   return (
@@ -76,7 +88,8 @@ function Wysiwyg({
         <textarea
           ref={textarea}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          // @ts-ignore
+          onChange={(e) => onTextAreaChange(e.target.value)}
           placeholder={placeholder}
           className="w-full bg-black-lightest border-b-2 border-white pl-3 pt-2 text-2xl font-medium"
         ></textarea>
@@ -97,6 +110,7 @@ function Wysiwyg({
           <ToolbarItem
             key={`toolbar--item--${type}-${i}`}
             type={type}
+            // @ts-ignore
             onClick={() => insertAtCaret(textarea.current, type)}
           />
         ))}
@@ -105,15 +119,11 @@ function Wysiwyg({
   );
 }
 
-const TOOLBAR_ICONS = {
-  b: MdFormatBold,
-  i: MdFormatItalic,
-  s: MdStrikethroughS,
-  url: MdLink,
-  img: MdImage
-};
-
-function ToolbarItem({ type, onClick }) {
+interface IToolbarItem {
+  type: keyof typeof TOOLBAR_ICONS;
+  onClick: React.MouseEventHandler<HTMLButtonElement>;
+}
+function ToolbarItem({ type, onClick }: IToolbarItem) {
   const Icon = TOOLBAR_ICONS[type];
 
   return (

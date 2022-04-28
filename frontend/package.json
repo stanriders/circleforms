@@ -19,6 +19,7 @@
     "@reach/listbox": "^0.16.2",
     "@reach/menu-button": "^0.16.2",
     "@reach/tabs": "^0.16.4",
+    "@reach/visually-hidden": "^0.17.0",
     "autosize": "^5.0.1",
     "classnames": "^2.3.1",
     "flag-icons": "^6.1.1",

@@ -1,28 +1,42 @@
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
-import { Fragment, useRef, useState } from "react";
+import React, { Fragment, useRef, useState } from "react";
 import Button from "./Button";
+
+interface InputFileProps {
+  label: string;
+  name: string;
+  value: File[];
+  classname: string;
+  onChange: (() => void) | ((files: File[]) => void);
+}
 
 function noop() {}
 
-export default function InputFile({ label, name, value, classname, onChange = noop }) {
+export default function InputFile({
+  label,
+  name,
+  value,
+  classname,
+  onChange = noop
+}: InputFileProps) {
   const t = useTranslations("global.inputs");
   const [dragOver, setDragOver] = useState(false);
-  const input = useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  function handleDragOver(e) {
+  function handleDragOver(e: React.DragEvent<HTMLLabelElement>) {
     e.preventDefault();
     e.stopPropagation();
     setDragOver(true);
   }
 
-  function handleDragExit(e) {
+  function handleDragExit(e: React.DragEvent<HTMLLabelElement>) {
     e.preventDefault();
     e.stopPropagation();
     setDragOver(false);
   }
 
-  function handleDrop(e) {
+  function handleDrop(e: React.DragEvent<HTMLLabelElement>) {
     e.preventDefault();
     e.stopPropagation();
 
@@ -67,16 +81,19 @@ export default function InputFile({ label, name, value, classname, onChange = no
             <p className="font-medium text-xs text-white text-opacity-20 select-none">
               {t("file.orPressButton")}
             </p>
-            <Button onClick={() => input.current.click()} theme="secondary" classname="my-2">
+
+            <Button onClick={() => inputRef?.current?.click()} theme="secondary" classname="my-2">
               {t("file.chooseFile")}
             </Button>
           </Fragment>
         )}
         <input
-          ref={input}
+          ref={inputRef}
           id={name}
           name={name}
-          onChange={(e) => onChange([...e.target.files])}
+          onChange={(e) => {
+            onChange([...e.target.files!]);
+          }}
           type="file"
           className="hidden"
           accept="image/png, image/jpeg"

@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import Head from "next/head";
 import Hero from "../components/Hero";
 import DefaultLayout from "../layouts";
+import { Locales } from "../types/common-types";
 
 export default function Privacy() {
   const t = useTranslations();
@@ -21,7 +22,7 @@ export default function Privacy() {
   );
 }
 
-export async function getStaticProps({ locale }) {
+export async function getStaticProps({ locale }: { locale: Locales }) {
   const [translations, global] = await Promise.all([
     import(`../messages/privacy/${locale}.json`),
     import(`../messages/global/${locale}.json`)
