@@ -50,9 +50,6 @@ public class PostResponseContract
     [JsonProperty("questions")]
     public List<Question> Questions { get; set; }
 
-    [JsonProperty("answers")]
-    public List<AnswerContract> Answers { get; set; }
-
     [JsonProperty("publish_time")]
     public DateTime PublishTime { get; set; }
 }

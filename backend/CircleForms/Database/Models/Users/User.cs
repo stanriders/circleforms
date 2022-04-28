@@ -13,6 +13,7 @@ public class User : IEntity
     public User()
     {
         this.InitOneToMany(() => PostsRelation);
+        this.InitOneToMany(() => Answers);
     }
 
     [Field("token")]
@@ -20,6 +21,9 @@ public class User : IEntity
 
     [Field("posts")]
     public Many<Post> PostsRelation { get; set; }
+
+    [Field("answers")]
+    public Many<Answer> Answers { get; set; }
 
     [Field("discord")]
     public string Discord { get; set; }

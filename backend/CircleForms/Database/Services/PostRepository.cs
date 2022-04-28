@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Users;
@@ -44,10 +45,9 @@ public class PostRepository : IPostRepository
         return await DB.Find<Post>().OneAsync(postId);
     }
 
-    public async Task AddAnswer(Post post, Answer entry)
+    public async Task<Post> Get(string postId, Expression<Func<Post, Post>> projection)
     {
-        post.Answers.Add(entry);
-        await post.SaveAsync();
+        return await DB.Find<Post>().Project(projection).OneAsync(postId);
     }
 
     public async Task Update(Post post)

@@ -113,6 +113,7 @@ public class Startup
         services.AddTransient<IAnswerService, AnswerService>();
         services.AddTransient<IPublishService, PublishService>();
         services.AddTransient<IGamemodeService, GamemodeService>();
+        services.AddTransient<IAnswerRepository, AnswerRepository>();
         services.AddTransient<PostsService>();
         services.AddTransient<ICacheRepository, RedisCacheRepository>();
         services.AddTransient<IStaticFilesService, StaticFilesService>();

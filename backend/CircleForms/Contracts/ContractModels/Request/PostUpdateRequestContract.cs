@@ -17,10 +17,10 @@ public class PostUpdateRequestContract
     public string Excerpt { get; set; }
 
     [JsonProperty("is_active")]
-    public bool IsActive { get; set; }
+    public bool? IsActive { get; set; }
 
     [JsonProperty("gamemode")]
-    public Gamemode Gamemode { get; set; }
+    public Gamemode? Gamemode { get; set; }
 
     [JsonProperty("limitations")]
     public Limitations Limitations { get; set; }
@@ -32,13 +32,16 @@ public class PostUpdateRequestContract
 public class QuestionUpdateContract
 {
     [JsonProperty("id")]
-    public int? Id { get; set; }
+    public string Id { get; set; }
 
     [JsonProperty("delete")]
     public bool Delete { get; set; }
 
+    [JsonProperty("order")]
+    public int Order { get; set; }
+
     [JsonProperty("type")]
-    public QuestionType QuestionType { get; set; }
+    public QuestionType? QuestionType { get; set; }
 
     [JsonProperty("title")]
     public string Title { get; set; }

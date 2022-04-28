@@ -16,18 +16,20 @@ using CircleForms.IO.FileIO.Abstract;
 using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace CircleForms.ModelLayer;
 
 public class PostsService
 {
     private readonly ICacheRepository _cache;
-    private readonly ILogger<PostsController> _logger;
+    private readonly ILogger<PostsService> _logger;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
     private readonly IStaticFilesService _staticFilesService;
 
-    public PostsService(ILogger<PostsController> logger, IStaticFilesService staticFilesService,
+    public PostsService(ILogger<PostsService> logger, IStaticFilesService staticFilesService,
         IPostRepository postRepository, IMapper mapper, ICacheRepository cache)
     {
         _logger = logger;
@@ -35,6 +37,20 @@ public class PostsService
         _postRepository = postRepository;
         _mapper = mapper;
         _cache = cache;
+    }
+
+    private static void ValidateQuestionOrder(IReadOnlyList<Question> questions)
+    {
+        var expected = questions[0].Order + 1;
+        for (var i = 1; i < questions.Count; i++)
+        {
+            if (questions[i].Order != expected)
+            {
+                questions[i].Order = expected;
+            }
+
+            expected++;
+        }
     }
 
     private static string GenerateAccessKey(byte size)
@@ -66,15 +82,16 @@ public class PostsService
             post.AccessKey = GenerateAccessKey(6);
         }
 
-        for (var i = 0; i < post.Questions.Count; i++)
+        foreach (var question in post.Questions)
         {
-            var question = post.Questions[i];
-            question.Id = i;
+            question.Id = ObjectId.GenerateNewId().ToString();
             if (question.QuestionType != QuestionType.Choice)
             {
                 question.QuestionInfo = new List<string>();
             }
         }
+
+        ValidateQuestionOrder(post.Questions);
 
         var result = await _postRepository.Add(userId, post);
 
@@ -99,7 +116,7 @@ public class PostsService
         }
 
         _logger.LogInformation("User {Claim} updated the post {Id}", userId, post.ID);
-        _logger.LogDebug("User {Claim} updated the post {Id} with {Contract}", userId, post.ID, updateContract);
+        _logger.LogDebug("User {Claim} updated the post {Id} with {@Contract}", userId, post.ID, updateContract);
 
         var questions = post.Questions;
         var updatedPost = _mapper.Map(updateContract, post);
@@ -121,15 +138,21 @@ public class PostsService
                 }
 
                 var newQuestion = _mapper.Map<Question>(updatedPostQuestion);
+                //New question
                 if (updatedPostQuestion.Id is null)
                 {
-                    var newPostId = questions.Max(x => x.Id) + 1;
-                    newQuestion.Id = newPostId;
+                    newQuestion.Id = ObjectId.GenerateNewId().ToString();
+                    if (newQuestion.QuestionType != QuestionType.Choice)
+                    {
+                        newQuestion.QuestionInfo = new List<string>();
+                    }
+
                     questions.Add(newQuestion);
 
                     continue;
                 }
 
+                //Update question
                 var postToUpdate = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
                 if (postToUpdate is null)
                 {
@@ -141,6 +164,9 @@ public class PostsService
             }
         }
 
+        questions.Sort((x, y) => x.Order.CompareTo(y.Order));
+
+        ValidateQuestionOrder(questions);
         updatedPost.Questions = questions;
 
         await _postRepository.Update(post);
@@ -182,7 +208,7 @@ public class PostsService
             return _mapper.Map<PostDetailedResponseContract>(post);
         }
 
-        return null;
+        return Result<object>.NotFound(post.ID);
     }
 
     private async Task<Result<PostRedis>> GetCachedPostPrivate(string id)
@@ -331,4 +357,6 @@ public class PostsService
 
         return posts;
     }
+
+
 }

@@ -139,7 +139,7 @@ public class RedisCacheRepository : ICacheRepository
 
         var postId = post.ID.ToPostId();
         await Task.WhenAll(
-            _redis.StringSetAsync(post.ID.ToPostAnswersCount(), post.Answers.Count),
+            _redis.StringSetAsync(post.ID.ToPostAnswersCount(), await post.Answers.ChildrenCountAsync()),
             _redis.SortedSetRemoveAsync(removeFrom, postId),
             _redis.SortedSetAddAsync(addTo, postId, post.PublishTime.ToUnixTimestamp())
         );

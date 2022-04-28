@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts;
 
@@ -9,6 +11,6 @@ public interface IPostRepository
     Task<Post> Add(string userId, Post post);
     Task<List<Post>> Get();
     Task<Post> Get(string postId);
+    Task<Post> Get(string postId, Expression<Func<Post, Post>> projection);
     Task Update(Post post);
-    Task AddAnswer(Post postId, Answer entry);
 }

@@ -4,17 +4,13 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CircleForms.ModelLayer;
 
-public class Result : Result<object>
+public class Error : Result<object>
 {
-    public Result() : base(value: null)
+    public Error() : base(value: null)
     {
     }
 
-    public Result(HttpStatusCode code, string message) : base(code, message)
-    {
-    }
-
-    public Result(string message) : base(message)
+    public Error(HttpStatusCode code, string message) : base(code, message)
     {
     }
 }
@@ -53,9 +49,14 @@ public class Result<T>
         return new Result<T>(HttpStatusCode.NotFound, $"Entity {id} is not found");
     }
 
-    public Result<object> Error()
+    public static Result<T> Forbidden()
     {
-        return new Result<object>(StatusCode, Message);
+        return new Result<T>(HttpStatusCode.Forbidden, "You're not allowed to access that resource");
+    }
+
+    public Error ToError()
+    {
+        return new Error(StatusCode, Message);
     }
 
     public IActionResult Map()
