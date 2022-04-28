@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
+using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Controllers;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Posts.Enums;

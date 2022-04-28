@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
+using CircleForms.Contracts.ContractModels.Response.Posts;
+using CircleForms.Contracts.ContractModels.Response.Users;
 using CircleForms.Database.Services.Abstract;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;

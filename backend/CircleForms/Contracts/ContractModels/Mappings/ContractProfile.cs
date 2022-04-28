@@ -1,5 +1,6 @@
 ﻿using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Contracts.ContractModels.Response;
+using CircleForms.Contracts.ContractModels.Response.Users;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Users;
 using Mapster;

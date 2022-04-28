@@ -2,7 +2,7 @@
 using CircleForms.Database.Models.Posts.Enums;
 using Newtonsoft.Json;
 
-namespace CircleForms.Contracts.ContractModels.Response;
+namespace CircleForms.Contracts.ContractModels.Response.Posts;
 
 public class MinimalPostContract
 {

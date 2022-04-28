@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using CircleForms.Contracts.ContractModels.Response.Users;
 
 namespace CircleForms.Contracts.ContractModels.Response.Compound;
 
