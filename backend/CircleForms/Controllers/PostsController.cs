@@ -97,7 +97,7 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPost(ApiEndpoints.PostsAddPost)]
-    [ProducesResponseType(typeof(PostMinimalContract), StatusCodes.Status201Created, "application/json")]
+    [ProducesResponseType(typeof(MinimalPostContract), StatusCodes.Status201Created, "application/json")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Post(PostContract postContract)

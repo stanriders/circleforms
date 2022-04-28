@@ -4,6 +4,6 @@ using CircleForms.Contracts.ContractModels.Response.Compound.Abstract;
 namespace CircleForms.Contracts.ContractModels.Response.Compound;
 
 public class PageContract :
-    CompoundUserPost<List<UserMinimalContract>, PostMinimalContract[]>
+    CompoundUserPost<List<UserMinimalContract>, MinimalPostContract[]>
 {
 }

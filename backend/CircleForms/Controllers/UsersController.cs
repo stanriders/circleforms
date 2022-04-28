@@ -73,7 +73,7 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMePosts)]
-    [ProducesResponseType(typeof(List<PostMinimalContract>), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(List<MinimalPostContract>), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMePosts()
     {
@@ -83,7 +83,7 @@ public class UsersController : ControllerBase
             var posts = await user.PostsRelation.ChildrenFluent()
                 .ToListAsync();
 
-            return Ok(_mapper.Map<List<PostMinimalContract>>(posts));
+            return Ok(_mapper.Map<List<MinimalPostContract>>(posts));
         }
 
         _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", _claim);

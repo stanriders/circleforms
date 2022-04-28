@@ -133,7 +133,7 @@ public class AdminController : ControllerBase
     ///     Get all posts. (Requires auth, Requires Admin role)
     /// </summary>
     [HttpGet(ApiEndpoints.PostsAllCachedPosts)]
-    public async Task<PostMinimalContract[]> GetCached()
+    public async Task<MinimalPostContract[]> GetCached()
     {
         _logger.LogInformation("User {User} requested posts cache dump", _claim);
 
@@ -146,7 +146,7 @@ public class AdminController : ControllerBase
     ///     Get a post.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsOneCachedPost)]
-    [ProducesResponseType(typeof(PostMinimalContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(MinimalPostContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCachedPost(string id)
     {

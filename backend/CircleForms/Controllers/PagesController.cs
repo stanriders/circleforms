@@ -32,7 +32,7 @@ public class PagesController : ControllerBase
 
     //TODO: Move it to PostService
     private async Task<PageContract> FillResponseContract(PageContract responseContract,
-        PostMinimalContract[] posts)
+        MinimalPostContract[] posts)
     {
         var authorIdsTasks = posts
             .Select(x => x.AuthorId)
@@ -64,7 +64,7 @@ public class PagesController : ControllerBase
         var responseContract = new PageContract
         {
             Users = new List<UserMinimalContract>(),
-            Posts = Array.Empty<PostMinimalContract>()
+            Posts = Array.Empty<MinimalPostContract>()
         };
 
         var postsRedis = await _posts.GetPage(page, pageSize, filter);
@@ -88,7 +88,7 @@ public class PagesController : ControllerBase
         var response = new PageContract
         {
             Users = new List<UserMinimalContract>(),
-            Posts = Array.Empty<PostMinimalContract>()
+            Posts = Array.Empty<MinimalPostContract>()
         };
 
         if (posts.Length == 0)

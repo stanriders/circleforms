@@ -270,28 +270,28 @@ public class PostsService
         return _mapper.Map<List<Post>, List<FullPostContract>>(posts);
     }
 
-    public async Task<PostMinimalContract[]> GetAllCached()
+    public async Task<MinimalPostContract[]> GetAllCached()
     {
-        return _mapper.Map<PostRedis[], PostMinimalContract[]>(
+        return _mapper.Map<PostRedis[], MinimalPostContract[]>(
             await MapWithAnswerCounts(await _cache.GetDump()));
     }
 
-    public async Task<Result<PostMinimalContract>> GetCachedPost(string id)
+    public async Task<Result<MinimalPostContract>> GetCachedPost(string id)
     {
         var post = await GetCachedPostPrivate(id);
         if (post.IsError)
         {
-            return new Result<PostMinimalContract>(post.StatusCode, post.Message);
+            return new Result<MinimalPostContract>(post.StatusCode, post.Message);
         }
 
-        return _mapper.Map<PostMinimalContract>(post);
+        return _mapper.Map<MinimalPostContract>(post);
     }
 
-    public async Task<PostMinimalContract[]> GetPage(int page, int pageSize, PostFilter filter)
+    public async Task<MinimalPostContract[]> GetPage(int page, int pageSize, PostFilter filter)
     {
         var posts = await _cache.GetPage(page, pageSize, filter);
 
-        return _mapper.Map<PostRedis[], PostMinimalContract[]>(await MapWithAnswerCounts(posts));
+        return _mapper.Map<PostRedis[], MinimalPostContract[]>(await MapWithAnswerCounts(posts));
     }
 
     public async Task<Result<string>> SaveImage(string claim, string id, IFormFile image, ImageQuery query)
@@ -334,9 +334,9 @@ public class PostsService
         return !result ? Result<bool>.NotFound(postId) : true;
     }
 
-    public async Task<PostMinimalContract[]> GetPinned()
+    public async Task<MinimalPostContract[]> GetPinned()
     {
-        return _mapper.Map<PostRedis[], PostMinimalContract[]>(
+        return _mapper.Map<PostRedis[], MinimalPostContract[]>(
             await MapWithAnswerCounts(await _cache.GetPinnedPosts()));
     }
 
