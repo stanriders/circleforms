@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response;
+using CircleForms.Contracts.ContractModels.Response.Posts;
+using CircleForms.Contracts.ContractModels.Response.Users;
 using CircleForms.Database.Services.Abstract;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
@@ -38,14 +40,14 @@ public class UsersController : ControllerBase
     ///     Get user data.
     /// </summary>
     [HttpGet(ApiEndpoints.UsersGetUser)]
-    [ProducesResponseType(typeof(UserResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(UserContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([RegularExpression(@"^\d+$")] string id)
     {
         var user = await _usersService.Get(id);
         if (user != null)
         {
-            return Ok(_mapper.Map<UserResponseContract>(user));
+            return Ok(_mapper.Map<UserContract>(user));
         }
 
         return NotFound();
@@ -55,14 +57,14 @@ public class UsersController : ControllerBase
     ///     Get user data.
     /// </summary>
     [HttpGet(ApiEndpoints.UsersGetMinimalUser)]
-    [ProducesResponseType(typeof(UserMinimalResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(UserMinimalContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMinimal([RegularExpression(@"^\d+$")] string id)
     {
         var user = await _cache.GetMinimalUser(id);
         if (user != null)
         {
-            return Ok(_mapper.Map<UserMinimalResponseContract>(user));
+            return Ok(_mapper.Map<UserMinimalContract>(user));
         }
 
         return NotFound();
@@ -73,7 +75,7 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMePosts)]
-    [ProducesResponseType(typeof(List<PostMinimalResponseContract>), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(List<MinimalPostContract>), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMePosts()
     {
@@ -83,7 +85,7 @@ public class UsersController : ControllerBase
             var posts = await user.PostsRelation.ChildrenFluent()
                 .ToListAsync();
 
-            return Ok(_mapper.Map<List<PostMinimalResponseContract>>(posts));
+            return Ok(_mapper.Map<List<MinimalPostContract>>(posts));
         }
 
         _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", _claim);
@@ -98,7 +100,7 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMe)]
-    [ProducesResponseType(typeof(UserResponseContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(UserContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMe()
     {
@@ -107,7 +109,7 @@ public class UsersController : ControllerBase
         var user = await _usersService.Get(_claim);
         if (user != null)
         {
-            var result = _mapper.Map<UserResponseContract>(user);
+            var result = _mapper.Map<UserContract>(user);
 
             return Ok(result);
         }

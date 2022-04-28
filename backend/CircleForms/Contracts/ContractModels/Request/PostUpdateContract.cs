@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 
 namespace CircleForms.Contracts.ContractModels.Request;
 
-public class PostUpdateRequestContract
+public class PostUpdateContract
 {
     [JsonProperty("title")]
     public string Title { get; set; }

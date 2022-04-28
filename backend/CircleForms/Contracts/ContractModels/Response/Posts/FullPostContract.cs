@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using CircleForms.Database.Models.Posts.Enums;
+using CircleForms.Database.Models.Posts.Questions;
 using Newtonsoft.Json;
 
-namespace CircleForms.Contracts.ContractModels.Response;
+namespace CircleForms.Contracts.ContractModels.Response.Posts;
 
-public class PostMinimalResponseContract
+public class FullPostContract
 {
     [JsonProperty("id")]
     public string ID { get; set; }
@@ -24,6 +26,9 @@ public class PostMinimalResponseContract
     [JsonProperty("title")]
     public string Title { get; set; }
 
+    [JsonProperty("access_key")]
+    public string AccessKey { get; set; }
+
     [JsonProperty("description")]
     public string Description { get; set; }
 
@@ -33,15 +38,18 @@ public class PostMinimalResponseContract
     [JsonProperty("gamemode")]
     public Gamemode Gamemode { get; set; }
 
-    [JsonProperty("publish_time")]
-    public DateTime PublishTime { get; set; }
-
     [JsonProperty("accessibility")]
     public Accessibility Accessibility { get; set; }
 
     [JsonProperty("limitations")]
     public Limitations Limitations { get; set; }
 
-    [JsonProperty("answer_count")]
-    public int AnswerCount { get; set; }
+    [JsonProperty("published")]
+    public bool Published { get; set; }
+
+    [JsonProperty("questions")]
+    public List<Question> Questions { get; set; }
+
+    [JsonProperty("publish_time")]
+    public DateTime PublishTime { get; set; }
 }

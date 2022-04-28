@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
 
-namespace CircleForms.Contracts.ContractModels.Response;
+namespace CircleForms.Contracts.ContractModels.Response.Users;
 
-public class UserAnswerContract
+public class UserInAnswerContract
 {
     [JsonProperty("id")]
     public string ID { get; set; }

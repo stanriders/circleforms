@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using CircleForms.Contracts.ContractModels.Response;
+using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Services.Abstract;
@@ -21,18 +22,18 @@ public class PublishService : IPublishService
         _cache = cache;
     }
 
-    public async Task<Result<PostResponseContract>> Publish(string id, string claim)
+    public async Task<Result<FullPostContract>> Publish(string id, string claim)
     {
         var postResult = await GetAndValidate(id, claim);
         if (postResult.IsError)
         {
-            return new Result<PostResponseContract>(postResult.StatusCode, postResult.Message);
+            return new Result<FullPostContract>(postResult.StatusCode, postResult.Message);
         }
 
         var post = postResult.Value;
         if (post.Published)
         {
-            return _mapper.Map<PostResponseContract>(post);
+            return _mapper.Map<FullPostContract>(post);
         }
 
         post.Published = true;
@@ -43,28 +44,28 @@ public class PublishService : IPublishService
             await _cache.Publish(post);
         }
 
-        return _mapper.Map<PostResponseContract>(post);
+        return _mapper.Map<FullPostContract>(post);
     }
 
-    public async Task<Result<PostResponseContract>> Unpublish(string id, string claim)
+    public async Task<Result<FullPostContract>> Unpublish(string id, string claim)
     {
         var postResult = await GetAndValidate(id, claim);
         if (postResult.IsError)
         {
-            return new Result<PostResponseContract>(postResult.StatusCode, postResult.Message);
+            return new Result<FullPostContract>(postResult.StatusCode, postResult.Message);
         }
 
         var post = postResult.Value;
         if (!post.Published)
         {
-            return _mapper.Map<PostResponseContract>(post);
+            return _mapper.Map<FullPostContract>(post);
         }
 
         post.Published = false;
         await _postRepository.Update(post);
         await _cache.Unpublish(post.ID);
 
-        return _mapper.Map<PostResponseContract>(post);
+        return _mapper.Map<FullPostContract>(post);
     }
 
     private async Task<Result<Post>> GetAndValidate(string id, string claim)

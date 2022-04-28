@@ -23,7 +23,7 @@ public class PostValidator : AbstractValidator<Post>
     }
 }
 
-public class PostUpdateRequestContractValidator : AbstractValidator<PostUpdateRequestContract>
+public class PostUpdateRequestContractValidator : AbstractValidator<PostUpdateContract>
 {
     public PostUpdateRequestContractValidator()
     {

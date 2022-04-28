@@ -1,9 +1,10 @@
 using System.Collections.Generic;
+using CircleForms.Contracts.ContractModels.Response.Users;
 
 namespace CircleForms.Contracts.ContractModels.Response.Compound;
 
-public class AnswersUsersResponseContract
+public class AnswersUsersContract
 {
-    public List<UserAnswerContract> Users { get; set; }
+    public List<UserInAnswerContract> Users { get; set; }
     public List<AnswerContract> Answers { get; set; }
 }
