@@ -1,21 +1,13 @@
 import Link from "next/link";
 import * as timeago from "timeago.js";
+import { PostResponse, User } from "../types/common-types";
 import getImage from "../utils/getImage";
 
-export default function FormEntry({
-  id,
-  user,
-  author_id,
-  is_active,
-  icon,
-  banner,
-  title,
-  description,
-  excerpt,
-  publish_time,
-  accessibility,
-  limitations
-}) {
+interface IFormEntry extends PostResponse {
+  user: User;
+}
+
+export default function FormEntry({ id, user, banner, title, excerpt, publish_time }: IFormEntry) {
   const bannerImg = getImage({ banner, id, type: "banner" });
 
   return (
@@ -40,11 +32,12 @@ export default function FormEntry({
               <span className="font-semibold">
                 posted by <span className="font-bold">{user?.username}</span>
               </span>
-              <span className="text-green">{timeago.format(publish_time)}</span>
+              {/* FIXME im not sure about this, maybe publish time needs to be converted to datetime first? */}
+              <span className="text-green">{timeago.format(publish_time as string)}</span>
             </div>
             <img
               className="h-10 w-10 rounded-full"
-              src={user?.avatar_url}
+              src={user?.avatar_url || ""}
               alt="Profile user {name}"
             />
           </div>
