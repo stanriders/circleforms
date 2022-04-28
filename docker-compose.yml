@@ -1,12 +1,12 @@
 version: '3.8'
 
+networks:
+  main:
+
 services:
   backend:
     build: ./backend/.
     depends_on:
-      - redis
-      - mongodb
-    links:
       - redis
       - mongodb
     ports:
@@ -15,7 +15,7 @@ services:
       - PathBase=/api
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:3001
-      - ConnectionStrings__Database=mongodb://mongodb:mongodb@mongodb
+      - ConnectionStrings__Database=mongodb://mongodb:mongodb@mongodb:27017
       - ConnectionStrings__Redis=redis:6379,allowAdmin=true
       - osuApi__ClientId=
       - osuApi__ClientSecret=
@@ -23,6 +23,8 @@ services:
     volumes:
       - ./logs/backend:/app/logs
       - ./keys:/root/.aspnet/DataProtection-Keys
+    networks:
+      - main
 
   frontend:
     build: ./frontend/.
@@ -31,6 +33,8 @@ services:
     volumes:
       - ./logs/frontend:/app/logs
       - ./logs/frontend/npm:/root/.npm/_logs
+    networks:
+      - main
 
   redis:
     image: redis
@@ -39,6 +43,8 @@ services:
     volumes:
       - ./redis:/data
       - ./logs/redis:/var/log/redis
+    networks:
+      - main
 
   mongodb:
     image: mongo:latest
@@ -51,3 +57,5 @@ services:
     volumes:
       - ./db:/data/db
       - ./logs/mongo:/var/log/mongodb
+    networks:
+      - main
