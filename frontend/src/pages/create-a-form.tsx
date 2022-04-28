@@ -1,3 +1,6 @@
+// @ts-nocheck
+// TODO: Keziah, HEEEELP
+
 import Head from "next/head";
 import DefaultLayout from "../layouts";
 import { useContext, useEffect, useReducer, useState } from "react";
@@ -70,7 +73,7 @@ const initialState = {
   banner: []
 };
 
-function reducer(state, action) {
+function reducer(state: any, action: any) {
   switch (action.type) {
     case types.SET_TITLE:
       return {
@@ -100,28 +103,32 @@ function reducer(state, action) {
     case types.REMOVE_QUESTION:
       return {
         ...state,
-        questions: state.questions.filter((question, index) => index !== action.value.index)
+        questions: state.questions.filter(
+          (_question: any, index: any) => index !== action.value.index
+        )
       };
     case types.ADD_QUESTION_INFO:
       return {
         ...state,
-        questions: state.questions.map((question, index) => {
-          if (index === action.value.index) {
-            return {
-              ...question,
-              question_info: [
-                ...question.question_info,
-                `Option ${question.question_info.length + 1}`
-              ]
-            };
+        questions: state.questions.map(
+          (question: { question_info: string | any[] }, index: any) => {
+            if (index === action.value.index) {
+              return {
+                ...question,
+                question_info: [
+                  ...question.question_info,
+                  `Option ${question.question_info.length + 1}`
+                ]
+              };
+            }
+            return question;
           }
-          return question;
-        })
+        )
       };
     case types.SET_QUESTION_TYPE:
       return {
         ...state,
-        questions: state.questions.map((question, index) => {
+        questions: state.questions.map((question: { question_info: any }, index: any) => {
           if (index === action.value.index) {
             return {
               ...question,
@@ -135,7 +142,7 @@ function reducer(state, action) {
     case types.REMOVE_QUESTION_INFO:
       return {
         ...state,
-        questions: state.questions.map((question, index) => {
+        questions: state.questions.map((question: { question_info: any[] }, index: any) => {
           if (index === action.value.index) {
             return {
               ...question,
@@ -150,7 +157,7 @@ function reducer(state, action) {
     case types.EDIT_QUESTION_TITLE:
       return {
         ...state,
-        questions: state.questions.map((question, index) => {
+        questions: state.questions.map((question: any, index: any) => {
           if (index === action.value.index) {
             return {
               ...question,
@@ -163,7 +170,7 @@ function reducer(state, action) {
     case types.EDIT_QUESTION_OPTIONAL:
       return {
         ...state,
-        questions: state.questions.map((question, index) => {
+        questions: state.questions.map((question: any, index: any) => {
           if (index === action.value.index) {
             return {
               ...question,
@@ -176,7 +183,7 @@ function reducer(state, action) {
     case types.EDIT_QUESTION_INFO:
       return {
         ...state,
-        questions: state.questions.map((question, index) => {
+        questions: state.questions.map((question: { question_info: any[] }, index: any) => {
           if (index === action.value.index) {
             return {
               ...question,
@@ -239,7 +246,7 @@ export default function Dashboard() {
 
       await api(`/posts/${id}/files?query=Icon`, {
         method: "PUT",
-        body
+        body: JSON.stringify(body)
       });
     }
 
@@ -248,7 +255,7 @@ export default function Dashboard() {
 
       await api(`/posts/${id}/files?query=Banner`, {
         method: "PUT",
-        body
+        body: JSON.stringify(body)
       });
     }
   }
