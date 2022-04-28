@@ -7,7 +7,7 @@ interface InputFileProps {
   label: string;
   name: string;
   value: File[];
-  classname: string;
+  classname?: string;
   onChange: (() => void) | ((files: File[]) => void);
 }
 

@@ -26,6 +26,7 @@ import Select from "../components/Select";
 import Button from "../components/Button";
 import UserContext from "../context/UserContext";
 import Unauthorized from "../components/Unauthorized";
+import { Locales } from "../types/common-types";
 
 const COMPONENTS_TYPES = {
   Choice: CreateChoice,
@@ -412,7 +413,7 @@ export default function Dashboard() {
                   <Wysiwyg
                     value={state.description}
                     placeholder={t("placeholders.description")}
-                    onChange={(value) =>
+                    onTextAreaChange={(value) =>
                       dispatch({
                         type: types.SET_DESCRIPTION,
                         value
@@ -737,14 +738,18 @@ function Question({ children, title, type, onEditTitle, t }) {
     <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14 relative overflow-clip">
       <div className="absolute left-0 top-0 bg-pink h-full w-2" />
 
-      <Wysiwyg value={title} onChange={onEditTitle} placeholder={t(`placeholders.${type}`)} />
+      <Wysiwyg
+        value={title}
+        onTextAreaChange={onEditTitle}
+        placeholder={t(`placeholders.${type}`)}
+      />
 
       {children}
     </div>
   );
 }
 
-export async function getStaticProps({ locale }) {
+export async function getStaticProps({ locale }: { locale: Locales }) {
   const [translations, global] = await Promise.all([
     import(`../messages/create-a-form/${locale}.json`),
     import(`../messages/global/${locale}.json`)

@@ -48,8 +48,8 @@ function insertAtCaret(input: HTMLTextAreaElement, type: ToolbarIcon) {
 interface IWysiwyg {
   value: string;
   placeholder: string;
-  onTextAreaChange: () => void;
-  toolbarItems: ToolbarIcon[];
+  onTextAreaChange: (text: string) => void;
+  toolbarItems?: ToolbarIcon[];
 }
 function Wysiwyg({
   value = "",
@@ -88,8 +88,9 @@ function Wysiwyg({
         <textarea
           ref={textarea}
           value={value}
-          // @ts-ignore
-          onChange={(e) => onTextAreaChange(e.target.value)}
+          onChange={(e) => {
+            onTextAreaChange(e.target.value);
+          }}
           placeholder={placeholder}
           className="w-full bg-black-lightest border-b-2 border-white pl-3 pt-2 text-2xl font-medium"
         ></textarea>
