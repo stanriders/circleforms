@@ -1,11 +1,11 @@
-﻿using CircleForms.Contracts.ContractModels.Request;
-using CircleForms.Database.Models.Posts;
+﻿using System;
+using CircleForms.Contracts.ContractModels.Request;
 using CircleForms.Database.Models.Posts.Enums;
 using FluentValidation;
 
 namespace CircleForms.Contracts.Validation;
 
-public class PostValidator : AbstractValidator<Post>
+public class PostValidator : AbstractValidator<PostContract>
 {
     public PostValidator()
     {
@@ -15,6 +15,13 @@ public class PostValidator : AbstractValidator<Post>
             {
                 x.SetValidator(new QuestionValidator());
             });
+
+        RuleFor(x => x.ActiveTo)
+            .NotEmpty()
+            .Must(x => x > DateTime.UtcNow)
+            .WithMessage("ActiveTo can't be less than current time of the server")
+            .Must(x => (x - DateTime.UtcNow).Days <= 365)
+            .WithMessage("ActiveTo can't be more than a year");
 
         When(x => x.Limitations is not null, () =>
         {
