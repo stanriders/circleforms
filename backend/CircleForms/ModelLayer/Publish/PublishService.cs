@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Posts.Enums;
