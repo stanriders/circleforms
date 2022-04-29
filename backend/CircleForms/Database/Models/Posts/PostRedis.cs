@@ -14,6 +14,9 @@ public class PostRedis
     [JsonProperty("active_to")]
     public DateTime ActiveTo { get; set; }
 
+    [JsonIgnore]
+    public bool IsActive => DateTime.UtcNow < ActiveTo;
+
     [JsonProperty("author_id")]
     public string AuthorId { get; set; }
 
