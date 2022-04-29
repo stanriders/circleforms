@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Users;
 
@@ -19,6 +20,7 @@ public interface ICacheRepository
 
     Task<PostRedis> AddOrUpdate(Post post);
     Task<PostRedis> GetPost(string id);
+    bool SetInactive(string postId);
     Task<PostRedis[]> GetPinnedPosts();
     Task<PostRedis[]> GetDump();
     Task<int> GetAnswerCount(string id);
