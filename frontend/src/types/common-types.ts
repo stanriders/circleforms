@@ -3,14 +3,14 @@ import { Osu } from "./osu-user";
 import LOCALES from "../libs/i18n";
 
 export type Locales = keyof typeof LOCALES;
-export type PostResponse = components["schemas"]["PostResponseContract"];
-export type PostRequest = components["schemas"]["PostRequestContract"];
-export type PinnedPosts = components["schemas"]["PageResponseContract"];
+export type PostResponse = components["schemas"]["FullPostContract"];
+export type PostRequest = components["schemas"]["PostContract"];
+export type PinnedPosts = components["schemas"]["PageContract"];
 export type PostFilter = components["schemas"]["PostFilter"] | null;
 
-type UserResponseContract = components["schemas"]["UserResponseContract"];
+type UserResponseContract = components["schemas"]["UserContract"];
 export interface UserResponse extends UserResponseContract {
   osu?: Osu;
 }
 
-export type User = components["schemas"]["UserMinimalResponseContract"];
+export type User = components["schemas"]["UserMinimalContract"];

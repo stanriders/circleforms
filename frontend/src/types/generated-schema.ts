@@ -18,9 +18,9 @@ export interface paths {
         /** Success */
         200: {
           content: {
-            "text/plain": components["schemas"]["UserResponseContract"][];
-            "application/json": components["schemas"]["UserResponseContract"][];
-            "text/json": components["schemas"]["UserResponseContract"][];
+            "text/plain": components["schemas"]["UserContract"][];
+            "application/json": components["schemas"]["UserContract"][];
+            "text/json": components["schemas"]["UserContract"][];
           };
         };
       };
@@ -36,9 +36,9 @@ export interface paths {
         /** Success */
         200: {
           content: {
-            "text/plain": components["schemas"]["UserResponseContract"];
-            "application/json": components["schemas"]["UserResponseContract"];
-            "text/json": components["schemas"]["UserResponseContract"];
+            "text/plain": components["schemas"]["UserContract"];
+            "application/json": components["schemas"]["UserContract"];
+            "text/json": components["schemas"]["UserContract"];
           };
         };
         /** Unauthorized */
@@ -79,9 +79,9 @@ export interface paths {
         /** Success */
         200: {
           content: {
-            "text/plain": components["schemas"]["PostResponseContract"][];
-            "application/json": components["schemas"]["PostResponseContract"][];
-            "text/json": components["schemas"]["PostResponseContract"][];
+            "text/plain": components["schemas"]["FullPostContract"][];
+            "application/json": components["schemas"]["FullPostContract"][];
+            "text/json": components["schemas"]["FullPostContract"][];
           };
         };
       };
@@ -93,9 +93,9 @@ export interface paths {
         /** Success */
         200: {
           content: {
-            "text/plain": components["schemas"]["PostMinimalResponseContract"][];
-            "application/json": components["schemas"]["PostMinimalResponseContract"][];
-            "text/json": components["schemas"]["PostMinimalResponseContract"][];
+            "text/plain": components["schemas"]["MinimalPostContract"][];
+            "application/json": components["schemas"]["MinimalPostContract"][];
+            "text/json": components["schemas"]["MinimalPostContract"][];
           };
         };
       };
@@ -153,9 +153,9 @@ export interface paths {
         /** Success */
         200: {
           content: {
-            "text/plain": components["schemas"]["PageResponseContract"];
-            "application/json": components["schemas"]["PageResponseContract"];
-            "text/json": components["schemas"]["PageResponseContract"];
+            "text/plain": components["schemas"]["PageContract"];
+            "application/json": components["schemas"]["PageContract"];
+            "text/json": components["schemas"]["PageContract"];
           };
         };
         /** Bad Request */
@@ -175,9 +175,9 @@ export interface paths {
         /** Success */
         200: {
           content: {
-            "text/plain": components["schemas"]["PageResponseContract"];
-            "application/json": components["schemas"]["PageResponseContract"];
-            "text/json": components["schemas"]["PageResponseContract"];
+            "text/plain": components["schemas"]["PageContract"];
+            "application/json": components["schemas"]["PageContract"];
+            "text/json": components["schemas"]["PageContract"];
           };
         };
       };
@@ -203,6 +203,25 @@ export interface paths {
     };
   };
   "/posts/{id}/answers": {
+    get: {
+      parameters: {
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** Success */
+        200: unknown;
+        /** Not Found */
+        404: {
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
+          };
+        };
+      };
+    };
     post: {
       parameters: {
         path: {
@@ -289,10 +308,10 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json-patch+json": components["schemas"]["PostRequestContract"];
-          "application/json": components["schemas"]["PostRequestContract"];
-          "text/json": components["schemas"]["PostRequestContract"];
-          "application/*+json": components["schemas"]["PostRequestContract"];
+          "application/json-patch+json": components["schemas"]["PostContract"];
+          "application/json": components["schemas"]["PostContract"];
+          "text/json": components["schemas"]["PostContract"];
+          "application/*+json": components["schemas"]["PostContract"];
         };
       };
     };
@@ -358,10 +377,10 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json-patch+json": components["schemas"]["PostUpdateRequestContract"];
-          "application/json": components["schemas"]["PostUpdateRequestContract"];
-          "text/json": components["schemas"]["PostUpdateRequestContract"];
-          "application/*+json": components["schemas"]["PostUpdateRequestContract"];
+          "application/json-patch+json": components["schemas"]["PostUpdateContract"];
+          "application/json": components["schemas"]["PostUpdateContract"];
+          "text/json": components["schemas"]["PostUpdateContract"];
+          "application/*+json": components["schemas"]["PostUpdateContract"];
         };
       };
     };
@@ -446,9 +465,23 @@ export interface components {
   schemas: {
     /** @enum {string} */
     Accessibility: "Public" | "Link" | "FriendsOnly" | "Whitelist";
-    AnswerContract: {
-      submissions?: components["schemas"]["Submission"][] | null;
-      user?: string | null;
+    FullPostContract: {
+      id?: string | null;
+      author_id?: string | null;
+      is_active?: boolean;
+      icon?: string | null;
+      banner?: string | null;
+      title?: string | null;
+      access_key?: string | null;
+      description?: string | null;
+      excerpt?: string | null;
+      gamemode?: components["schemas"]["Gamemode"];
+      accessibility?: components["schemas"]["Accessibility"];
+      limitations?: components["schemas"]["Limitations"];
+      published?: boolean;
+      questions?: components["schemas"]["Question"][] | null;
+      /** Format: date-time */
+      publish_time?: string;
     };
     /** @enum {string} */
     Gamemode: "None" | "Osu" | "Taiko" | "Fruits" | "Mania";
@@ -458,19 +491,7 @@ export interface components {
       rank?: components["schemas"]["MongoDbRange"];
       pp?: components["schemas"]["MongoDbRange"];
     };
-    MongoDbRange: {
-      /** Format: int32 */
-      start?: number;
-      /** Format: int32 */
-      end?: number;
-    };
-    PageResponseContract: {
-      users?: components["schemas"]["UserMinimalResponseContract"][] | null;
-      posts?: components["schemas"]["PostMinimalResponseContract"][] | null;
-    };
-    /** @enum {string} */
-    PostFilter: "Both" | "Active" | "Inactive";
-    PostMinimalResponseContract: {
+    MinimalPostContract: {
       id?: string | null;
       author_id?: string | null;
       is_active?: boolean;
@@ -487,7 +508,17 @@ export interface components {
       /** Format: int32 */
       answer_count?: number;
     };
-    PostRequestContract: {
+    MongoDbRange: {
+      /** Format: int32 */
+      start?: number;
+      /** Format: int32 */
+      end?: number;
+    };
+    PageContract: {
+      users?: components["schemas"]["UserMinimalContract"][] | null;
+      posts?: components["schemas"]["MinimalPostContract"][] | null;
+    };
+    PostContract: {
       title: string;
       description?: string | null;
       excerpt?: string | null;
@@ -496,30 +527,13 @@ export interface components {
       limitations?: components["schemas"]["Limitations"];
       questions: components["schemas"]["Question"][];
     };
-    PostResponseContract: {
-      id?: string | null;
-      author_id?: string | null;
-      is_active?: boolean;
-      icon?: string | null;
-      banner?: string | null;
-      title?: string | null;
-      access_key?: string | null;
-      description?: string | null;
-      excerpt?: string | null;
-      gamemode?: components["schemas"]["Gamemode"];
-      accessibility?: components["schemas"]["Accessibility"];
-      limitations?: components["schemas"]["Limitations"];
-      published?: boolean;
-      questions?: components["schemas"]["Question"][] | null;
-      answers?: components["schemas"]["AnswerContract"][] | null;
-      /** Format: date-time */
-      publish_time?: string;
-    };
-    PostUpdateRequestContract: {
+    /** @enum {string} */
+    PostFilter: "Both" | "Active" | "Inactive";
+    PostUpdateContract: {
       title?: string | null;
       description?: string | null;
       excerpt?: string | null;
-      is_active?: boolean;
+      is_active?: boolean | null;
       gamemode?: components["schemas"]["Gamemode"];
       limitations?: components["schemas"]["Limitations"];
       questions?: components["schemas"]["QuestionUpdateContract"][] | null;
@@ -533,8 +547,9 @@ export interface components {
       instance?: string | null;
     } & { [key: string]: unknown };
     Question: {
+      question_id?: string | null;
       /** Format: int32 */
-      question_id?: number;
+      order?: number;
       type: components["schemas"]["QuestionType"];
       title: string;
       is_optional?: boolean;
@@ -543,35 +558,29 @@ export interface components {
     /** @enum {string} */
     QuestionType: "Checkbox" | "Freeform" | "Choice";
     QuestionUpdateContract: {
-      /** Format: int32 */
-      id?: number | null;
+      id?: string | null;
       delete?: boolean;
+      /** Format: int32 */
+      order?: number;
       type?: components["schemas"]["QuestionType"];
       title?: string | null;
       is_optional?: boolean;
       question_info?: string[] | null;
     };
-    Submission: {
-      /** Format: int32 */
-      question_id?: number;
-      answer?: string | null;
-    };
     SubmissionContract: {
-      /** Format: int32 */
-      question_id: number;
-      question_type: components["schemas"]["QuestionType"];
+      question_id: string;
       answer: string;
     };
-    UserMinimalResponseContract: {
+    UserContract: {
+      id?: string | null;
+      discord?: string | null;
+      osu?: unknown | null;
+    };
+    UserMinimalContract: {
       id?: string | null;
       avatar_url?: string | null;
       discord?: string | null;
       username?: string | null;
-    };
-    UserResponseContract: {
-      id?: string | null;
-      discord?: string | null;
-      osu?: unknown | null;
     };
   };
 }
