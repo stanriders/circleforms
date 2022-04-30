@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
-using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Contracts.ContractModels.Response.Compound;
 using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Contracts.ContractModels.Response.Users;
@@ -53,8 +52,8 @@ public class PagesController : ControllerBase
     ///     Get posts page.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsPage)]
-    [ProducesResponseType(typeof(PageContract), 200)]
-    [ProducesResponseType(400)]
+    [ProducesResponseType(typeof(PageContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetPage(int page, [FromQuery] int pageSize = 50,
         [FromQuery] PostFilter filter = PostFilter.Both)
     {
@@ -83,6 +82,7 @@ public class PagesController : ControllerBase
     ///     Get all pinned posts
     /// </summary>
     [HttpGet(ApiEndpoints.PostsPagePinned)]
+    [ProducesResponseType(typeof(PageContract), StatusCodes.Status200OK)]
     public async Task<PageContract> GetPinned()
     {
         var posts = await _posts.GetPinned();

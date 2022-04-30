@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace CircleForms.Contracts.ContractModels.Response.Users;
 
@@ -11,5 +12,5 @@ public class UserContract
     public string Discord { get; set; }
 
     [JsonProperty("osu")]
-    public object Osu { get; set; }
+    public Dictionary<string, object> Osu { get; set; }
 }

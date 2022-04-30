@@ -40,7 +40,7 @@ public class UsersController : ControllerBase
     ///     Get user data.
     /// </summary>
     [HttpGet(ApiEndpoints.UsersGetUser)]
-    [ProducesResponseType(typeof(UserContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(UserContract), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get([RegularExpression(@"^\d+$")] string id)
     {
@@ -57,7 +57,7 @@ public class UsersController : ControllerBase
     ///     Get user data.
     /// </summary>
     [HttpGet(ApiEndpoints.UsersGetMinimalUser)]
-    [ProducesResponseType(typeof(UserMinimalContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(UserMinimalContract), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetMinimal([RegularExpression(@"^\d+$")] string id)
     {
@@ -75,7 +75,7 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMePosts)]
-    [ProducesResponseType(typeof(List<MinimalPostContract>), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(List<MinimalPostContract>), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMePosts()
     {
@@ -100,7 +100,7 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMe)]
-    [ProducesResponseType(typeof(UserContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(UserContract), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMe()
     {

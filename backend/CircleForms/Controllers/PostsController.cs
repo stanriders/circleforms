@@ -69,6 +69,9 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPut(ApiEndpoints.PostsUploadImage)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UploadImage(string id, IFormFile image, [FromQuery] ImageQuery query)
     {
         if (image is null)
@@ -99,7 +102,7 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPost(ApiEndpoints.PostsAddPost)]
-    [ProducesResponseType(typeof(MinimalPostContract), StatusCodes.Status201Created, "application/json")]
+    [ProducesResponseType(typeof(MinimalPostContract), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Post(PostContract postContract)
@@ -120,6 +123,7 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator}")]
     [HttpPost(ApiEndpoints.PostUnpublish)]
+    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK)]
     public async Task<IActionResult> Unpublish(string id)
     {
         var result = await _publish.Unpublish(id, _claim);
@@ -132,6 +136,8 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPost(ApiEndpoints.PostPublish)]
+    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Publish(string id)
     {
         var result = await _publish.Publish(id, _claim);
@@ -144,7 +150,8 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPatch(ApiEndpoints.PostsUpdatePost)]
-    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdatePost([FromBody] PostUpdateContract updateContract, string id)
     {
         var result = await _posts.UpdatePost(_claim, updateContract, id);
@@ -156,8 +163,9 @@ public class PostsController : ControllerBase
     ///     Get full info about a page if you are the creator of the page, otherwise return cached version
     /// </summary>
     [HttpGet(ApiEndpoints.PostsDetailedPost)]
-    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK, "application/json")]
-    [ProducesResponseType(typeof(PostWithQuestionsContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PostWithQuestionsContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {
@@ -171,7 +179,8 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.PostsAnswer)]
-    [ProducesResponseType(typeof(AnswersUsersContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(AnswersUsersContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAnswers(string id)
     {
@@ -181,10 +190,11 @@ public class PostsController : ControllerBase
             return result.Map();
         }
 
-        var contract = new AnswersUsersContract();
-        contract.Answers = result.Value.Adapt<List<AnswerContract>>();
-        contract.Users = (await Task.WhenAll(result.Value.Select(x => x.UserRelation.ToEntityAsync())))
-            .Adapt<List<UserInAnswerContract>>();
+        var contract = new AnswersUsersContract
+        {
+            Answers = result.Value.Adapt<List<AnswerContract>>(),
+            Users = (await Task.WhenAll(result.Value.Select(x => x.UserRelation.ToEntityAsync()))).Adapt<List<UserInAnswerContract>>()
+        };
 
         return Ok(contract);
     }
