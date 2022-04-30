@@ -188,6 +188,23 @@ public class RedisCacheRepository : ICacheRepository
         return await Map(postId);
     }
 
+    public bool SetInactive(string id)
+    {
+        var postId = id.ToPostId();
+
+        var score = _redis.SortedSetScore(_activeSet, postId);
+        if (score is null)
+        {
+            return false;
+        }
+
+        var transaction = _redis.CreateTransaction();
+        transaction.AddCondition(Condition.SortedSetContains(_activeSet, postId));
+        transaction.SortedSetRemoveAsync(_activeSet, postId);
+        transaction.SortedSetAddAsync(_inactiveSet, postId, score.Value);
+        return transaction.Execute();
+    }
+
     public async Task<PostRedis[]> GetDump()
     {
         var ids = _redis.SortedSetRangeByScore(_postsSet, order: Order.Descending);

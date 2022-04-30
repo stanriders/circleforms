@@ -59,7 +59,7 @@ public class AnswerService : IAnswerService
             return new Error(HttpStatusCode.BadRequest, "Could not find post with this id");
         }
 
-        if (!post.IsActive || !post.Published)
+        if (!post.IsActive)
         {
             return new Error(HttpStatusCode.BadRequest, "The post is inactive or unpublished");
         }

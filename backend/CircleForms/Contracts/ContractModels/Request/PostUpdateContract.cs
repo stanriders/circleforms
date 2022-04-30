@@ -16,9 +16,6 @@ public class PostUpdateContract
     [JsonProperty("excerpt")]
     public string Excerpt { get; set; }
 
-    [JsonProperty("is_active")]
-    public bool? IsActive { get; set; }
-
     [JsonProperty("gamemode")]
     public Gamemode? Gamemode { get; set; }
 

@@ -17,6 +17,9 @@ public class FullPostContract
     [JsonProperty("is_active")]
     public bool IsActive { get; set; }
 
+    [JsonProperty("active_to")]
+    public DateTime ActiveTo { get; set; }
+
     [JsonProperty("icon")]
     public string Icon { get; set; }
 

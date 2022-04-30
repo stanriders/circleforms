@@ -8,14 +8,18 @@ using CircleForms.Database.Services;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.ExternalAPI.OsuApi;
 using CircleForms.ExternalAPI.OsuApi.Configurations;
+using CircleForms.Hangfire;
 using CircleForms.IO.FileIO;
 using CircleForms.IO.FileIO.Abstract;
 using CircleForms.IO.FileIO.Configuration;
 using CircleForms.ModelLayer;
 using CircleForms.ModelLayer.Answers;
+using CircleForms.ModelLayer.Jobs.Abstract;
 using CircleForms.ModelLayer.Publish;
 using FastExpressionCompiler;
 using FluentValidation.AspNetCore;
+using Hangfire;
+using Hangfire.Redis;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
@@ -117,12 +121,29 @@ public class Startup
         services.AddTransient<PostsService>();
         services.AddTransient<ICacheRepository, RedisCacheRepository>();
         services.AddTransient<IStaticFilesService, StaticFilesService>();
+        services.AddTransient<IActivityJob, ActivityJob>();
 
         DB.InitAsync("circleforms",
             MongoClientSettings.FromConnectionString(Configuration.GetConnectionString("Database"))).Wait();
 
         var multiplexer = ConnectionMultiplexer.Connect(Configuration.GetConnectionString("Redis"));
         services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+
+        services.AddHangfire(x =>
+        {
+            x.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseRedisStorage(multiplexer, new RedisStorageOptions
+                {
+                    Prefix = "hangfire_job:"
+                });
+        });
+
+        services.AddHangfireServer(options =>
+        {
+            options.SchedulePollingInterval = TimeSpan.FromMinutes(1);
+        });
 
         services.AddControllers()
             .AddNewtonsoftJson(opts =>
@@ -140,7 +161,7 @@ public class Startup
 
         services.AddSwaggerGen(c =>
         {
-            c.SwaggerDoc("v1", new OpenApiInfo {Title = "CircleForms", Version = "v1"});
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "CircleForms", Version = "v1" });
             c.EnableAnnotations();
 
             var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -152,9 +173,14 @@ public class Startup
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        app.UseForwardedHeaders(new ForwardedHeadersOptions {ForwardedHeaders = ForwardedHeaders.All});
+        app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All });
 
         var basePath = Configuration.GetValue<string>("PathBase");
+        app.UsePathBase(basePath);
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+
         if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
@@ -162,6 +188,11 @@ public class Startup
             {
                 Secure = CookieSecurePolicy.None,
                 MinimumSameSitePolicy = SameSiteMode.None
+            });
+
+            app.UseHangfireDashboard(options: new DashboardOptions()
+            {
+                AppPath = "https://localhost:5001/swagger"
             });
         }
 
@@ -174,7 +205,7 @@ public class Startup
                 {
                     var scheme = env.IsStaging() ? "https" : httpReq.Scheme;
                     swaggerDoc.Servers = new List<OpenApiServer>
-                        {new() {Url = $"{scheme}://{httpReq.Host.Value}{basePath}"}};
+                        { new() { Url = $"{scheme}://{httpReq.Host.Value}{basePath}" } };
                 });
             });
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "CircleForms v1"));
@@ -194,15 +225,18 @@ public class Startup
                 Secure = CookieSecurePolicy.SameAsRequest,
                 MinimumSameSitePolicy = SameSiteMode.Lax
             });
+
+            app.UseHangfireDashboard(options: new DashboardOptions
+            {
+                IsReadOnlyFunc = _ => true,
+                Authorization = new[] { new AuthorizationFilter() }
+            });
         }
 
-        app.UsePathBase(basePath);
-
-        app.UseRouting();
-
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapControllers();
+            endpoints.MapHangfireDashboard();
+        });
     }
 }

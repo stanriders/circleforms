@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using CircleForms.Database.Models.Posts.Enums;
@@ -26,6 +27,9 @@ public class PostContract
 
     [JsonProperty("limitations")]
     public Limitations Limitations { get; set; }
+
+    [JsonProperty("active_to")]
+    public DateTime ActiveTo { get; set; }
 
     [Required]
     [JsonProperty("questions")]
