@@ -26,6 +26,14 @@ public class PostValidator : AbstractValidator<PostContract>
         When(x => x.Limitations is not null, () =>
         {
             RuleFor(x => x.Gamemode).NotEqual(Gamemode.None);
+
+            RuleFor(x => x.Limitations.Pp)
+                .Must(x => x.Start > 0 && x.End > 0).WithMessage("PP should be bigger than 0")
+                .Must(x=> x.End < x.Start).WithMessage("Start of the pp range should be bigger than end");
+
+            RuleFor(x => x.Limitations.Rank)
+                .Must(x => x.Start > 0 && x.End > 0).WithMessage("Rank should be bigger than 0")
+                .Must(x => x.End > x.Start).WithMessage("End of the rank range should be bigger than start");
         });
     }
 }
@@ -43,6 +51,14 @@ public class PostUpdateRequestContractValidator : AbstractValidator<PostUpdateCo
         When(x => x.Limitations is not null, () =>
         {
             RuleFor(x => x.Gamemode).NotEqual(Gamemode.None);
+
+            RuleFor(x => x.Limitations.Pp)
+                .Must(x => x.Start > 0 && x.End > 0).WithMessage("PP should be bigger than 0")
+                .Must(x => x.End < x.Start).WithMessage("Start of the pp range should be bigger than end");
+
+            RuleFor(x => x.Limitations.Rank)
+                .Must(x => x.Start > 0 && x.End > 0).WithMessage("Rank should be bigger than 0")
+                .Must(x => x.End > x.Start).WithMessage("End of the rank range should be bigger than start");
         });
     }
 }
