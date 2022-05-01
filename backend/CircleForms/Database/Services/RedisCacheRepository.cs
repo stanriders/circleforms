@@ -72,7 +72,7 @@ public class RedisCacheRepository : ICacheRepository
     {
         await _redis.SetAddAsync(_userIds, user.ID);
         var cachedUser = _mapper.Map<UserMinimalRedis>(user);
-        await _redis.StringSetAsync(user.ID.ToUserId(), JsonConvert.SerializeObject(cachedUser));
+        await _redis.StringSetAsync(user.ID.ToUserId(), JsonConvert.SerializeObject(cachedUser, Formatting.None));
     }
 
     public async Task<UserMinimalRedis> GetMinimalUser(string id)
@@ -99,7 +99,7 @@ public class RedisCacheRepository : ICacheRepository
 
         var postId = post.ID.ToPostId();
         var postRedis = _mapper.Map<PostRedis>(post);
-        var postJson = JsonConvert.SerializeObject(postRedis);
+        var postJson = JsonConvert.SerializeObject(postRedis, Formatting.None);
 
         _logger.LogInformation("Adding {Post} to the cache", postId);
         if (!await _redis.StringSetAsync(postId, postJson))
@@ -223,7 +223,7 @@ public class RedisCacheRepository : ICacheRepository
     public async Task<PostRedis> AddOrUpdate(Post post)
     {
         var map = _mapper.Map<PostRedis>(post);
-        await _redis.StringSetAsync(post.ID.ToPostId(), JsonConvert.SerializeObject(map));
+        await _redis.StringSetAsync(post.ID.ToPostId(), JsonConvert.SerializeObject(map, Formatting.None));
 
         return map;
     }
