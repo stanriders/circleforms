@@ -194,6 +194,11 @@ public class Startup
             {
                 AppPath = "https://localhost:5001/swagger"
             });
+
+            app.UseCors(x =>
+            {
+                x.WithOrigins("http://localhost:3000", "https://localhost:3000", "localhost:3000");
+            });
         }
 
         if (env.IsDevelopment() || env.IsStaging())
