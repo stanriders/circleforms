@@ -211,7 +211,21 @@ export interface paths {
       };
       responses: {
         /** Success */
-        200: unknown;
+        200: {
+          content: {
+            "text/plain": components["schemas"]["AnswersUsersContract"];
+            "application/json": components["schemas"]["AnswersUsersContract"];
+            "text/json": components["schemas"]["AnswersUsersContract"];
+          };
+        };
+        /** Unauthorized */
+        401: {
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
+          };
+        };
         /** Not Found */
         404: {
           content: {
@@ -279,6 +293,22 @@ export interface paths {
       responses: {
         /** Success */
         200: unknown;
+        /** Bad Request */
+        400: {
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
+          };
+        };
+        /** Unauthorized */
+        401: {
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
+          };
+        };
       };
       requestBody: {
         content: {
@@ -294,7 +324,13 @@ export interface paths {
     post: {
       responses: {
         /** Success */
-        201: unknown;
+        201: {
+          content: {
+            "text/plain": components["schemas"]["MinimalPostContract"];
+            "application/json": components["schemas"]["MinimalPostContract"];
+            "text/json": components["schemas"]["MinimalPostContract"];
+          };
+        };
         /** Unauthorized */
         401: {
           content: {
@@ -325,7 +361,13 @@ export interface paths {
       };
       responses: {
         /** Success */
-        200: unknown;
+        200: {
+          content: {
+            "text/plain": components["schemas"]["FullPostContract"];
+            "application/json": components["schemas"]["FullPostContract"];
+            "text/json": components["schemas"]["FullPostContract"];
+          };
+        };
       };
     };
   };
@@ -338,7 +380,21 @@ export interface paths {
       };
       responses: {
         /** Success */
-        200: unknown;
+        200: {
+          content: {
+            "text/plain": components["schemas"]["FullPostContract"];
+            "application/json": components["schemas"]["FullPostContract"];
+            "text/json": components["schemas"]["FullPostContract"];
+          };
+        };
+        /** Unauthorized */
+        401: {
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
+          };
+        };
       };
     };
   };
@@ -354,7 +410,21 @@ export interface paths {
       };
       responses: {
         /** Success */
-        200: unknown;
+        200: {
+          content: {
+            "text/plain": components["schemas"]["PostWithQuestionsContract"];
+            "application/json": components["schemas"]["PostWithQuestionsContract"];
+            "text/json": components["schemas"]["PostWithQuestionsContract"];
+          };
+        };
+        /** Unauthorized */
+        401: {
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
+          };
+        };
         /** Not Found */
         404: {
           content: {
@@ -373,7 +443,21 @@ export interface paths {
       };
       responses: {
         /** Success */
-        200: unknown;
+        200: {
+          content: {
+            "text/plain": components["schemas"]["FullPostContract"];
+            "application/json": components["schemas"]["FullPostContract"];
+            "text/json": components["schemas"]["FullPostContract"];
+          };
+        };
+        /** Unauthorized */
+        401: {
+          content: {
+            "text/plain": components["schemas"]["ProblemDetails"];
+            "application/json": components["schemas"]["ProblemDetails"];
+            "text/json": components["schemas"]["ProblemDetails"];
+          };
+        };
       };
       requestBody: {
         content: {
@@ -394,7 +478,13 @@ export interface paths {
       };
       responses: {
         /** Success */
-        200: unknown;
+        200: {
+          content: {
+            "text/plain": components["schemas"]["UserContract"];
+            "application/json": components["schemas"]["UserContract"];
+            "text/json": components["schemas"]["UserContract"];
+          };
+        };
         /** Not Found */
         404: {
           content: {
@@ -415,7 +505,13 @@ export interface paths {
       };
       responses: {
         /** Success */
-        200: unknown;
+        200: {
+          content: {
+            "text/plain": components["schemas"]["UserMinimalContract"];
+            "application/json": components["schemas"]["UserMinimalContract"];
+            "text/json": components["schemas"]["UserMinimalContract"];
+          };
+        };
         /** Not Found */
         404: {
           content: {
@@ -431,7 +527,13 @@ export interface paths {
     get: {
       responses: {
         /** Success */
-        200: unknown;
+        200: {
+          content: {
+            "text/plain": components["schemas"]["MinimalPostContract"][];
+            "application/json": components["schemas"]["MinimalPostContract"][];
+            "text/json": components["schemas"]["MinimalPostContract"][];
+          };
+        };
         /** Unauthorized */
         401: {
           content: {
@@ -447,7 +549,13 @@ export interface paths {
     get: {
       responses: {
         /** Success */
-        200: unknown;
+        200: {
+          content: {
+            "text/plain": components["schemas"]["UserContract"];
+            "application/json": components["schemas"]["UserContract"];
+            "text/json": components["schemas"]["UserContract"];
+          };
+        };
         /** Unauthorized */
         401: {
           content: {
@@ -465,10 +573,20 @@ export interface components {
   schemas: {
     /** @enum {string} */
     Accessibility: "Public" | "Link" | "FriendsOnly" | "Whitelist";
+    AnswerContract: {
+      submissions?: components["schemas"]["Submission"][] | null;
+      user?: string | null;
+    };
+    AnswersUsersContract: {
+      users?: components["schemas"]["UserInAnswerContract"][] | null;
+      answers?: components["schemas"]["AnswerContract"][] | null;
+    };
     FullPostContract: {
       id?: string | null;
       author_id?: string | null;
       is_active?: boolean;
+      /** Format: date-time */
+      active_to?: string;
       icon?: string | null;
       banner?: string | null;
       title?: string | null;
@@ -495,6 +613,8 @@ export interface components {
       id?: string | null;
       author_id?: string | null;
       is_active?: boolean;
+      /** Format: date-time */
+      active_to?: string;
       icon?: string | null;
       banner?: string | null;
       title?: string | null;
@@ -514,6 +634,12 @@ export interface components {
       /** Format: int32 */
       end?: number;
     };
+    OsuAnswerContract: {
+      avatar_url?: string | null;
+      username?: string | null;
+      statistics?: unknown | null;
+      country_code?: unknown | null;
+    };
     PageContract: {
       users?: components["schemas"]["UserMinimalContract"][] | null;
       posts?: components["schemas"]["MinimalPostContract"][] | null;
@@ -525,6 +651,8 @@ export interface components {
       gamemode?: components["schemas"]["Gamemode"];
       accessibility?: components["schemas"]["Accessibility"];
       limitations?: components["schemas"]["Limitations"];
+      /** Format: date-time */
+      active_to?: string;
       questions: components["schemas"]["Question"][];
     };
     /** @enum {string} */
@@ -533,10 +661,29 @@ export interface components {
       title?: string | null;
       description?: string | null;
       excerpt?: string | null;
-      is_active?: boolean | null;
       gamemode?: components["schemas"]["Gamemode"];
       limitations?: components["schemas"]["Limitations"];
       questions?: components["schemas"]["QuestionUpdateContract"][] | null;
+    };
+    PostWithQuestionsContract: {
+      questions?: components["schemas"]["Question"][] | null;
+      id?: string | null;
+      author_id?: string | null;
+      is_active?: boolean;
+      /** Format: date-time */
+      active_to?: string;
+      icon?: string | null;
+      banner?: string | null;
+      title?: string | null;
+      description?: string | null;
+      excerpt?: string | null;
+      gamemode?: components["schemas"]["Gamemode"];
+      /** Format: date-time */
+      publish_time?: string;
+      accessibility?: components["schemas"]["Accessibility"];
+      limitations?: components["schemas"]["Limitations"];
+      /** Format: int32 */
+      answer_count?: number;
     };
     ProblemDetails: {
       type?: string | null;
@@ -567,6 +714,10 @@ export interface components {
       is_optional?: boolean;
       question_info?: string[] | null;
     };
+    Submission: {
+      question_id?: string | null;
+      answer?: string | null;
+    };
     SubmissionContract: {
       question_id: string;
       answer: string;
@@ -574,7 +725,12 @@ export interface components {
     UserContract: {
       id?: string | null;
       discord?: string | null;
-      osu?: unknown | null;
+      osu?: { [key: string]: unknown } | null;
+    };
+    UserInAnswerContract: {
+      id?: string | null;
+      discord?: string | null;
+      osu?: components["schemas"]["OsuAnswerContract"];
     };
     UserMinimalContract: {
       id?: string | null;

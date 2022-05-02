@@ -10,11 +10,11 @@ import api from "../libs/api";
 import Button from "../components/Button";
 import Loading from "../components/Loading";
 import FormEntry from "../components/FormEntry";
-import { Locales, PinnedPosts, User } from "../types/common-types";
+import { Locales, PostsPage, User } from "../types/common-types";
 import VisuallyHidden from "@reach/visually-hidden";
 
 const Home: NextPage = () => {
-  const { data, isValidating } = useSWR<PinnedPosts>(`/posts/page/1?pageSize=4&filter=Active`, api);
+  const { data, isValidating } = useSWR<PostsPage>(`/posts/page/1?pageSize=4&filter=Active`, api);
   const t = useTranslations();
 
   return (

@@ -14,13 +14,13 @@ import Unauthorized from "../components/Unauthorized";
 import Title from "../components/Title";
 import FormCard from "../components/FormCard";
 import UserContext from "../context/UserContext";
-import { Locales, PostResponse } from "../types/common-types";
+import { Locales, PostsId } from "../types/common-types";
 
 export default function Dashboard() {
   const t = useTranslations();
   const { user } = useContext(UserContext);
   const [forms, setForms] = useState(Array.from({ length: 11 }));
-  const { data: posts } = useSWR<PostResponse[]>("/me/posts", api);
+  const { data: posts } = useSWR<PostsId[]>("/me/posts", api);
 
   useEffect(() => {
     if (posts && posts.length > 0) {

@@ -6,6 +6,8 @@ interface ImageProps {
 }
 
 export default function getImage({ id, banner, icon, type = "banner" }: ImageProps) {
+  console.log(id);
+
   if (!id) {
     throw new Error("getImage: id is required");
   }

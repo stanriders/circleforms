@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { PostResponse } from "../types/common-types";
+import { PostsId } from "../types/common-types";
 import getImage from "../utils/getImage";
 
-export default function FormThumbnail({ id, icon, title }: PostResponse) {
+export default function FormThumbnail({ id, icon, title }: PostsId) {
   const iconImg = getImage({ icon, id, type: "icon" });
 
   return (

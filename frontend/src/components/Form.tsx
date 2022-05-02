@@ -9,13 +9,8 @@ import Player from "./Player";
 import Button from "./Button";
 import bbcode from "../libs/bbcode";
 import UserContext from "../context/UserContext";
-import { PostResponse, User } from "../types/common-types";
+import { Answers, PostsId, UserInAnswer } from "../types/common-types";
 import { dynamicSort } from "../utils/objectSort";
-
-interface IFromProps {
-  posts: PostResponse;
-  users: User[];
-}
 
 const TempPlayers = [
   { name: "Varvalian", ranking: 14, countryRanking: 1, discordTag: "Varvalian#948" },
@@ -25,15 +20,28 @@ const TempPlayers = [
   { name: "WhiteCat", ranking: 4, countryRanking: 1, discordTag: "WhiteCat#1076" }
 ];
 
-export default function Form({ posts, users }: IFromProps) {
-  const { banner, description, icon, id, is_active, answers, title } = posts;
+interface IFromProps {
+  posts: PostsId;
+  users: UserInAnswer[] | null | undefined;
+  answers: Answers;
+}
+
+export default function Form({ posts, users, answers }: IFromProps) {
+  
+
+  const { banner, description, icon, id, is_active, title } = posts;
   const { user } = useContext(UserContext);
   const osuUser = user?.osu;
 
   const [sort, setSort] = useState("rank");
   const [sortedPlayers, setSortedPlayers] = useState(TempPlayers);
 
-  const [primaryAuthor, setPrimaryAuthor] = useState(users[0]);
+  const [primaryAuthor, setPrimaryAuthor] = useState<UserInAnswer | null | undefined>(null);
+  useEffect(() => {
+    if (users && users[0]) {
+      setPrimaryAuthor(users[0]);
+    }
+  }, [users]);
 
   const t = useTranslations();
   const router = useRouter();
@@ -55,7 +63,7 @@ export default function Form({ posts, users }: IFromProps) {
 
   useEffect(() => {
     if (!primaryAuthor) {
-      setPrimaryAuthor(osuUser as User);
+      setPrimaryAuthor(osuUser as UserInAnswer);
     }
   }, [primaryAuthor, osuUser]);
 
@@ -77,15 +85,15 @@ export default function Form({ posts, users }: IFromProps) {
               <img className="h-20 w-20 rounded-full" src={iconImg} alt={`${title}'s thumbnail`} />
               <img
                 className="h-10 w-10 rounded-full absolute bottom-0 right-0"
-                src={primaryAuthor?.avatar_url as string}
-                alt={`${primaryAuthor?.username}'s avatar`}
+                src={primaryAuthor?.osu?.avatar_url as string}
+                alt={`${primaryAuthor?.osu?.username}'s avatar`}
               />
             </div>
 
             <div>
               <h1 className="text-4xl font-bold">{title}</h1>
               <p className="text-white text-opacity-50 text-2xl">
-                {answerCount ?? posts?.answers?.length} {t("answersCount")}
+                {answerCount ?? answers?.length} {t("answersCount")}
               </p>
             </div>
           </div>

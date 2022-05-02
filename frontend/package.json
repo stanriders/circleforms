@@ -6,7 +6,7 @@
     "dev": "npm run generate-backend-types && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "tsc --noEmit && next lint",
     "prepare": "cd .. && husky install frontend/.husky",
     "format": "prettier --write ./src/*",
     "check-types": "tsc --pretty --noEmit",

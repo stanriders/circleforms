@@ -1,9 +1,9 @@
 import Link from "next/link";
 import * as timeago from "timeago.js";
-import { PostResponse, User } from "../types/common-types";
+import { PostsId, User } from "../types/common-types";
 import getImage from "../utils/getImage";
 
-interface IFormEntry extends PostResponse {
+interface IFormEntry extends PostsId {
   user: User;
 }
 

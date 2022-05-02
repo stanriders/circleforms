@@ -1,4 +1,6 @@
-import { PinnedPosts, PostResponse, User, UserResponse } from "../types/common-types";
+import { POSTS_PAGE } from "../mocks/posts-page";
+import { POSTS_PAGE_PINNED } from "../mocks/posts-page-pinned";
+import {  PostsId, User, UserMe } from "../types/common-types";
 
 export default async function api(endpoint: string, options?: RequestInit) {
   if (process.env.NODE_ENV === "development") {
@@ -6,15 +8,15 @@ export default async function api(endpoint: string, options?: RequestInit) {
     await sleep(350);
 
     if (endpoint.includes("/posts/page/pinned")) {
-      return mocks.pinned as PinnedPosts;
+      return POSTS_PAGE_PINNED;
     }
 
     if (endpoint.includes("/posts/page")) {
-      return mocks.forms as PinnedPosts;
+      return POSTS_PAGE;
     }
 
     if (endpoint.includes("/posts/")) {
-    return mocks.form as PostResponse;
+      return mocks.form as PostsId;
     }
 
     if (endpoint.includes("/minimal")) {
@@ -22,11 +24,11 @@ export default async function api(endpoint: string, options?: RequestInit) {
     }
 
     if (endpoint === "/me/posts") {
-      return mocks.mePosts as PostResponse[];
+      return mocks.mePosts as PostsId[];
     }
 
     if (endpoint === "/me") {
-      return mocks.me as UserResponse;
+      return mocks.me as UserMe;
     }
   }
 

@@ -13,7 +13,7 @@ import FormEntrySkeletonList from "../components/FormEntrySkeletonList";
 import FormEntry from "../components/FormEntry";
 import Button from "../components/Button";
 
-import { Locales, PinnedPosts, PostFilter, User } from "../types/common-types";
+import { Locales, PostsPage, PostFilter, User } from "../types/common-types";
 
 export default function FormsList() {
   const router = useRouter();
@@ -21,9 +21,9 @@ export default function FormsList() {
   const [filter, setFilter] = useState<PostFilter>("Both");
   const [page, setPage] = useState(1);
 
-  const { data: pinnedForms } = useSWR<PinnedPosts>(`/posts/page/pinned`, api);
+  const { data: pinnedForms } = useSWR<PostsPage>(`/posts/page/pinned`, api);
 
-  const { data, isValidating } = useSWR<PinnedPosts>(
+  const { data, isValidating } = useSWR<PostsPage>(
     `/posts/page/${page}?filter=${filter}&pageSize=10`,
     api
   );

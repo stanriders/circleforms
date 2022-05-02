@@ -1,40 +1,50 @@
-import { InferGetServerSidePropsType } from "next";
+import { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
 import Head from "next/head";
 import Form from "../../components/Form";
 import DefaultLayout from "../../layouts";
 import api from "../../libs/api";
-import { Locales } from "../../types/common-types";
+import { Locales, PostsId, PostsIdAnswers } from "../../types/common-types";
 
-export default function SingleForm({
-  form,
-  author
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+const SingleForm: NextPage<ServerProps> = ({ posts, usersAndAnswers }) => {
+  console.log(posts);
+
   return (
     <DefaultLayout>
       <Head>
-        {/* @ts-ignore */}
-        <title>CircleForms - {form.posts.title}</title>
+        <title>CircleForms - {posts.title}</title>
       </Head>
 
       <section className="container mb-12">
-        {/* @ts-ignore */}
-        <Form {...form} />
+        <Form posts={posts} users={usersAndAnswers.users} answers={usersAndAnswers.answers} />
       </section>
     </DefaultLayout>
   );
-}
+};
 
-interface Props {
-  params: { id: number };
+type ServerProps = {
+  posts: PostsId;
+  messages: any;
+  usersAndAnswers: PostsIdAnswers;
+};
+
+type ServerParams = {
+  id: string;
   locale: Locales;
-}
-export async function getServerSideProps({ params, locale }: Props) {
-  const { id } = params;
+};
 
-  const [form, translations, global] = await Promise.all([
+export const getServerSideProps: GetServerSideProps<ServerProps, ServerParams> = async (
+  context
+): Promise<GetServerSidePropsResult<ServerProps>> => {
+  // console.log(context.);
+
+  const id = context.params as ServerParams;
+
+  type Resp = [PostsId, PostsIdAnswers, any, any];
+  const [posts, usersAndAnswers, translations, global] = await Promise.all<Resp>([
     await api(`/posts/${id}`),
-    import(`../../messages/single-form/${locale}.json`),
-    import(`../../messages/global/${locale}.json`)
+    await api(`/posts/${id}/answers`),
+    import(`../../messages/single-form/${context.locale}.json`),
+    import(`../../messages/global/${context.locale}.json`)
   ]);
 
   const messages = {
@@ -44,8 +54,11 @@ export async function getServerSideProps({ params, locale }: Props) {
 
   return {
     props: {
-      form,
+      posts,
+      usersAndAnswers,
       messages
     }
   };
-}
+};
+
+export default SingleForm;
