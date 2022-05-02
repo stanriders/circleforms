@@ -44,8 +44,10 @@ export default function Form({ posts, users, answers }: IFromProps) {
   const t = useTranslations();
   const router = useRouter();
 
-  const bannerImg = getImage({ id, banner, type: "banner" });
-  const iconImg = getImage({ id, icon, type: "icon" });
+  // const bannerImg = getImage({ id, banner, type: "banner" });
+  // const iconImg = getImage({ id, icon, type: "icon" });
+  const bannerImg = "/images/form-entry-test.jpg"
+  const iconImg = "/images/form-entry-test.jpg"
 
   const answerCount = answers?.length;
 
@@ -116,7 +118,7 @@ export default function Form({ posts, users, answers }: IFromProps) {
               <div
                 className="bbcode"
                 dangerouslySetInnerHTML={{
-                  __html: bbcode(description)
+                  __html: bbcode(description || "")
                 }}
               />
             </TabPanel>
