@@ -34,6 +34,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using MongoDB.Driver;
 using MongoDB.Entities;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using StackExchange.Redis;
@@ -149,6 +150,7 @@ public class Startup
             .AddNewtonsoftJson(opts =>
             {
                 opts.SerializerSettings.Converters.Add(new StringEnumConverter());
+                opts.SerializerSettings.Formatting = Formatting.None;
                 opts.SerializerSettings.ContractResolver = new DefaultContractResolver
                 {
                     NamingStrategy = new SnakeCaseNamingStrategy
