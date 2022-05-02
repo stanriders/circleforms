@@ -1,6 +1,6 @@
 import { POSTS_PAGE } from "../mocks/posts-page";
 import { POSTS_PAGE_PINNED } from "../mocks/posts-page-pinned";
-import {  PostsId, User, UserMe } from "../types/common-types";
+import { PostsId, User, UserMe } from "../types/common-types";
 
 export default async function api(endpoint: string, options?: RequestInit) {
   if (process.env.NODE_ENV === "development") {

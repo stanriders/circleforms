@@ -27,8 +27,6 @@ interface IFromProps {
 }
 
 export default function Form({ posts, users, answers }: IFromProps) {
-  
-
   const { banner, description, icon, id, is_active, title } = posts;
   const { user } = useContext(UserContext);
   const osuUser = user?.osu;
