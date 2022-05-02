@@ -1,0 +1,27 @@
+{
+  "global": {
+    "navbar": {
+      "home": "Home",
+      "forms": "Forms List",
+      "team": "Our Team",
+      "dashboard": "Dashboard",
+      "settings": "Settings",
+      "logout": "Log Out",
+      "login": "Log In"
+    },
+    "meta": {
+      "description": "CircleForms is an alternative to Google Forms, designed for osu!-related projects with convenience in mind, allowing easier registration for tournaments and much more."
+    },
+    "inputs": {
+      "file": {
+        "dragImageHere": "Drag an image here",
+        "orPressButton": "or press the button",
+        "chooseFile": "Choose a file"
+      },
+      "wysiwyg": {
+        "preview": "Preview",
+        "write": "Write"
+      }
+    }
+  }
+}

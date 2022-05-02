@@ -1,0 +1,35 @@
+{
+  "users": [
+    {
+      "id": "7217455",
+      "avatar_url": "https://a.ppy.sh/7217455?1588635261.jpeg",
+      "discord": "StanR#3012",
+      "username": "StanR"
+    }
+  ],
+  "posts": [
+    {
+      "id": "62570f3ec41a85f75fd57d5e",
+      "author_id": "7217455",
+      "is_active": true,
+      "icon": null,
+      "banner": null,
+      "title": "A Very important Form",
+      "description": "too lazy to write a description, so look at this cat instead: [img]https://cdn2.thecatapi.com/images/dda.jpg[/img]",
+      "excerpt": "So important it's pinned!",
+      "publish_time": "2022-04-13T18:03:39.585Z",
+      "accessibility": "Public",
+      "limitations": {
+        "rank": {
+          "start": 0,
+          "end": 0
+        },
+        "pp": {
+          "start": 0,
+          "end": 0
+        }
+      },
+      "answer_count": 1
+    }
+  ]
+}

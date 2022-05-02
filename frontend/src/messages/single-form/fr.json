@@ -1,0 +1,25 @@
+{
+  "status": "Statut",
+  "answersCount": "réponses soumises",
+  "tabs": {
+    "info": {
+      "title": "Info"
+    },
+    "answers": {
+      "title": "Réponses"
+    }
+  },
+  "sort": {
+    "rank": "Trier par rank",
+    "date": "Trier par date"
+  },
+  "active": "Actif",
+  "inactive": "Inactif",
+  "mistakeNotice": "Pensez-vous que votre réponse ou celle de quelqu'un d'autre n'a pas été comptabilisée ? <br> Veuillez nous envoyer un message dans le canal <a class='inline-link' href='https://discord.com/invite/rx9RKQsy9H'>#reports</a> !",
+  "back": "Retour",
+  "answer": "Répondre",
+  "Player": {
+    "globalRanking": "Classement global",
+    "countryRanking": "Classement national"
+  }
+}

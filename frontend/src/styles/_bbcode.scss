@@ -1,0 +1,37 @@
+.bbcode {
+  @apply text-2xl whitespace-pre-line;
+
+  .notice {
+    @apply block rounded-5 bg-black border-2 border-black-darker p-4 my-4;
+  }
+
+  h3 {
+    @apply text-4xl font-bold mt-6 mb-4;
+  }
+
+  a {
+    @apply text-pink transition ease-out-cubic;
+
+    &:hover {
+      @apply text-pink-200;
+    }
+  }
+
+  ul {
+    @apply px-8 my-4;
+    list-style: disc;
+  }
+
+  ol {
+    @apply px-8 my-4;
+    list-style: auto;
+  }
+
+  blockquote {
+    @apply border-l-2 border-white my-4;
+
+    p {
+      @apply ml-4;
+    }
+  }
+}

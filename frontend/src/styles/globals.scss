@@ -1,0 +1,259 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Exo+2:wght@500;700&family=MuseoModerno:wght@500&display=swap");
+
+@import "~flag-icons/sass/flag-icons";
+@import "reach";
+@import "inputs";
+@import "bbcode";
+
+html,
+body {
+  @apply p-0 m-0 bg-black text-white font-body h-full scroll-smooth;
+  background-image: url("/images/background-decorations.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+::-webkit-scrollbar {
+  @apply w-1;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply outline-none bg-pink rounded-14;
+}
+
+:root {
+  scrollbar-width: thin;
+}
+
+#__next {
+  @apply h-full;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+.link {
+  @apply font-museo font-medium relative px-5 py-3;
+
+  &::before {
+    content: "";
+    @apply w-full h-full opacity-0 rounded-3xl transition-opacity ease-out-cubic absolute inset-0;
+    background-color: rgba(255, 102, 170, 0.2);
+  }
+
+  &.active::before {
+    @apply opacity-100;
+  }
+
+  &:hover::before {
+    @apply opacity-100;
+  }
+}
+
+header .button.primary {
+  @apply font-museo text-base;
+}
+
+footer {
+  a {
+    &:hover {
+      @apply underline;
+    }
+  }
+}
+
+svg {
+  width: auto;
+  height: auto;
+}
+
+.button {
+  @apply font-body text-lg font-bold rounded-3xl px-5 py-2 transition ease-out-cubic select-none;
+
+  &.primary {
+    @apply bg-black outline outline-3 outline-pink text-pink;
+  }
+
+  &.secondary {
+    @apply bg-pink text-pink-dark;
+
+    &:hover {
+      @apply bg-pink-600;
+    }
+  }
+
+  &.tertiary {
+    @apply outline-5 outline-dashed outline-pink;
+  }
+
+  &.grey {
+    @apply font-body bg-grey-dark text-grey text-2xl font-semibold transition-colors ease-out-cubic;
+
+    &.active,
+    &:hover {
+      @apply bg-pink text-black-lighter font-bold;
+    }
+  }
+
+  &.dark {
+    @apply font-body bg-black-lighter text-white font-semibold transition-colors ease-out-cubic;
+
+    &.active,
+    &:hover {
+      @apply bg-pink text-black-lighter font-bold;
+    }
+  }
+
+  &.button--rounded {
+    @apply rounded-full w-12 h-12 flex justify-center items-center;
+  }
+
+  &.button--large {
+    @apply text-2xl px-14 py-3;
+  }
+
+  &[disabled] {
+    @apply opacity-50 cursor-not-allowed;
+  }
+}
+
+.button--icon {
+  @apply inline-flex items-center gap-x-2 p-2 transition-colors ease-out-cubic rounded-full;
+
+  &:hover {
+    @apply bg-white bg-opacity-10;
+  }
+}
+
+.container {
+  @apply w-full mx-auto px-4;
+  max-width: 1172px;
+
+  &.max-height {
+    height: calc(100% - 56px);
+  }
+}
+
+.small-container {
+  @apply w-full mx-auto px-4;
+  max-width: 968px;
+}
+
+.type-h1 {
+  @apply text-7xl font-bold;
+}
+
+.type-h2 {
+  @apply text-5xl;
+}
+
+.lds-ellipsis {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+
+.lds-ellipsis div {
+  position: absolute;
+  top: 33px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #fff;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
+}
+
+.lds-ellipsis div:nth-child(1) {
+  left: 8px;
+  animation: lds-ellipsis1 0.6s infinite;
+}
+
+.lds-ellipsis div:nth-child(2) {
+  left: 8px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+
+.lds-ellipsis div:nth-child(3) {
+  left: 32px;
+  animation: lds-ellipsis2 0.6s infinite;
+}
+
+.lds-ellipsis div:nth-child(4) {
+  left: 56px;
+  animation: lds-ellipsis3 0.6s infinite;
+}
+
+@keyframes lds-ellipsis1 {
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes lds-ellipsis3 {
+  0% {
+    transform: scale(1);
+  }
+
+  100% {
+    transform: scale(0);
+  }
+}
+
+@keyframes lds-ellipsis2 {
+  0% {
+    transform: translate(0, 0);
+  }
+
+  100% {
+    transform: translate(24px, 0);
+  }
+}
+
+.skeleton {
+  background-image: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0.106) 200%,
+    rgba(255, 255, 255, 0) 80%
+  );
+  background-repeat: repeat-y;
+  background-size: 100px 200px;
+  background-position: 0 0;
+  animation: shine 1.3s infinite;
+}
+
+@keyframes shine {
+  to {
+    background-position: 150% 0;
+  }
+}
+
+.bg-gradient {
+  background: linear-gradient(89.81deg, #0c0c0c 27.73%, #151515 46.49%, #0c0c0c 65.11%);
+}
+
+.fi {
+  width: 42px;
+  height: 29px;
+
+  &.small {
+    height: 24px;
+    width: 35px;
+  }
+}
+
+.inline-link {
+  @apply text-blue underline hover:no-underline;
+}

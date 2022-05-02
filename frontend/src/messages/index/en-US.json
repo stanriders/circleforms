@@ -1,0 +1,17 @@
+{
+  "title": "Home",
+  "description": "an innovative solution for your osu! projects.",
+  "createForm": "Create a form!",
+  "readMore": "Read more",
+  "about": {
+    "title": "About CircleForms",
+    "first": "CircleForms is an alternative to Google Forms, designed for osu!-related projects with convenience in mind, allowing easier registration for tournaments and much more.",
+    "second": "This project is non-profit and is not associated with osu!. It is something we created in our free time, for the osu! community."
+  },
+  "recentForms": {
+    "title": "Recently created forms",
+    "description": "See the latest projects from the community hosts!"
+  },
+  "noForms": "No forms here. Come back later!",
+  "showMore": "Show more!"
+}
