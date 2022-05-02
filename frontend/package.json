@@ -6,10 +6,9 @@
     "dev": "npm run generate-backend-types && next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc --noEmit && next lint",
+    "lint": "tsc --pretty --noEmit && next lint",
     "prepare": "cd .. && husky install frontend/.husky",
     "format": "prettier --write ./src/*",
-    "check-types": "tsc --pretty --noEmit",
     "generate-backend-types": "npx openapi-typescript https://circleforms.net/swagger/v1/swagger.json --output ./src/types/generated-schema.ts"
   },
   "dependencies": {

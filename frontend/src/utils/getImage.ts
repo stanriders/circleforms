@@ -6,14 +6,8 @@ interface ImageProps {
 }
 
 export default function getImage({ id, banner, icon, type = "banner" }: ImageProps) {
-  console.log(id);
-
-  if (!id) {
-    throw new Error("getImage: id is required");
-  }
-
   if (type === "icon") {
-    if (!icon) {
+    if (!icon || !id) {
       return `/images/form-entry-test-thumbnail.png`;
     }
 
@@ -21,7 +15,7 @@ export default function getImage({ id, banner, icon, type = "banner" }: ImagePro
   }
 
   if (type === "banner") {
-    if (!banner) {
+    if (!banner || !id) {
       return `/images/form-entry-test.jpg`;
     }
 
