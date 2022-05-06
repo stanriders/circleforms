@@ -189,7 +189,7 @@ public class Startup
             app.UseCookiePolicy(new CookiePolicyOptions
             {
                 Secure = CookieSecurePolicy.None,
-                MinimumSameSitePolicy = SameSiteMode.None
+                MinimumSameSitePolicy = SameSiteMode.Lax
             });
 
             app.UseHangfireDashboard(options: new DashboardOptions()
