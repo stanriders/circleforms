@@ -89,6 +89,9 @@ export default function Header() {
             {t("navbar.login")}
           </Button>
         )}
+        <Button onClick={() => {}} href="http://localhost:3001/api/OAuth/auth">
+          api auth
+        </Button>
 
         <Menu>
           <MenuButton>
