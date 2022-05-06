@@ -1,6 +1,7 @@
 ## Setting up dev env
 
 1) Create docker-compose.override.yml and fill in osuApi env vars
+
 1.1) Get env vars by creating https://osu.ppy.sh/home/account/edit oAuth app, with callback url
 `http://localhost:3001/api/oauth/callback`
 
