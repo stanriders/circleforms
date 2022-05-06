@@ -1,38 +1,10 @@
-import { POSTS_PAGE } from "../mocks/posts-page";
-import { POSTS_PAGE_PINNED } from "../mocks/posts-page-pinned";
-import { PostsId, User, UserMe } from "../types/common-types";
-
 export default async function api(endpoint: string, options?: RequestInit) {
+  let API_URL = `https://circleforms.net/api${endpoint}`;
   if (process.env.NODE_ENV === "development") {
-    const mocks = await import("../mocks");
-    await sleep(350);
-
-    if (endpoint.includes("/posts/page/pinned")) {
-      return POSTS_PAGE_PINNED;
-    }
-
-    if (endpoint.includes("/posts/page")) {
-      return POSTS_PAGE;
-    }
-
-    if (endpoint.includes("/posts/")) {
-      return mocks.form as PostsId;
-    }
-
-    if (endpoint.includes("/minimal")) {
-      return mocks.userMinimal as User;
-    }
-
-    if (endpoint === "/me/posts") {
-      return mocks.mePosts as PostsId[];
-    }
-
-    if (endpoint === "/me") {
-      return mocks.me as UserMe;
-    }
+    API_URL = `http://localhost:3001/api${endpoint}`;
   }
 
-  const response = await fetch(`https://circleforms.net/api${endpoint}`, {
+  const response = await fetch(API_URL, {
     credentials: "include",
     headers: {
       Accept: "application/json",
@@ -41,6 +13,7 @@ export default async function api(endpoint: string, options?: RequestInit) {
     ...options
   });
 
+  // why do we need this?
   if (response.status === 204) {
     return null;
   }
@@ -52,8 +25,4 @@ export default async function api(endpoint: string, options?: RequestInit) {
   }
 
   throw responseData;
-}
-
-function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }

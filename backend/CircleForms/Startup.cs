@@ -199,8 +199,10 @@ public class Startup
 
             app.UseCors(x =>
             {
-                x.WithOrigins("http://localhost:3000", "https://localhost:3000", "localhost:3000").AllowAnyHeader().AllowAnyMethod();
+                x.WithOrigins("http://localhost:3000","http://localhost:3001", "https://localhost:3000").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+             
             });
+          
         }
 
         if (env.IsDevelopment() || env.IsStaging())
