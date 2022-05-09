@@ -27,6 +27,7 @@ import Button from "../components/Button";
 import UserContext from "../context/UserContext";
 import Unauthorized from "../components/Unauthorized";
 import { Locales } from "../types/common-types";
+import { apiClient } from "../libs/apiClient";
 
 const COMPONENTS_TYPES = {
   Choice: CreateChoice,
@@ -233,31 +234,28 @@ export default function Dashboard() {
   }
 
   async function submitForm() {
-    const data = await api("/posts", {
-      method: "POST",
-      // body: JSON.stringify(state)
-      body: JSON.stringify({
-        title: "string",
-        description: "string",
-        excerpt: "string",
-        gamemode: "Osu",
-        accessibility: "Public",
+    const time = new Date(2023, 4, 4);
+    const obj = {
+      title: "string",
+      description: "string",
+      excerpt: "string",
+      gamemode: "Osu",
+      accessibility: "Public",
 
-        active_to: "2023-04-04T08:56:04.570Z",
-        questions: [
-          {
-            order: 0,
-            type: "Checkbox",
-            title: "string",
-            is_optional: true,
-            question_info: ["string"]
-          }
-        ]
-      })
-    });
-    console.log(data);
-    
-    // const data = await response.json();
+      activeTo: time,
+      questions: [
+        {
+          order: 0,
+          type: "Checkbox",
+          title: "string",
+          isOptional: true,
+          questionInfo: ["string"]
+        }
+      ]
+    };
+
+    const data = await apiClient.posts.postsPost({ postContract: obj });
+
     return data;
   }
 

@@ -2,7 +2,7 @@ import { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
 import Head from "next/head";
 import Form from "../../components/Form";
 import DefaultLayout from "../../layouts";
-import api from "../../libs/api";
+import { apiClient } from "../../libs/apiClient";
 import { Locales, PostsId, PostsIdAnswers } from "../../types/common-types";
 
 const SingleForm: NextPage<ServerProps> = ({ posts, usersAndAnswers }) => {
@@ -35,14 +35,13 @@ type ServerParams = {
 export const getServerSideProps: GetServerSideProps<ServerProps, ServerParams> = async (
   context
 ): Promise<GetServerSidePropsResult<ServerProps>> => {
-  // console.log(context.);
-
   const id = context.params as ServerParams;
+  const idString = String(id)
 
   type Resp = [PostsId, PostsIdAnswers, any, any];
   const [posts, usersAndAnswers, translations, global] = await Promise.all<Resp>([
-    await api(`/posts/${id}`),
-    await api(`/posts/${id}/answers`),
+    await apiClient.posts.postsIdGet({id: idString}),
+    await apiClient.posts.postsIdAnswersGet({id : idString }),
     import(`../../messages/single-form/${context.locale}.json`),
     import(`../../messages/global/${context.locale}.json`)
   ]);
