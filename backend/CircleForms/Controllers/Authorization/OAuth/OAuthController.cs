@@ -153,8 +153,7 @@ public class OAuthController : ControllerBase
 
         _logger.LogDebug("User {Username} logged in", osuUser.Username);
 
-        // FIXME: better redirects
-        return Redirect("https://circleforms.net/");
+        return Redirect($"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/");
     }
 
     /// <summary>
@@ -167,7 +166,6 @@ public class OAuthController : ControllerBase
     {
         await HttpContext.SignOutAsync("InternalCookies");
 
-        // FIXME: better redirects
-        return Redirect("https://circleforms.net/");
+        return Redirect($"{HttpContext.Request.Scheme}://{HttpContext.Request.Host}/");
     }
 }
