@@ -1,7 +1,7 @@
 export default async function api(endpoint: string, options?: RequestInit) {
   let API_URL = `https://circleforms.net/api${endpoint}`;
   if (process.env.NODE_ENV === "development") {
-    API_URL = `http://localhost:3001/api${endpoint}`;
+    API_URL = `http://localhost/api${endpoint}`;
   }
 
   const response = await fetch(API_URL, {

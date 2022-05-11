@@ -89,10 +89,7 @@ export default function Header() {
             {t("navbar.login")}
           </Button>
         )}
-        <Button onClick={() => {}} href="http://localhost:3001/api/OAuth/auth">
-          api auth
-        </Button>
-
+        
         <Menu>
           <MenuButton>
             <div className="flex items-center justify-center rounded-7 bg-black-lightest px-2 py-2">

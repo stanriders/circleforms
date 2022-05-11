@@ -199,7 +199,7 @@ public class Startup
 
             app.UseCors(x =>
             {
-                x.WithOrigins("http://localhost:3000","http://localhost:3001", "https://localhost:3000").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+                x.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
              
             });
           
