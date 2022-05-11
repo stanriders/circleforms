@@ -13,3 +13,7 @@ services:
       - ./logs/nginx:/var/log/nginx
     networks:
       - main
+
+    depends_on:
+      - backend
+      - frontend
