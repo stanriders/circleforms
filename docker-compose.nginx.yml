@@ -1,7 +1,9 @@
 version: '3.8'
 
 networks:
-  main:
+  host:
+    name: host
+    external: true
 
 services:
   nginx:
@@ -13,7 +15,4 @@ services:
       - ./logs/nginx:/var/log/nginx
     networks:
       - main
-
-    depends_on:
-      - backend
-      - frontend
+      - host
