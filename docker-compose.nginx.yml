@@ -14,5 +14,4 @@ services:
       - ./nginx:/etc/nginx/conf.d
       - ./logs/nginx:/var/log/nginx
     networks:
-      - main
       - host
