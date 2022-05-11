@@ -14,5 +14,9 @@ services:
       - ./nginx:/etc/nginx/conf.d
       - ./logs/nginx:/var/log/nginx
     networks:
+<<<<<<< HEAD
       - main
       - host
+=======
+      - host
+>>>>>>> 7304c91 (Remove `main` network from nginx)
