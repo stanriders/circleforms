@@ -8,31 +8,34 @@ import SVG from "react-inlinesvg";
 import Link from "next/link";
 
 import { useTranslations } from "next-intl";
-import useSWR from "swr";
-import api from "../libs/api";
 import Unauthorized from "../components/Unauthorized";
 import Title from "../components/Title";
 import FormCard from "../components/FormCard";
 import UserContext from "../context/UserContext";
-import { Locales, PostsId } from "../types/common-types";
+import { Locales } from "../types/common-types";
+import { apiClient } from "../libs/apiClient";
+import { useQuery } from "react-query";
 
 export default function Dashboard() {
   const t = useTranslations();
   const { user } = useContext(UserContext);
   const [forms, setForms] = useState(Array.from({ length: 11 }));
-  const { data: posts } = useSWR<PostsId[]>("/me/posts", api);
+
+  const { error, data } = useQuery("mePostsGet", apiClient.users.mePostsGet);
 
   useEffect(() => {
-    if (posts && posts.length > 0) {
+    if (data && data.length > 0) {
       const newForms = [...forms];
-      posts.forEach((el, index) => {
+      data.forEach((el, index) => {
         newForms.splice(index, 1, el);
       });
       setForms(newForms);
     }
     //TODO FIXME
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [posts]);
+  }, [data]);
+
+  if (error instanceof Error) return <p>{"An error has occurred: " + error.message}</p>;
 
   if (!user) {
     return <Unauthorized />;

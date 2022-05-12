@@ -19,7 +19,9 @@ const Home: NextPage = () => {
   );
   const t = useTranslations();
 
-  if (error instanceof Error) return <p>"An error has occurred: " + error.message;</p>;
+  if (error instanceof Error) return <p>{"An error has occurred: " + error.message}</p>;
+
+
 
   return (
     <DefaultLayout classname="">

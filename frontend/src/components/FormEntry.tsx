@@ -1,13 +1,14 @@
 import Link from "next/link";
 import * as timeago from "timeago.js";
-import { PostsId, User } from "../types/common-types";
+import { MinimalPostContract, UserMinimalContract } from "../../openapi";
+
 import getImage from "../utils/getImage";
 
-interface IFormEntry extends PostsId {
-  user: User;
+interface IFormEntry extends MinimalPostContract {
+  user: UserMinimalContract | undefined;
 }
 
-export default function FormEntry({ id, user, banner, title, excerpt, publish_time }: IFormEntry) {
+export default function FormEntry({ id, user, banner, title, excerpt, publishTime }: IFormEntry) {
   const bannerImg = getImage({ banner, id, type: "banner" });
 
   return (
@@ -33,11 +34,11 @@ export default function FormEntry({ id, user, banner, title, excerpt, publish_ti
                 posted by <span className="font-bold">{user?.username}</span>
               </span>
               {/* FIXME im not sure about this, maybe publish time needs to be converted to datetime first? */}
-              <span className="text-green">{timeago.format(publish_time as string)}</span>
+              <span className="text-green">{timeago.format(publishTime!)}</span>
             </div>
             <img
               className="h-10 w-10 rounded-full"
-              src={user?.avatar_url || ""}
+              src={user?.avatarUrl || ""}
               alt="Profile user {name}"
             />
           </div>

@@ -1,8 +1,8 @@
 import React from "react";
-import { UserContract } from "../../openapi";
+import { UserContract, UserInAnswerContract } from "../../openapi";
 
 interface IUserContext {
-  user: UserContract | null;
+  user: UserContract | null | UserInAnswerContract;
 }
 
 const UserContext = React.createContext({} as IUserContext);

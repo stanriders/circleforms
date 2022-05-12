@@ -47,7 +47,7 @@ export default function Settings() {
             <div className="flex items-center">
               <img
                 className="h-28 w-28 rounded-full"
-                src={user.osu?.avatar_url}
+                src={user.osu?.avatarUrl}
                 alt={user.osu?.username}
               />
               <div className="pl-3">

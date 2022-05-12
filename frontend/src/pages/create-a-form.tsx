@@ -1,4 +1,3 @@
-// @ts-nocheck
 // TODO: Keziah, HEEEELP
 
 import Head from "next/head";
@@ -8,7 +7,7 @@ import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import { useTranslations } from "next-intl";
 import toast, { Toaster } from "react-hot-toast";
 import Switch from "react-switch";
-import api from "../libs/api";
+
 import {
   MdAddCircleOutline,
   MdClose,

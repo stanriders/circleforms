@@ -1,13 +1,7 @@
 import { Configuration, OAuthApi, PagesApi, PostsApi, UsersApi } from "../../openapi";
 
-const isDevelopment = process.env.NODE_ENV === "development";
-let API_URL = `https://circleforms.net/api`;
-if (isDevelopment) {
-  API_URL = `http://localhost:3001/api`;
-}
-
 const configuration = new Configuration({
-  basePath: API_URL,
+  basePath: "/api",
   credentials: "include"
 });
 
