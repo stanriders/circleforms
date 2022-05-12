@@ -1,47 +1,17 @@
-import { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
+import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import Head from "next/head";
 import Form from "../../components/Form";
 import DefaultLayout from "../../layouts";
 import { apiClient } from "../../libs/apiClient";
-import { Locales, PostsId, PostsIdAnswers } from "../../types/common-types";
 
-const SingleForm: NextPage<ServerProps> = ({ posts, usersAndAnswers }) => {
-  console.log(posts);
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const id = context.params;
+  const idString = String(id);
 
-  return (
-    <DefaultLayout>
-      <Head>
-        <title>CircleForms - {posts.title}</title>
-      </Head>
+  const posts = await apiClient.posts.postsIdGet({ id: idString });
+  const usersAndAnswers = await apiClient.posts.postsIdAnswersGet({ id: idString });
 
-      <section className="container mb-12">
-        <Form posts={posts} users={usersAndAnswers.users} answers={usersAndAnswers.answers} />
-      </section>
-    </DefaultLayout>
-  );
-};
-
-type ServerProps = {
-  posts: PostsId;
-  messages: any;
-  usersAndAnswers: PostsIdAnswers;
-};
-
-type ServerParams = {
-  id: string;
-  locale: Locales;
-};
-
-export const getServerSideProps: GetServerSideProps<ServerProps, ServerParams> = async (
-  context
-): Promise<GetServerSidePropsResult<ServerProps>> => {
-  const id = context.params as ServerParams;
-  const idString = String(id)
-
-  type Resp = [PostsId, PostsIdAnswers, any, any];
-  const [posts, usersAndAnswers, translations, global] = await Promise.all<Resp>([
-    await apiClient.posts.postsIdGet({id: idString}),
-    await apiClient.posts.postsIdAnswersGet({id : idString }),
+  const [translations, global] = await Promise.all([
     import(`../../messages/single-form/${context.locale}.json`),
     import(`../../messages/global/${context.locale}.json`)
   ]);
@@ -53,11 +23,31 @@ export const getServerSideProps: GetServerSideProps<ServerProps, ServerParams> =
 
   return {
     props: {
-      posts,
-      usersAndAnswers,
-      messages
+      posts: posts,
+      usersAndAnswers: usersAndAnswers,
+      messages: messages
     }
   };
+};
+
+type ServerSideProps = InferGetServerSidePropsType<typeof getServerSideProps>;
+
+const SingleForm: NextPage<ServerSideProps> = (props) => {
+  return (
+    <DefaultLayout>
+      <Head>
+        <title>CircleForms - {props.posts.title}</title>
+      </Head>
+
+      <section className="container mb-12">
+        <Form
+          posts={props.posts}
+          users={props.usersAndAnswers.users}
+          answers={props.usersAndAnswers.answers}
+        />
+      </section>
+    </DefaultLayout>
+  );
 };
 
 export default SingleForm;

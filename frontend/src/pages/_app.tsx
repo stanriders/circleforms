@@ -11,9 +11,9 @@ import { NextIntlProvider } from "next-intl";
 import UserContext from "../context/UserContext";
 import ErrorFallback from "../components/ErrorFallback";
 
- import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "react-query";
 
- const queryClient = new QueryClient();
+const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { user } = useAuth();

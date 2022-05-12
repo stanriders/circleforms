@@ -1,9 +1,8 @@
 import React from "react";
-import { OsuUser } from "../types/osu-user";
+import { UserContract } from "../../openapi";
 
-// I am not sure if the type should be UserResponse or OsuUser
 interface IUserContext {
-  user: OsuUser | null;
+  user: UserContract | null;
 }
 
 const UserContext = React.createContext({} as IUserContext);
