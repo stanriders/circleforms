@@ -233,11 +233,31 @@ export default function Dashboard() {
   }
 
   async function submitForm() {
-    const response = await api("/posts", {
+    const data = await api("/posts", {
       method: "POST",
-      body: JSON.stringify(state)
+      // body: JSON.stringify(state)
+      body: JSON.stringify({
+        title: "string",
+        description: "string",
+        excerpt: "string",
+        gamemode: "Osu",
+        accessibility: "Public",
+
+        active_to: "2023-04-04T08:56:04.570Z",
+        questions: [
+          {
+            order: 0,
+            type: "Checkbox",
+            title: "string",
+            is_optional: true,
+            question_info: ["string"]
+          }
+        ]
+      })
     });
-    const data = await response.json();
+    console.log(data);
+    
+    // const data = await response.json();
     return data;
   }
 
