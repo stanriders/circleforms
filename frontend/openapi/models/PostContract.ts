@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -134,4 +135,3 @@ export function PostContractToJSON(value?: PostContract | null): any {
         'questions': ((value.questions as Array<any>).map(QuestionToJSON)),
     };
 }
-

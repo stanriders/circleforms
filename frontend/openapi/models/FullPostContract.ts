@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -198,4 +199,3 @@ export function FullPostContractToJSON(value?: FullPostContract | null): any {
         'publish_time': value.publishTime === undefined ? undefined : (value.publishTime.toISOString()),
     };
 }
-

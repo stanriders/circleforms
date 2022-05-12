@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -99,4 +100,3 @@ export function QuestionToJSON(value?: Question | null): any {
         'question_info': value.questionInfo,
     };
 }
-

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -35,4 +36,3 @@ export function AccessibilityFromJSONTyped(json: any, ignoreDiscriminator: boole
 export function AccessibilityToJSON(value?: Accessibility | null): any {
     return value as any;
 }
-

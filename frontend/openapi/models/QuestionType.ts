@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -34,4 +35,3 @@ export function QuestionTypeFromJSONTyped(json: any, ignoreDiscriminator: boolea
 export function QuestionTypeToJSON(value?: QuestionType | null): any {
     return value as any;
 }
-

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -33,4 +34,3 @@ export function ImageQueryFromJSONTyped(json: any, ignoreDiscriminator: boolean)
 export function ImageQueryToJSON(value?: ImageQuery | null): any {
     return value as any;
 }
-

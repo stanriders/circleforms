@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -74,4 +75,3 @@ export function AnswersUsersContractToJSON(value?: AnswersUsersContract | null):
         'answers': value.answers === undefined ? undefined : (value.answers === null ? null : (value.answers as Array<any>).map(AnswerContractToJSON)),
     };
 }
-

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -69,4 +70,3 @@ export function UserContractToJSON(value?: UserContract | null): any {
         'osu': value.osu,
     };
 }
-

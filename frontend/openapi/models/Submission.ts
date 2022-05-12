@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -61,4 +62,3 @@ export function SubmissionToJSON(value?: Submission | null): any {
         'answer': value.answer,
     };
 }
-

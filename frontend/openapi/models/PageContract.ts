@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -74,4 +75,3 @@ export function PageContractToJSON(value?: PageContract | null): any {
         'posts': value.posts === undefined ? undefined : (value.posts === null ? null : (value.posts as Array<any>).map(MinimalPostContractToJSON)),
     };
 }
-

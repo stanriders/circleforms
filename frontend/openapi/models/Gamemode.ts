@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -36,4 +37,3 @@ export function GamemodeFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
 export function GamemodeToJSON(value?: Gamemode | null): any {
     return value as any;
 }
-

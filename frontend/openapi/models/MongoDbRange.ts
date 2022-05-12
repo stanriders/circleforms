@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -61,4 +62,3 @@ export function MongoDbRangeToJSON(value?: MongoDbRange | null): any {
         'end': value.end,
     };
 }
-

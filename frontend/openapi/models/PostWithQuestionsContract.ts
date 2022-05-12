@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -190,4 +191,3 @@ export function PostWithQuestionsContractToJSON(value?: PostWithQuestionsContrac
         'answer_count': value.answerCount,
     };
 }
-

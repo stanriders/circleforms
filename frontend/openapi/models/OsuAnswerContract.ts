@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -77,4 +78,3 @@ export function OsuAnswerContractToJSON(value?: OsuAnswerContract | null): any {
         'country_code': value.countryCode,
     };
 }
-

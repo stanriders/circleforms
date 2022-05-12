@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -61,4 +62,3 @@ export function SubmissionContractToJSON(value?: SubmissionContract | null): any
         'answer': value.answer,
     };
 }
-

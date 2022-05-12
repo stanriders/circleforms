@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -68,4 +69,3 @@ export function LimitationsToJSON(value?: Limitations | null): any {
         'pp': MongoDbRangeToJSON(value.pp),
     };
 }
-

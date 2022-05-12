@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -112,4 +113,3 @@ export function PostUpdateContractToJSON(value?: PostUpdateContract | null): any
         'questions': value.questions === undefined ? undefined : (value.questions === null ? null : (value.questions as Array<any>).map(QuestionUpdateContractToJSON)),
     };
 }
-

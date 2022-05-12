@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -176,4 +177,3 @@ export function MinimalPostContractToJSON(value?: MinimalPostContract | null): a
         'answer_count': value.answerCount,
     };
 }
-

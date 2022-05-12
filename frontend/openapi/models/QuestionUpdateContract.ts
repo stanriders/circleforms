@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -108,4 +109,3 @@ export function QuestionUpdateContractToJSON(value?: QuestionUpdateContract | nu
         'question_info': value.questionInfo,
     };
 }
-

@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -34,4 +35,3 @@ export function PostFilterFromJSONTyped(json: any, ignoreDiscriminator: boolean)
 export function PostFilterToJSON(value?: PostFilter | null): any {
     return value as any;
 }
-

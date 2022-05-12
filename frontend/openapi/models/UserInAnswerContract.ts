@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -76,4 +77,3 @@ export function UserInAnswerContractToJSON(value?: UserInAnswerContract | null):
         'osu': OsuAnswerContractToJSON(value.osu),
     };
 }
-

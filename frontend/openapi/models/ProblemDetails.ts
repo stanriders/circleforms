@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -88,4 +89,3 @@ export function ProblemDetailsToJSON(value?: ProblemDetails | null): any {
         'instance': value.instance,
     };
 }
-
