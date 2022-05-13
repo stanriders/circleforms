@@ -47,7 +47,9 @@ export default function Settings() {
             <div className="flex items-center">
               <img
                 className="h-28 w-28 rounded-full"
-                src={user.osu?.avatarUrl}
+                // TODO fixme, should be avatarUrl but it breaks for some reason
+                // @ts-ignore
+                src={user.osu?.avatar_url}
                 alt={user.osu?.username}
               />
               <div className="pl-3">

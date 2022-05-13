@@ -21,7 +21,7 @@ export default function Dashboard() {
   const { user } = useContext(UserContext);
   const [forms, setForms] = useState(Array.from({ length: 11 }));
 
-  const { error, data } = useQuery("mePostsGet", apiClient.users.mePostsGet);
+  const { error, data } = useQuery("mePostsGet", () => apiClient.users.mePostsGet());
 
   useEffect(() => {
     if (data && data.length > 0) {

@@ -91,7 +91,9 @@ export default function Form({ posts, users, answers }: IFormProps) {
               <img className="h-20 w-20 rounded-full" src={iconImg} alt={`${title}'s thumbnail`} />
               <img
                 className="h-10 w-10 rounded-full absolute bottom-0 right-0"
-                src={primaryAuthor?.osu?.avatarUrl as string}
+                // @ts-ignore
+                // todo should be avatarUrl but it breaks
+                src={primaryAuthor?.osu?.avatar_url as string}
                 alt={`${primaryAuthor?.osu?.username}'s avatar`}
               />
             </div>

@@ -1,8 +1,9 @@
 import { Configuration, OAuthApi, PagesApi, PostsApi, UsersApi } from "../../openapi";
 
 const configuration = new Configuration({
-  basePath: "/api",
-  credentials: "include"
+  basePath: "http://localhost/api",
+  credentials: "include",
+
 });
 
 const posts = new PostsApi(configuration);

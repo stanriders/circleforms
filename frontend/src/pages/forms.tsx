@@ -18,14 +18,14 @@ import { useQuery } from "react-query";
 export default function FormsList() {
   const router = useRouter();
   const t = useTranslations();
-  const [filter, setFilter] = useState<PostFilter>();
+  const [filter, setFilter] = useState<PostFilter>(PostFilter.Active);
   const [page, setPage] = useState(1);
 
-  const { data: pinnedForms } = useQuery(["posts", page], () =>
+  const { data: pinnedForms } = useQuery(["postsPagePinnedGet", page], () =>
     apiClient.pages.postsPagePinnedGet()
   );
 
-  const { isLoading: isLoadingPosts, data } = useQuery(["posts", page], () =>
+  const { isLoading: isLoadingPosts, data } = useQuery(["postsPagePageGet", page, filter], () =>
     apiClient.pages.postsPagePageGet({ page: page, filter: filter, pageSize: 10 })
   );
 
