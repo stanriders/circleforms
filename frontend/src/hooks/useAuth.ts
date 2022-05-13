@@ -51,9 +51,7 @@ export default function useAuth() {
 
   async function logout() {
     await Promise.all([localforage.removeItem("user"), localforage.removeItem("user_updated_at")]);
-    await apiClient.oauth.oAuthSignoutGet();
-    // router.push("/api/OAuth/signout");
-    router.push("/");
+    router.push("/api/OAuth/signout");
   }
 
   return {

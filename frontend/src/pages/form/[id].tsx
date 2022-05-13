@@ -2,7 +2,7 @@ import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from
 import Head from "next/head";
 import Form from "../../components/Form";
 import DefaultLayout from "../../layouts";
-import { getServerApiClient } from "../../utils/getServerApiClient";
+import { getApiClient } from "../../utils/getApiClient";
 
 type ServerSideProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
@@ -26,7 +26,7 @@ const SingleForm: NextPage<ServerSideProps> = (props) => {
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   // we need to create a new apiClient because cookies are not present on the server
-  const apiClient = getServerApiClient(context.req.headers.cookie);
+  const apiClient = getApiClient(context.req.headers.cookie);
 
   const id = context.params?.id;
   const idString = String(id);
