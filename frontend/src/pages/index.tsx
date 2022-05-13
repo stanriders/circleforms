@@ -11,17 +11,19 @@ import VisuallyHidden from "@reach/visually-hidden";
 import { useQuery } from "react-query";
 import { apiClient } from "../libs/apiClient";
 import { PostFilter } from "../../openapi";
+import React, { useRef } from "react";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
-  // const { data, isValidating } = useSWR<PostsPage>(`/posts/page/1?pageSize=4&filter=Active`, api)
+  const router = useRouter();
   const { isLoading, error, data } = useQuery(["posts", 1], () =>
     apiClient.pages.postsPagePageGet({ page: 1, filter: PostFilter.Active, pageSize: 4 })
   );
   const t = useTranslations();
+  const scrollRef = useRef<HTMLHeadingElement>(null);
+  const scrollToReadMore = () => scrollRef.current?.scrollIntoView({ behavior: "smooth" });
 
   if (error instanceof Error) return <p>{"An error has occurred: " + error.message}</p>;
-
-
 
   return (
     <DefaultLayout classname="">
@@ -34,10 +36,10 @@ const Home: NextPage = () => {
         <SVG className="w-3/4 max-w-6xl" src="/svg/logo.svg" />
         <p className="font-museo lg:text-4xl mt-4 text-center">{t("description")}</p>
         <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
-          <Button theme="secondary" large>
+          <Button onClick={() => router.push("/dashboard")} theme="secondary" large>
             {t("createForm")}
           </Button>
-          <Button theme="tertiary" large>
+          <Button onClick={scrollToReadMore} theme="tertiary" large>
             {t("readMore")}
           </Button>
         </div>
@@ -46,7 +48,9 @@ const Home: NextPage = () => {
       <div className="bg-black-darker w-full py-32">
         <section className="small-container">
           <div className="flex flex-col lg:flex-row justify-between items-center mb-8">
-            <h2 className="text-6xl uppercase font-semibold">{t("about.title")}</h2>
+            <h2 ref={scrollRef} className="text-6xl uppercase font-semibold">
+              {t("about.title")}
+            </h2>
 
             <SVG className="h-8 lg:h-11 lg:-ml-8" src="/svg/circles-sliders.svg" />
           </div>
