@@ -102,7 +102,7 @@ public class PagesController : ControllerBase
     }
 
     /// <summary>
-    ///     Add post to pinned posts. (Requires auth, Admin/Moderator role)"
+    ///     Add post to pinned posts.
     /// </summary>
     [HttpPost(ApiEndpoints.PostsPagePinned)]
     [Authorize(Roles = "Admin,Moderator")]

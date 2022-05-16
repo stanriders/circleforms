@@ -157,7 +157,7 @@ public class OAuthController : ControllerBase
     }
 
     /// <summary>
-    ///     Sign out from current user. (Requires auth)
+    ///     Sign out from current user.
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.OAuthSignOut)]

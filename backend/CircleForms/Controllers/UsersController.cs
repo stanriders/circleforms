@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
-using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Contracts.ContractModels.Response.Users;
 using CircleForms.Database.Services.Abstract;
@@ -71,12 +70,11 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    ///     Get user's posts. (Requires auth)
+    ///     Get user's posts.
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMePosts)]
     [ProducesResponseType(typeof(List<MinimalPostContract>), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMePosts()
     {
         var user = await _usersService.Get(_claim);
@@ -96,12 +94,11 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    ///     Get data for current user. (Requires auth)
+    ///     Get data for current user.
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMe)]
     [ProducesResponseType(typeof(UserContract), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMe()
     {
         _logger.LogInformation("User {User} requests /me", _claim);
