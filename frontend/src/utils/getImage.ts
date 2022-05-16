@@ -1,5 +1,5 @@
 interface ImageProps {
-  type: string;
+  type: "banner" | "icon";
   icon?: string | null;
   id?: string | null;
   banner?: string | null;
