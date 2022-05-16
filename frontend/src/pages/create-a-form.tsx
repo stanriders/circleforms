@@ -233,8 +233,6 @@ export default function Dashboard() {
 
   async function submitForm() {
     const data = await apiClient.posts.postsPost({ postContract: state });
-    console.log(data);
-
     return data;
   }
 
