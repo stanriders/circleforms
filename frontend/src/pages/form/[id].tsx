@@ -14,11 +14,7 @@ const SingleForm: NextPage<ServerSideProps> = (props) => {
       </Head>
 
       <section className="container mb-12">
-        <Form
-          posts={props.posts}
-          users={props.usersAndAnswers.users}
-          answers={props.usersAndAnswers.answers}
-        />
+        <Form posts={props.posts} user={props.user} />
       </section>
     </DefaultLayout>
   );
@@ -27,17 +23,15 @@ const SingleForm: NextPage<ServerSideProps> = (props) => {
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   // we need to create a new apiClient because cookies are not present on the server
   const apiClient = getApiClient(context.req.headers.cookie);
+  const id = context.params?.id || "";
 
-  const id = context.params?.id;
-  const idString = String(id);
-
-  const postsRes = await apiClient.posts.postsIdGet({ id: idString });
-  const usersAndAnswers = await apiClient.posts.postsIdAnswersGet({ id: idString });
-
-  const [translations, global] = await Promise.all([
+  const [translations, global, posts] = await Promise.all([
     import(`../../messages/single-form/${context.locale}.json`),
-    import(`../../messages/global/${context.locale}.json`)
+    import(`../../messages/global/${context.locale}.json`),
+    apiClient.posts.postsIdGet({ id: id as string })
   ]);
+
+  const user = await apiClient.users.usersIdGet({ id: posts.authorId as string });
 
   const messages = {
     ...translations,
@@ -46,10 +40,9 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
   return {
     props: {
-      // because it needs to serialize Dates in JSON to pass them to the page
-      posts: JSON.parse(JSON.stringify(postsRes)),
-      usersAndAnswers: usersAndAnswers,
-      messages: messages
+      posts,
+      user,
+      messages
     }
   };
 };
