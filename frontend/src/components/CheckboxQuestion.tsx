@@ -10,11 +10,12 @@ const CheckboxQuestion = ({ question }: { question: Question }) => {
       </h2>
       <div className="flex flex-col gap-4">
         {question.questionInfo?.map((text) => {
+          const questionId = question.questionId;
           return (
             <InputCheckbox
-              key={question.questionId + text}
+              key={questionId + text}
               inputText={text}
-              inputProps={{ required: !question.isOptional }}
+              inputProps={{ name: String(questionId), required: !question.isOptional }}
             />
           );
         })}
