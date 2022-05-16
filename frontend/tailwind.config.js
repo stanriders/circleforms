@@ -65,7 +65,9 @@ module.exports = {
         blue: {
           DEFAULT: "#005ce7",
           discord: "#5865F2",
-        },
+      },
+      boxShadow: {
+        inputInset: "inset 1em 1em #FF66AA"
       },
       borderRadius: {
         5: "5px",
