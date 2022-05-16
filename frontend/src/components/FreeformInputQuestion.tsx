@@ -1,3 +1,4 @@
+import { Field } from "formik";
 import React from "react";
 import { Question } from "../../openapi";
 
@@ -8,12 +9,12 @@ const FreeformInputQuestion = ({ question }: { question: Question }) => {
         {question.title}
         {question.isOptional ? null : <span className="text-pink">*</span>}
       </label>
-      <input
+      <Field
         placeholder="Your answer"
         className="input--inline"
         type="text"
         autoComplete="off"
-        id={question.questionId as string}
+        name={question.questionId as string}
         required={!question.isOptional}
       />
     </div>

@@ -14,7 +14,7 @@ const ChoiceRadioQuestion = ({ question }: { question: Question }) => {
           <InputRadio
             key={text}
             labelText={text}
-            inputProps={{ name: question.title, required: !question.isOptional }}
+            inputProps={{ name: String(question.questionId), required: !question.isOptional }}
           />
         ))}
       </div>

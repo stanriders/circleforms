@@ -1,8 +1,14 @@
+import { Form, Formik } from "formik";
 import { GetStaticPropsContext, InferGetStaticPropsType, NextPage } from "next";
 import { useTranslations } from "next-intl";
 import Head from "next/head";
-import React from "react";
-import { PostWithQuestionsContract, Question, QuestionType } from "../../../openapi";
+import React, { useMemo } from "react";
+import {
+  PostWithQuestionsContract,
+  Question,
+  QuestionType,
+  SubmissionContract
+} from "../../../openapi";
 import CheckboxQuestion from "../../components/CheckboxQuestion";
 import ChoiceRadioQuestion from "../../components/ChoiceRadioQuestion";
 import FreeformInputQuestion from "../../components/FreeformInputQuestion";
@@ -19,7 +25,6 @@ const Questions: NextPage<StaticSideProps> = (props) => {
 
   const t = useTranslations();
 
-  // console.log();
   const bannerImg = getImage({ banner: post.banner, id: post.id, type: "banner" });
   const iconImg = getImage({ banner: post.icon, id: post.id, type: "icon" });
 
@@ -36,6 +41,27 @@ const Questions: NextPage<StaticSideProps> = (props) => {
         break;
     }
   };
+
+  const computeFormState = () => {
+    const formikState: Record<string, string | string[]> = {};
+    TEMP_RESP.questions?.forEach((question) => {
+      const id = question.questionId ?? "none";
+      switch (question.type) {
+        case QuestionType.Freeform:
+          return (formikState[id] = "");
+        case QuestionType.Checkbox:
+          return (formikState[id] = []);
+        case QuestionType.Choice:
+          return (formikState[id] = "");
+        default:
+          console.error("Question type doesnt exist, cannot assign initial state");
+          return (formikState[id] = "");
+      }
+    });
+    return formikState;
+  };
+
+  const formikState = useMemo(() => computeFormState(), []);
 
   return (
     <DefaultLayout>
@@ -90,21 +116,34 @@ const Questions: NextPage<StaticSideProps> = (props) => {
         </div>
 
         {/* questions */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            console.log(e);
+        <Formik
+          initialValues={formikState}
+          onSubmit={async (values, { setSubmitting }) => {
+            const answers: SubmissionContract[] = [];
+            Object.entries(values).map((curr) =>
+              answers.push({ questionId: curr[0], answer: curr[1] })
+            );
+
+            console.log(answers);
+            apiClient.posts.postsIdAnswersPost({
+              id: post.id as string,
+              submissionContract: answers
+            });
+            setSubmitting(false);
           }}
-          className="flex flex-col gap-6 p-16 pt-12"
         >
-          {TEMP_RESP.questions?.map((question) => switchQuestionType(question))}
-          <div className="flex justify-between">
-            <button className="button dark">Back</button>
-            <button type="submit" className="button secondary">
-              Submit response
-            </button>
-          </div>
-        </form>
+          {({ isSubmitting }) => (
+            <Form className="flex flex-col gap-6 p-16 pt-12">
+              {TEMP_RESP.questions?.map((question) => switchQuestionType(question))}
+              <div className="flex justify-between">
+                <button className="button dark">Back</button>
+                <button type="submit" className="button secondary" disabled={isSubmitting}>
+                  Submit response
+                </button>
+              </div>
+            </Form>
+          )}
+        </Formik>
       </section>
     </DefaultLayout>
   );
@@ -201,7 +240,7 @@ var TEMP_RESP: PostWithQuestionsContract = {
       questionId: "627fea5b0f343a3ef130d75f",
       order: 3,
       type: QuestionType.Choice,
-      title: "Do you even multichoice #1?",
+      title: "Do you even choice #1?",
       isOptional: false,
       questionInfo: ["Yes1", "No1"]
     },
@@ -217,7 +256,7 @@ var TEMP_RESP: PostWithQuestionsContract = {
       questionId: "627fea5b0f343a3ef130d761",
       order: 5,
       type: QuestionType.Choice,
-      title: "Multichoice AGAIN hello????",
+      title: "Choice AGAIN hello????",
       isOptional: true,
       questionInfo: ["Hello", "Goodbye"]
     }
