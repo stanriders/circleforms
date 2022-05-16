@@ -1,6 +1,6 @@
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import { useRouter } from "next/router";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import getImage from "../utils/getImage";
 import Tag from "./Tag";
@@ -8,15 +8,9 @@ import InputRadio from "./InputRadio";
 import Player from "./Player";
 import Button from "./Button";
 import bbcode from "../libs/bbcode";
-import UserContext from "../context/UserContext";
 
 import { dynamicSort } from "../utils/objectSort";
-import {
-  AnswerContract,
-  PostWithQuestionsContract,
-  UserContract,
-  UserInAnswerContract
-} from "../../openapi";
+import { PostWithQuestionsContract, UserContract } from "../../openapi";
 
 const TempPlayers = [
   { name: "Varvalian", ranking: 14, countryRanking: 1, discordTag: "Varvalian#948" },
@@ -28,34 +22,20 @@ const TempPlayers = [
 
 interface IFormProps {
   posts: PostWithQuestionsContract;
-  users: UserInAnswerContract[] | null | undefined;
-  answers: AnswerContract[] | null | undefined;
+  user: UserContract | null | undefined;
 }
 
-export default function Form({ posts, users, answers }: IFormProps) {
+export default function Form({ posts, user }: IFormProps) {
   const { banner, description, icon, id, isActive, title } = posts;
-  const { user } = useContext(UserContext);
 
   const [sort, setSort] = useState("rank");
   const [sortedPlayers, setSortedPlayers] = useState(TempPlayers);
-
-  let firstUser;
-
-  if (users && users[0] !== null) {
-    firstUser = users[0];
-  }
-
-  const [primaryAuthor, setPrimaryAuthor] = useState<
-    UserContract | UserInAnswerContract | null | undefined
-  >(firstUser);
 
   const t = useTranslations();
   const router = useRouter();
 
   const bannerImg = getImage({ id, banner, type: "banner" });
   const iconImg = getImage({ id, icon, type: "icon" });
-
-  const answerCount = answers?.length;
 
   useEffect(() => {
     if (sort === "rank") {
@@ -66,12 +46,6 @@ export default function Form({ posts, users, answers }: IFormProps) {
       setSortedPlayers(TempPlayers);
     }
   }, [sort]);
-
-  useEffect(() => {
-    if (!primaryAuthor) {
-      setPrimaryAuthor(user);
-    }
-  }, [primaryAuthor, user]);
 
   return (
     <div>
@@ -91,17 +65,15 @@ export default function Form({ posts, users, answers }: IFormProps) {
               <img className="h-20 w-20 rounded-full" src={iconImg} alt={`${title}'s thumbnail`} />
               <img
                 className="h-10 w-10 rounded-full absolute bottom-0 right-0"
-                // @ts-ignore
-                // todo should be avatarUrl but it breaks
-                src={primaryAuthor?.osu?.avatar_url as string}
-                alt={`${primaryAuthor?.osu?.username}'s avatar`}
+                src={user?.osu?.avatar_url}
+                alt={`${user?.osu?.username}'s avatar`}
               />
             </div>
 
             <div>
               <h1 className="text-4xl font-bold">{title}</h1>
               <p className="text-white text-opacity-50 text-2xl">
-                {answerCount ?? answers?.length} {t("answersCount")}
+                {posts.answerCount} {t("answersCount")}
               </p>
             </div>
           </div>
@@ -133,10 +105,16 @@ export default function Form({ posts, users, answers }: IFormProps) {
             <TabPanel>
               <div
                 onChange={(e: ChangeEvent<HTMLInputElement>) => setSort(e.target.value)}
-                className="flex flex-col"
+                className="flex flex-col gap-4"
               >
-                <InputRadio name="sort" value="rank" label={t("sort.rank")} />
-                <InputRadio name="sort" value="date" label={t("sort.date")} />
+                <InputRadio
+                  inputProps={{ name: "sort", value: "rank" }}
+                  labelText={t("sort.rank")}
+                />
+                <InputRadio
+                  inputProps={{ name: "sort", value: "date" }}
+                  labelText={t("sort.date")}
+                />
               </div>
 
               <div className="text-center text-pink w-full border-4 border-pink rounded-14 py-2 mt-11 mb-10">
@@ -160,7 +138,12 @@ export default function Form({ posts, users, answers }: IFormProps) {
             {t("back")}
           </Button>
 
-          <Button onClick={() => {}} theme="secondary">
+          <Button
+            onClick={() => {
+              router.push(`/questions/${id}`);
+            }}
+            theme="secondary"
+          >
             {t("answer")}
           </Button>
         </div>
