@@ -1,14 +1,14 @@
 interface IRadioProps {
-  value: "rank" | "date";
-  name: string;
-  label: string;
+  labelText: string;
+  labelProps?: React.HTMLProps<HTMLLabelElement>;
+  inputProps?: React.HTMLProps<HTMLInputElement>;
 }
 
-export default function InputRadio({ value, name, label }: IRadioProps) {
+export default function InputRadio({ labelText, labelProps, inputProps }: IRadioProps) {
   return (
-    <label className="text-2xl flex items-baseline gap-x-2 cursor-pointer">
-      <input className="radio" type="radio" name={name} value={value} />
-      {label}
+    <label className="radio-input" htmlFor={labelText} {...labelProps}>
+      <input id={labelText} type="radio" {...inputProps} />
+      {labelText}
     </label>
   );
 }
