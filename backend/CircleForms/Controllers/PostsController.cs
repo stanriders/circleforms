@@ -10,7 +10,6 @@ using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Contracts.ContractModels.Response.Users;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Users;
-using CircleForms.Database.Services.Abstract;
 using CircleForms.ModelLayer;
 using CircleForms.ModelLayer.Answers;
 using CircleForms.ModelLayer.Publish;
@@ -28,34 +27,29 @@ public class PostsController : ControllerBase
 {
     private static readonly string[] _imageUploadExtensions = {".jpg", ".png"};
     private readonly IAnswerService _answer;
-    private readonly ICacheRepository _cache;
     private readonly ILogger<PostsController> _logger;
     private readonly PostsService _posts;
     private readonly IPublishService _publish;
-    private readonly IUserRepository _users;
 
     public PostsController(ILogger<PostsController> logger, PostsService posts,
         IAnswerService answer,
-        IPublishService publish, IUserRepository users, ICacheRepository cache)
+        IPublishService publish)
     {
         _logger = logger;
         _posts = posts;
         _answer = answer;
         _publish = publish;
-        _users = users;
-        _cache = cache;
     }
 
     private string _claim => HttpContext.User.Identity!.Name;
 
     /// <summary>
-    ///     Add answer to a question. (Requires auth)
+    ///     Add answer to a question.
     /// </summary>
     [Authorize]
     [HttpPost(ApiEndpoints.PostsAnswer)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status409Conflict)]
     public async Task<IActionResult> Answer(string id, [FromBody] List<SubmissionContract> answerContracts)
     {
@@ -65,13 +59,12 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
-    ///     Upload an image. (Requires auth)
+    ///     Upload an image.
     /// </summary>
     [Authorize]
     [HttpPut(ApiEndpoints.PostsUploadImage)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UploadImage(string id, IFormFile image, [FromQuery] ImageQuery query)
     {
         if (image is null)
@@ -98,13 +91,11 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
-    ///     Add a new post. (Requires auth)
+    ///     Add a new post.
     /// </summary>
     [Authorize]
     [HttpPost(ApiEndpoints.PostsAddPost)]
     [ProducesResponseType(typeof(MinimalPostContract), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Post(PostContract postContract)
     {
         var result = await _posts.AddPost(_claim, postContract);
@@ -119,7 +110,7 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
-    ///     Unpublish a post. (Requires auth. Required Admin,Moderator)
+    ///     Unpublish a post.
     /// </summary>
     [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator}")]
     [HttpPost(ApiEndpoints.PostUnpublish)]
@@ -132,12 +123,11 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
-    ///     Publish a post. (Requires auth)
+    ///     Publish a post.
     /// </summary>
     [Authorize]
     [HttpPost(ApiEndpoints.PostPublish)]
     [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> Publish(string id)
     {
         var result = await _publish.Publish(id, _claim);
@@ -146,12 +136,11 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
-    ///     Update post. (Requires auth)
+    ///     Update post.
     /// </summary>
     [Authorize]
     [HttpPatch(ApiEndpoints.PostsUpdatePost)]
     [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> UpdatePost([FromBody] PostUpdateContract updateContract, string id)
     {
         var result = await _posts.UpdatePost(_claim, updateContract, id);
@@ -160,12 +149,11 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
-    ///     Get full info about a page if you are the creator of the page, otherwise return cached version
+    ///     Get full info about a page if you are the creator of the page, otherwise return cached version.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsDetailedPost)]
     [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(PostWithQuestionsContract), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {
@@ -175,12 +163,11 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
-    ///     Get posts' answers. (Requires auth)
+    ///     Get posts' answers.
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.PostsAnswer)]
     [ProducesResponseType(typeof(AnswersUsersContract), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAnswers(string id)
     {

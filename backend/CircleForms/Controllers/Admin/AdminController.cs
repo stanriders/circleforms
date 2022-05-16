@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
-using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Contracts.ContractModels.Response.Users;
 using CircleForms.Database.Models.Posts.Enums;
@@ -63,7 +62,7 @@ public class AdminController : ControllerBase
     }
 
     /// <summary>
-    ///     Get all users. (Requires auth, Requires Admin role)
+    ///     Get all users.
     /// </summary>
     [HttpGet(ApiEndpoints.UsersGetAllUsers)]
     public async Task<List<UserContract>> GetAll()
@@ -75,12 +74,11 @@ public class AdminController : ControllerBase
 
 
     /// <summary>
-    ///     Set user role. (Requires auth, Requires SuperAdmin role)
+    ///     Set user role.
     /// </summary>
     [Authorize(Roles = RoleConstants.SuperAdmin)]
     [HttpPatch(ApiEndpoints.UsersEscalateUserPrivileges)]
     [ProducesResponseType(typeof(UserContract), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> EscalatePrivileges([RegularExpression(@"^\d+$")] string id, int roles)
     {
         var role = (Roles) roles;
@@ -102,7 +100,7 @@ public class AdminController : ControllerBase
 
     #region Mongo
     /// <summary>
-    ///     Get uncached post. (Requires auth, Requires Admin role)
+    ///     Get uncached post.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsOneDatabasePost)]
     [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK, "application/json")]
@@ -117,7 +115,7 @@ public class AdminController : ControllerBase
     }
 
     /// <summary>
-    ///     Get all uncached posts. (Requires auth, Requires Admin role)
+    ///     Get all uncached posts.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsAllDatabasePosts)]
     public async Task<List<FullPostContract>> Get()
@@ -132,7 +130,7 @@ public class AdminController : ControllerBase
 
     #region Cache
     /// <summary>
-    ///     Get all posts. (Requires auth, Requires Admin role)
+    ///     Get all posts.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsAllCachedPosts)]
     public async Task<MinimalPostContract[]> GetCached()
