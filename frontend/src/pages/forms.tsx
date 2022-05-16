@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 
 import DefaultLayout from "../layouts";
-import Radio from "../components/Radio";
+import StatusRadio from "../components/StatusRadio";
 import SubTitle from "../components/SubTitle";
 import FormEntrySkeletonList from "../components/FormEntrySkeletonList";
 import FormEntry from "../components/FormEntry";
@@ -110,15 +110,15 @@ export default function FormsList() {
                   </svg>
                 </h3>
                 <div className="space-x-2">
-                  <Radio
+                  <StatusRadio
                     name="filter"
                     value="Both"
                     onClick={(e) => handleFilterClick(e.currentTarget.value as PostFilter)}
                     active={"Both" === filter}
                   >
                     {t("filters.all")}
-                  </Radio>
-                  <Radio
+                  </StatusRadio>
+                  <StatusRadio
                     name="filter"
                     value="Active"
                     color="bg-green"
@@ -126,8 +126,8 @@ export default function FormsList() {
                     active={"Active" === filter}
                   >
                     {t("filters.active")}
-                  </Radio>
-                  <Radio
+                  </StatusRadio>
+                  <StatusRadio
                     name="filter"
                     value="Inactive"
                     color="bg-red"
@@ -135,7 +135,7 @@ export default function FormsList() {
                     active={"Inactive" === filter}
                   >
                     {t("filters.inactive")}
-                  </Radio>
+                  </StatusRadio>
                 </div>
               </div>
             </div>
