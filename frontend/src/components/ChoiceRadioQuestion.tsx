@@ -1,6 +1,6 @@
 import React from "react";
 import { Question } from "../../openapi";
-import InputRadio from "./InputRadio";
+import { FormikInputRadio } from "./InputRadio/FormikInputRadio";
 
 const ChoiceRadioQuestion = ({ question }: { question: Question }) => {
   return (
@@ -11,7 +11,7 @@ const ChoiceRadioQuestion = ({ question }: { question: Question }) => {
       </h2>
       <div className="flex flex-col gap-4">
         {question.questionInfo?.map((text) => (
-          <InputRadio
+          <FormikInputRadio
             key={text}
             labelText={text}
             inputProps={{ name: String(question.questionId), required: !question.isOptional }}

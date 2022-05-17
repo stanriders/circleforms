@@ -1,6 +1,5 @@
-import { Field } from "formik";
 
-interface IRadioProps {
+export interface IRadioProps {
   labelText: string;
   labelProps?: React.HTMLProps<HTMLLabelElement>;
   inputProps?: React.HTMLProps<HTMLInputElement>;
@@ -9,7 +8,7 @@ interface IRadioProps {
 export default function InputRadio({ labelText, labelProps, inputProps }: IRadioProps) {
   return (
     <label className="radio-input" {...labelProps}>
-      <Field type="radio" value={labelText} {...inputProps} />
+      <input type="radio" value={labelText} {...inputProps} />
       {labelText}
     </label>
   );
