@@ -1,6 +1,6 @@
 import React from "react";
 import { Question } from "../../openapi";
-import InputCheckbox from "./InputCheckbox";
+import FormikInputCheckbox from "./InputCheckbox/FormikInputCheckbox";
 
 const CheckboxQuestion = ({ question }: { question: Question }) => {
   return (
@@ -12,7 +12,7 @@ const CheckboxQuestion = ({ question }: { question: Question }) => {
         {question.questionInfo?.map((text) => {
           const questionId = question.questionId;
           return (
-            <InputCheckbox
+            <FormikInputCheckbox
               key={questionId + text}
               inputText={text}
               inputProps={{ name: String(questionId), required: !question.isOptional }}

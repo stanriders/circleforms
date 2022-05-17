@@ -121,6 +121,7 @@ const Questions: NextPage<StaticSideProps> = (props) => {
           onSubmit={async (values, { setSubmitting }) => {
             const answers: SubmissionContract[] = [];
             Object.entries(values).map((curr) =>
+              // @ts-ignore Waiting for backend to support string[]
               answers.push({ questionId: curr[0], answer: curr[1] })
             );
 
