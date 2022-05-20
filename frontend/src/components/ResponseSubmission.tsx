@@ -89,6 +89,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
       case QuestionType.Freeform:
         return (
           <FreeformInputQuestion
+            key={question.questionId}
             question={question}
             register={register}
             errors={errors}
@@ -98,6 +99,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
       case QuestionType.Checkbox:
         return (
           <CheckboxQuestion
+            key={question.questionId}
             question={question}
             register={register}
             errors={errors}
@@ -107,6 +109,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
       case QuestionType.Choice:
         return (
           <ChoiceRadioQuestion
+            key={question.questionId}
             question={question}
             register={register}
             errors={errors}
