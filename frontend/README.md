@@ -9,7 +9,7 @@
 1.  `docker-compose -f docker-compose.nginx.yml -f docker-compose.yml -f docker-compose.override.yml up backend nginx`
 1.  cd frontend && npm run dev
 
-1.  go to localhost (without :3000)
+1.  go to localhost:3000 (you can also use localhost without ports, but it breaks HMR)
 
 1.  If you click on login button you should be authorized
 
