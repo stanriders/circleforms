@@ -21,5 +21,11 @@
   "Player": {
     "globalRanking": "Global Ranking",
     "countryRanking": "Country Ranking"
+  },
+  "toast": {
+    "userError": "Fill all required fields first!",
+    "error": "There was an error submitting your response",
+    "success": "Your response has been submitted!",
+    "loading": "Creating your CircleForm..."
   }
 }

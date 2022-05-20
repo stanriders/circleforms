@@ -1,22 +1,24 @@
-import { Field } from "formik";
 import React from "react";
-import { Question } from "../../openapi";
+import { IQuestionProps } from "../types/common-types";
+import QuestionError from "./QuestionError";
 
-const FreeformInputQuestion = ({ question }: { question: Question }) => {
+const FreeformInputQuestion = ({ question, register, errors }: IQuestionProps) => {
   return (
     <div className="flex flex-col gap-2 bg-black-lighter px-8 py-5 rounded-3xl">
       <label className="text-3xl font-bold" htmlFor={question.questionId as string}>
         {question.title}
         {question.isOptional ? null : <span className="text-pink">*</span>}
       </label>
-      <Field
+      <input
         placeholder="Your answer"
         className="input--inline"
         type="text"
         autoComplete="off"
-        name={question.questionId as string}
-        required={!question.isOptional}
+        {...register(String(question.questionId), {
+          required: !question.isOptional
+        })}
       />
+      {errors[String(question.questionId)] && QuestionError({ text: "This question is required*" })}
     </div>
   );
 };
