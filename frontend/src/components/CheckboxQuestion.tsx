@@ -3,7 +3,7 @@ import { IQuestionProps } from "../types/common-types";
 import InputCheckbox from "./InputCheckbox";
 import QuestionError from "./QuestionError";
 
-const CheckboxQuestion = ({ question, register, errors }: IQuestionProps) => {
+const CheckboxQuestion = ({ question, register, errors, disableEdit }: IQuestionProps) => {
   const questionId = question.questionId;
   const questionIsRequired = !question.isOptional;
 
@@ -20,9 +20,12 @@ const CheckboxQuestion = ({ question, register, errors }: IQuestionProps) => {
               inputText={text}
               inputProps={{
                 ...register(`${question.questionId}.${index}`, {
-                  required: questionIsRequired
+                  required: questionIsRequired,
+                  disabled: disableEdit
                 }),
-                ...{ "aria-invalid": errors[questionId!]?.[index] ? "true" : "false" }
+                ...{
+                  "aria-invalid": errors[questionId!]?.[index] ? "true" : "false"
+                }
               }}
             />
           );

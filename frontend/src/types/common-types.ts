@@ -8,4 +8,5 @@ export interface IQuestionProps {
   question: Question;
   register: UseFormRegister<FieldValues>;
   errors: { [x: string]: any };
+  disableEdit?: boolean;
 }

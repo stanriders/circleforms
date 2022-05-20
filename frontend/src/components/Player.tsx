@@ -5,13 +5,23 @@ export interface IPlayerProps {
   ranking: number;
   countryRanking: number;
   discordTag: string;
+  onClickHandler: () => void;
 }
 
-export default function Player({ name, ranking, countryRanking, discordTag = "" }: IPlayerProps) {
+export default function Player({
+  name,
+  ranking,
+  countryRanking,
+  discordTag = "",
+  onClickHandler
+}: IPlayerProps) {
   const t = useTranslations("Player");
 
   return (
-    <div className="bg-gradient w-full rounded-14 flex justify-between items-center pr-4">
+    <div
+      onClick={onClickHandler}
+      className="bg-gradient w-full rounded-14 flex justify-between items-center pr-4"
+    >
       <div className="flex items-center gap-x-3">
         <img
           className="w-14 h-14 rounded-14"

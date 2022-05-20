@@ -58,6 +58,7 @@
     "eslint": "8.14.0",
     "eslint-config-next": "12.1.5",
     "eslint-config-prettier": "^8.5.0",
+    "infer-next-props-type": "^0.0.4",
     "postcss": "^8.4.12",
     "prettier": "^2.6.2",
     "sass": "^1.49.9",
