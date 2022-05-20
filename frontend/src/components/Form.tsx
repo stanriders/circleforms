@@ -10,26 +10,28 @@ import Button from "./Button";
 import bbcode from "../libs/bbcode";
 
 import { dynamicSort } from "../utils/objectSort";
-import { PostWithQuestionsContract, UserContract } from "../../openapi";
+import { AnswersUsersContract, PostWithQuestionsContract, UserContract } from "../../openapi";
 
-const TempPlayers = [
-  { name: "Varvalian", ranking: 14, countryRanking: 1, discordTag: "Varvalian#948" },
-  { name: "Alumetri", ranking: 47, countryRanking: 3, discordTag: "Alumetri#836" },
-  { name: "sakamata1", ranking: 1, countryRanking: 1, discordTag: "sakamata1#1337" },
-  { name: "badeu", ranking: 38, countryRanking: 1, discordTag: "badeu#1114" },
-  { name: "WhiteCat", ranking: 4, countryRanking: 1, discordTag: "WhiteCat#1076" }
-];
+// const TempPlayers = [
+//   { name: "Varvalian", ranking: 14, countryRanking: 1, discordTag: "Varvalian#948" },
+//   { name: "Alumetri", ranking: 47, countryRanking: 3, discordTag: "Alumetri#836" },
+//   { name: "sakamata1", ranking: 1, countryRanking: 1, discordTag: "sakamata1#1337" },
+//   { name: "badeu", ranking: 38, countryRanking: 1, discordTag: "badeu#1114" },
+//   { name: "WhiteCat", ranking: 4, countryRanking: 1, discordTag: "WhiteCat#1076" }
+// ];
 
 interface IFormProps {
-  posts: PostWithQuestionsContract;
-  user: UserContract | null | undefined;
+  post: PostWithQuestionsContract;
+  authorUser: UserContract | null | undefined;
+  usersAndAnswers: AnswersUsersContract;
 }
 
-export default function Form({ posts, user }: IFormProps) {
-  const { banner, description, icon, id, isActive, title } = posts;
+export default function Form({ post, authorUser, usersAndAnswers }: IFormProps) {
+  const { banner, description, icon, id, isActive, title } = post;
+  const { users } = usersAndAnswers;
 
   const [sort, setSort] = useState("rank");
-  const [sortedPlayers, setSortedPlayers] = useState(TempPlayers);
+  const [sortedPlayers, setSortedPlayers] = useState(users);
 
   const t = useTranslations();
   const router = useRouter();
@@ -39,13 +41,13 @@ export default function Form({ posts, user }: IFormProps) {
 
   useEffect(() => {
     if (sort === "rank") {
-      let sorted = [...TempPlayers];
-      dynamicSort(sorted, "-ranking", "-countryRanking");
+      let sorted = [...(users || [])];
+      dynamicSort(sorted, "-id");
       setSortedPlayers(sorted.reverse());
     } else {
-      setSortedPlayers(TempPlayers);
+      setSortedPlayers(users);
     }
-  }, [sort]);
+  }, [sort, users]);
 
   return (
     <div>
@@ -65,15 +67,15 @@ export default function Form({ posts, user }: IFormProps) {
               <img className="h-20 w-20 rounded-full" src={iconImg} alt={`${title}'s thumbnail`} />
               <img
                 className="h-10 w-10 rounded-full absolute bottom-0 right-0"
-                src={user?.osu?.avatar_url}
-                alt={`${user?.osu?.username}'s avatar`}
+                src={authorUser?.osu?.avatar_url}
+                alt={`${authorUser?.osu?.username}'s avatar`}
               />
             </div>
 
             <div>
               <h1 className="text-4xl font-bold">{title}</h1>
               <p className="text-white text-opacity-50 text-2xl">
-                {posts.answerCount} {t("answersCount")}
+                {post.answerCount} {t("answersCount")}
               </p>
             </div>
           </div>
@@ -120,15 +122,20 @@ export default function Form({ posts, user }: IFormProps) {
               <div className="text-center text-pink w-full border-4 border-pink rounded-14 py-2 mt-11 mb-10">
                 <p dangerouslySetInnerHTML={{ __html: t.raw("mistakeNotice") }} />
               </div>
-              {sortedPlayers.map((player) => (
-                <Player
-                  key={player.name}
-                  name={player.name}
-                  countryRanking={player.countryRanking}
-                  discordTag={player.discordTag}
-                  ranking={player.ranking}
-                />
-              ))}
+              <div className="flex flex-col gap-1">
+                {sortedPlayers?.map((player) => (
+                  <Player
+                    key={player.id}
+                    name={player.osu?.username as string}
+                    countryRanking={1}
+                    discordTag={player.discord as string}
+                    ranking={Number(player.id)}
+                    onClickHandler={() => {
+                      router.push(window.location.href + `/${player.id}`);
+                    }}
+                  />
+                ))}
+              </div>
             </TabPanel>
           </TabPanels>
         </Tabs>
