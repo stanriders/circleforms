@@ -23,7 +23,6 @@
     "autosize": "^5.0.1",
     "classnames": "^2.3.1",
     "flag-icons": "^6.1.1",
-    "formik": "^2.2.9",
     "js-cookie": "^3.0.1",
     "localforage": "^1.10.0",
     "next": "12.1.5",
@@ -34,6 +33,7 @@
     "react-dom": "17.0.2",
     "react-error-boundary": "^3.1.4",
     "react-flagpack": "^1.2.0",
+    "react-hook-form": "^7.31.1",
     "react-hot-toast": "^2.2.0",
     "react-icons": "^4.3.1",
     "react-inlinesvg": "^2.3.0",
@@ -44,6 +44,7 @@
     "timeago.js": "^4.0.2"
   },
   "devDependencies": {
+    "@hookform/devtools": "^4.1.0",
     "@openapitools/openapi-generator-cli": "^2.5.1",
     "@types/autosize": "^4.0.1",
     "@types/js-cookie": "^3.0.2",

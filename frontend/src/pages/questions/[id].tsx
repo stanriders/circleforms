@@ -1,9 +1,10 @@
-import { Form, Formik } from "formik";
 import { GetStaticPropsContext, InferGetStaticPropsType, NextPage } from "next";
 import { useTranslations } from "next-intl";
 import Head from "next/head";
-import React, { useMemo } from "react";
+import { FieldError, FieldValues, useForm, UseFormRegister } from "react-hook-form";
+import { DevTool } from "@hookform/devtools";
 import {
+  PostsIdAnswersPostRequest,
   PostWithQuestionsContract,
   Question,
   QuestionType,
@@ -17,57 +18,88 @@ import Tag from "../../components/Tag";
 import DefaultLayout from "../../layouts";
 import { apiClient } from "../../libs/apiClient";
 import getImage from "../../utils/getImage";
+import { useMutation } from "react-query";
+import toast, { Toaster } from "react-hot-toast";
 
 type StaticSideProps = InferGetStaticPropsType<typeof getStaticProps>;
 
+type FormData = {
+  [key: string]: string | string[];
+};
+
 const Questions: NextPage<StaticSideProps> = (props) => {
   const { post, user } = props;
-
   const t = useTranslations();
+
+  // Form settings
+  const {
+    register,
+    control,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<FormData>({ mode: "onBlur" });
+
+  const { mutate } = useMutation(
+    (obj: PostsIdAnswersPostRequest) => apiClient.posts.postsIdAnswersPost(obj),
+    {
+      onSuccess: () => {
+        toast.success(t("toast.success"));
+      },
+      onError: (err) => {
+        toast.error(t("toast.error"));
+      }
+    }
+  );
+
+  const onSubmit = handleSubmit((data) => {
+    const answers: SubmissionContract[] = [];
+
+    Object.entries(data).map((curr) => {
+      // delete boolean answers
+      let filteredAnswers: string[] | null = null;
+      if (Array.isArray(curr[1])) {
+        filteredAnswers = curr[1]?.filter((v) => typeof v !== "boolean");
+      }
+
+      // @ts-ignore Waiting for backend to support string[]
+      answers.push({ questionId: curr[0], answer: filteredAnswers ? filteredAnswers : curr[1] });
+    });
+
+
+    mutate({
+      id: post.id as string,
+      submissionContract: answers
+    });
+  });
 
   const bannerImg = getImage({ banner: post.banner, id: post.id, type: "banner" });
   const iconImg = getImage({ banner: post.icon, id: post.id, type: "icon" });
 
-  const switchQuestionType = (question: Question) => {
+  const switchQuestionType = (
+    question: Question,
+    register: UseFormRegister<FieldValues>,
+    errors: { [x: string]: FieldError | FieldError[] }
+  ) => {
     switch (question.type) {
       case QuestionType.Freeform:
-        return <FreeformInputQuestion question={question} />;
+        return <FreeformInputQuestion question={question} register={register} errors={errors} />;
       case QuestionType.Checkbox:
-        return <CheckboxQuestion question={question} />;
+        return <CheckboxQuestion question={question} register={register} errors={errors} />;
       case QuestionType.Choice:
-        return <ChoiceRadioQuestion question={question} />;
+        return <ChoiceRadioQuestion question={question} register={register} errors={errors} />;
       default:
         console.error("Question type doesnt exist");
         break;
     }
   };
 
-  const computeFormState = () => {
-    const formikState: Record<string, string | string[]> = {};
-    TEMP_RESP.questions?.forEach((question) => {
-      const id = question.questionId ?? "none";
-      switch (question.type) {
-        case QuestionType.Freeform:
-          return (formikState[id] = "");
-        case QuestionType.Checkbox:
-          return (formikState[id] = []);
-        case QuestionType.Choice:
-          return (formikState[id] = "");
-        default:
-          console.error("Question type doesnt exist, cannot assign initial state");
-          return (formikState[id] = "");
-      }
-    });
-    return formikState;
-  };
-
-  const formikState = useMemo(() => computeFormState(), []);
-
   return (
     <DefaultLayout>
       <Head>
         <title>CircleForms - {post.title}</title>
       </Head>
+
+      <Toaster />
 
       <section className="container mb-12">
         {/* background rounded image */}
@@ -80,7 +112,6 @@ const Questions: NextPage<StaticSideProps> = (props) => {
           `
           }}
         />
-
         {/* form header */}
         <div className="bg-black-dark2 p-16 relative rounded-b-70">
           <div className="absolute top-0 left-16 right-16 flex items-start justify-between">
@@ -105,8 +136,7 @@ const Questions: NextPage<StaticSideProps> = (props) => {
                 </p>
               </div>
             </div>
-
-            <div className="p-4 bg-black-lightest rounded-14 mt-[-6px]">
+            <div className="p-4 pr-0 mt-[-6px]">
               <Tag
                 label={post.isActive ? t("active") : t("inactive")}
                 theme={post.isActive ? "success" : "stale"}
@@ -114,37 +144,17 @@ const Questions: NextPage<StaticSideProps> = (props) => {
             </div>
           </div>
         </div>
-
         {/* questions */}
-        <Formik
-          initialValues={formikState}
-          onSubmit={async (values, { setSubmitting }) => {
-            const answers: SubmissionContract[] = [];
-            Object.entries(values).map((curr) =>
-              // @ts-ignore Waiting for backend to support string[]
-              answers.push({ questionId: curr[0], answer: curr[1] })
-            );
-
-            console.log(answers);
-            apiClient.posts.postsIdAnswersPost({
-              id: post.id as string,
-              submissionContract: answers
-            });
-            setSubmitting(false);
-          }}
-        >
-          {({ isSubmitting }) => (
-            <Form className="flex flex-col gap-6 p-16 pt-12">
-              {TEMP_RESP.questions?.map((question) => switchQuestionType(question))}
-              <div className="flex justify-between">
-                <button className="button dark">Back</button>
-                <button type="submit" className="button secondary" disabled={isSubmitting}>
-                  Submit response
-                </button>
-              </div>
-            </Form>
-          )}
-        </Formik>
+        <form onSubmit={onSubmit} className="flex flex-col gap-6 p-16 pt-12">
+          {TEMP_RESP.questions?.map((question) => switchQuestionType(question, register, errors))}
+          <div className="flex justify-between">
+            <button className="button dark">Back</button>
+            <button type="submit" className="button secondary">
+              Submit response
+            </button>
+          </div>
+        </form>
+        <DevTool control={control} /> {/* set up the dev tool */}
       </section>
     </DefaultLayout>
   );

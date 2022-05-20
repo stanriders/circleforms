@@ -4,7 +4,7 @@ import { ChangeEvent, useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import getImage from "../utils/getImage";
 import Tag from "./Tag";
-import InputRadio from "./InputRadio/InputRadio";
+import InputRadio from "./InputRadio";
 import Player from "./Player";
 import Button from "./Button";
 import bbcode from "../libs/bbcode";

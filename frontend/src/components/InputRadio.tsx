@@ -1,4 +1,3 @@
-
 export interface IRadioProps {
   labelText: string;
   labelProps?: React.HTMLProps<HTMLLabelElement>;
