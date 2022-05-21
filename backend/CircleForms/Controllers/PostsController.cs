@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Request;
@@ -14,6 +15,7 @@ using CircleForms.ModelLayer;
 using CircleForms.ModelLayer.Answers;
 using CircleForms.ModelLayer.Publish;
 using Mapster;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +56,13 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> Answer(string id, [FromBody] List<SubmissionContract> answerContracts)
     {
         var postResult = await _answer.Answer(_claim, id, answerContracts);
+
+        if (postResult.IsError && postResult.StatusCode is HttpStatusCode.Unauthorized)
+        {
+            _logger.LogWarning("User was not authorized to post answers to a post - probably outdated refresh token, logging them out...");
+
+            await HttpContext.SignOutAsync("InternalCookies");
+        }
 
         return postResult.Map();
     }

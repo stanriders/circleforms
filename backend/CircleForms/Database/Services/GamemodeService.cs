@@ -78,7 +78,17 @@ public class GamemodeService : IGamemodeService
         var osuUserResult = await _osuApiProvider.GetUser(user.Token.AccessToken, mode);
         if (osuUserResult.IsError)
         {
-            return new Result<BsonDocument>(osuUserResult.StatusCode, osuUserResult.Message);
+            if (osuUserResult.StatusCode is HttpStatusCode.Unauthorized)
+            {
+                var newToken = await _osuApiProvider.RefreshToken(user.Token.RefreshToken);
+                if (newToken.IsError)
+                {
+                    return new Result<BsonDocument>(newToken.StatusCode, newToken.Errors);
+                }
+
+                user.Token = newToken.Value;
+                osuUserResult = await _osuApiProvider.GetUser(user.Token.AccessToken, mode);
+            }
         }
 
         var statictics = osuUserResult.Value.Statistics.ToBsonDocument();
