@@ -20,12 +20,9 @@ public class SubmissionContractValidator : AbstractValidator<(Question Question,
         {
             RuleFor(x => x.Contract.Answers)
                 .NotEmpty()
-                .Must(x => x.Length >= 1)
+                .Must((data, answers) => answers.Length == data.Question.QuestionInfo.Count)
+                .WithMessage(x => $"Answer count is not the same as question info count ({x.Contract.Answers.Length} vs {x.Question.QuestionInfo.Count})")
                 .ForEach(x => x.Must(y => y is "true" or "false").WithMessage("Answer is not a boolean with values 'true' or 'false'"));
-
-            RuleFor(x => x)
-                .Must(x => x.Contract.Answers.Length == x.Question.QuestionInfo.Count)
-                .WithMessage(x => $"Answer count is not the same as question info count ({x.Contract.Answers.Length} vs {x.Question.QuestionInfo.Count})");
         });
 
         When(x => x.Question.QuestionType == QuestionType.Choice, () =>
@@ -34,8 +31,8 @@ public class SubmissionContractValidator : AbstractValidator<(Question Question,
                 .NotEmpty()
                 .Must(x => x.Length == 1)
                 .WithMessage("There can't be more than one answer for a Choice question")
-                .Must(x => int.TryParse(x[0], out var val) && val >= 0)
-                .WithMessage("Answer is not a number greater than 0");
+                .Must((data, answers) => !string.IsNullOrEmpty(answers[0]) && data.Question.QuestionInfo.Contains(answers[0]))
+                .WithMessage(x => $"{x.Contract.Answers[0]} is not a valid choice");
         });
     }
 }
