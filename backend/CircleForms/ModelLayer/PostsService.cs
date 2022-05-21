@@ -6,9 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using CircleForms.Contracts.ContractModels.Request;
-using CircleForms.Contracts.ContractModels.Response;
 using CircleForms.Contracts.ContractModels.Response.Posts;
-using CircleForms.Controllers;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
@@ -18,7 +16,6 @@ using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
-using MongoDB.Driver;
 
 namespace CircleForms.ModelLayer;
 
@@ -85,7 +82,7 @@ public class PostsService
         foreach (var question in post.Questions)
         {
             question.Id = ObjectId.GenerateNewId().ToString();
-            if (question.QuestionType != QuestionType.Choice)
+            if (question.QuestionType == QuestionType.Freeform)
             {
                 question.QuestionInfo = new List<string>();
             }
@@ -281,7 +278,7 @@ public class PostsService
         var post = await GetCachedPostPrivate(id);
         if (post.IsError)
         {
-            return new Result<MinimalPostContract>(post.StatusCode, post.Message);
+            return new Result<MinimalPostContract>(post.StatusCode, post.Errors);
         }
 
         return _mapper.Map<MinimalPostContract>(post);

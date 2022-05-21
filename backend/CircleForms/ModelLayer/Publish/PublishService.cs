@@ -29,7 +29,7 @@ public class PublishService : IPublishService
         var postResult = await GetAndValidate(id, claim);
         if (postResult.IsError)
         {
-            return new Result<FullPostContract>(postResult.StatusCode, postResult.Message);
+            return new Result<FullPostContract>(postResult.StatusCode, postResult.Errors);
         }
 
         var post = postResult.Value;
@@ -55,7 +55,7 @@ public class PublishService : IPublishService
         var postResult = await GetAndValidate(id, claim);
         if (postResult.IsError)
         {
-            return new Result<FullPostContract>(postResult.StatusCode, postResult.Message);
+            return new Result<FullPostContract>(postResult.StatusCode, postResult.Errors);
         }
 
         var post = postResult.Value;

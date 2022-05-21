@@ -18,6 +18,16 @@ public class QuestionValidator : AbstractValidator<Question>
                 .Must(x => x.All(v => !string.IsNullOrEmpty(v)))
                 .WithMessage("Question info can't contain empty values");
         });
+
+        When(x => x.QuestionType == QuestionType.Checkbox, () =>
+        {
+            RuleFor(x => x.QuestionInfo)
+                .NotEmpty()
+                .Must(x => x.Count >= 1)
+                .WithMessage("Question info must contain at least 1 element")
+                .Must(x => x.All(v => !string.IsNullOrEmpty(v)))
+                .WithMessage("Question info can't contain empty values");
+        });
     }
 }
 
@@ -35,8 +45,19 @@ public class QuestionUpdateContractValidator : AbstractValidator<QuestionUpdateC
         {
             RuleFor(x => x.QuestionInfo)
                 .NotEmpty()
-                .Must(x => x?.Count >= 2).WithMessage("Question info must contain at least 2 elements")
-                .Must(x => x?.All(v => !string.IsNullOrEmpty(v)) == true)
+                .Must(x => x.Count >= 2)
+                .WithMessage("Question info must contain at least 2 elements")
+                .Must(x => x.All(v => !string.IsNullOrEmpty(v)))
+                .WithMessage("Question info can't contain empty values");
+        });
+
+        When(x => x.QuestionType == QuestionType.Checkbox, () =>
+        {
+            RuleFor(x => x.QuestionInfo)
+                .NotEmpty()
+                .Must(x => x.Count >= 1)
+                .WithMessage("Question info must contain at least 1 element")
+                .Must(x => x.All(v => !string.IsNullOrEmpty(v)))
                 .WithMessage("Question info can't contain empty values");
         });
     }

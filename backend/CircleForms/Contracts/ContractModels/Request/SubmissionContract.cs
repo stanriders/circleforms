@@ -10,6 +10,6 @@ public class SubmissionContract
     public string QuestionId { get; set; }
 
     [Required]
-    [JsonProperty("answer")]
-    public string Answer { get; set; }
+    [JsonProperty("answers")]
+    public string[] Answers { get; set; }
 }

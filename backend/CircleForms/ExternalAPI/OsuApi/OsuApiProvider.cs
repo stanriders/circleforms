@@ -48,7 +48,7 @@ public class OsuApiProvider : IOsuApiProvider
         return response.StatusCode switch
         {
             HttpStatusCode.OK => new Result<OsuUser>(response.Data),
-            HttpStatusCode.Unauthorized => new Result<OsuUser>(HttpStatusCode.Unauthorized, null),
+            HttpStatusCode.Unauthorized => new Result<OsuUser>(HttpStatusCode.Unauthorized, string.Empty),
             _ => new Result<OsuUser>(response.StatusCode, "An error occurred on osu! user request")
         };
     }
@@ -57,9 +57,14 @@ public class OsuApiProvider : IOsuApiProvider
     {
         var config = _mapper.Map<RefreshTokenRequest>(_config);
         config.RefreshToken = refreshToken;
-        var request = new RestRequest(_apiTokenLink)
-            .AddJsonBody(config);
+
+        var request = new RestRequest(_apiTokenLink).AddJsonBody(config);
         var response = await _client.ExecutePostAsync<TokenResponse>(request);
+
+        if (!response.IsSuccessful)
+        {
+            _logger.LogWarning(response.Content);
+        }
 
         return response.IsSuccessful
             ? new Result<TokenResponse>(response.Data)

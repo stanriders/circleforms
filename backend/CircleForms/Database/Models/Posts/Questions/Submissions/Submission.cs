@@ -7,6 +7,6 @@ public class Submission
     [JsonProperty("question_id")]
     public string QuestionId { get; set; }
 
-    [JsonProperty("answer")]
-    public string Answer { get; set; }
+    [JsonProperty("answers")]
+    public string[] Answers { get; set; }
 }

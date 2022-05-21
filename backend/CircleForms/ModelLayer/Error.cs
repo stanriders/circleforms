@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,9 +11,23 @@ public class Error : Result<object>
     {
     }
 
+    public Error(HttpStatusCode code) : base(code, "")
+    {
+    }
+
     public Error(HttpStatusCode code, string message) : base(code, message)
     {
     }
+
+    public Error(HttpStatusCode code, ErrorData[] errors) : base(code, errors)
+    {
+    }
+}
+
+public class ErrorData
+{
+    public string Source { get; set; }
+    public string Message { get; set; }
 }
 
 public class Result<T>
@@ -20,29 +35,40 @@ public class Result<T>
     public Result(T value)
     {
         Value = value;
-        IsError = false;
     }
 
     public Result(HttpStatusCode code, string message)
     {
         StatusCode = code;
-        Message = message;
-        IsError = true;
+        Errors = new ErrorData[] { new() {Message = message} };
     }
 
     public Result(string message)
     {
         StatusCode = HttpStatusCode.BadRequest;
-        Message = message;
-        IsError = true;
+        Errors = new ErrorData[] { new() { Message = message } };
+    }
+
+    public Result(HttpStatusCode code, ErrorData[] errors)
+    {
+        StatusCode = code;
+        Errors = errors;
+    }
+
+    public Result(ErrorData[] errors)
+    {
+        StatusCode = HttpStatusCode.BadRequest;
+        Errors = errors;
     }
 
     public T Value { get; }
 
     public HttpStatusCode StatusCode { get; }
-    public string Message { get; }
+    public ErrorData[] Errors { get; }
 
-    public bool IsError { get; }
+    public bool IsError => Errors?.Length > 0;
+
+    public string Message => string.Join(", ", Errors.Select(x => $"{x.Source} - {x.Message}"));
 
     public static Result<T> NotFound(string id)
     {
@@ -56,7 +82,7 @@ public class Result<T>
 
     public Error ToError()
     {
-        return new Error(StatusCode, Message);
+        return new Error(StatusCode, Errors);
     }
 
     public IActionResult Map()
@@ -76,7 +102,7 @@ public class Result<T>
             return new OkObjectResult(mapOk(Value));
         }
 
-        var payload = new {error = Message};
+        var payload = new {errors = Errors};
 
         return StatusCode switch
         {
