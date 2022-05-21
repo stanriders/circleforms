@@ -4,7 +4,7 @@
 echo 'Running checks before committing'
 
 cd frontend
-npm run lint-staged
+npm run pre-commit
 # npm run format
 
 # Enable all checks below after fixing all type errors
