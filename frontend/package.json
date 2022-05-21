@@ -9,7 +9,8 @@
     "lint": "tsc --pretty --noEmit && next lint",
     "prepare": "cd .. && husky install frontend/.husky",
     "format": "prettier --write ./src/*",
-    "generate-backend-types": "npx openapi-typescript https://circleforms.net/swagger/v1/swagger.json --output ./src/types/generated-schema.ts"
+    "generate-backend-types": "npx openapi-typescript https://circleforms.net/swagger/v1/swagger.json --output ./src/types/generated-schema.ts",
+    "pre-commit": "lint-staged"
   },
   "dependencies": {
     "@bbob/core": "^2.8.0",
@@ -50,6 +51,7 @@
     "eslint-config-next": "12.1.5",
     "eslint-config-prettier": "^8.5.0",
     "husky": "^7.0.4",
+    "lint-staged": "^12.4.1",
     "postcss": "^8.4.12",
     "prettier": "2.6.2",
     "sass": "^1.49.9",
