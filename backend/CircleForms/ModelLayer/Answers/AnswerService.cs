@@ -92,6 +92,7 @@ public class AnswerService : IAnswerService
     {
         var questions = post.Questions.ToDictionary(x => x.Id);
         var required = post.Questions.Where(x => !x.Optional).Select(x => x.Id).ToHashSet();
+        var validationErrors = new List<ErrorData>();
 
         foreach (var answer in answers)
         {
@@ -106,8 +107,14 @@ public class AnswerService : IAnswerService
             var validationResult = await validator.ValidateAsync((question, answer));
             if (!validationResult.IsValid)
             {
-                return new Result<List<Submission>>(string.Join(", ",
-                    validationResult.Errors.Select(x => x.ErrorMessage)));
+                foreach (var error in validationResult.Errors)
+                {
+                    validationErrors.Add(new ErrorData
+                    {
+                        Source = answer.QuestionId,
+                        Message = error.ToString()
+                    });
+                }
             }
 
             required.Remove(answer.QuestionId);
@@ -117,6 +124,11 @@ public class AnswerService : IAnswerService
         {
             return new Result<List<Submission>>(
                 $"Following required questions are not filled: {string.Join(", ", required)}");
+        }
+
+        if (validationErrors.Count != 0)
+        {
+            return new Result<List<Submission>>(validationErrors.ToArray());
         }
 
         return new Result<List<Submission>>(answers.Adapt<List<Submission>>());
@@ -133,7 +145,7 @@ public class AnswerService : IAnswerService
         var statistics = await _gamemodeService.GetOrAddStatistics(userId, gamemode);
         if (statistics.IsError)
         {
-            return new Error(statistics.StatusCode, statistics.Message);
+            return new Error(statistics.StatusCode, statistics.Errors);
         }
 
         if (post.Limitations is null)
