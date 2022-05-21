@@ -72,6 +72,8 @@ const initialState = {
   accessibility: "Public",
   limitations: null,
   questions: [],
+  // FIXME!!!
+  gamemode: "osu",
   icon: [],
   banner: [],
   // hardcoded a year from now

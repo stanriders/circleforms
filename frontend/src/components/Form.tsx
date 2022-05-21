@@ -10,7 +10,13 @@ import Button from "./Button";
 import bbcode from "../libs/bbcode";
 
 import { dynamicSort } from "../utils/objectSort";
-import { AnswersUsersContract, PostWithQuestionsContract, UserContract } from "../../openapi";
+import {
+  AnswersUsersContract,
+  OsuAnswerContract,
+  PostWithQuestionsContract,
+  UserContract,
+  UserInAnswerContract
+} from "../../openapi";
 
 // const TempPlayers = [
 //   { name: "Varvalian", ranking: 14, countryRanking: 1, discordTag: "Varvalian#948" },
@@ -24,6 +30,13 @@ interface IFormProps {
   post: PostWithQuestionsContract;
   authorUser: UserContract | null | undefined;
   usersAndAnswers: AnswersUsersContract;
+}
+
+interface FullUserInAnswerContract extends UserInAnswerContract {
+  taiko?: OsuAnswerContract;
+  fruits?: OsuAnswerContract;
+  mania?: OsuAnswerContract;
+  none?: null;
 }
 
 export default function Form({ post, authorUser, usersAndAnswers }: IFormProps) {
@@ -123,18 +136,30 @@ export default function Form({ post, authorUser, usersAndAnswers }: IFormProps) 
                 <p dangerouslySetInnerHTML={{ __html: t.raw("mistakeNotice") }} />
               </div>
               <div className="flex flex-col gap-1">
-                {sortedPlayers?.map((player) => (
-                  <Player
-                    key={player.id}
-                    name={player.osu?.username as string}
-                    countryRanking={1}
-                    discordTag={player.discord as string}
-                    ranking={Number(player.id)}
-                    onClickHandler={() => {
-                      router.push(window.location.href + `/${player.id}`);
-                    }}
-                  />
-                ))}
+                {sortedPlayers?.map((player: FullUserInAnswerContract) => {
+                  const postGameMode = post.gamemode?.toLowerCase();
+                  console.log(postGameMode);
+                  console.log(player);
+                  let country_rank = 0;
+                  let global_rank = 0;
+                  if (player?.osu?.statistics !== undefined) {
+                    country_rank = player?.osu?.statistics[postGameMode!]?.country_rank;
+                    global_rank = player?.osu?.statistics[postGameMode!]?.global_rank;
+                  }
+
+                  return (
+                    <Player
+                      key={player.id}
+                      name={player.osu?.username as string}
+                      countryRanking={country_rank}
+                      discordTag={player.discord as string}
+                      ranking={global_rank}
+                      onClickHandler={() => {
+                        router.push(window.location.href + `/${player.id}`);
+                      }}
+                    />
+                  );
+                })}
               </div>
             </TabPanel>
           </TabPanels>
