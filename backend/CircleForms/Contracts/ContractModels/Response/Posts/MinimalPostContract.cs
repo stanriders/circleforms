@@ -36,8 +36,11 @@ public class MinimalPostContract
     [JsonProperty("gamemode")]
     public Gamemode Gamemode { get; set; }
 
+    [JsonProperty("published")]
+    public bool Published { get; set; }
+
     [JsonProperty("publish_time")]
-    public DateTime PublishTime { get; set; }
+    public DateTime? PublishTime { get; set; }
 
     [JsonProperty("accessibility")]
     public Accessibility Accessibility { get; set; }

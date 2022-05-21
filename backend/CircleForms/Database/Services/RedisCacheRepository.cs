@@ -109,7 +109,7 @@ public class RedisCacheRepository : ICacheRepository
             return null;
         }
 
-        var publishUnixTime = post.PublishTime.ToUnixTimestamp();
+        var publishUnixTime = post.PublishTime?.ToUnixTimestamp() ?? DateTime.UtcNow.ToUnixTimestamp();
         _logger.LogInformation("Adding {PostId} to the cached posts set", postId);
         if (!await _redis.SortedSetAddAsync("posts", postId, publishUnixTime))
         {
@@ -141,7 +141,7 @@ public class RedisCacheRepository : ICacheRepository
         await Task.WhenAll(
             _redis.StringSetAsync(post.ID.ToPostAnswersCount(), await post.Answers.ChildrenCountAsync()),
             _redis.SortedSetRemoveAsync(removeFrom, postId),
-            _redis.SortedSetAddAsync(addTo, postId, post.PublishTime.ToUnixTimestamp())
+            _redis.SortedSetAddAsync(addTo, postId, post.PublishTime!.Value.ToUnixTimestamp())
         );
     }
 
