@@ -273,6 +273,11 @@ public class PostsService
             await MapWithAnswerCounts(await _cache.GetDump()));
     }
 
+    public Task<string[]> GetAllCachedIds()
+    {
+        return _cache.GetAllIds();
+    }
+
     public async Task<Result<MinimalPostContract>> GetCachedPost(string id)
     {
         var post = await GetCachedPostPrivate(id);

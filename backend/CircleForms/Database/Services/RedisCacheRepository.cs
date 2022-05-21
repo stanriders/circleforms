@@ -227,6 +227,14 @@ public class RedisCacheRepository : ICacheRepository
 
         return map;
     }
+
+    public async Task<string[]> GetAllIds()
+    {
+        var ids = await _redis.SortedSetRangeByScoreAsync(_postsSet, order: Order.Descending);
+
+        // a bit of a hack, but since redis ids are the same as post ids this saves us redundant object fetches
+        return ids.Select(x => x.ToString().Replace("post:", string.Empty)).ToArray();
+    }
     #endregion
 
     #region Pages
