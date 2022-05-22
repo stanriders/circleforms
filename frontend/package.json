@@ -11,7 +11,7 @@
     "format": "prettier --write ./src/*",
     "generate-backend-types": "npx openapi-typescript https://circleforms.net/swagger/v1/swagger.json --output ./src/types/generated-schema.ts",
     "eslint": "eslint",
-    "lefthook-update": "npx @arkweid/lefthook install -a"
+    "lefthook-install": "cd .. && npx @arkweid/lefthook install -a"
   },
   "dependencies": {
     "@bbob/core": "^2.8.0",
