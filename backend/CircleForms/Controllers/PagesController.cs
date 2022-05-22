@@ -22,7 +22,6 @@ namespace CircleForms.Controllers;
 [Route("[controller]")]
 public class PagesController : ControllerBase
 {
-    // backend change
     private readonly ICacheRepository _cache;
     private readonly IMapper _mapper;
     private readonly PostsService _posts;
