@@ -7,11 +7,16 @@
 
 1.  `docker-compose build`
 1.  `docker-compose -f docker-compose.nginx.yml -f docker-compose.yml -f docker-compose.override.yml up backend nginx`
-1.  cd frontend && npm run dev
+1.  `cd frontend`
+1.  `npm i`
+1.  `npm run lefthook-install` (to get pre-commit checks)
+1.  `npm run dev`
 
-1.  go to localhost (without :3000)
+1.  go to localhost
 
 1.  If you click on login button you should be authorized
+
+1.  You can use localhost:3000 now to still have HMR, and be logged in
 
 ## Possible errors
 
