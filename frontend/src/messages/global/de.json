@@ -10,7 +10,18 @@
       "login": "Log In"
     },
     "meta": {
-      "description": "CircleForms is an alternative to google forms, aimed at more convenient and faster moderation of various projects on osu!, including registration for tournaments and much more."
+      "description": "CircleForms is an alternative to Google Forms, designed for osu!-related projects with convenience in mind, allowing easier registration for tournaments and much more."
+    },
+    "inputs": {
+      "file": {
+        "dragImageHere": "Drag an image here",
+        "orPressButton": "or press the button",
+        "chooseFile": "Choose a file"
+      },
+      "wysiwyg": {
+        "preview": "Preview",
+        "write": "Write"
+      }
     }
   }
 }

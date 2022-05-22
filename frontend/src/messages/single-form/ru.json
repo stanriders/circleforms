@@ -1,1 +1,31 @@
-{}
+{
+  "status": "Status",
+  "answersCount": "responses submitted",
+  "tabs": {
+    "info": {
+      "title": "Info"
+    },
+    "answers": {
+      "title": "Responses"
+    }
+  },
+  "sort": {
+    "rank": "Sort by rank",
+    "date": "Sort chronologically"
+  },
+  "active": "Active",
+  "inactive": "Inactive",
+  "mistakeNotice": "If a submitted response is missing, please send a message in the Discord's <a class='inline-link' href='https://discord.com/invite/rx9RKQsy9H'>#reports</a> channel!",
+  "back": "Back",
+  "answer": "Respond",
+  "Player": {
+    "globalRanking": "Global Ranking",
+    "countryRanking": "Country Ranking"
+  },
+  "toast": {
+    "userError": "Fill all required fields first!",
+    "error": "There was an error submitting your response",
+    "success": "Your response has been submitted!",
+    "loading": "Creating your CircleForm..."
+  }
+}
