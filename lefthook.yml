@@ -1,0 +1,11 @@
+pre-commit:
+  commands:
+    linter:
+      root: "frontend/"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: npm run eslint {staged_files} && npm run ts-lint
+
+    prettier:
+      root: "frontend/"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: npx prettier --write {staged_files} && git add {staged_files}
