@@ -24,6 +24,7 @@ public static class ApiEndpoints
     public const string PostsUploadImage = "{id}/files";
     public const string PostPublish = "{id}/publish";
     public const string PostUnpublish = "{id}/unpublish";
+    public const string PostsPublishedIds = "all";
     #endregion
 
     #region Users

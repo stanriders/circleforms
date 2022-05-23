@@ -194,4 +194,13 @@ public class PostsController : ControllerBase
 
         return Ok(contract);
     }
+
+    /// <summary>
+    ///     Get IDs of all published posts
+    /// </summary>
+    [HttpGet(ApiEndpoints.PostsPublishedIds)]
+    public async Task<string[]> GetPublishedPostsIds()
+    {
+        return await _posts.GetAllCachedIds();
+    }
 }

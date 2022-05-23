@@ -26,4 +26,5 @@ public interface ICacheRepository
     Task<int> GetAnswerCount(string id);
     Task<PostRedis[]> GetPage(int page, int pageSize, PostFilter filter);
     Task RemoveUser(string userId);
+    Task<string[]> GetAllIds();
 }
