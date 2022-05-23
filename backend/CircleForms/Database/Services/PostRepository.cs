@@ -23,7 +23,6 @@ public class PostRepository : IPostRepository
     public async Task<Post> Add(string userId, Post post)
     {
         post.AuthorRelation = userId;
-        post.PublishTime = DateTime.UtcNow;
 
         _logger.LogInformation("User {Id} created a new post", userId);
         _logger.LogDebug("User {Id} created a new post {@Post}", userId, post);

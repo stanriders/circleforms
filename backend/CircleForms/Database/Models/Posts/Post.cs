@@ -68,5 +68,5 @@ public class Post : Entity
     public List<Question> Questions { get; set; }
 
     [Field("publish_time")]
-    public DateTime PublishTime { get; set; }
+    public DateTime? PublishTime { get; set; }
 }

@@ -54,5 +54,5 @@ public class FullPostContract
     public List<Question> Questions { get; set; }
 
     [JsonProperty("publish_time")]
-    public DateTime PublishTime { get; set; }
+    public DateTime? PublishTime { get; set; }
 }
