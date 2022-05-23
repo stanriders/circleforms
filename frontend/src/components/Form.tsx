@@ -9,8 +9,14 @@ import Player from "./Player";
 import Button from "./Button";
 import bbcode from "../libs/bbcode";
 import UserContext from "../context/UserContext";
-import { Answers, PostsId, UserInAnswer } from "../types/common-types";
+
 import { dynamicSort } from "../utils/objectSort";
+import {
+  AnswerContract,
+  PostWithQuestionsContract,
+  UserContract,
+  UserInAnswerContract
+} from "../../openapi";
 
 const TempPlayers = [
   { name: "Varvalian", ranking: 14, countryRanking: 1, discordTag: "Varvalian#948" },
@@ -20,26 +26,28 @@ const TempPlayers = [
   { name: "WhiteCat", ranking: 4, countryRanking: 1, discordTag: "WhiteCat#1076" }
 ];
 
-interface IFromProps {
-  posts: PostsId;
-  users: UserInAnswer[] | null | undefined;
-  answers: Answers;
+interface IFormProps {
+  posts: PostWithQuestionsContract;
+  users: UserInAnswerContract[] | null | undefined;
+  answers: AnswerContract[] | null | undefined;
 }
 
-export default function Form({ posts, users, answers }: IFromProps) {
-  const { banner, description, icon, id, is_active, title } = posts;
+export default function Form({ posts, users, answers }: IFormProps) {
+  const { banner, description, icon, id, isActive, title } = posts;
   const { user } = useContext(UserContext);
-  const osuUser = user?.osu;
 
   const [sort, setSort] = useState("rank");
   const [sortedPlayers, setSortedPlayers] = useState(TempPlayers);
 
-  const [primaryAuthor, setPrimaryAuthor] = useState<UserInAnswer | null | undefined>(null);
-  useEffect(() => {
-    if (users && users[0]) {
-      setPrimaryAuthor(users[0]);
-    }
-  }, [users]);
+  let firstUser;
+
+  if (users && users[0] !== null) {
+    firstUser = users[0];
+  }
+
+  const [primaryAuthor, setPrimaryAuthor] = useState<
+    UserContract | UserInAnswerContract | null | undefined
+  >(firstUser);
 
   const t = useTranslations();
   const router = useRouter();
@@ -61,9 +69,9 @@ export default function Form({ posts, users, answers }: IFromProps) {
 
   useEffect(() => {
     if (!primaryAuthor) {
-      setPrimaryAuthor(osuUser as UserInAnswer);
+      setPrimaryAuthor(user);
     }
-  }, [primaryAuthor, osuUser]);
+  }, [primaryAuthor, user]);
 
   return (
     <div>
@@ -83,6 +91,8 @@ export default function Form({ posts, users, answers }: IFromProps) {
               <img className="h-20 w-20 rounded-full" src={iconImg} alt={`${title}'s thumbnail`} />
               <img
                 className="h-10 w-10 rounded-full absolute bottom-0 right-0"
+                // @ts-ignore
+                // todo should be avatarUrl but it breaks
                 src={primaryAuthor?.osu?.avatar_url as string}
                 alt={`${primaryAuthor?.osu?.username}'s avatar`}
               />
@@ -99,8 +109,8 @@ export default function Form({ posts, users, answers }: IFromProps) {
           <div className="p-4 bg-black-lightest rounded-14">
             <span className="text-4xl font-bold leading-5">{t("status")}:</span>
             <Tag
-              label={is_active ? t("active") : t("inactive")}
-              theme={is_active ? "success" : "stale"}
+              label={isActive ? t("active") : t("inactive")}
+              theme={isActive ? "success" : "stale"}
             />
           </div>
         </div>

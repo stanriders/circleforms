@@ -1,13 +1,14 @@
 import localforage from "localforage";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import api from "../libs/api";
+import { UserContract } from "../../openapi";
+import { apiClient } from "../libs/apiClient";
 
 // user cache
 const FIVE_MINUTES = 1000 * 60 * 5;
 
 export default function useAuth() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<UserContract | null>(null);
   const router = useRouter();
 
   // Get user at initial loading
@@ -33,7 +34,7 @@ export default function useAuth() {
 
     // Get user data from the API
     try {
-      const user = await api("/me");
+      const user = await apiClient.users.meGet();
       setUser(user);
       localforage.setItem("user", user);
       localforage.setItem("user_updated_at", Date.now());

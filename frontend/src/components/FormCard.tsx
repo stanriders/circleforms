@@ -1,8 +1,8 @@
 import Link from "next/link";
 import getImage from "../utils/getImage";
-import { PostsId } from "../types/common-types";
+import { PostWithQuestionsContract } from "../../openapi";
 
-export default function FormThumbnail({ id, icon, title }: PostsId) {
+export default function FormThumbnail({ id, icon, title }: PostWithQuestionsContract) {
   if (!id) {
     return (
       <div className="flex justify-center items-center bg-pink rounded-20 h-40 transition-transform ease-out-cubic hover:-translate-y-1 bg-opacity-10"></div>

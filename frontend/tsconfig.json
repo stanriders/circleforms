@@ -20,6 +20,6 @@
     "strictNullChecks": true,
     "noUnusedLocals": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "src"],
   "exclude": ["node_modules"]
 }

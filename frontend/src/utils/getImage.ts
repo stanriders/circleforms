@@ -6,19 +6,15 @@ interface ImageProps {
 }
 
 export default function getImage({ id, banner, icon, type = "banner" }: ImageProps) {
-  if (type === "icon") {
-    if (!icon || !id) {
-      return `/images/form-entry-test-thumbnail.png`;
-    }
+  const isDev = process.env.NODE_ENV === "development";
 
-    return `https://assets.circleforms.net/${id}/${icon}`;
+  if (type === "icon") {
+    return isDev
+      ? `/images/form-entry-test-thumbnail.png`
+      : `https://assets.circleforms.net/${id}/${icon}`;
   }
 
   if (type === "banner") {
-    if (!banner || !id) {
-      return `/images/form-entry-test.jpg`;
-    }
-
-    return `https://assets.circleforms.net/${id}/${banner}`;
+    return isDev ? `/images/form-entry-test.jpg` : `https://assets.circleforms.net/${id}/${banner}`;
   }
 }

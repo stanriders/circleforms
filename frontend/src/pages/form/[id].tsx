@@ -1,48 +1,40 @@
-import { GetServerSideProps, GetServerSidePropsResult, NextPage } from "next";
+import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import Head from "next/head";
 import Form from "../../components/Form";
 import DefaultLayout from "../../layouts";
-import api from "../../libs/api";
-import { Locales, PostsId, PostsIdAnswers } from "../../types/common-types";
+import { getApiClient } from "../../utils/getApiClient";
 
-const SingleForm: NextPage<ServerProps> = ({ posts, usersAndAnswers }) => {
-  console.log(posts);
+type ServerSideProps = InferGetServerSidePropsType<typeof getServerSideProps>;
 
+const SingleForm: NextPage<ServerSideProps> = (props) => {
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - {posts.title}</title>
+        <title>CircleForms - {props.posts.title}</title>
       </Head>
 
       <section className="container mb-12">
-        <Form posts={posts} users={usersAndAnswers.users} answers={usersAndAnswers.answers} />
+        <Form
+          posts={props.posts}
+          users={props.usersAndAnswers.users}
+          answers={props.usersAndAnswers.answers}
+        />
       </section>
     </DefaultLayout>
   );
 };
 
-type ServerProps = {
-  posts: PostsId;
-  messages: any;
-  usersAndAnswers: PostsIdAnswers;
-};
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  // we need to create a new apiClient because cookies are not present on the server
+  const apiClient = getApiClient(context.req.headers.cookie);
 
-type ServerParams = {
-  id: string;
-  locale: Locales;
-};
+  const id = context.params?.id;
+  const idString = String(id);
 
-export const getServerSideProps: GetServerSideProps<ServerProps, ServerParams> = async (
-  context
-): Promise<GetServerSidePropsResult<ServerProps>> => {
-  // console.log(context.);
+  const postsRes = await apiClient.posts.postsIdGet({ id: idString });
+  const usersAndAnswers = await apiClient.posts.postsIdAnswersGet({ id: idString });
 
-  const id = context.params as ServerParams;
-
-  type Resp = [PostsId, PostsIdAnswers, any, any];
-  const [posts, usersAndAnswers, translations, global] = await Promise.all<Resp>([
-    await api(`/posts/${id}`),
-    await api(`/posts/${id}/answers`),
+  const [translations, global] = await Promise.all([
     import(`../../messages/single-form/${context.locale}.json`),
     import(`../../messages/global/${context.locale}.json`)
   ]);
@@ -54,9 +46,10 @@ export const getServerSideProps: GetServerSideProps<ServerProps, ServerParams> =
 
   return {
     props: {
-      posts,
-      usersAndAnswers,
-      messages
+      // because it needs to serialize Dates in JSON to pass them to the page
+      posts: JSON.parse(JSON.stringify(postsRes)),
+      usersAndAnswers: usersAndAnswers,
+      messages: messages
     }
   };
 };

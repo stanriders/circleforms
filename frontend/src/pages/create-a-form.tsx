@@ -8,7 +8,7 @@ import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import { useTranslations } from "next-intl";
 import toast, { Toaster } from "react-hot-toast";
 import Switch from "react-switch";
-import api from "../libs/api";
+
 import {
   MdAddCircleOutline,
   MdClose,
@@ -27,6 +27,8 @@ import Button from "../components/Button";
 import UserContext from "../context/UserContext";
 import Unauthorized from "../components/Unauthorized";
 import { Locales } from "../types/common-types";
+import { apiClient } from "../libs/apiClient";
+import { ImageQuery } from "../../openapi";
 
 const COMPONENTS_TYPES = {
   Choice: CreateChoice,
@@ -71,7 +73,9 @@ const initialState = {
   limitations: null,
   questions: [],
   icon: [],
-  banner: []
+  banner: [],
+  // hardcoded a year from now
+  activeTo: new Date(new Date().setFullYear(new Date().getFullYear() + 1))
 };
 
 function reducer(state: any, action: any) {
@@ -111,29 +115,24 @@ function reducer(state: any, action: any) {
     case types.ADD_QUESTION_INFO:
       return {
         ...state,
-        questions: state.questions.map(
-          (question: { question_info: string | any[] }, index: any) => {
-            if (index === action.value.index) {
-              return {
-                ...question,
-                question_info: [
-                  ...question.question_info,
-                  `Option ${question.question_info.length + 1}`
-                ]
-              };
-            }
-            return question;
+        questions: state.questions.map((question: { questionInfo: string | any[] }, index: any) => {
+          if (index === action.value.index) {
+            return {
+              ...question,
+              questionInfo: [...question.questionInfo, `Option ${question.questionInfo.length + 1}`]
+            };
           }
-        )
+          return question;
+        })
       };
     case types.SET_QUESTION_TYPE:
       return {
         ...state,
-        questions: state.questions.map((question: { question_info: any }, index: any) => {
+        questions: state.questions.map((question: { questionInfo: any }, index: any) => {
           if (index === action.value.index) {
             return {
               ...question,
-              question_info: action.value.type === "Freeform" ? [] : question.question_info,
+              questionInfo: action.value.type === "Freeform" ? [] : question.questionInfo,
               type: action.value.type
             };
           }
@@ -143,11 +142,11 @@ function reducer(state: any, action: any) {
     case types.REMOVE_QUESTION_INFO:
       return {
         ...state,
-        questions: state.questions.map((question: { question_info: any[] }, index: any) => {
+        questions: state.questions.map((question: { questionInfo: any[] }, index: any) => {
           if (index === action.value.index) {
             return {
               ...question,
-              question_info: question.question_info.filter(
+              questionInfo: question.questionInfo.filter(
                 (info, index) => index !== action.value.infoIndex
               )
             };
@@ -175,7 +174,7 @@ function reducer(state: any, action: any) {
           if (index === action.value.index) {
             return {
               ...question,
-              is_optional: action.value.is_optional
+              isOptional: action.value.isOptional
             };
           }
           return question;
@@ -184,11 +183,11 @@ function reducer(state: any, action: any) {
     case types.EDIT_QUESTION_INFO:
       return {
         ...state,
-        questions: state.questions.map((question: { question_info: any[] }, index: any) => {
+        questions: state.questions.map((question: { questionInfo: any[] }, index: any) => {
           if (index === action.value.index) {
             return {
               ...question,
-              question_info: question.question_info.map((info, infoIndex) => {
+              questionInfo: question.questionInfo.map((info, infoIndex) => {
                 if (infoIndex === action.value.infoIndex) {
                   return action.value.value;
                 }
@@ -233,50 +232,26 @@ export default function Dashboard() {
   }
 
   async function submitForm() {
-    const data = await api("/posts", {
-      method: "POST",
-      // body: JSON.stringify(state)
-      body: JSON.stringify({
-        title: "string",
-        description: "string",
-        excerpt: "string",
-        gamemode: "Osu",
-        accessibility: "Public",
-
-        active_to: "2023-04-04T08:56:04.570Z",
-        questions: [
-          {
-            order: 0,
-            type: "Checkbox",
-            title: "string",
-            is_optional: true,
-            question_info: ["string"]
-          }
-        ]
-      })
-    });
+    const data = await apiClient.posts.postsPost({ postContract: state });
     console.log(data);
 
-    // const data = await response.json();
     return data;
   }
 
   async function submitImages(id) {
     if (state.icon.length > 0) {
-      const body = new FormData().append("image", state.icon[0]);
-
-      await api(`/posts/${id}/files?query=Icon`, {
-        method: "PUT",
-        body: JSON.stringify(body)
+      await apiClient.posts.postsIdFilesPut({
+        id,
+        query: ImageQuery.Icon,
+        image: state.icon[0]
       });
     }
 
     if (state.banner.length > 0) {
-      const body = new FormData().append("image", state.banner[0]);
-
-      await api(`/posts/${id}/files?query=Banner`, {
-        method: "PUT",
-        body: JSON.stringify(body)
+      await apiClient.posts.postsIdFilesPut({
+        id,
+        query: ImageQuery.Banner,
+        image: state.banner[0]
       });
     }
   }
@@ -390,8 +365,8 @@ export default function Dashboard() {
                           value: {
                             title: "",
                             type,
-                            is_optional: false,
-                            question_info: []
+                            isOptional: false,
+                            questionInfo: []
                           }
                         })
                       }
@@ -488,7 +463,7 @@ export default function Dashboard() {
                       onEditQuestionOptional={(isOptional) =>
                         dispatch({
                           type: types.EDIT_QUESTION_OPTIONAL,
-                          value: { index, is_optional: isOptional }
+                          value: { index, isOptional: isOptional }
                         })
                       }
                       onEdit={(infoIndex, value) =>
@@ -538,8 +513,8 @@ export default function Dashboard() {
 function CreateChoice({
   title,
   type,
-  is_optional,
-  question_info,
+  isOptional,
+  questionInfo,
   onAdd,
   onDuplicate,
   onRemove,
@@ -552,7 +527,7 @@ function CreateChoice({
 }) {
   return (
     <Question title={title} type={type} onEditTitle={onEditTitle} t={t}>
-      {question_info.map((info, index) => (
+      {questionInfo.map((info, index) => (
         <div key={`${title}-${index}`} className="flex gap-x-2 items-center">
           <div className="h-6 w-6 rounded-full border-2" />
           <input
@@ -587,7 +562,7 @@ function CreateChoice({
         onRemove={onRemove}
         onEditQuestionType={onEditQuestionType}
         onEditQuestionOptional={onEditQuestionOptional}
-        isOptional={is_optional}
+        isOptional={isOptional}
         t={t}
       />
     </Question>
@@ -600,8 +575,8 @@ function CreateChoice({
 function CreateCheckbox({
   title,
   type,
-  is_optional,
-  question_info,
+  isOptional,
+  questionInfo,
   onAdd,
   onDuplicate,
   onRemove,
@@ -614,7 +589,7 @@ function CreateCheckbox({
 }) {
   return (
     <Question title={title} type={type} onEditTitle={onEditTitle} t={t}>
-      {question_info.map((info, index) => (
+      {questionInfo.map((info, index) => (
         <div key={`${title}-${index}`} className="flex gap-x-2 items-center">
           <div className="h-6 w-6 border-2" />
           <input
@@ -649,7 +624,7 @@ function CreateCheckbox({
         onRemove={onRemove}
         onEditQuestionType={onEditQuestionType}
         onEditQuestionOptional={onEditQuestionOptional}
-        isOptional={is_optional}
+        isOptional={isOptional}
         t={t}
       />
     </Question>
@@ -662,8 +637,8 @@ function CreateCheckbox({
 function CreateFreeform({
   title,
   type,
-  is_optional,
-  question_info,
+  isOptional,
+  questionInfo,
   onAdd,
   onDuplicate,
   onRemove,
@@ -684,7 +659,7 @@ function CreateFreeform({
         onRemove={onRemove}
         onEditQuestionType={onEditQuestionType}
         onEditQuestionOptional={onEditQuestionOptional}
-        isOptional={is_optional}
+        isOptional={isOptional}
         t={t}
       />
     </Question>

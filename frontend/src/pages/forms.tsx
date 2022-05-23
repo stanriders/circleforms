@@ -1,10 +1,7 @@
 import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";
-import useSWR from "swr";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
-
-import api from "../libs/api";
 
 import DefaultLayout from "../layouts";
 import Radio from "../components/Radio";
@@ -13,19 +10,23 @@ import FormEntrySkeletonList from "../components/FormEntrySkeletonList";
 import FormEntry from "../components/FormEntry";
 import Button from "../components/Button";
 
-import { Locales, PostsPage, PostFilter, User } from "../types/common-types";
+import { Locales } from "../types/common-types";
+import { PostFilter } from "../../openapi";
+import { apiClient } from "../libs/apiClient";
+import { useQuery } from "react-query";
 
 export default function FormsList() {
   const router = useRouter();
   const t = useTranslations();
-  const [filter, setFilter] = useState<PostFilter>("Both");
+  const [filter, setFilter] = useState<PostFilter>(PostFilter.Active);
   const [page, setPage] = useState(1);
 
-  const { data: pinnedForms } = useSWR<PostsPage>(`/posts/page/pinned`, api);
+  const { data: pinnedForms } = useQuery(["postsPagePinnedGet", page], () =>
+    apiClient.pages.postsPagePinnedGet()
+  );
 
-  const { data, isValidating } = useSWR<PostsPage>(
-    `/posts/page/${page}?filter=${filter}&pageSize=10`,
-    api
+  const { isLoading: isLoadingPosts, data } = useQuery(["postsPagePageGet", page, filter], () =>
+    apiClient.pages.postsPagePageGet({ page: page, filter: filter, pageSize: 10 })
   );
 
   // Handle direct link to page and/or filter
@@ -144,8 +145,8 @@ export default function FormsList() {
                   <SubTitle>{t("pinnedForms")}</SubTitle>
                   <div className="flex flex-col gap-y-3">
                     {pinnedForms?.posts?.map((form) => {
-                      const user = pinnedForms?.users?.find((user) => user.id === form.author_id);
-                      return <FormEntry key={form.id} user={user as User} {...form} />;
+                      const user = pinnedForms?.users?.find((user) => user.id === form.authorId);
+                      return <FormEntry key={form.id} user={user} {...form} />;
                     })}
                   </div>
                 </Fragment>
@@ -153,12 +154,12 @@ export default function FormsList() {
 
               <SubTitle>{t("title")}</SubTitle>
               <div className="flex flex-col gap-y-3 relative">
-                {!data && isValidating && <FormEntrySkeletonList length={10} />}
+                {!data && isLoadingPosts && <FormEntrySkeletonList length={10} />}
                 {!showFormEntries && <p className="font-semibold text-center">{t("noForms")}</p>}
                 {showFormEntries &&
                   data?.posts?.map((form) => {
-                    const user = data?.users?.find((user) => user.id === form.author_id);
-                    return <FormEntry key={form.id} user={user as User} {...form} />;
+                    const user = data?.users?.find((user) => user.id === form.authorId);
+                    return <FormEntry key={form.id} user={user} {...form} />;
                   })}
               </div>
             </div>

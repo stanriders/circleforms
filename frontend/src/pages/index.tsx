@@ -2,20 +2,28 @@ import Head from "next/head";
 import SVG from "react-inlinesvg";
 import { useTranslations } from "next-intl";
 import type { NextPage } from "next";
-
 import DefaultLayout from "../layouts";
-import useSWR from "swr";
-import api from "../libs/api";
-
 import Button from "../components/Button";
 import Loading from "../components/Loading";
 import FormEntry from "../components/FormEntry";
-import { Locales, PostsPage, User } from "../types/common-types";
+import { Locales } from "../types/common-types";
 import VisuallyHidden from "@reach/visually-hidden";
+import { useQuery } from "react-query";
+import { apiClient } from "../libs/apiClient";
+import { PostFilter } from "../../openapi";
+import React, { useRef } from "react";
+import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
-  const { data, isValidating } = useSWR<PostsPage>(`/posts/page/1?pageSize=4&filter=Active`, api);
+  const router = useRouter();
+  const { isLoading, error, data } = useQuery(["posts", 1], () =>
+    apiClient.pages.postsPagePageGet({ page: 1, filter: PostFilter.Active, pageSize: 4 })
+  );
   const t = useTranslations();
+  const scrollRef = useRef<HTMLHeadingElement>(null);
+  const scrollToReadMore = () => scrollRef.current?.scrollIntoView({ behavior: "smooth" });
+
+  if (error instanceof Error) return <p>{"An error has occurred: " + error.message}</p>;
 
   return (
     <DefaultLayout classname="">
@@ -28,10 +36,10 @@ const Home: NextPage = () => {
         <SVG className="w-3/4 max-w-6xl" src="/svg/logo.svg" />
         <p className="font-museo lg:text-4xl mt-4 text-center">{t("description")}</p>
         <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
-          <Button theme="secondary" large>
+          <Button onClick={() => router.push("/dashboard")} theme="secondary" large>
             {t("createForm")}
           </Button>
-          <Button theme="tertiary" large>
+          <Button onClick={scrollToReadMore} theme="tertiary" large>
             {t("readMore")}
           </Button>
         </div>
@@ -40,7 +48,9 @@ const Home: NextPage = () => {
       <div className="bg-black-darker w-full py-32">
         <section className="small-container">
           <div className="flex flex-col lg:flex-row justify-between items-center mb-8">
-            <h2 className="text-6xl uppercase font-semibold">{t("about.title")}</h2>
+            <h2 ref={scrollRef} className="text-6xl uppercase font-semibold">
+              {t("about.title")}
+            </h2>
 
             <SVG className="h-8 lg:h-11 lg:-ml-8" src="/svg/circles-sliders.svg" />
           </div>
@@ -66,7 +76,7 @@ const Home: NextPage = () => {
                 }}
               ></div>
               <div className="relative space-y-3">
-                {isValidating && (
+                {isLoading && (
                   <div className="flex justify-center absolute top-4 z-50 left-1/2 transform -translate-x-1/2">
                     <Loading />
                   </div>
@@ -79,8 +89,8 @@ const Home: NextPage = () => {
                 {data &&
                   data?.posts?.length! > 0 &&
                   data.posts?.map((form) => {
-                    const user = data.users?.find((user) => user.id === form.author_id);
-                    return <FormEntry key={form.id} user={user as User} {...form} />;
+                    const user = data.users?.find((user) => user.id === form.authorId);
+                    return <FormEntry key={form.id} user={user} {...form} />;
                   })}
               </div>
             </div>
