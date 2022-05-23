@@ -138,8 +138,6 @@ export default function Form({ post, authorUser, usersAndAnswers }: IFormProps) 
               <div className="flex flex-col gap-1">
                 {sortedPlayers?.map((player: FullUserInAnswerContract) => {
                   const postGameMode = post.gamemode?.toLowerCase();
-                  console.log(postGameMode);
-                  console.log(player);
                   let country_rank = 0;
                   let global_rank = 0;
                   if (player?.osu?.statistics !== undefined) {

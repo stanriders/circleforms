@@ -20,7 +20,7 @@ import FreeformInputQuestion from "./FreeformInputQuestion";
 import Tag from "./Tag";
 
 type FormData = {
-  [key: string]: string | string[];
+  [key: string]: string | string[] | undefined;
 };
 
 interface IResponseSubmission {
@@ -37,7 +37,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
 
   let showSubmitButton = true;
   if (defaultUserAnswers) {
-    showSubmitButton = Object.keys(defaultUserAnswers!).length === 0;
+    showSubmitButton = Object.keys(defaultUserAnswers).length === 0;
   }
 
   // Form settings
@@ -63,15 +63,29 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
   const onSubmit = handleSubmit((data) => {
     const answers: SubmissionContract[] = [];
 
-    Object.entries(data).map((curr) => {
-      // delete boolean answers
-      let filteredAnswers: string[] | null = null;
-      if (Array.isArray(curr[1])) {
-        filteredAnswers = curr[1]?.filter((v) => typeof v !== "boolean");
-      }
+    // convert data to correct format for backend
 
-      // @ts-ignore Waiting for backend to support string[]
-      answers.push({ questionId: curr[0], answer: filteredAnswers ? filteredAnswers : curr[1] });
+    // delete all objects that are null, empty strings, or boolean array
+    let filteredData = Object.fromEntries(
+      Object.entries(data).filter(([_, v]) => v != null && v != "" && typeof v[0] !== "boolean")
+    );
+
+    Object.entries(filteredData).map((curr) => {
+      const [questionId, questionValue] = curr;
+
+      // convert string to array
+      if (typeof questionValue === "string") {
+        answers.push({
+          questionId: questionId,
+          answers: [questionValue]
+        });
+        // or just push array of answers
+      } else {
+        answers.push({
+          questionId: questionId,
+          answers: questionValue!
+        });
+      }
     });
 
     mutate({
