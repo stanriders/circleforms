@@ -1,6 +1,6 @@
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import { useRouter } from "next/router";
-import { ChangeEvent, useState, useEffect } from "react";
+import { ChangeEvent, useState, useEffect, useContext } from "react";
 import { useTranslations } from "next-intl";
 import getImage from "../utils/getImage";
 import Tag from "./Tag";
@@ -11,25 +11,18 @@ import bbcode from "../libs/bbcode";
 
 import { dynamicSort } from "../utils/objectSort";
 import {
-  AnswersUsersContract,
   OsuAnswerContract,
   PostWithQuestionsContract,
   UserContract,
   UserInAnswerContract
 } from "../../openapi";
-
-// const TempPlayers = [
-//   { name: "Varvalian", ranking: 14, countryRanking: 1, discordTag: "Varvalian#948" },
-//   { name: "Alumetri", ranking: 47, countryRanking: 3, discordTag: "Alumetri#836" },
-//   { name: "sakamata1", ranking: 1, countryRanking: 1, discordTag: "sakamata1#1337" },
-//   { name: "badeu", ranking: 38, countryRanking: 1, discordTag: "badeu#1114" },
-//   { name: "WhiteCat", ranking: 4, countryRanking: 1, discordTag: "WhiteCat#1076" }
-// ];
+import { useQuery } from "react-query";
+import { apiClient } from "../libs/apiClient";
+import UserContext from "../context/UserContext";
 
 interface IFormProps {
   post: PostWithQuestionsContract;
   authorUser: UserContract | null | undefined;
-  usersAndAnswers: AnswersUsersContract;
 }
 
 interface FullUserInAnswerContract extends UserInAnswerContract {
@@ -39,12 +32,24 @@ interface FullUserInAnswerContract extends UserInAnswerContract {
   none?: null;
 }
 
-export default function Form({ post, authorUser, usersAndAnswers }: IFormProps) {
+export default function Form({ post, authorUser }: IFormProps) {
+  const { user } = useContext(UserContext);
   const { banner, description, icon, id, isActive, title } = post;
-  const { users } = usersAndAnswers;
+
+  const [showResponseButton, setShowResponseButton] = useState<boolean>();
+
+  useEffect(() => {
+    setShowResponseButton(user !== null);
+  }, [user]);
+
+  const { data: usersAndAnswers } = useQuery(
+    ["postsIdAnswersGet", id],
+    () => apiClient.posts.postsIdAnswersGet({ id: id as string }),
+    { retry: 0 }
+  );
 
   const [sort, setSort] = useState("rank");
-  const [sortedPlayers, setSortedPlayers] = useState(users);
+  const [sortedPlayers, setSortedPlayers] = useState(usersAndAnswers?.users);
 
   const t = useTranslations();
   const router = useRouter();
@@ -52,15 +57,17 @@ export default function Form({ post, authorUser, usersAndAnswers }: IFormProps) 
   const bannerImg = getImage({ id, banner, type: "banner" });
   const iconImg = getImage({ id, icon, type: "icon" });
 
+  useEffect(() => {}, []);
+
   useEffect(() => {
     if (sort === "rank") {
-      let sorted = [...(users || [])];
+      let sorted = [...(usersAndAnswers?.users || [])];
       dynamicSort(sorted, "-id");
       setSortedPlayers(sorted.reverse());
     } else {
-      setSortedPlayers(users);
+      setSortedPlayers(usersAndAnswers?.users);
     }
-  }, [sort, users]);
+  }, [sort, usersAndAnswers?.users]);
 
   return (
     <div>
@@ -105,7 +112,7 @@ export default function Form({ post, authorUser, usersAndAnswers }: IFormProps) 
         <Tabs className="mt-16 mb-4">
           <TabList>
             <Tab>{t("tabs.info.title")}</Tab>
-            <Tab>{t("tabs.answers.title")}</Tab>
+            {usersAndAnswers?.users && <Tab>{t("tabs.answers.title")}</Tab>}
           </TabList>
 
           <TabPanels className="bg-black-lightest px-8 py-5 rounded-b-3xl">
@@ -117,49 +124,51 @@ export default function Form({ post, authorUser, usersAndAnswers }: IFormProps) 
                 }}
               />
             </TabPanel>
-            <TabPanel>
-              <div
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setSort(e.target.value)}
-                className="flex flex-col gap-4"
-              >
-                <InputRadio
-                  inputProps={{ name: "sort", value: "rank" }}
-                  labelText={t("sort.rank")}
-                />
-                <InputRadio
-                  inputProps={{ name: "sort", value: "date" }}
-                  labelText={t("sort.date")}
-                />
-              </div>
+            {usersAndAnswers?.users && (
+              <TabPanel>
+                <div
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setSort(e.target.value)}
+                  className="flex flex-col gap-4"
+                >
+                  <InputRadio
+                    inputProps={{ name: "sort", value: "rank" }}
+                    labelText={t("sort.rank")}
+                  />
+                  <InputRadio
+                    inputProps={{ name: "sort", value: "date" }}
+                    labelText={t("sort.date")}
+                  />
+                </div>
 
-              <div className="text-center text-pink w-full border-4 border-pink rounded-14 py-2 mt-11 mb-10">
-                <p dangerouslySetInnerHTML={{ __html: t.raw("mistakeNotice") }} />
-              </div>
-              <div className="flex flex-col gap-1">
-                {sortedPlayers?.map((player: FullUserInAnswerContract) => {
-                  const postGameMode = post.gamemode?.toLowerCase();
-                  let country_rank = 0;
-                  let global_rank = 0;
-                  if (player?.osu?.statistics !== undefined) {
-                    country_rank = player?.osu?.statistics[postGameMode!]?.country_rank;
-                    global_rank = player?.osu?.statistics[postGameMode!]?.global_rank;
-                  }
+                <div className="text-center text-pink w-full border-4 border-pink rounded-14 py-2 mt-11 mb-10">
+                  <p dangerouslySetInnerHTML={{ __html: t.raw("mistakeNotice") }} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  {sortedPlayers?.map((player: FullUserInAnswerContract) => {
+                    const postGameMode = post.gamemode?.toLowerCase();
+                    let country_rank = 0;
+                    let global_rank = 0;
+                    if (player?.osu?.statistics !== undefined) {
+                      country_rank = player?.osu?.statistics[postGameMode!]?.country_rank;
+                      global_rank = player?.osu?.statistics[postGameMode!]?.global_rank;
+                    }
 
-                  return (
-                    <Player
-                      key={player.id}
-                      name={player.osu?.username as string}
-                      countryRanking={country_rank}
-                      discordTag={player.discord as string}
-                      ranking={global_rank}
-                      onClickHandler={() => {
-                        router.push(window.location.href + `/${player.id}`);
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            </TabPanel>
+                    return (
+                      <Player
+                        key={player.id}
+                        name={player.osu?.username as string}
+                        countryRanking={country_rank}
+                        discordTag={player.discord as string}
+                        ranking={global_rank}
+                        onClickHandler={() => {
+                          router.push(window.location.href + `/${player.id}`);
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </TabPanel>
+            )}
           </TabPanels>
         </Tabs>
 
@@ -168,14 +177,16 @@ export default function Form({ post, authorUser, usersAndAnswers }: IFormProps) 
             {t("back")}
           </Button>
 
-          <Button
-            onClick={() => {
-              router.push(`/questions/${id}`);
-            }}
-            theme="secondary"
-          >
-            {t("answer")}
-          </Button>
+          {showResponseButton && (
+            <Button
+              onClick={() => {
+                router.push(`/questions/${id}`);
+              }}
+              theme="secondary"
+            >
+              {t("answer")}
+            </Button>
+          )}
         </div>
       </div>
     </div>

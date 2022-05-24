@@ -14,11 +14,7 @@ const SingleForm: NextPage<ServerSideProps> = (props) => {
       </Head>
 
       <section className="container mb-12">
-        <Form
-          post={props.post}
-          authorUser={props.authorUser}
-          usersAndAnswers={props.usersAndAnswers}
-        />
+        <Form post={props.post} authorUser={props.authorUser} />
       </section>
     </DefaultLayout>
   );
@@ -26,14 +22,13 @@ const SingleForm: NextPage<ServerSideProps> = (props) => {
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   // we need to create a new apiClient because cookies are not present on the server
-  const apiClient = getApiClient(context.req.headers.cookie);
   const formid = context.params?.formid || "";
+  const apiClient = getApiClient(context.req.headers.cookie);
 
-  const [translations, global, post, usersAndAnswers] = await Promise.all([
+  const [translations, global, post] = await Promise.all([
     import(`../../../messages/single-form/${context.locale}.json`),
     import(`../../../messages/global/${context.locale}.json`),
-    apiClient.posts.postsIdGet({ id: formid as string }),
-    apiClient.posts.postsIdAnswersGet({ id: formid as string })
+    apiClient.posts.postsIdGet({ id: formid as string })
   ]);
 
   const authorUser = await apiClient.users.usersIdGet({ id: post.authorId as string });
@@ -47,8 +42,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     props: {
       post,
       authorUser,
-      messages,
-      usersAndAnswers
+      messages
     }
   };
 };

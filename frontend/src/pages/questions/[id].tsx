@@ -5,11 +5,19 @@ import DefaultLayout from "../../layouts";
 import { apiClient } from "../../libs/apiClient";
 
 import ResponseSubmission from "../../components/ResponseSubmission";
+import { useContext } from "react";
+import UserContext from "../../context/UserContext";
+import Unauthorized from "../../components/Unauthorized";
 
 type StaticSideProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 const Questions: NextPage<StaticSideProps> = (props) => {
   const { post, authorUser } = props;
+
+  const { user } = useContext(UserContext);
+  if (!user) {
+    return <Unauthorized />;
+  }
 
   return (
     <DefaultLayout>
