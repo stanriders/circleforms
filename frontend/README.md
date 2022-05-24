@@ -12,7 +12,7 @@
 1.  `npm run lefthook-install` (to get pre-commit checks)
 1.  `npm run dev`
 
-1.  go to localhost
+1.  go to localhost:3000 (you can also use localhost without ports, but it breaks HMR)
 
 1.  If you click on login button you should be authorized
 
