@@ -2,8 +2,7 @@ import { useFormData } from "./FormContext";
 import ImageDropzone from "./ImageDropzone";
 
 const DesignTab = () => {
-  const { data, setValues } = useFormData();
-  console.log(data);
+  const { setValues } = useFormData();
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-6 gap-y-8 gap-x-24">
