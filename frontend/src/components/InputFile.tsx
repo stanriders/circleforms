@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
-import React, { Fragment, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import Button from "./Button";
 
 interface InputFileProps {
@@ -11,15 +11,7 @@ interface InputFileProps {
   onChange: (() => void) | ((files: File[]) => void);
 }
 
-function noop() {}
-
-export default function InputFile({
-  label,
-  name,
-  value,
-  classname,
-  onChange = noop
-}: InputFileProps) {
+export default function InputFile({ label, name, value, classname, onChange }: InputFileProps) {
   const t = useTranslations("global.inputs");
   const [dragOver, setDragOver] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -76,7 +68,7 @@ export default function InputFile({
             ))}
           </div>
         )) || (
-          <Fragment>
+          <>
             <p className="font-semibold text-xl mb-1 select-none">{t("file.dragImageHere")}</p>
             <p className="font-medium text-xs text-white text-opacity-20 select-none">
               {t("file.orPressButton")}
@@ -85,7 +77,7 @@ export default function InputFile({
             <Button onClick={() => inputRef?.current?.click()} theme="secondary" classname="my-2">
               {t("file.chooseFile")}
             </Button>
-          </Fragment>
+          </>
         )}
         <input
           ref={inputRef}
