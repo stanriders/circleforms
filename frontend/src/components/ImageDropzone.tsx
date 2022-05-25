@@ -17,8 +17,6 @@ const ImageDropzone = ({ name, headingText, classname, fileAcceptCallback }: IIm
   const t = useTranslations("global.inputs");
   const [file, setFile] = useState<File>();
 
-  console.log("Dropzone rerender!!!");
-
   useEffect(() => {
     // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
     return () => URL.revokeObjectURL(file?.name as string);
