@@ -44,7 +44,6 @@
     "react-query": "^3.39.0",
     "react-switch": "^6.0.0",
     "superjson": "^1.9.1",
-    "swr": "^1.2.2",
     "timeago.js": "^4.0.2",
     "yup": "^0.32.11"
   },
