@@ -124,7 +124,7 @@ public class RedisCacheRepository : ICacheRepository
 
     public async Task PurgePost(string id)
     {
-        var postId = id.ToUserId();
+        var postId = id.ToPostId();
         _logger.LogInformation("Deleting {PostId} from cache", postId);
         var tasks = _postOccupation.Select(x => _redis.SortedSetRemoveAsync(x, postId));
         await Task.WhenAll(tasks);
