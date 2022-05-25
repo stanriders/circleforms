@@ -12,6 +12,7 @@ import UserContext from "../context/UserContext";
 import ErrorFallback from "../components/ErrorFallback";
 
 import { QueryClient, QueryClientProvider } from "react-query";
+import { FormDataProvider } from "../components/FormContext";
 
 const queryClient = new QueryClient();
 
@@ -23,12 +24,14 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <NextIntlProvider messages={pageProps.messages}>
-        <UserContext.Provider value={{ user }}>
-          <NextNProgress color="#FF66AA" />
-          <ErrorBoundary FallbackComponent={ErrorFallback}>
-            <Component {...pageProps} />
-          </ErrorBoundary>
-        </UserContext.Provider>
+        <FormDataProvider>
+          <UserContext.Provider value={{ user }}>
+            <NextNProgress color="#FF66AA" />
+            <ErrorBoundary FallbackComponent={ErrorFallback}>
+              <Component {...pageProps} />
+            </ErrorBoundary>
+          </UserContext.Provider>
+        </FormDataProvider>
       </NextIntlProvider>
     </QueryClientProvider>
   );

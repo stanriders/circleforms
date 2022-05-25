@@ -1,3 +1,4 @@
 {
-  "eslint.workingDirectories": ["./frontend"]
+  "eslint.workingDirectories": ["./frontend"],
+  "css.validate": false
 }
