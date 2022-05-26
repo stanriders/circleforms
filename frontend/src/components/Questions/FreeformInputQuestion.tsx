@@ -1,7 +1,8 @@
 import React from "react";
-import { IQuestionProps } from "../types/common-types";
-import QuestionError from "./QuestionError";
+import { IQuestionProps } from "../../types/common-types";
+import QuestionError from "../QuestionError";
 
+// meant to be used inside React Hook Form
 const FreeformInputQuestion = ({ question, register, errors, disableEdit }: IQuestionProps) => {
   return (
     <div className="flex flex-col gap-2 bg-black-lighter px-8 py-5 rounded-3xl">

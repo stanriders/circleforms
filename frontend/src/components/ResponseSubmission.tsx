@@ -14,9 +14,9 @@ import {
 } from "../../openapi";
 import { apiClient } from "../libs/apiClient";
 import getImage from "../utils/getImage";
-import CheckboxQuestion from "./CheckboxQuestion";
-import ChoiceRadioQuestion from "./ChoiceRadioQuestion";
-import FreeformInputQuestion from "./FreeformInputQuestion";
+import CheckboxQuestion from "./Questions/CheckboxQuestion";
+import ChoiceRadioQuestion from "./Questions/ChoiceRadioQuestion";
+import FreeformInputQuestion from "./Questions/FreeformInputQuestion";
 import Tag from "./Tag";
 
 type FormData = {
