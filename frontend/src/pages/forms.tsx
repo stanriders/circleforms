@@ -146,7 +146,17 @@ export default function FormsList() {
                   <div className="flex flex-col gap-y-3">
                     {pinnedForms?.posts?.map((form) => {
                       const user = pinnedForms?.users?.find((user) => user.id === form.authorId);
-                      return <FormEntry key={form.id} user={user} {...form} />;
+                      return (
+                        <FormEntry
+                          key={form.id}
+                          user={user}
+                          id={form.id}
+                          banner={form.banner}
+                          title={form.title}
+                          excerpt={form.excerpt}
+                          publishTime={form.publishTime}
+                        />
+                      );
                     })}
                   </div>
                 </Fragment>
@@ -159,7 +169,17 @@ export default function FormsList() {
                 {showFormEntries &&
                   data?.posts?.map((form) => {
                     const user = data?.users?.find((user) => user.id === form.authorId);
-                    return <FormEntry key={form.id} user={user} {...form} />;
+                    return (
+                      <FormEntry
+                        key={form.id}
+                        user={user}
+                        id={form.id}
+                        banner={form.banner}
+                        title={form.title}
+                        excerpt={form.excerpt}
+                        publishTime={form.publishTime}
+                      />
+                    );
                   })}
               </div>
             </div>

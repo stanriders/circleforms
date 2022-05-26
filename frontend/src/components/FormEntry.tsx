@@ -6,21 +6,33 @@ import getImage from "../utils/getImage";
 
 interface IFormEntry extends MinimalPostContract {
   user: UserMinimalContract | undefined;
+  isPreview?: boolean;
+  previewBanner?: string;
 }
 
-export default function FormEntry({ id, user, banner, title, excerpt, publishTime }: IFormEntry) {
+export default function FormEntry({
+  id,
+  user,
+  banner,
+  title,
+  excerpt,
+  publishTime,
+  previewBanner,
+  isPreview
+}: IFormEntry) {
   const bannerImg = getImage({ banner, id, type: "banner" });
 
   return (
-    <Link href={`/form/${id}`}>
+    <Link href={isPreview ? "" : `/form/${id}`}>
       <a className="flex rounded-5 overflow-clip bg-black-light z-0 transform transition-transform ease-out-cubic hover:scale-99 hover:z-10">
         <div
           className="flex-1 bg-cover"
           style={{
             backgroundImage: `
               linear-gradient(270deg, #131313 2.39%, rgba(17, 17, 17, 0) 98.16%),
-              url('${bannerImg}')
-            `
+              url('${previewBanner ? previewBanner : bannerImg}')
+            `,
+            backgroundPosition: "center"
           }}
         />
         <div className="flex-1 flex justify-between py-5 pr-5">
