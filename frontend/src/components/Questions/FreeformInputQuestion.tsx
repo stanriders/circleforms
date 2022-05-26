@@ -1,6 +1,6 @@
 import React from "react";
 import { IQuestionProps } from "../../types/common-types";
-import QuestionError from "../QuestionError";
+import ErrorMessage from "../ErrorMessage";
 
 // meant to be used inside React Hook Form
 const FreeformInputQuestion = ({ question, register, errors, disableEdit }: IQuestionProps) => {
@@ -20,7 +20,7 @@ const FreeformInputQuestion = ({ question, register, errors, disableEdit }: IQue
           disabled: disableEdit
         })}
       />
-      {errors[String(question.questionId)] && QuestionError({ text: "This question is required*" })}
+      {errors[String(question.questionId)] && ErrorMessage({ text: "This question is required*" })}
     </div>
   );
 };

@@ -1,6 +1,6 @@
 import React from "react";
 
-const QuestionError = ({ text }: { text: string }) => {
+const ErrorMessage = ({ text }: { text: string }) => {
   return (
     <p className="text-pink" role="alert">
       {text}
@@ -8,4 +8,4 @@ const QuestionError = ({ text }: { text: string }) => {
   );
 };
 
-export default QuestionError;
+export default ErrorMessage;
