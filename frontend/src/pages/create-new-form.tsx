@@ -5,7 +5,6 @@ import React from "react";
 import { Toaster } from "react-hot-toast";
 import Button from "../components/Button";
 import DesignTab from "../components/DesignTab";
-import Title from "../components/Title";
 import DefaultLayout from "../layouts";
 import { Locales } from "../types/common-types";
 
@@ -20,14 +19,11 @@ const CreateNewForm = () => {
 
       <Toaster />
 
-      <Title title={t("subtitle")}>
-        {t("createYour")} "<span className="text-pink">CircleForms</span>".
-      </Title>
-
       <section className="container space-y-8 mb-12">
         <Tabs>
           <TabList>
             <Tab>{t("tabs.design")}</Tab>
+            <Tab>Post</Tab>
             <Tab>{t("tabs.questions")}</Tab>
             <Tab>{t("tabs.options")}</Tab>
           </TabList>
