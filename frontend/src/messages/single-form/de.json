@@ -23,7 +23,7 @@
     "countryRanking": "Country Ranking"
   },
   "toast": {
-    "userError": "Fill in all required fields!",
+    "userError": "Please fill in all required fields!",
     "error": "There was an error submitting your response",
     "success": "Your response has been submitted!",
     "loading": "Creating your CircleForm..."
