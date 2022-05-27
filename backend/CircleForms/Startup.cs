@@ -190,10 +190,6 @@ public class Startup
         app.UseForwardedHeaders(new ForwardedHeadersOptions { ForwardedHeaders = ForwardedHeaders.All });
 
         var basePath = Configuration.GetValue<string>("PathBase");
-        app.UsePathBase(basePath);
-        app.UseRouting();
-        app.UseAuthentication();
-        app.UseAuthorization();
 
         if (env.IsDevelopment())
         {
@@ -204,17 +200,10 @@ public class Startup
                 MinimumSameSitePolicy = SameSiteMode.Lax
             });
 
-            app.UseHangfireDashboard(options: new DashboardOptions()
-            {
-                AppPath = "https://localhost:5001/swagger"
-            });
-
             app.UseCors(x =>
             {
                 x.WithOrigins("http://localhost:3000").AllowAnyHeader().AllowAnyMethod().AllowCredentials();
-             
             });
-          
         }
 
         if (env.IsDevelopment() || env.IsStaging())
@@ -246,7 +235,24 @@ public class Startup
                 Secure = CookieSecurePolicy.SameAsRequest,
                 MinimumSameSitePolicy = SameSiteMode.Lax
             });
+        }
 
+        // WARNING: These MUST be after cookie configuration, otherwise production breaks in a very bizarre and non-descriptive way.
+        //          This was a big headache to find and fix, so if you need to change the order first make sure it will work in prod.
+        app.UsePathBase(basePath);
+        app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        if (env.IsDevelopment())
+        {
+            app.UseHangfireDashboard(options: new DashboardOptions
+            {
+                AppPath = "https://localhost:5001/swagger"
+            });
+        }
+        else
+        {
             app.UseHangfireDashboard(options: new DashboardOptions
             {
                 IsReadOnlyFunc = _ => true,
