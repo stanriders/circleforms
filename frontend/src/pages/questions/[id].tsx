@@ -65,10 +65,16 @@ export async function getStaticProps(context: GetStaticPropsContext) {
 // It may be called again, on a serverless function, if
 // the path has not been generated.
 export async function getStaticPaths() {
-  const pageIds = await apiClient.posts.postsAllGet();
+  let pageIds;
+  try {
+    pageIds = await apiClient.posts.postsAllGet();
+  } catch (e) {
+    console.log("Failed to get posts/all");
+    console.log(e);
+  }
 
   // Get the paths we want to pre-render based on posts
-  const paths = pageIds.map((pageId) => ({
+  const paths = pageIds?.map((pageId) => ({
     params: { id: pageId }
   }));
 
