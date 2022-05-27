@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEventHandler, InputHTMLAttributes } from "react";
 import autosize from "autosize";
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
@@ -45,18 +45,21 @@ function insertAtCaret(input: HTMLTextAreaElement, type: ToolbarIcon) {
   input.focus();
   input.dispatchEvent(new Event("input"));
 }
+
 interface IWysiwyg {
   value: string;
   placeholder: string;
-  onTextAreaChange: (text: string) => void;
+  onTextAreaChange: ChangeEventHandler<HTMLTextAreaElement>;
   toolbarItems?: ToolbarIcon[];
+  inputProps: InputHTMLAttributes<HTMLTextAreaElement>;
 }
-function Wysiwyg({
+const Wysiwyg = ({
   value = "",
   placeholder = "Placeholder",
   onTextAreaChange,
-  toolbarItems = ["b", "i", "s", "url", "img"]
-}: IWysiwyg) {
+  toolbarItems = ["b", "i", "s", "url", "img"],
+  inputProps
+}: IWysiwyg) => {
   const textarea = useRef<HTMLTextAreaElement>(null);
   const t = useTranslations("global.inputs.wysiwyg");
   const [preview, setPreview] = useState(bbcode(value));
@@ -88,11 +91,10 @@ function Wysiwyg({
         <textarea
           ref={textarea}
           value={value}
-          onChange={(e) => {
-            onTextAreaChange(e.target.value);
-          }}
+          onChange={onTextAreaChange}
           placeholder={placeholder}
           className="w-full bg-black-lightest border-b-2 border-white pl-3 pt-2 text-2xl font-medium"
+          {...inputProps}
         ></textarea>
       )) || (
         <div
@@ -118,7 +120,7 @@ function Wysiwyg({
       </div>
     </div>
   );
-}
+};
 
 interface IToolbarItem {
   type: keyof typeof TOOLBAR_ICONS;
