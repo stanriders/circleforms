@@ -72,6 +72,8 @@ const initialState = {
   accessibility: "Public",
   limitations: null,
   questions: [],
+  // FIXME!!!
+  gamemode: "osu",
   icon: [],
   banner: [],
   // hardcoded a year from now
@@ -233,8 +235,6 @@ export default function Dashboard() {
 
   async function submitForm() {
     const data = await apiClient.posts.postsPost({ postContract: state });
-    console.log(data);
-
     return data;
   }
 

@@ -5,12 +5,17 @@ interface IRadioProps {
   value: string;
   children: React.ReactNode;
   onClick: React.MouseEventHandler<HTMLInputElement>;
-
-  // onClick: (event: ChangeEvent<HTMLInputElement>) => void;
   active?: boolean;
   color?: string;
 }
-export default function Radio({ name, value, children, onClick, active, color }: IRadioProps) {
+export default function StatusRadio({
+  name,
+  value,
+  children,
+  onClick,
+  active,
+  color
+}: IRadioProps) {
   return (
     <div className="inline-block select-none">
       <label

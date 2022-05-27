@@ -1,3 +1,4 @@
+.openapi-generator-ignore
 apis/AdminApi.ts
 apis/OAuthApi.ts
 apis/PagesApi.ts

@@ -1,6 +1,6 @@
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
 import { useRouter } from "next/router";
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, useState, useEffect, useContext } from "react";
 import { useTranslations } from "next-intl";
 import getImage from "../utils/getImage";
 import Tag from "./Tag";
@@ -8,46 +8,48 @@ import InputRadio from "./InputRadio";
 import Player from "./Player";
 import Button from "./Button";
 import bbcode from "../libs/bbcode";
-import UserContext from "../context/UserContext";
 
 import { dynamicSort } from "../utils/objectSort";
 import {
-  AnswerContract,
+  OsuAnswerContract,
   PostWithQuestionsContract,
   UserContract,
   UserInAnswerContract
 } from "../../openapi";
-
-const TempPlayers = [
-  { name: "Varvalian", ranking: 14, countryRanking: 1, discordTag: "Varvalian#948" },
-  { name: "Alumetri", ranking: 47, countryRanking: 3, discordTag: "Alumetri#836" },
-  { name: "sakamata1", ranking: 1, countryRanking: 1, discordTag: "sakamata1#1337" },
-  { name: "badeu", ranking: 38, countryRanking: 1, discordTag: "badeu#1114" },
-  { name: "WhiteCat", ranking: 4, countryRanking: 1, discordTag: "WhiteCat#1076" }
-];
+import { useQuery } from "react-query";
+import { apiClient } from "../libs/apiClient";
+import UserContext from "../context/UserContext";
 
 interface IFormProps {
-  posts: PostWithQuestionsContract;
-  users: UserInAnswerContract[] | null | undefined;
-  answers: AnswerContract[] | null | undefined;
+  post: PostWithQuestionsContract;
+  authorUser: UserContract | null | undefined;
 }
 
-export default function Form({ posts, users, answers }: IFormProps) {
-  const { banner, description, icon, id, isActive, title } = posts;
+interface FullUserInAnswerContract extends UserInAnswerContract {
+  taiko?: OsuAnswerContract;
+  fruits?: OsuAnswerContract;
+  mania?: OsuAnswerContract;
+  none?: null;
+}
+
+export default function Form({ post, authorUser }: IFormProps) {
   const { user } = useContext(UserContext);
+  const { banner, description, icon, id, isActive, title } = post;
+
+  const [showResponseButton, setShowResponseButton] = useState<boolean>();
+
+  useEffect(() => {
+    setShowResponseButton(user !== null);
+  }, [user]);
+
+  const { data: usersAndAnswers } = useQuery(
+    ["postsIdAnswersGet", id],
+    () => apiClient.posts.postsIdAnswersGet({ id: id as string }),
+    { retry: 0 }
+  );
 
   const [sort, setSort] = useState("rank");
-  const [sortedPlayers, setSortedPlayers] = useState(TempPlayers);
-
-  let firstUser;
-
-  if (users && users[0] !== null) {
-    firstUser = users[0];
-  }
-
-  const [primaryAuthor, setPrimaryAuthor] = useState<
-    UserContract | UserInAnswerContract | null | undefined
-  >(firstUser);
+  const [sortedPlayers, setSortedPlayers] = useState(usersAndAnswers?.users);
 
   const t = useTranslations();
   const router = useRouter();
@@ -55,23 +57,17 @@ export default function Form({ posts, users, answers }: IFormProps) {
   const bannerImg = getImage({ id, banner, type: "banner" });
   const iconImg = getImage({ id, icon, type: "icon" });
 
-  const answerCount = answers?.length;
+  useEffect(() => {}, []);
 
   useEffect(() => {
     if (sort === "rank") {
-      let sorted = [...TempPlayers];
-      dynamicSort(sorted, "-ranking", "-countryRanking");
+      let sorted = [...(usersAndAnswers?.users || [])];
+      dynamicSort(sorted, "-id");
       setSortedPlayers(sorted.reverse());
     } else {
-      setSortedPlayers(TempPlayers);
+      setSortedPlayers(usersAndAnswers?.users);
     }
-  }, [sort]);
-
-  useEffect(() => {
-    if (!primaryAuthor) {
-      setPrimaryAuthor(user);
-    }
-  }, [primaryAuthor, user]);
+  }, [sort, usersAndAnswers?.users]);
 
   return (
     <div>
@@ -91,17 +87,15 @@ export default function Form({ posts, users, answers }: IFormProps) {
               <img className="h-20 w-20 rounded-full" src={iconImg} alt={`${title}'s thumbnail`} />
               <img
                 className="h-10 w-10 rounded-full absolute bottom-0 right-0"
-                // @ts-ignore
-                // todo should be avatarUrl but it breaks
-                src={primaryAuthor?.osu?.avatar_url as string}
-                alt={`${primaryAuthor?.osu?.username}'s avatar`}
+                src={authorUser?.osu?.avatar_url}
+                alt={`${authorUser?.osu?.username}'s avatar`}
               />
             </div>
 
             <div>
               <h1 className="text-4xl font-bold">{title}</h1>
               <p className="text-white text-opacity-50 text-2xl">
-                {answerCount ?? answers?.length} {t("answersCount")}
+                {post.answerCount} {t("answersCount")}
               </p>
             </div>
           </div>
@@ -118,7 +112,7 @@ export default function Form({ posts, users, answers }: IFormProps) {
         <Tabs className="mt-16 mb-4">
           <TabList>
             <Tab>{t("tabs.info.title")}</Tab>
-            <Tab>{t("tabs.answers.title")}</Tab>
+            {usersAndAnswers?.users && <Tab>{t("tabs.answers.title")}</Tab>}
           </TabList>
 
           <TabPanels className="bg-black-lightest px-8 py-5 rounded-b-3xl">
@@ -130,28 +124,51 @@ export default function Form({ posts, users, answers }: IFormProps) {
                 }}
               />
             </TabPanel>
-            <TabPanel>
-              <div
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setSort(e.target.value)}
-                className="flex flex-col"
-              >
-                <InputRadio name="sort" value="rank" label={t("sort.rank")} />
-                <InputRadio name="sort" value="date" label={t("sort.date")} />
-              </div>
+            {usersAndAnswers?.users && (
+              <TabPanel>
+                <div
+                  onChange={(e: ChangeEvent<HTMLInputElement>) => setSort(e.target.value)}
+                  className="flex flex-col gap-4"
+                >
+                  <InputRadio
+                    inputProps={{ name: "sort", value: "rank" }}
+                    labelText={t("sort.rank")}
+                  />
+                  <InputRadio
+                    inputProps={{ name: "sort", value: "date" }}
+                    labelText={t("sort.date")}
+                  />
+                </div>
 
-              <div className="text-center text-pink w-full border-4 border-pink rounded-14 py-2 mt-11 mb-10">
-                <p dangerouslySetInnerHTML={{ __html: t.raw("mistakeNotice") }} />
-              </div>
-              {sortedPlayers.map((player) => (
-                <Player
-                  key={player.name}
-                  name={player.name}
-                  countryRanking={player.countryRanking}
-                  discordTag={player.discordTag}
-                  ranking={player.ranking}
-                />
-              ))}
-            </TabPanel>
+                <div className="text-center text-pink w-full border-4 border-pink rounded-14 py-2 mt-11 mb-10">
+                  <p dangerouslySetInnerHTML={{ __html: t.raw("mistakeNotice") }} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  {sortedPlayers?.map((player: FullUserInAnswerContract) => {
+                    const postGameMode = post.gamemode?.toLowerCase();
+                    let country_rank = 0;
+                    let global_rank = 0;
+                    if (player?.osu?.statistics !== undefined) {
+                      country_rank = player?.osu?.statistics[postGameMode!]?.country_rank;
+                      global_rank = player?.osu?.statistics[postGameMode!]?.global_rank;
+                    }
+
+                    return (
+                      <Player
+                        key={player.id}
+                        name={player.osu?.username as string}
+                        countryRanking={country_rank}
+                        discordTag={player.discord as string}
+                        ranking={global_rank}
+                        onClickHandler={() => {
+                          router.push(window.location.href + `/${player.id}`);
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              </TabPanel>
+            )}
           </TabPanels>
         </Tabs>
 
@@ -160,9 +177,16 @@ export default function Form({ posts, users, answers }: IFormProps) {
             {t("back")}
           </Button>
 
-          <Button onClick={() => {}} theme="secondary">
-            {t("answer")}
-          </Button>
+          {showResponseButton && (
+            <Button
+              onClick={() => {
+                router.push(`/questions/${id}`);
+              }}
+              theme="secondary"
+            >
+              {t("answer")}
+            </Button>
+          )}
         </div>
       </div>
     </div>

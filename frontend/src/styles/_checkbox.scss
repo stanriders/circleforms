@@ -1,0 +1,55 @@
+// https://moderncss.dev/pure-css-custom-checkbox-style/
+.checkbox-input {
+  font-size: 1.5rem;
+  line-height: 1.1;
+  display: grid;
+  grid-template-columns: 1em auto;
+  align-items: center;
+  gap: 0.65em;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    appearance: none;
+    @apply bg-black-darker;
+    margin: 0;
+    font: inherit;
+    color: currentColor;
+    width: 1.15em;
+    height: 1.15em;
+    border: 0.15em solid currentColor;
+    border-radius: 0.15em;
+    transform: translateY(-0.075em);
+
+    display: grid;
+    place-content: center;
+  }
+
+  input[type="checkbox"]::before {
+    content: "";
+    width: 0.65em;
+    height: 0.65em;
+    transform: scale(0);
+    transition: 120ms transform ease-in-out;
+    @apply shadow-inputInset;
+
+    /* Windows High Contrast Mode */
+    background-color: CanvasText;
+
+    transform-origin: center;
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  }
+
+  input[type="checkbox"]:checked::before {
+    transform: scale(1);
+  }
+
+  input[type="checkbox"]:focus-visible {
+    outline: max(2px, 0.15em) solid currentColor;
+    outline-offset: max(2px, 0.15em);
+  }
+
+  input[type="checkbox"]:disabled {
+    @apply text-pink-darker;
+    cursor: not-allowed;
+  }
+}

@@ -15,7 +15,7 @@ module.exports = {
         "Fira Sans",
         "Droid Sans",
         "Helvetica Neue",
-        "sans-serif",
+        "sans-serif"
       ],
       museo: [
         "MuseoModerno",
@@ -30,8 +30,8 @@ module.exports = {
         "Fira Sans",
         "Droid Sans",
         "Helvetica Neue",
-        "sans-serif",
-      ],
+        "sans-serif"
+      ]
     },
     extend: {
       colors: {
@@ -41,31 +41,31 @@ module.exports = {
           dark2: "#0F0F0F",
           light: "#121212",
           lighter: "#131313",
-          lightest: "#1A1A1A",
+          lightest: "#1A1A1A"
         },
         grey: {
           dark: "#2D2D2D",
           DEFAULT: "#999999",
           border: "rgba(255, 255, 255, 0.15)",
-          skeleton: "rgba(255, 255, 255, 0.02)",
+          skeleton: "rgba(255, 255, 255, 0.02)"
         },
         pink: {
           DEFAULT: "#FF66AA",
           dark: "#5C253D",
-          darker: "#3C1526",
+          darker: "#3C1526"
         },
         green: {
           DEFAULT: "#ACFF8F",
-          dark: "#426636",
+          dark: "#426636"
         },
         red: {
           DEFAULT: "#FF8F8F",
-          a: "#614e4e",
+          a: "#614e4e"
         },
         blue: {
           DEFAULT: "#005ce7",
-          discord: "#5865F2",
-        },
+          discord: "#5865F2"
+        }
       },
       borderRadius: {
         5: "5px",
@@ -75,20 +75,23 @@ module.exports = {
         20: "20px",
         35: "35px",
         40: "40px",
-        70: "70px",
+        70: "70px"
       },
       outlineWidth: {
         3: "3px",
-        5: "5px",
+        5: "5px"
       },
       scale: {
-        99: "0.99",
+        99: "0.99"
       },
       zIndex: {
         navbar: "999",
-        aboveNavbar: "9999",
+        aboveNavbar: "9999"
       },
-    },
+      boxShadow: {
+        inputInset: "inset 1em 1em #FF66AA"
+      }
+    }
   },
-  plugins: [require("@whiterussianstudio/tailwind-easing")],
+  plugins: [require("@whiterussianstudio/tailwind-easing")]
 };

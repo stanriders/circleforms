@@ -15,6 +15,9 @@ import { QueryClient, QueryClientProvider } from "react-query";
 
 const queryClient = new QueryClient();
 
+// i18n setup
+// https://codesandbox.io/s/github/amannn/next-intl/tree/main/packages/example-advanced?file=/src/pages/_app.tsx
+
 function MyApp({ Component, pageProps }: AppProps) {
   const { user } = useAuth();
   return (
