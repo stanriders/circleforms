@@ -4,7 +4,8 @@ import Head from "next/head";
 import React from "react";
 import { Toaster } from "react-hot-toast";
 import Button from "../components/Button";
-import DesignTab from "../components/DesignTab";
+import DesignTab from "../components/CreateForm/DesignTab";
+import QuestionsTab from "../components/CreateForm/QuestionsTab";
 import DefaultLayout from "../layouts";
 import { Locales } from "../types/common-types";
 
@@ -19,7 +20,7 @@ const CreateNewForm = () => {
 
       <Toaster />
 
-      <section className="container space-y-8 mb-12">
+      <section className="container space-y-8 mb-12 ">
         <Tabs>
           <TabList>
             <Tab>{t("tabs.design")}</Tab>
@@ -32,56 +33,17 @@ const CreateNewForm = () => {
             <TabPanel>
               <DesignTab />
             </TabPanel>
+
+            <TabPanel className="relative">
+              <div>post</div>
+            </TabPanel>
             {/* Questions */}
-            {/* <TabPanel className="relative">
-              <div
-                className="
-                absolute -right-28 top-0
-                rounded-35 bg-black-lightest py-8 px-2
-                flex flex-col items-center
-              "
-              >
-                <button className="button--icon">
-                  <MdAddCircleOutline className="w-10 h-10" />
-                </button>
-
-                {QUESTIONS_TYPES.map((type) => {
-                  const Icon = QUESTIONS_ICONS[type];
-
-                  return (
-                    <button key={type} className="button--icon">
-                      <span className="sr-only">
-                        {t("add")} {t(`inputs.${type}`)}
-                      </span>
-                      <Icon className="w-10 h-10" />
-                    </button>
-                  );
-                })}
-              </div>
-              <div className="flex flex-col gap-y-4">
-                <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-5 pb-8 px-14 relative overflow-clip">
-                  <div className="absolute left-0 top-0 bg-pink h-2 w-full" />
-                  <input
-                    className="input--inline input--title"
-                    type="text"
-                    placeholder={t("placeholders.title")}
-                    defaultValue={t("placeholders.titleValue")}
-                  />
-                  <input
-                    className="input--inline"
-                    type="text"
-                    placeholder={t("placeholders.excerpt")}
-                  />
-                  <Wysiwyg value={state.description} placeholder={t("placeholders.description")} />
-                </div>
-
-                {state.questions.map((question, index) => {
-                  const Component = COMPONENTS_TYPES[question.type];
-
-                  return <Component key={index} {...question} />;
-                })}
-              </div>
-            </TabPanel> */}
+            <TabPanel className="relative">
+              <QuestionsTab />
+            </TabPanel>
+            <TabPanel>
+              <div>options</div>
+            </TabPanel>
             {/* Options */}
             {/* <TabPanel>
               <Select

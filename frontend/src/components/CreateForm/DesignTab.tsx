@@ -1,9 +1,9 @@
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-import { useFormData } from "./FormContext";
-import FormEntry from "./FormEntry";
-import ImageDropzone from "./ImageDropzone";
+import { useFormData } from "../FormContext";
+import FormEntry from "../FormEntry";
+import ImageDropzone from "../ImageDropzone";
 
 const DesignTab = () => {
   const t = useTranslations();
