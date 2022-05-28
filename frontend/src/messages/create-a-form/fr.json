@@ -9,7 +9,7 @@
   },
   "inputs": {
     "Checkbox": "Cases à cocher",
-    "Freeform": "Paragraphe",
+    "Freeform": "Texte",
     "Choice": "Choix multiples"
   },
   "placeholders": {

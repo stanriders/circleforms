@@ -5,44 +5,48 @@ import {
   ListboxList,
   ListboxOption
 } from "@reach/listbox";
-import { Fragment } from "react";
+import React, { Fragment } from "react";
 import { IconType } from "react-icons";
 import { AiFillCaretDown } from "react-icons/ai";
 
 interface ISelectProps {
-  Icon: IconType;
+  Icon?: IconType;
   options: { value: string; label: string }[];
-  defaultValue: string;
+  inputValue: string;
   onChange: () => void;
+  inputProps: any;
 }
-function Select({ Icon, options, defaultValue, onChange }: ISelectProps) {
-  return (
-    <ListboxInput defaultValue={defaultValue} onChange={onChange}>
-      {({ value, valueLabel }) => (
-        <Fragment>
-          <ListboxButton className="inline-flex pl-4 pr-3 py-2">
-            <div className="inline-flex items-center gap-x-2">
-              {Icon && <Icon className="w-7 h-7" />}
-              <span className="text-2xl" data-value={value}>
-                {valueLabel}
-              </span>
-            </div>
-            <AiFillCaretDown />
-          </ListboxButton>
-          <ListboxPopover>
-            <ListboxList>
-              {options &&
-                options.map((option) => (
-                  <ListboxOption key={option.value} value={option.value}>
-                    {option.label}
-                  </ListboxOption>
-                ))}
-            </ListboxList>
-          </ListboxPopover>
-        </Fragment>
-      )}
-    </ListboxInput>
-  );
-}
+const Select = React.forwardRef(
+  ({ Icon, options, inputValue, onChange, inputProps }: ISelectProps, ref) => {
+    return (
+      <ListboxInput ref={ref} {...inputProps}>
+        {({ value, valueLabel }) => (
+          <Fragment>
+            <ListboxButton className="inline-flex pl-4 pr-3 py-2">
+              <div className="inline-flex items-center gap-x-2">
+                {Icon && <Icon className="w-7 h-7" />}
+                <span className="text-2xl" data-value={value}>
+                  {valueLabel}
+                </span>
+              </div>
+              <AiFillCaretDown />
+            </ListboxButton>
+            <ListboxPopover>
+              <ListboxList>
+                {options &&
+                  options.map((option) => (
+                    <ListboxOption key={option.value} value={option.value}>
+                      {option.label}
+                    </ListboxOption>
+                  ))}
+              </ListboxList>
+            </ListboxPopover>
+          </Fragment>
+        )}
+      </ListboxInput>
+    );
+  }
+);
+Select.displayName = "Select";
 
 export default Select;

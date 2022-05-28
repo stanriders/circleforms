@@ -1,18 +1,11 @@
 import { useTranslations } from "next-intl";
 import React from "react";
-import { Controller, useFieldArray } from "react-hook-form";
-import {
-  MdAddCircleOutline,
-  MdCheckBox,
-  MdClose,
-  MdRadioButtonChecked,
-  MdShortText
-} from "react-icons/md";
+import { Controller, useFieldArray, useWatch } from "react-hook-form";
+import { MdCheckBox, MdRadioButtonChecked, MdShortText } from "react-icons/md";
 import Wysiwyg from "../Wysiwyg";
-import NestedFieldArray from "./NestedFieldArray";
-import QuestionFooter from "./QuestionFooter";
 
-let renderCount = 0;
+import NestedOptionFieldArray from "./NestedFieldArray";
+import QuestionFooter from "./QuestionFooter";
 
 export const QUESTIONS_TYPES = ["Checkbox", "Freeform", "Choice"];
 
@@ -22,39 +15,23 @@ export const QUESTIONS_ICONS = {
   Choice: MdRadioButtonChecked
 };
 
-const FakeRadio = () => {
-  const t = useTranslations();
-  return (
-    <div className="flex gap-x-2 items-center">
-      <div className="h-6 w-6 rounded-full border-2" />
-      <input className="input--inline" type="text" />
-      <button className="button--icon" title={t("removeOption")}>
-        <span className="sr-only">{t("removeOption")}</span>
-        <MdClose />
-      </button>
-    </div>
-  );
-};
-
-const FieldArray = ({ control, register, setValue, getValues }) => {
+const QuestionFieldArray = ({ control, register, setValue, getValues }) => {
   const t = useTranslations();
   const { fields, append, remove, prepend } = useFieldArray({
     control,
-    name: "test"
+    name: "questions"
   });
-
-  renderCount++;
 
   return (
     <>
       <ul className="flex flex-col gap-6">
         {fields.map((item, index) => (
           <li key={item.id}>
-            {/* <input {...register(`test.${index}.name`)} /> */}
             <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14 relative overflow-clip">
               <div className="absolute left-0 top-0 bg-pink h-full w-2" />
+              {/* wysiwyg acts as input for question title */}
               <Controller
-                name={`test.${index}.name`}
+                name={`questions.${index}.title`}
                 control={control}
                 rules={{ required: true }}
                 render={({ field }) => (
@@ -62,17 +39,11 @@ const FieldArray = ({ control, register, setValue, getValues }) => {
                     placeholder="Write your question here"
                     value={field.value}
                     onTextAreaChange={field.onChange}
-                  >
-                    {" "}
-                  </Wysiwyg>
+                  />
                 )}
               />
-              {/* <Wysiwyg
-                    placeholder="Write your question here"
-                    inputProps={register(`test.${index}.name`)}
-                  ></Wysiwyg> */}
-              <NestedFieldArray nestIndex={index} {...{ control, register }} />
-              {/* delete button */}
+
+              <NestedOptionFieldArray nestIndex={index} {...{ control, register }} />
 
               <QuestionFooter
                 onRemove={() => remove(index)}
@@ -80,6 +51,7 @@ const FieldArray = ({ control, register, setValue, getValues }) => {
                 nestIndex={index}
                 control={control}
                 type={QUESTIONS_TYPES[0]}
+                register={register}
               />
             </div>
           </li>
@@ -89,13 +61,16 @@ const FieldArray = ({ control, register, setValue, getValues }) => {
       {/* sidebar for adding questions  */}
       <div className="absolute -right-28 top-0 h-full">
         <div className="sticky top-72 flex flex-col items-center  rounded-35 bg-black-lightest py-8 px-2">
-          <button className="button--icon">
-            <MdAddCircleOutline className="w-10 h-10" />
-          </button>
           {QUESTIONS_TYPES.map((type) => {
             const Icon = QUESTIONS_ICONS[type];
             return (
-              <button key={type} className="button--icon">
+              <button
+                key={type}
+                className="button--icon"
+                onClick={() => {
+                  append({ title: "", type: type });
+                }}
+              >
                 <span className="sr-only">
                   {t("add")} {t(`inputs.${type}`)}
                 </span>
@@ -119,7 +94,7 @@ const FieldArray = ({ control, register, setValue, getValues }) => {
         <button
           type="button"
           onClick={() => {
-            append({ name: "SECRET" });
+            append({ name: "thing", type: "Choice" });
           }}
         >
           APPEND ANOTHER COMPONENT
@@ -128,11 +103,11 @@ const FieldArray = ({ control, register, setValue, getValues }) => {
         <button
           type="button"
           onClick={() => {
-            setValue("test", [
-              ...(getValues().test || []),
+            setValue("questions", [
+              ...(getValues().questions || []),
               {
                 name: "append",
-                nestedArray: [{ field1: "append" }]
+                questionInfo: [{ field1: "append" }]
               }
             ]);
           }}
@@ -152,22 +127,20 @@ const FieldArray = ({ control, register, setValue, getValues }) => {
         <button
           type="button"
           onClick={() => {
-            setValue("test", [
+            setValue("questions", [
               {
                 name: "append",
-                nestedArray: [{ field1: "Prepend", field2: "Prepend" }]
+                questionInfo: [{ field1: "Prepend", field2: "Prepend" }]
               },
-              ...(getValues().test || [])
+              ...(getValues().questions || [])
             ]);
           }}
         >
           prepend Nested
         </button>
       </section>
-
-      <span className="counter">Render Count: {renderCount}</span>
     </>
   );
 };
 
-export default FieldArray;
+export default QuestionFieldArray;
