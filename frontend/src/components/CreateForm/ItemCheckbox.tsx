@@ -1,17 +1,14 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 import { MdClose } from "react-icons/md";
 
-const ItemCheckbox = () => {
+const ItemCheckbox = ({ inputProps, onDelete }) => {
+  const t = useTranslations();
   return (
     <div className="flex gap-x-2 items-center">
       <div className="h-6 w-6 border-2" />
-      <input
-        className="input--inline"
-        {...register(`test.${nestIndex}.nestedArray.${k}.field1`, {
-          required: true
-        })}
-      />
-      <button className="button--icon" title={t("removeOption")} onClick={() => remove(k)}>
+      <input className="input--inline" {...inputProps} />
+      <button className="button--icon" title={t("removeOption")} onClick={onDelete}>
         <span className="sr-only">{t("removeOption")}</span>
         <MdClose />
       </button>

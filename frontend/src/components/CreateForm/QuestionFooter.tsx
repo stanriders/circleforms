@@ -1,49 +1,45 @@
 import { MdContentCopy, MdDeleteOutline, MdMoreVert } from "react-icons/md";
 import ReactSelect from "react-select";
-import { QUESTIONS_ICONS, QUESTIONS_TYPES } from "./FieldArray";
+import { QUESTIONS_ICONS, QUESTIONS_TYPES } from "./QuestionFieldArray";
 import Switch from "react-switch";
 import { useTranslations } from "next-intl";
 import { Controller } from "react-hook-form";
+import Select from "../Select";
+import React from "react";
+import MantineSelect from "../MantineSelect";
 
-const QuestionFooter = ({
-  onEditQuestionType,
-  onEditQuestionOptional,
-  type,
-  onDuplicate,
-  onRemove,
-  isOptional,
-  control,
-  nestIndex
-}) => {
+const QuestionFooter = (
+  {
+    onEditQuestionType,
+    onEditQuestionOptional,
+    type,
+    onDuplicate,
+    onRemove,
+    isOptional,
+    control,
+    nestIndex,
+    register
+  },
+  ref
+) => {
   const t = useTranslations();
-  const Icon = QUESTIONS_ICONS[type];
-  // t(`inputs.${type}`);
-  const options = QUESTIONS_TYPES.map((type) => ({
-    value: type,
-    label: (
-      <div>
-        <Icon />
-        text
-      </div>
-    )
-  }));
+  console.log(type);
 
   return (
     <div className="flex justify-between border-t-2 border-white border-opacity-5 pt-4 mt-14">
-      {/* <Select
-        onChange={onEditQuestionType}
-        Icon={Icon}
-        defaultValue={type}
-        options={QUESTIONS_TYPES.map((type) => ({
-          value: type,
-          label: t(`inputs.${type}`)
-        }))}
-      /> */}
-
       <Controller
-        name={`test.${nestIndex}.type`}
+        name={`questions.${nestIndex}.type`}
         control={control}
-        render={({ field }) => <ReactSelect {...field} options={options} />}
+        render={({ field }) => (
+          <MantineSelect
+            value={field.value || QUESTIONS_TYPES[0]}
+            setValue={field.onChange}
+            data={QUESTIONS_TYPES.map((type) => ({
+              value: type,
+              label: t(`inputs.${type}`)
+            }))}
+          />
+        )}
       />
 
       <div className="flex gap-x-2">
@@ -56,6 +52,9 @@ const QuestionFooter = ({
         </button>
         <label className="flex items-center gap-x-4 text-2xl font-medium border-l-2 border-white border-opacity-5 pl-8">
           <span>Required</span>
+
+          {/* TODO make me controlled */}
+
           <Switch
             // onChange={(e) => onEditQuestionOptional(!e)}
             onChange={() => {}}
@@ -80,5 +79,7 @@ const QuestionFooter = ({
     </div>
   );
 };
+
+QuestionFooter.displayName = "QuestionFooter";
 
 export default QuestionFooter;
