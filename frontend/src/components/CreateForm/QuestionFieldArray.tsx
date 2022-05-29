@@ -1,24 +1,30 @@
 import { useTranslations } from "next-intl";
 import React from "react";
-import { Controller, useFieldArray } from "react-hook-form";
+import { Control, Controller, FieldErrors, useFieldArray } from "react-hook-form";
+import { IconType } from "react-icons";
 import { MdCheckBox, MdRadioButtonChecked, MdShortText } from "react-icons/md";
+import { json } from "stream/consumers";
 import { QuestionType } from "../../../openapi";
 import ErrorMessage from "../ErrorMessage";
 import Wysiwyg from "../Wysiwyg";
 
 import NestedOptionFieldArray from "./NestedFieldArray";
 import QuestionFooter from "./QuestionFooter";
+import { IFormValues } from "./QuestionsTab";
 
-// export const QUESTIONS_TYPES = ["Checkbox", "Freeform", "Choice"];
 export const QUESTIONS_TYPES = Object.values(QuestionType);
 
-export const QUESTIONS_ICONS = {
+export const QUESTIONS_ICONS: Record<QuestionType, IconType> = {
   Checkbox: MdCheckBox,
   Freeform: MdShortText,
   Choice: MdRadioButtonChecked
 };
 
-const QuestionFieldArray = ({ control, register, errors }) => {
+interface IQuestionFieldArray {
+  control: Control<IFormValues, any>;
+  errors: FieldErrors<IFormValues>;
+}
+const QuestionFieldArray = ({ control, errors }: IQuestionFieldArray) => {
   const t = useTranslations();
   const { fields, append, remove } = useFieldArray({
     control,
@@ -43,24 +49,23 @@ const QuestionFieldArray = ({ control, register, errors }) => {
                 <Controller
                   name={`questions.${index}.title`}
                   control={control}
-                  rules={{ required: "Question text is required" }}
+                  rules={{ required: "Question title is required" }}
                   render={({ field }) => (
                     <Wysiwyg
                       placeholder="Write your question here"
                       value={field.value}
                       onTextAreaChange={field.onChange}
+                      onBlur={field.onBlur}
+                      name={field.name}
                     />
                   )}
                 />
                 <ErrorMessage>{errors?.questions?.[index]?.title?.message}</ErrorMessage>
-                <NestedOptionFieldArray nestIndex={index} {...{ control, register, errors }} />
+                <NestedOptionFieldArray nestIndex={index} control={control} errors={errors} />
                 <QuestionFooter
                   onRemove={() => remove(index)}
-                  isOptional={false}
                   nestIndex={index}
                   control={control}
-                  type={QUESTIONS_TYPES[0]}
-                  register={register}
                 />
               </div>
             </li>
@@ -77,7 +82,7 @@ const QuestionFieldArray = ({ control, register, errors }) => {
                   key={type}
                   className="button--icon"
                   onClick={() => {
-                    append({ title: "", type: type, required: true });
+                    append({ title: undefined, type: type, required: true });
                   }}
                 >
                   <span className="sr-only">

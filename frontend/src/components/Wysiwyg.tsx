@@ -51,14 +51,18 @@ interface IWysiwyg {
   placeholder: string;
   onTextAreaChange: ChangeEventHandler<HTMLTextAreaElement>;
   toolbarItems?: ToolbarIcon[];
-  inputProps: InputHTMLAttributes<HTMLTextAreaElement>;
+  inputProps?: InputHTMLAttributes<HTMLTextAreaElement>;
+  onBlur: any;
+  name: string;
 }
 const Wysiwyg = ({
   value = "",
   placeholder = "Placeholder",
   onTextAreaChange,
   toolbarItems = ["b", "i", "s", "url", "img"],
-  inputProps
+  inputProps,
+  onBlur,
+  name
 }: IWysiwyg) => {
   const textarea = useRef<HTMLTextAreaElement>(null);
   const t = useTranslations("global.inputs.wysiwyg");
@@ -74,7 +78,6 @@ const Wysiwyg = ({
     if (hasPreview) {
       setPreview(bbcode(value));
     }
-
   }, [hasPreview, value]);
 
   return (
@@ -95,6 +98,8 @@ const Wysiwyg = ({
           onChange={onTextAreaChange}
           placeholder={placeholder}
           className="w-full bg-black-lightest border-b-2 border-white pl-3 pt-2 text-2xl font-medium"
+          onBlur={onBlur}
+          name={name}
           {...inputProps}
         ></textarea>
       )) || (

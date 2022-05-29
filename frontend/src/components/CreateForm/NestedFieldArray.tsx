@@ -1,4 +1,3 @@
-import { useTranslations } from "next-intl";
 import React from "react";
 import { Control, FieldErrors, useFieldArray, useWatch } from "react-hook-form";
 import ConditionalInput from "./ConditionalInput";
@@ -11,7 +10,6 @@ interface INestedOptionFieldArray {
   errors: FieldErrors<IFormValues>;
 }
 const NestedOptionFieldArray = ({ nestIndex, control, errors }: INestedOptionFieldArray) => {
-  const t = useTranslations();
   const { fields, remove, append } = useFieldArray({
     control,
     name: `questions.${nestIndex}.questionInfo`
@@ -22,7 +20,7 @@ const NestedOptionFieldArray = ({ nestIndex, control, errors }: INestedOptionFie
     control
   });
 
-  const onAppend = () => append("");
+  const onAppend = () => append({ value: "" });
 
   let Placeholder = <></>;
   switch (questionType) {
