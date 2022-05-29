@@ -1,7 +1,11 @@
 import { useTranslations } from "next-intl";
 import React from "react";
 
-const ItemCheckboxPlaceholder = ({onClick}) => {
+interface IItemCheckboxPlaceholder {
+  onClick: React.MouseEventHandler<HTMLDivElement>;
+}
+
+const ItemCheckboxPlaceholder = ({ onClick }: IItemCheckboxPlaceholder) => {
   const t = useTranslations();
   return (
     <div onClick={onClick} className="flex gap-x-2 items-center">

@@ -8,8 +8,8 @@ import ImageDropzone from "../ImageDropzone";
 const DesignTab = () => {
   const t = useTranslations();
   const { data, setValues } = useFormData();
-  const [title, setTitle] = useState<string>();
-  const [description, setDescription] = useState<string>();
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
 
   let previewUrl;
   try {
@@ -26,6 +26,7 @@ const DesignTab = () => {
           type="text"
           placeholder={t("placeholders.title")}
           value={title}
+          required={true}
           onChange={(e) => setTitle(e.target.value)}
           onBlur={() => {
             setValues({ title: title });
@@ -36,6 +37,7 @@ const DesignTab = () => {
           className="input--inline"
           type="text"
           placeholder={t("placeholders.excerpt")}
+          required={true}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           onBlur={() => {
