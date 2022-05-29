@@ -3,7 +3,6 @@ import React from "react";
 import { Control, Controller, FieldErrors, useFieldArray } from "react-hook-form";
 import { IconType } from "react-icons";
 import { MdCheckBox, MdRadioButtonChecked, MdShortText } from "react-icons/md";
-import { json } from "stream/consumers";
 import { QuestionType } from "../../../openapi";
 import ErrorMessage from "../ErrorMessage";
 import Wysiwyg from "../Wysiwyg";
