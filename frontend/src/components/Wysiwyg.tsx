@@ -43,7 +43,7 @@ function insertAtCaret(input: HTMLTextAreaElement, type: ToolbarIcon) {
 
   input.setRangeText(rangeText);
   input.focus();
-  input.dispatchEvent(new Event("input"));
+  input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
 interface IWysiwyg {
@@ -74,12 +74,13 @@ const Wysiwyg = ({
     if (hasPreview) {
       setPreview(bbcode(value));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasPreview]);
+
+  }, [hasPreview, value]);
 
   return (
     <div className="relative overflow-clip">
       <button
+        type="button"
         onClick={() => setHasPreview(!hasPreview)}
         className="button--icon mb-2"
         title={hasPreview ? t("write") : t("preview")}
@@ -130,7 +131,7 @@ function ToolbarItem({ type, onClick }: IToolbarItem) {
   const Icon = TOOLBAR_ICONS[type];
 
   return (
-    <button onClick={onClick} className="button--icon">
+    <button type="button" onClick={onClick} className="button--icon">
       <Icon className="w-8 h-8" />
     </button>
   );

@@ -1,7 +1,11 @@
 import { useTranslations } from "next-intl";
 import React from "react";
 
-const ItemRadioPlaceholder = ({ onClick }) => {
+interface IItemRadioPlaceholder {
+  onClick: React.MouseEventHandler<HTMLDivElement>;
+}
+
+const ItemRadioPlaceholder = ({ onClick }: IItemRadioPlaceholder) => {
   const t = useTranslations();
   return (
     <div onClick={onClick} className="flex gap-x-2 items-center">

@@ -1,38 +1,42 @@
-import { useTranslations } from "next-intl";
-import React from "react";
-import {  useForm } from "react-hook-form";
+import { NestedValue, useForm } from "react-hook-form";
+import { QuestionType } from "../../../openapi";
+import { useFormData } from "../FormContext";
 import QuestionFieldArray from "./QuestionFieldArray";
 
-const defaultValues = {
-  questions: [
-    {
-      title: "",
-      type: "Checkbox"
-    }
-  ]
-};
+interface QuestionEntry {
+  questionInfo: Array<string>;
+  // questionInfo: Array<Record<"value", string>>;
+  type: QuestionType;
+  required: boolean;
+  title: string;
+}
+export interface IFormValues {
+  questions: QuestionEntry[];
+}
 
-const QuestionsTab = () => {
-  const t = useTranslations();
+const QuestionsTab = ({ defaultValues }: { defaultValues?: IFormValues }) => {
+  const { setValues } = useFormData();
 
-  const { control, register, handleSubmit, getValues, reset, setValue } = useForm({
-    defaultValues
+  const {
+    control,
+    register,
+    getValues,
+    setValue,
+    formState: { errors }
+  } = useForm<IFormValues>({
+    defaultValues,
+    mode: "onBlur"
   });
-  const onSubmit = (data) => console.log("data", data);
+
+  console.log(getValues());
 
   return (
     <div className="">
       <div className="flex flex-col gap-y-4">
-        <form className="flex flex-col gap-6" onSubmit={handleSubmit(onSubmit)}>
+        <form className="flex flex-col gap-6" onBlur={() => setValues({ questions: getValues() })}>
           <QuestionFieldArray
-            {...{ control, register, defaultValues, getValues, setValue }}
+            {...{ control, register, defaultValues, getValues, setValue, errors }}
           />
-          {/* <button type="button" onClick={() => reset(defaultValues)}>
-            Reset
-          </button> */}
-          <button type="submit" >
-            submit
-          </button>
         </form>
       </div>
     </div>
