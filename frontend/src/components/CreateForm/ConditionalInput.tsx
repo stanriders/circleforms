@@ -23,11 +23,7 @@ const ConditionalInput = ({ control, index, nestIndex, remove, errors }: ICondit
     <div>
       <Controller
         control={control}
-        // @ts-ignore
-        // so we have two options here:
-        // 1) with the current approach, the result looks like: questionInfo: [string1, string2]
-        // 2) to avoid the TS error, we must do: questionInfo.${index}.value , but then the output will look like: questionInfo: [{value : string1}, {value : string2}] , which is not really what we want
-        name={`questions.${nestIndex}.questionInfo.${index}.`}
+        name={`questions.${nestIndex}.questionInfo.${index}.value`}
         rules={{ required: "Option text cannot be blank" }}
         render={({ field }) => {
           switch (value) {
@@ -45,7 +41,9 @@ const ConditionalInput = ({ control, index, nestIndex, remove, errors }: ICondit
           }
         }}
       />
-      <ErrorMessage>{errors?.questions?.[nestIndex]?.questionInfo?.[index]?.message}</ErrorMessage>
+      <ErrorMessage>
+        {errors?.questions?.[nestIndex]?.questionInfo?.[index]?.value?.message}
+      </ErrorMessage>
     </div>
   );
 };

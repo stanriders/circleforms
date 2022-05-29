@@ -1,24 +1,17 @@
-import { MdContentCopy, MdDeleteOutline, MdMoreVert } from "react-icons/md";
-import ReactSelect from "react-select";
-import { QUESTIONS_ICONS, QUESTIONS_TYPES } from "./QuestionFieldArray";
+import { MdDeleteOutline, MdMoreVert } from "react-icons/md";
+import { QUESTIONS_TYPES } from "./QuestionFieldArray";
 import Switch from "react-switch";
 import { useTranslations } from "next-intl";
-import { Controller } from "react-hook-form";
-import Select from "../Select";
+import { Control, Controller } from "react-hook-form";
 import React from "react";
-import MantineSelect from "../MantineSelect";
-
-const QuestionFooter = ({
-  onEditQuestionType,
-  onEditQuestionOptional,
-  type,
-  onDuplicate,
-  onRemove,
-  isOptional,
-  control,
-  nestIndex,
-  register
-}) => {
+import { IFormValues } from "./QuestionsTab";
+import { Select } from "@mantine/core";
+interface IQuestionFooter {
+  onRemove: React.MouseEventHandler<HTMLButtonElement>;
+  control: Control<IFormValues, any>;
+  nestIndex: number;
+}
+const QuestionFooter = ({ onRemove, control, nestIndex }: IQuestionFooter) => {
   const t = useTranslations();
 
   return (
@@ -27,9 +20,10 @@ const QuestionFooter = ({
         name={`questions.${nestIndex}.type`}
         control={control}
         render={({ field }) => (
-          <MantineSelect
+          <Select
+            aria-label="Select question type"
             value={field.value || QUESTIONS_TYPES[0]}
-            setValue={field.onChange}
+            onChange={field.onChange}
             data={QUESTIONS_TYPES.map((type) => ({
               value: type,
               label: t(`inputs.${type}`)

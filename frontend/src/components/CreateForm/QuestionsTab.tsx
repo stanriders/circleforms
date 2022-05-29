@@ -1,11 +1,12 @@
-import { NestedValue, useForm } from "react-hook-form";
+import { DevTool } from "@hookform/devtools";
+import { useForm } from "react-hook-form";
 import { QuestionType } from "../../../openapi";
 import { useFormData } from "../FormContext";
 import QuestionFieldArray from "./QuestionFieldArray";
 
 interface QuestionEntry {
-  questionInfo: Array<string>;
-  // questionInfo: Array<Record<"value", string>>;
+  // questionInfo: Array<string>;
+  questionInfo: Array<Record<"value", string>>;
   type: QuestionType;
   required: boolean;
   title: string;
@@ -28,8 +29,6 @@ const QuestionsTab = ({ defaultValues }: { defaultValues?: IFormValues }) => {
     mode: "onBlur"
   });
 
-  console.log(getValues());
-
   return (
     <div className="">
       <div className="flex flex-col gap-y-4">
@@ -37,6 +36,9 @@ const QuestionsTab = ({ defaultValues }: { defaultValues?: IFormValues }) => {
           <QuestionFieldArray
             {...{ control, register, defaultValues, getValues, setValue, errors }}
           />
+          {/* Dev tools will lag with large amount of nested inputs */}
+          {/* doesnt affect prod */}
+          <DevTool control={control} />
         </form>
       </div>
     </div>
