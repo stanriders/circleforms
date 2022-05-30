@@ -13,3 +13,10 @@ export function formatBytes(bytes: number, decimals = 2) {
 
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 }
+
+export function withEvent(func: Function): React.ChangeEventHandler<any> {
+  return (event: React.ChangeEvent<any>) => {
+    const { target } = event;
+    func(target.value);
+  };
+}

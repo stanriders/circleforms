@@ -7,7 +7,6 @@ import { useFormData } from "../FormContext";
 import QuestionFieldArray from "./QuestionFieldArray";
 
 interface QuestionEntry {
-  // questionInfo: Array<string>;
   questionInfo: Array<Record<"value", string>>;
   type: QuestionType;
   required: boolean;

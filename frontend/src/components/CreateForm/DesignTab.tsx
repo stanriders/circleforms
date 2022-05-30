@@ -41,7 +41,7 @@ const DesignTab = () => {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           onBlur={() => {
-            setValues({ short_desc: description });
+            setValues({ excerpt: description });
           }}
         />
       </div>
