@@ -5,9 +5,10 @@ import Head from "next/head";
 import { useTranslations } from "next-intl";
 
 import Button from "../components/Button";
-import DesignTab from "../components/CreateForm/DesignTab";
-import PostTab from "../components/CreateForm/PostTab";
-import QuestionsTab from "../components/CreateForm/QuestionsTab";
+import TabDesign from "../components/CreateForm/TabDesign";
+import TabOptions from "../components/CreateForm/TabOptions";
+import TabPost from "../components/CreateForm/TabPost";
+import TabQuestions from "../components/CreateForm/TabQuestions";
 import DefaultLayout from "../layouts";
 import { Locales } from "../types/common-types";
 
@@ -33,29 +34,19 @@ const CreateNewForm = () => {
 
           <TabPanels className="bg-black-lightest px-8 py-5 rounded-b-3xl">
             <TabPanel>
-              <DesignTab />
+              <TabDesign />
             </TabPanel>
 
             <TabPanel className="relative">
-              <PostTab />
+              <TabPost />
             </TabPanel>
             {/* Questions */}
             <TabPanel className="relative">
-              <QuestionsTab />
+              <TabQuestions />
             </TabPanel>
             <TabPanel>
-              <div>options</div>
+              <TabOptions />
             </TabPanel>
-            {/* Options */}
-            {/* <TabPanel>
-              <Select
-                defaultValue={ACCESSIBILITY_OPTIONS[0]}
-                options={ACCESSIBILITY_OPTIONS.map((option) => ({
-                  value: option,
-                  label: t(`accessibility.${option}`)
-                }))}
-              />
-            </TabPanel> */}
           </TabPanels>
         </Tabs>
 

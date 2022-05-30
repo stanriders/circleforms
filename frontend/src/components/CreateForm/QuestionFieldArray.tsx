@@ -1,5 +1,5 @@
 import React from "react";
-import { Control, Controller, FieldErrors, useFieldArray } from "react-hook-form";
+import { Controller, useFieldArray, useFormContext } from "react-hook-form";
 import { IconType } from "react-icons";
 import { MdCheckBox, MdRadioButtonChecked, MdShortText } from "react-icons/md";
 import { useTranslations } from "next-intl";
@@ -10,7 +10,6 @@ import Wysiwyg from "../Wysiwyg";
 
 import NestedOptionFieldArray from "./NestedFieldArray";
 import QuestionFooter from "./QuestionFooter";
-import { IFormValues } from "./QuestionsTab";
 
 export const QUESTIONS_TYPES = Object.values(QuestionType);
 
@@ -20,14 +19,13 @@ export const QUESTIONS_ICONS: Record<QuestionType, IconType> = {
   Choice: MdRadioButtonChecked
 };
 
-interface IQuestionFieldArray {
-  control: Control<IFormValues, any>;
-  errors: FieldErrors<IFormValues>;
-}
-const QuestionFieldArray = ({ control, errors }: IQuestionFieldArray) => {
+const QuestionFieldArray = () => {
   const t = useTranslations();
+
+  const { control } = useFormContext();
+
   const { fields, append, remove } = useFieldArray({
-    control,
+    control: control,
     name: `questions`
   });
   const showEmptyMessage = fields.length === 0;
@@ -46,27 +44,28 @@ const QuestionFieldArray = ({ control, errors }: IQuestionFieldArray) => {
               <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14 relative overflow-clip">
                 <div className="absolute left-0 top-0 bg-pink h-full w-2" />
                 {/* wysiwyg acts as input for question title */}
-                <Controller
-                  name={`questions.${index}.title`}
-                  control={control}
-                  rules={{ required: "Question title is required" }}
-                  render={({ field }) => (
-                    <Wysiwyg
-                      placeholder="Write your question here"
-                      value={field.value}
-                      onTextAreaChange={field.onChange}
-                      onBlur={field.onBlur}
-                      name={field.name}
-                    />
-                  )}
-                />
-                <ErrorMessage>{errors?.questions?.[index]?.title?.message}</ErrorMessage>
-                <NestedOptionFieldArray nestIndex={index} control={control} errors={errors} />
-                <QuestionFooter
-                  onRemove={() => remove(index)}
-                  nestIndex={index}
-                  control={control}
-                />
+                <div>
+                  <Controller
+                    name={`questions.${index}.title`}
+                    control={control}
+                    rules={{ required: "Question title is required" }}
+                    render={({ field, fieldState }) => (
+                      <div>
+                        <Wysiwyg
+                          placeholder="Write your question here"
+                          value={field.value}
+                          onTextAreaChange={field.onChange}
+                          onBlur={field.onBlur}
+                          name={field.name}
+                        />
+                        <ErrorMessage>{fieldState.error?.message}</ErrorMessage>
+                      </div>
+                    )}
+                  />
+                </div>
+
+                <NestedOptionFieldArray nestIndex={index} />
+                <QuestionFooter onRemove={() => remove(index)} nestIndex={index} />
               </div>
             </li>
           ))}
