@@ -30,6 +30,22 @@ const QuestionFooter = ({ onRemove, control, nestIndex }: IQuestionFooter) => {
               value: type,
               label: t(`inputs.${type}`)
             }))}
+            // https://mantine.dev/core/select/?t=styles
+            radius={"lg"}
+            size={"md"}
+            styles={{
+              dropdown: { backgroundColor: "black", color: "#eeeeee" },
+              item: { backgroundColor: "black", color: "#eeeeee" },
+              input: {
+                backgroundColor: "#1a1a1a",
+                color: "#eeeeee",
+                borderWidth: "2px",
+                fontWeight: "bold"
+              },
+              hovered: { backgroundColor: "#1672d4", color: "#eeeeee" },
+              selected: { backgroundColor: "#1a1a1a", color: "#FF66AA" }
+              // wrapper: {}
+            }}
           />
         )}
       />

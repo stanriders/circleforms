@@ -38,6 +38,7 @@ const QuestionsTab = ({ defaultValues }: { defaultValues?: IFormValues }) => {
           <QuestionFieldArray
             {...{ control, register, defaultValues, getValues, setValue, errors }}
           />
+
           {/* Dev tools will lag with large amount of nested inputs */}
           {/* doesnt affect prod */}
           <DevTool control={control} />
