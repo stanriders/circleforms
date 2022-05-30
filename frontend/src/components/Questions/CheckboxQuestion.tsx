@@ -1,7 +1,8 @@
 import React from "react";
+
 import { IQuestionProps } from "../../types/common-types";
-import InputCheckbox from "../InputCheckbox";
 import ErrorMessage from "../ErrorMessage";
+import InputCheckbox from "../InputCheckbox";
 
 // meant to be used inside React Hook Form
 const CheckboxQuestion = ({ question, register, errors, disableEdit }: IQuestionProps) => {

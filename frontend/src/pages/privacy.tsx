@@ -1,5 +1,6 @@
-import { useTranslations } from "next-intl";
 import Head from "next/head";
+import { useTranslations } from "next-intl";
+
 import Hero from "../components/Hero";
 import DefaultLayout from "../layouts";
 import { Locales } from "../types/common-types";

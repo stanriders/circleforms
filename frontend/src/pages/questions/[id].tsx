@@ -1,13 +1,12 @@
+import { useContext } from "react";
 import { GetStaticPropsContext, InferGetStaticPropsType, NextPage } from "next";
 import Head from "next/head";
 
+import ResponseSubmission from "../../components/ResponseSubmission";
+import Unauthorized from "../../components/Unauthorized";
+import UserContext from "../../context/UserContext";
 import DefaultLayout from "../../layouts";
 import { apiClient } from "../../libs/apiClient";
-
-import ResponseSubmission from "../../components/ResponseSubmission";
-import { useContext } from "react";
-import UserContext from "../../context/UserContext";
-import Unauthorized from "../../components/Unauthorized";
 
 type StaticSideProps = InferGetStaticPropsType<typeof getStaticProps>;
 

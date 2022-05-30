@@ -1,19 +1,21 @@
+import { useContext } from "react";
 import SVG from "react-inlinesvg";
+import { Menu, MenuButton, MenuItem,MenuList } from "@reach/menu-button";
+import VisuallyHidden from "@reach/visually-hidden";
+import classNames from "classnames";
+import Cookies from "js-cookie";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import classNames from "classnames";
-import { useContext } from "react";
-import { Menu, MenuList, MenuButton, MenuItem } from "@reach/menu-button";
-import useAuth from "../hooks/useAuth";
-import Cookies from "js-cookie";
-import i18n from "../libs/i18n";
 import { useTranslations } from "next-intl";
-import UserContext from "../context/UserContext";
-import Button from "./Button";
+
 import { navLinks } from "../constants";
-import Flag from "./Flag";
+import UserContext from "../context/UserContext";
+import useAuth from "../hooks/useAuth";
+import i18n from "../libs/i18n";
 import { Locales } from "../types/common-types";
-import VisuallyHidden from "@reach/visually-hidden";
+
+import Button from "./Button";
+import Flag from "./Flag";
 
 const languages = Object.values(i18n);
 

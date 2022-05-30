@@ -1,6 +1,7 @@
 import Link from "next/link";
-import getImage from "../utils/getImage";
+
 import { PostWithQuestionsContract } from "../../openapi";
+import getImage from "../utils/getImage";
 
 export default function FormThumbnail({ id, icon, title }: PostWithQuestionsContract) {
   if (!id) {

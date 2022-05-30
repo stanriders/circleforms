@@ -1,8 +1,9 @@
-import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@reach/tabs";
-import { useTranslations } from "next-intl";
-import Head from "next/head";
 import React from "react";
 import { Toaster } from "react-hot-toast";
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@reach/tabs";
+import Head from "next/head";
+import { useTranslations } from "next-intl";
+
 import Button from "../components/Button";
 import DesignTab from "../components/CreateForm/DesignTab";
 import QuestionsTab from "../components/CreateForm/QuestionsTab";

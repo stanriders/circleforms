@@ -1,17 +1,17 @@
 import React, { ChangeEventHandler, InputHTMLAttributes } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  MdEdit,
+  MdFormatBold,
+  MdFormatItalic,
+  MdImage,
+  MdLink,
+  MdPreview,
+  MdStrikethroughS} from "react-icons/md";
 import autosize from "autosize";
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
-import {
-  MdFormatBold,
-  MdFormatItalic,
-  MdStrikethroughS,
-  MdLink,
-  MdImage,
-  MdEdit,
-  MdPreview
-} from "react-icons/md";
+
 import bbcode from "../libs/bbcode";
 
 const TOOLBAR_ICONS = {

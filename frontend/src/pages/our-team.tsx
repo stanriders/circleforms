@@ -1,12 +1,13 @@
-import Head from "next/head";
-import DefaultLayout from "../layouts";
-import SVG from "react-inlinesvg";
 import { Fragment } from "react";
-import classNames from "classnames";
-import { useTranslations } from "next-intl";
-import { team } from "../constants";
-import Title from "../components/Title";
+import SVG from "react-inlinesvg";
 import VisuallyHidden from "@reach/visually-hidden";
+import classNames from "classnames";
+import Head from "next/head";
+import { useTranslations } from "next-intl";
+
+import Title from "../components/Title";
+import { team } from "../constants";
+import DefaultLayout from "../layouts";
 import { Locales } from "../types/common-types";
 
 export default function OurTeam() {

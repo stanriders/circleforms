@@ -1,6 +1,6 @@
-import { useTranslations } from "next-intl";
 import React from "react";
 import { MdClose } from "react-icons/md";
+import { useTranslations } from "next-intl";
 
 interface IITemCheckbox {
   inputProps: React.InputHTMLAttributes<HTMLInputElement>;

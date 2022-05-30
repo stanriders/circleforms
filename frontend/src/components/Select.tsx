@@ -1,13 +1,12 @@
-import {
-  ListboxInput,
-  ListboxButton,
-  ListboxPopover,
-  ListboxList,
-  ListboxOption
-} from "@reach/listbox";
 import React, { Fragment } from "react";
 import { IconType } from "react-icons";
 import { AiFillCaretDown } from "react-icons/ai";
+import {
+  ListboxButton,
+  ListboxInput,
+  ListboxList,
+  ListboxOption,
+  ListboxPopover} from "@reach/listbox";
 
 interface ISelectProps {
   Icon?: IconType;

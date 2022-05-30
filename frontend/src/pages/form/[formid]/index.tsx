@@ -1,5 +1,6 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from "next";
 import Head from "next/head";
+
 import Form from "../../../components/Form";
 import DefaultLayout from "../../../layouts";
 import { getApiClient } from "../../../utils/getApiClient";
