@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { useFormData } from "../FormContext";
 import Wysiwyg from "../Wysiwyg";
 
-const PostTab = () => {
-  const [text, setText] = useState("");
+const TabPost = ({ defaultDescription = "" }) => {
+  const [text, setText] = useState(defaultDescription);
   const { setValues } = useFormData();
 
   return (
@@ -18,4 +18,4 @@ const PostTab = () => {
   );
 };
 
-export default PostTab;
+export default TabPost;

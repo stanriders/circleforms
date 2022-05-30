@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { useTranslations } from "next-intl";
 
 interface IItemRadioPlaceholder {
@@ -20,4 +20,4 @@ const ItemRadioPlaceholder = ({ onClick }: IItemRadioPlaceholder) => {
   );
 };
 
-export default ItemRadioPlaceholder;
+export default memo(ItemRadioPlaceholder);

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { MdClose } from "react-icons/md";
 import { useTranslations } from "next-intl";
 
@@ -21,4 +21,4 @@ const ItemCheckbox = ({ inputProps, onDelete }: IITemCheckbox) => {
   );
 };
 
-export default ItemCheckbox;
+export default memo(ItemCheckbox);

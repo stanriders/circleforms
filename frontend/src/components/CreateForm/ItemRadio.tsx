@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { MdClose } from "react-icons/md";
 import { useTranslations } from "next-intl";
 
@@ -21,4 +21,4 @@ const ItemRadio = ({ inputProps, onDelete }: IITemRadio) => {
   );
 };
 
-export default ItemRadio;
+export default memo(ItemRadio);

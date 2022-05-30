@@ -5,7 +5,7 @@ import { useFormData } from "../FormContext";
 import FormEntry from "../FormEntry";
 import ImageDropzone from "../ImageDropzone";
 
-const DesignTab = () => {
+const TabDesign = () => {
   const t = useTranslations();
   const { data, setValues } = useFormData();
   const [title, setTitle] = useState<string>("");
@@ -77,4 +77,4 @@ const DesignTab = () => {
   );
 };
 
-export default DesignTab;
+export default TabDesign;

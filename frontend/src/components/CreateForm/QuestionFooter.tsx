@@ -1,20 +1,21 @@
-import React from "react";
-import { Control, Controller } from "react-hook-form";
+import React, { memo } from "react";
+import { Controller, useFormContext } from "react-hook-form";
 import { MdDeleteOutline, MdMoreVert } from "react-icons/md";
 import Switch from "react-switch";
 import { Select } from "@mantine/core";
 import { useTranslations } from "next-intl";
 
+import { selectStyles } from "../../utils/misc";
+
 import { QUESTIONS_TYPES } from "./QuestionFieldArray";
-import { IFormValues } from "./QuestionsTab";
 
 interface IQuestionFooter {
   onRemove: React.MouseEventHandler<HTMLButtonElement>;
-  control: Control<IFormValues, any>;
   nestIndex: number;
 }
-const QuestionFooter = ({ onRemove, control, nestIndex }: IQuestionFooter) => {
+const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
   const t = useTranslations();
+  const { control } = useFormContext();
 
   return (
     <div className="flex justify-between border-t-2 border-white border-opacity-5 pt-4 mt-14">
@@ -44,7 +45,6 @@ const QuestionFooter = ({ onRemove, control, nestIndex }: IQuestionFooter) => {
               },
               hovered: { backgroundColor: "#1672d4", color: "#eeeeee" },
               selected: { backgroundColor: "#1a1a1a", color: "#FF66AA" }
-              // wrapper: {}
             }}
           />
         )}
@@ -94,4 +94,4 @@ const QuestionFooter = ({ onRemove, control, nestIndex }: IQuestionFooter) => {
 
 QuestionFooter.displayName = "QuestionFooter";
 
-export default QuestionFooter;
+export default memo(QuestionFooter);

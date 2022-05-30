@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { useTranslations } from "next-intl";
 
 interface IItemCheckboxPlaceholder {
@@ -20,4 +20,4 @@ const ItemCheckboxPlaceholder = ({ onClick }: IItemCheckboxPlaceholder) => {
   );
 };
 
-export default ItemCheckboxPlaceholder;
+export default memo(ItemCheckboxPlaceholder);

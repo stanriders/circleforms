@@ -1,22 +1,21 @@
-import { Control, Controller, FieldErrors, useWatch } from "react-hook-form";
+import { Control, Controller, FieldValues, useWatch } from "react-hook-form";
 
 import ErrorMessage from "../ErrorMessage";
 
 import ItemCheckbox from "./ItemCheckbox";
 import ItemRadio from "./ItemRadio";
-import { IFormValues } from "./QuestionsTab";
 
 interface IConditionalInput {
   index: number;
   nestIndex: number;
-  control: Control<IFormValues, any>;
   remove: (index: number) => void;
-  errors: FieldErrors<IFormValues>;
+  control: Control<FieldValues, any>;
 }
-const ConditionalInput = ({ control, index, nestIndex, remove, errors }: IConditionalInput) => {
+
+const ConditionalInput = ({ index, nestIndex, remove, control }: IConditionalInput) => {
   const value = useWatch({
     name: `questions.${nestIndex}.type`,
-    control
+    control: control
   });
 
   const onDelete = () => remove(index);
@@ -27,14 +26,24 @@ const ConditionalInput = ({ control, index, nestIndex, remove, errors }: ICondit
         control={control}
         name={`questions.${nestIndex}.questionInfo.${index}.value`}
         rules={{ required: "Option text cannot be blank" }}
-        render={({ field }) => {
+        render={({ field, fieldState: { error } }) => {
           switch (value) {
             case "Freeform":
               return <></>;
             case "Checkbox":
-              return <ItemCheckbox inputProps={{ ...field }} onDelete={onDelete} />;
+              return (
+                <>
+                  <ItemCheckbox inputProps={{ ...field }} onDelete={onDelete} />
+                  <ErrorMessage>{error?.message}</ErrorMessage>
+                </>
+              );
             case "Choice":
-              return <ItemRadio inputProps={{ ...field }} onDelete={onDelete} />;
+              return (
+                <div>
+                  <ItemRadio inputProps={{ ...field }} onDelete={onDelete} />
+                  <ErrorMessage>{error?.message}</ErrorMessage>
+                </div>
+              );
             case undefined:
               return <></>;
             default:
@@ -43,9 +52,6 @@ const ConditionalInput = ({ control, index, nestIndex, remove, errors }: ICondit
           }
         }}
       />
-      <ErrorMessage>
-        {errors?.questions?.[nestIndex]?.questionInfo?.[index]?.value?.message}
-      </ErrorMessage>
     </div>
   );
 };

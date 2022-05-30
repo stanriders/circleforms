@@ -1,27 +1,26 @@
-import React from "react";
-import { Control, FieldErrors, useFieldArray, useWatch } from "react-hook-form";
+import React, { useCallback } from "react";
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 
 import ConditionalInput from "./ConditionalInput";
 import ItemCheckboxPlaceholder from "./ItemCheckboxPlaceholder";
 import ItemRadioPlaceholder from "./ItemRadioPlaceholder";
-import { IFormValues } from "./QuestionsTab";
+
 interface INestedOptionFieldArray {
   nestIndex: number;
-  control: Control<IFormValues, any>;
-  errors: FieldErrors<IFormValues>;
 }
-const NestedOptionFieldArray = ({ nestIndex, control, errors }: INestedOptionFieldArray) => {
+const NestedOptionFieldArray = ({ nestIndex }: INestedOptionFieldArray) => {
+  const { control } = useFormContext();
   const { fields, remove, append } = useFieldArray({
-    control,
+    control: control,
     name: `questions.${nestIndex}.questionInfo`
   });
 
   const questionType = useWatch({
     name: `questions.${nestIndex}.type`,
-    control
+    control: control
   });
 
-  const onAppend = () => append({ value: "" });
+  const onAppend = useCallback(() => append({ value: "" }), [append]);
 
   let Placeholder = <></>;
   switch (questionType) {
@@ -53,10 +52,10 @@ const NestedOptionFieldArray = ({ nestIndex, control, errors }: INestedOptionFie
           <div key={field.id} className="flex gap-x-2 items-center">
             <ConditionalInput
               remove={remove}
-              control={control}
               nestIndex={nestIndex}
               index={ind}
-              errors={errors}
+              control={control}
+              // errors={errors}
             />
           </div>
         );
