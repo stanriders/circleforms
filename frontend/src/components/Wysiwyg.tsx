@@ -1,4 +1,4 @@
-import React, { ChangeEventHandler, InputHTMLAttributes } from "react";
+import React, { ChangeEventHandler, Dispatch, InputHTMLAttributes, SetStateAction } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
   MdEdit,
@@ -7,12 +7,14 @@ import {
   MdImage,
   MdLink,
   MdPreview,
-  MdStrikethroughS} from "react-icons/md";
+  MdStrikethroughS
+} from "react-icons/md";
 import autosize from "autosize";
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
 
 import bbcode from "../libs/bbcode";
+import { withEvent } from "../utils/misc";
 
 const TOOLBAR_ICONS = {
   b: MdFormatBold,
@@ -49,10 +51,10 @@ function insertAtCaret(input: HTMLTextAreaElement, type: ToolbarIcon) {
 interface IWysiwyg {
   value: string;
   placeholder: string;
-  onTextAreaChange: ChangeEventHandler<HTMLTextAreaElement>;
+  onTextAreaChange: ChangeEventHandler<HTMLTextAreaElement> | Dispatch<SetStateAction<string>>;
   toolbarItems?: ToolbarIcon[];
   inputProps?: InputHTMLAttributes<HTMLTextAreaElement>;
-  onBlur: any;
+  onBlur: React.FocusEventHandler<HTMLTextAreaElement>;
   name: string;
 }
 const Wysiwyg = ({
@@ -81,7 +83,7 @@ const Wysiwyg = ({
   }, [hasPreview, value]);
 
   return (
-    <div className="relative overflow-clip">
+    <div className={`relative overflow-clip`}>
       <button
         type="button"
         onClick={() => setHasPreview(!hasPreview)}
@@ -95,9 +97,9 @@ const Wysiwyg = ({
         <textarea
           ref={textarea}
           value={value}
-          onChange={onTextAreaChange}
+          onChange={withEvent(onTextAreaChange)}
           placeholder={placeholder}
-          className="w-full bg-black-lightest border-b-2 border-white pl-3 pt-2 text-2xl font-medium"
+          className={`w-full bg-black-lightest border-b-2 border-white pl-3 pt-2 text-2xl font-medium`}
           onBlur={onBlur}
           name={name}
           {...inputProps}

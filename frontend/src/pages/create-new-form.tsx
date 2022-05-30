@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 
 import Button from "../components/Button";
 import DesignTab from "../components/CreateForm/DesignTab";
+import PostTab from "../components/CreateForm/PostTab";
 import QuestionsTab from "../components/CreateForm/QuestionsTab";
 import DefaultLayout from "../layouts";
 import { Locales } from "../types/common-types";
@@ -36,7 +37,7 @@ const CreateNewForm = () => {
             </TabPanel>
 
             <TabPanel className="relative">
-              <div>post</div>
+              <PostTab />
             </TabPanel>
             {/* Questions */}
             <TabPanel className="relative">
