@@ -1,18 +1,16 @@
+import { ErrorBoundary } from "react-error-boundary";
+import { QueryClient, QueryClientProvider } from "react-query";
+import type { AppProps } from "next/app";
+import { NextIntlProvider } from "next-intl";
+import NextNProgress from "nextjs-progressbar";
+
+import ErrorFallback from "../components/ErrorFallback";
+import { FormDataProvider } from "../components/FormContext";
+import UserContext from "../context/UserContext";
+import useAuth from "../hooks/useAuth";
+
 import "../styles/globals.scss";
 import "@reach/listbox/styles.css";
-
-import type { AppProps } from "next/app";
-import useAuth from "../hooks/useAuth";
-import NextNProgress from "nextjs-progressbar";
-import { ErrorBoundary } from "react-error-boundary";
-
-import { NextIntlProvider } from "next-intl";
-
-import UserContext from "../context/UserContext";
-import ErrorFallback from "../components/ErrorFallback";
-
-import { QueryClient, QueryClientProvider } from "react-query";
-import { FormDataProvider } from "../components/FormContext";
 
 const queryClient = new QueryClient();
 

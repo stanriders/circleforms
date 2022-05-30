@@ -1,5 +1,5 @@
-import { useTranslations } from "next-intl";
 import React from "react";
+import { useTranslations } from "next-intl";
 
 interface IItemRadioPlaceholder {
   onClick: React.MouseEventHandler<HTMLDivElement>;

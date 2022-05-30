@@ -1,11 +1,12 @@
-import { GetServerSidePropsContext } from "next";
 import React from "react";
-import ResponseSubmission from "../../../components/ResponseSubmission";
-import { getApiClient } from "../../../utils/getApiClient";
 import InferNextPropsType from "infer-next-props-type";
-import DefaultLayout from "../../../layouts";
+import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
+
 import { Question } from "../../../../openapi";
+import ResponseSubmission from "../../../components/ResponseSubmission";
+import DefaultLayout from "../../../layouts";
+import { getApiClient } from "../../../utils/getApiClient";
 
 // https://github.com/vercel/next.js/issues/15913#issuecomment-950330472
 type ServerSideProps = InferNextPropsType<typeof getServerSideProps>;

@@ -1,8 +1,9 @@
-import { useTranslations } from "next-intl";
 import React from "react";
 import { Control, Controller, FieldErrors, useFieldArray } from "react-hook-form";
 import { IconType } from "react-icons";
 import { MdCheckBox, MdRadioButtonChecked, MdShortText } from "react-icons/md";
+import { useTranslations } from "next-intl";
+
 import { QuestionType } from "../../../openapi";
 import ErrorMessage from "../ErrorMessage";
 import Wysiwyg from "../Wysiwyg";

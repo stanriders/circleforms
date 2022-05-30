@@ -1,34 +1,33 @@
 // @ts-nocheck
 // TODO: Keziah, HEEEELP
 
-import Head from "next/head";
-import DefaultLayout from "../layouts";
 import { useContext, useEffect, useReducer, useState } from "react";
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
-import { useTranslations } from "next-intl";
 import toast, { Toaster } from "react-hot-toast";
-import Switch from "react-switch";
-
 import {
   MdAddCircleOutline,
-  MdClose,
-  MdDeleteOutline,
-  MdRadioButtonChecked,
   MdCheckBox,
-  MdShortText,
+  MdClose,
   MdContentCopy,
-  MdMoreVert
-} from "react-icons/md";
-import Title from "../components/Title";
-import InputFile from "../components/InputFile";
-import Wysiwyg from "../components/Wysiwyg";
-import Select from "../components/Select";
-import Button from "../components/Button";
-import UserContext from "../context/UserContext";
-import Unauthorized from "../components/Unauthorized";
-import { Locales } from "../types/common-types";
-import { apiClient } from "../libs/apiClient";
+  MdDeleteOutline,
+  MdMoreVert,
+  MdRadioButtonChecked,
+  MdShortText} from "react-icons/md";
+import Switch from "react-switch";
+import { Tab, TabList, TabPanel,TabPanels, Tabs } from "@reach/tabs";
+import Head from "next/head";
+import { useTranslations } from "next-intl";
+
 import { ImageQuery } from "../../openapi";
+import Button from "../components/Button";
+import InputFile from "../components/InputFile";
+import Select from "../components/Select";
+import Title from "../components/Title";
+import Unauthorized from "../components/Unauthorized";
+import Wysiwyg from "../components/Wysiwyg";
+import UserContext from "../context/UserContext";
+import DefaultLayout from "../layouts";
+import { apiClient } from "../libs/apiClient";
+import { Locales } from "../types/common-types";
 
 const COMPONENTS_TYPES = {
   Choice: CreateChoice,

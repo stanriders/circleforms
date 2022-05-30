@@ -1,7 +1,7 @@
 import Link from "next/link";
 import * as timeago from "timeago.js";
-import { MinimalPostContract, UserMinimalContract } from "../../openapi";
 
+import { MinimalPostContract, UserMinimalContract } from "../../openapi";
 import getImage from "../utils/getImage";
 
 interface IFormEntry extends MinimalPostContract {

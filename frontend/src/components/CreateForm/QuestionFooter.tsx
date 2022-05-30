@@ -1,11 +1,13 @@
-import { MdDeleteOutline, MdMoreVert } from "react-icons/md";
-import { QUESTIONS_TYPES } from "./QuestionFieldArray";
-import Switch from "react-switch";
-import { useTranslations } from "next-intl";
-import { Control, Controller } from "react-hook-form";
 import React from "react";
-import { IFormValues } from "./QuestionsTab";
+import { Control, Controller } from "react-hook-form";
+import { MdDeleteOutline, MdMoreVert } from "react-icons/md";
+import Switch from "react-switch";
 import { Select } from "@mantine/core";
+import { useTranslations } from "next-intl";
+
+import { QUESTIONS_TYPES } from "./QuestionFieldArray";
+import { IFormValues } from "./QuestionsTab";
+
 interface IQuestionFooter {
   onRemove: React.MouseEventHandler<HTMLButtonElement>;
   control: Control<IFormValues, any>;

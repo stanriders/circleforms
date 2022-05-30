@@ -1,6 +1,6 @@
+import { MouseEventHandler } from "react";
 import classNames from "classnames";
 import Link from "next/link";
-import { MouseEventHandler } from "react";
 
 interface IButton {
   href?: string;

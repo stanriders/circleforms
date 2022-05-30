@@ -1,8 +1,10 @@
-import classNames from "classnames";
-import { useTranslations } from "next-intl";
 import React, { useEffect, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
+import classNames from "classnames";
+import { useTranslations } from "next-intl";
+
 import { formatBytes } from "../utils/misc";
+
 import Button from "./Button";
 
 const ONE_MB = 1_000_000;

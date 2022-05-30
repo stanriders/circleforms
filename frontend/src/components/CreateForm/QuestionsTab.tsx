@@ -1,7 +1,9 @@
-import { DevTool } from "@hookform/devtools";
 import { useForm } from "react-hook-form";
+import { DevTool } from "@hookform/devtools";
+
 import { QuestionType } from "../../../openapi";
 import { useFormData } from "../FormContext";
+
 import QuestionFieldArray from "./QuestionFieldArray";
 
 interface QuestionEntry {

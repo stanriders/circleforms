@@ -1,17 +1,14 @@
-import Head from "next/head";
-
-import DefaultLayout from "../layouts";
-
 import { useContext, useEffect } from "react";
 import SVG from "react-inlinesvg";
-
-import useAuth from "../hooks/useAuth";
-
+import Head from "next/head";
 import { useTranslations } from "next-intl";
-import UserContext from "../context/UserContext";
-import Unauthorized from "../components/Unauthorized";
-import Title from "../components/Title";
+
 import Button from "../components/Button";
+import Title from "../components/Title";
+import Unauthorized from "../components/Unauthorized";
+import UserContext from "../context/UserContext";
+import useAuth from "../hooks/useAuth";
+import DefaultLayout from "../layouts";
 import { Locales } from "../types/common-types";
 
 export default function Settings() {

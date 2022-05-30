@@ -1,6 +1,7 @@
+import React, { useRef, useState } from "react";
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
-import React, { useRef, useState } from "react";
+
 import Button from "./Button";
 
 interface InputFileProps {

@@ -1,20 +1,17 @@
-import Head from "next/head";
-
-import DefaultLayout from "../layouts";
-
 import { useContext, useEffect, useState } from "react";
 import SVG from "react-inlinesvg";
-
-import Link from "next/link";
-
-import { useTranslations } from "next-intl";
-import Unauthorized from "../components/Unauthorized";
-import Title from "../components/Title";
-import FormCard from "../components/FormCard";
-import UserContext from "../context/UserContext";
-import { Locales } from "../types/common-types";
-import { apiClient } from "../libs/apiClient";
 import { useQuery } from "react-query";
+import Head from "next/head";
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+
+import FormCard from "../components/FormCard";
+import Title from "../components/Title";
+import Unauthorized from "../components/Unauthorized";
+import UserContext from "../context/UserContext";
+import DefaultLayout from "../layouts";
+import { apiClient } from "../libs/apiClient";
+import { Locales } from "../types/common-types";
 
 export default function Dashboard() {
   const t = useTranslations();
