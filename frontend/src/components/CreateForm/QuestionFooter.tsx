@@ -5,8 +5,6 @@ import Switch from "react-switch";
 import { Select } from "@mantine/core";
 import { useTranslations } from "next-intl";
 
-import { selectStyles } from "../../utils/misc";
-
 import { QUESTIONS_TYPES } from "./QuestionFieldArray";
 
 interface IQuestionFooter {
