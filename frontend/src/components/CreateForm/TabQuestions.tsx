@@ -17,7 +17,7 @@ export interface IFormValues {
 }
 
 const TabQuestions = ({ defaultValues }: { defaultValues?: IFormValues }) => {
-  const { data, setValues } = useFormData();
+  const { setValues } = useFormData();
 
   const methods = useForm<IFormValues>({
     defaultValues,

@@ -4,7 +4,6 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@reach/tabs";
 import Head from "next/head";
 import { useTranslations } from "next-intl";
 
-import Button from "../components/Button";
 import TabDesign from "../components/CreateForm/TabDesign";
 import TabOptions from "../components/CreateForm/TabOptions";
 import TabPost from "../components/CreateForm/TabPost";
@@ -49,10 +48,6 @@ const CreateNewForm = () => {
             </TabPanel>
           </TabPanels>
         </Tabs>
-
-        <div className="flex justify-center">
-          <Button>{t("createForm")}</Button>
-        </div>
       </section>
     </DefaultLayout>
   );
