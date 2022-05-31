@@ -1,9 +1,14 @@
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
+import toast, { Toaster } from "react-hot-toast";
+import { useMutation } from "react-query";
 import { Select } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
+import { useRouter } from "next/router";
+import { useTranslations } from "next-intl";
+import { array, date, InferType, mixed, object, string } from "yup";
 
-import { Accessibility, Gamemode, ImageQuery } from "../../../openapi";
+import { Accessibility, Gamemode, ImageQuery, PostContract, Question } from "../../../openapi";
 import { apiClient } from "../../libs/apiClient";
 import Button from "../Button";
 import ErrorMessage from "../ErrorMessage";
@@ -12,11 +17,70 @@ import { useFormData } from "../FormContext";
 const ACCESSABILITY_OPTIONS = Object.values(Accessibility);
 const GAMEMODE_OPTIONS = Object.values(Gamemode);
 
+let answerSchema = object({
+  title: string().required("Form title is required"),
+  excerpt: string().required("Form excerpt description is required"),
+  description: string().required("Main post body is required"),
+  accessibility: mixed<Accessibility>()
+    .oneOf([...ACCESSABILITY_OPTIONS])
+    .required("Active to date is required")
+    .default(Accessibility.Public),
+  activeTo: date().required("Active to date is required").min(new Date()),
+  gamemode: mixed<Gamemode>()
+    .oneOf([...GAMEMODE_OPTIONS])
+    .required("Game mode is required")
+    .default(Gamemode.None),
+  questions: array()
+    .of(
+      mixed<Question>().transform((currentValue) => {
+        // we need to transform questionInfo
+        // from being an array of object: [{value: string1}, {value:string2}]
+        // to just array of strings
+        const flattenedQuestions = currentValue?.questionInfo?.map(
+          (obj: Record<"value", string>) => obj.value
+        );
+        const filteredQuestionInfo = flattenedQuestions.length > 0 ? flattenedQuestions : null;
+        return { ...currentValue, questionInfo: filteredQuestionInfo };
+      })
+    )
+    .required("Create at least one question")
+});
+
 const TabOptions = ({
-  defaultValues = { accessibility: "Public", gamemmode: "None", activeTo: null }
+  defaultValues = { accessibility: "Public", gamemode: "None", activeTo: null }
 }) => {
-  // const t = useTranslations();
+  const t = useTranslations();
+  const router = useRouter();
   const { data, setValues } = useFormData();
+
+  const { mutate: mutatePost, data: submitData } = useMutation(
+    (validatedData: InferType<typeof answerSchema>) => {
+      return apiClient.posts.postsPost({
+        postContract: validatedData as PostContract
+      });
+    },
+    {
+      onSuccess: () => {
+        toast.success(t("toast.success"));
+      },
+      onError: (err) => {
+        if (err instanceof Error) {
+          toast.error(err?.message);
+        }
+        toast.error(t("toast.error"));
+      }
+    }
+  );
+
+  const { mutate: mutateImage } = useMutation(
+    ({ postid, file, isIcon }: { postid: string; file: File; isIcon: boolean }) => {
+      return apiClient.posts.postsIdFilesPut({
+        id: postid,
+        query: isIcon ? ImageQuery.Icon : ImageQuery.Banner,
+        image: file
+      });
+    }
+  );
 
   const methods = useForm({
     defaultValues,
@@ -24,163 +88,143 @@ const TabOptions = ({
   });
 
   async function handleFormSubmit() {
-    let resObj = { ...data };
+    let resObj = { ...data, questions: data?.questions?.questions };
+    let validatedData;
 
-    // format data for backend:
-    // question are in format {"value" : "question text"} and we need to flatten them first
-    const formattedQuestions = data?.questions?.questions
-      ?.map((val: Record<"questionInfo", Array<{ value: string }>>) => {
-        const flattenedQuestions = val.questionInfo.map((obj) => obj.value);
-        return {
-          ...val,
-          questionInfo: flattenedQuestions.length > 0 ? flattenedQuestions : null
-        };
-      })
-      // filter if there is no title
-      ?.filter((obj: Record<"title", string>) => Boolean(obj.title));
+    // show error to user
+    try {
+      validatedData = await answerSchema.validate(resObj);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        toast.error(err.message || "Something went wrong");
+      }
+      return;
+    }
 
-    resObj.questions = formattedQuestions;
+    mutatePost(validatedData);
 
-    const submittedData = await apiClient.posts.postsPost({ postContract: resObj });
-    if (submittedData.id) {
-      await submitIcon({ postid: submittedData.id, icon: data?.icon });
-      await submitBanner({ postid: submittedData.id, banner: data?.banner });
+    if (submitData?.id) {
+      mutateImage({ postid: submitData.id, file: data.icon, isIcon: true });
+      mutateImage({ postid: submitData.id, file: data.banner, isIcon: false });
     }
-  }
-  async function submitIcon({ postid, icon }: { postid: string; icon: File }) {
-    if (icon) {
-      await apiClient.posts.postsIdFilesPut({
-        id: postid,
-        query: ImageQuery.Icon,
-        image: icon
-      });
-    }
-  }
-  async function submitBanner({ postid, banner }: { postid: string; banner: File }) {
-    if (banner) {
-      await apiClient.posts.postsIdFilesPut({
-        id: postid,
-        query: ImageQuery.Banner,
-        image: banner
-      });
-    }
+    router.push("/dashboard");
   }
 
   return (
-    <form onSubmit={methods.handleSubmit(handleFormSubmit)} className="flex flex-col gap-6">
-      <Controller
-        name={`accessibility`}
-        control={methods.control}
-        rules={{ required: "True" }}
-        render={({ field, fieldState: { error } }) => (
-          <div>
-            <Select
-              aria-label="Select post accessibility"
-              label="Accessibility"
-              required={true}
-              {...field}
-              onBlur={() => setValues({ accessibility: field.value })}
-              data={ACCESSABILITY_OPTIONS.map((type) => ({
-                value: type,
-                label: type
-              }))}
-              // https://mantine.dev/core/select/?t=styles
-              radius={"lg"}
-              size={"md"}
-              styles={{
-                dropdown: { backgroundColor: "black", color: "#eeeeee" },
-                item: { backgroundColor: "black", color: "#eeeeee" },
-                input: {
-                  backgroundColor: "#1a1a1a",
-                  color: "#eeeeee",
-                  borderWidth: "2px",
-                  fontWeight: "bold"
-                },
-                hovered: { backgroundColor: "#1672d4", color: "#eeeeee" },
-                selected: { backgroundColor: "#1a1a1a", color: "#FF66AA" },
-                root: { maxWidth: "fit-content" },
-                label: { color: "#eeeeee" }
-              }}
-            />
-            <ErrorMessage text={error?.message} />
-          </div>
-        )}
-      />
-
-      <Controller
-        name={`gamemmode`}
-        control={methods.control}
-        rules={{ required: "Game mode is required" }}
-        render={({ field, fieldState: { error } }) => (
-          <div>
-            <Select
-              aria-label="Select game mode"
-              label="Game mode"
-              required={true}
-              {...field}
-              onBlur={() => setValues({ gamemmode: field.value })}
-              data={GAMEMODE_OPTIONS.map((type) => ({
-                value: type,
-                label: type
-              }))}
-              // https://mantine.dev/core/select/?t=styles
-              radius={"lg"}
-              size={"md"}
-              styles={{
-                dropdown: { backgroundColor: "black", color: "#eeeeee" },
-                item: { backgroundColor: "black", color: "#eeeeee" },
-                input: {
-                  backgroundColor: "#1a1a1a",
-                  color: "#eeeeee",
-                  borderWidth: "2px",
-                  fontWeight: "bold"
-                },
-                hovered: { backgroundColor: "#1672d4", color: "#eeeeee" },
-                selected: { backgroundColor: "#1a1a1a", color: "#FF66AA" },
-                root: { maxWidth: "fit-content" },
-                label: { color: "#eeeeee" }
-              }}
-            />
-            <ErrorMessage text={error?.message} />
-          </div>
-        )}
-      />
-
-      <Controller
-        name={`activeTo`}
-        control={methods.control}
-        rules={{ required: "Please pick post end date" }}
-        render={({ field, fieldState: { error } }) => (
-          <div>
-            <DatePicker
-              locale="en"
-              label="Active to"
-              placeholder="Pick a date"
-              required
-              {...field}
-              onBlur={() => setValues({ activeTo: field.value })}
-              radius={"lg"}
-              size={"md"}
-              styles={{
-                label: { color: "#eeeeee" },
-                root: { maxWidth: "fit-content" },
-                input: {
-                  backgroundColor: "#1a1a1a",
-                  color: "#eeeeee",
-                  borderWidth: "2px",
-                  fontWeight: "bold"
-                }
-              }}
-            />
-            <ErrorMessage text={error?.message} />
-          </div>
-        )}
-      />
-
-      <div className="flex justify-center">
-        <Button {...{ type: "submit" }}>Create draft</Button>
-      </div>
-    </form>
+    <>
+      <Toaster />
+      <form onSubmit={methods.handleSubmit(handleFormSubmit)} className="flex flex-col gap-6">
+        <Controller
+          name={`accessibility`}
+          control={methods.control}
+          rules={{ required: "True" }}
+          render={({ field, fieldState: { error } }) => (
+            <div>
+              <Select
+                aria-label="Select post accessibility"
+                label="Accessibility"
+                required={true}
+                {...field}
+                onBlur={() => setValues({ accessibility: field.value })}
+                data={ACCESSABILITY_OPTIONS.map((type) => ({
+                  value: type,
+                  label: type
+                }))}
+                // https://mantine.dev/core/select/?t=styles
+                radius={"lg"}
+                size={"md"}
+                styles={{
+                  dropdown: { backgroundColor: "black", color: "#eeeeee" },
+                  item: { backgroundColor: "black", color: "#eeeeee" },
+                  input: {
+                    backgroundColor: "#1a1a1a",
+                    color: "#eeeeee",
+                    borderWidth: "2px",
+                    fontWeight: "bold"
+                  },
+                  hovered: { backgroundColor: "#1672d4", color: "#eeeeee" },
+                  selected: { backgroundColor: "#1a1a1a", color: "#FF66AA" },
+                  root: { maxWidth: "fit-content" },
+                  label: { color: "#eeeeee" }
+                }}
+              />
+              <ErrorMessage text={error?.message} />
+            </div>
+          )}
+        />
+        <Controller
+          name={`gamemode`}
+          control={methods.control}
+          rules={{ required: "Game mode is required" }}
+          render={({ field, fieldState: { error } }) => (
+            <div>
+              <Select
+                aria-label="Select game mode"
+                label="Game mode"
+                required={true}
+                {...field}
+                onBlur={() => setValues({ gamemode: field.value })}
+                data={GAMEMODE_OPTIONS.map((type) => ({
+                  value: type,
+                  label: type
+                }))}
+                // https://mantine.dev/core/select/?t=styles
+                radius={"lg"}
+                size={"md"}
+                styles={{
+                  dropdown: { backgroundColor: "black", color: "#eeeeee" },
+                  item: { backgroundColor: "black", color: "#eeeeee" },
+                  input: {
+                    backgroundColor: "#1a1a1a",
+                    color: "#eeeeee",
+                    borderWidth: "2px",
+                    fontWeight: "bold"
+                  },
+                  hovered: { backgroundColor: "#1672d4", color: "#eeeeee" },
+                  selected: { backgroundColor: "#1a1a1a", color: "#FF66AA" },
+                  root: { maxWidth: "fit-content" },
+                  label: { color: "#eeeeee" }
+                }}
+              />
+              <ErrorMessage text={error?.message} />
+            </div>
+          )}
+        />
+        <Controller
+          name={`activeTo`}
+          control={methods.control}
+          rules={{ required: "Please pick post end date" }}
+          render={({ field, fieldState: { error } }) => (
+            <div>
+              <DatePicker
+                locale="en"
+                label="Active to"
+                placeholder="Pick a date"
+                required
+                {...field}
+                onBlur={() => setValues({ activeTo: field.value })}
+                radius={"lg"}
+                size={"md"}
+                styles={{
+                  label: { color: "#eeeeee" },
+                  root: { maxWidth: "fit-content" },
+                  input: {
+                    backgroundColor: "#1a1a1a",
+                    color: "#eeeeee",
+                    borderWidth: "2px",
+                    fontWeight: "bold"
+                  }
+                }}
+              />
+              <ErrorMessage text={error?.message} />
+            </div>
+          )}
+        />
+        <div className="flex justify-center">
+          <Button {...{ type: "submit" }}>Create draft</Button>
+        </div>
+      </form>
+    </>
   );
 };
 
