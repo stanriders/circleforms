@@ -1,8 +1,8 @@
 import React from "react";
-import { useFormContext } from "react-hook-form";
 
-export function isEmpty(obj: Record<any, any>) {
-  return Object.keys(obj).length === 0;
+export function isEmpty(obj: Record<any, unknown>) {
+  if (!obj) return true;
+  return Object.keys(obj)?.length === 0;
 }
 
 export function formatBytes(bytes: number, decimals = 2) {
@@ -23,10 +23,3 @@ export function withEvent(func: Function): React.ChangeEventHandler<any> {
     func(target.value);
   };
 }
-
-export const ConnectForm = ({ children }: { children: any }) => {
-  const methods = useFormContext();
-
-  return children({ ...methods });
-};
-

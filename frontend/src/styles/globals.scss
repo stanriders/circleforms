@@ -259,3 +259,8 @@ svg {
 .inline-link {
   @apply text-blue underline hover:no-underline;
 }
+
+.fix-blurry-scale {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}

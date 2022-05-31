@@ -2,7 +2,6 @@ import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { useMutation } from "react-query";
-import { Select } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
@@ -54,7 +53,7 @@ const TabOptions = ({
   const router = useRouter();
   const { data, setValues } = useFormData();
 
-  const { mutate: mutatePost, data: submitData } = useMutation(
+  const { mutateAsync: mutatePost } = useMutation(
     (validatedData: InferType<typeof answerSchema>) => {
       return apiClient.posts.postsPost({
         postContract: validatedData as PostContract
@@ -102,7 +101,7 @@ const TabOptions = ({
       return;
     }
 
-    mutatePost(validatedData);
+    const submitData = await mutatePost(validatedData);
 
     if (submitData?.id) {
       mutateImage({ postid: submitData.id, file: data.icon, isIcon: true });

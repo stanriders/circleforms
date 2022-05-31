@@ -1,9 +1,10 @@
 import React from "react";
 import { Select, SelectProps } from "@mantine/core";
 
-const DropdownSelect = React.forwardRef((props: SelectProps) => {
+const DropdownSelect = React.forwardRef<HTMLInputElement, SelectProps>((props, ref) => {
   return (
     <Select
+      ref={ref}
       radius={"lg"}
       size={"md"}
       styles={{
