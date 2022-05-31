@@ -72,7 +72,7 @@ const QuestionFieldArray = () => {
         </ul>
         {/* sidebar for adding questions  */}
         <div className="absolute -right-28 top-0 h-full">
-          <div className="sticky top-72 flex flex-col items-center  rounded-35 bg-black-lightest py-8 px-2">
+          <div className="sticky top-72 flex flex-col items-center rounded-35 bg-black-lightest py-8 px-2">
             {QUESTIONS_TYPES.map((type) => {
               const Icon = QUESTIONS_ICONS[type];
               return (

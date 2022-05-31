@@ -11,6 +11,7 @@ import { array, date, InferType, mixed, object, string } from "yup";
 import { Accessibility, Gamemode, ImageQuery, PostContract, Question } from "../../../openapi";
 import { apiClient } from "../../libs/apiClient";
 import Button from "../Button";
+import DropdownSelect from "../DropdownSelect";
 import ErrorMessage from "../ErrorMessage";
 import { useFormData } from "../FormContext";
 
@@ -113,14 +114,19 @@ const TabOptions = ({
   return (
     <>
       <Toaster />
-      <form onSubmit={methods.handleSubmit(handleFormSubmit)} className="flex flex-col gap-6">
+
+      <form
+        className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14 relative overflow-clip"
+        onSubmit={methods.handleSubmit(handleFormSubmit)}
+      >
+        <div className="absolute left-0 top-0 bg-pink h-full w-2" />
         <Controller
           name={`accessibility`}
           control={methods.control}
           rules={{ required: "True" }}
           render={({ field, fieldState: { error } }) => (
             <div>
-              <Select
+              <DropdownSelect
                 aria-label="Select post accessibility"
                 label="Accessibility"
                 required={true}
@@ -130,23 +136,8 @@ const TabOptions = ({
                   value: type,
                   label: type
                 }))}
-                // https://mantine.dev/core/select/?t=styles
                 radius={"lg"}
                 size={"md"}
-                styles={{
-                  dropdown: { backgroundColor: "black", color: "#eeeeee" },
-                  item: { backgroundColor: "black", color: "#eeeeee" },
-                  input: {
-                    backgroundColor: "#1a1a1a",
-                    color: "#eeeeee",
-                    borderWidth: "2px",
-                    fontWeight: "bold"
-                  },
-                  hovered: { backgroundColor: "#1672d4", color: "#eeeeee" },
-                  selected: { backgroundColor: "#1a1a1a", color: "#FF66AA" },
-                  root: { maxWidth: "fit-content" },
-                  label: { color: "#eeeeee" }
-                }}
               />
               <ErrorMessage text={error?.message} />
             </div>
@@ -158,7 +149,7 @@ const TabOptions = ({
           rules={{ required: "Game mode is required" }}
           render={({ field, fieldState: { error } }) => (
             <div>
-              <Select
+              <DropdownSelect
                 aria-label="Select game mode"
                 label="Game mode"
                 required={true}
@@ -168,23 +159,8 @@ const TabOptions = ({
                   value: type,
                   label: type
                 }))}
-                // https://mantine.dev/core/select/?t=styles
                 radius={"lg"}
                 size={"md"}
-                styles={{
-                  dropdown: { backgroundColor: "black", color: "#eeeeee" },
-                  item: { backgroundColor: "black", color: "#eeeeee" },
-                  input: {
-                    backgroundColor: "#1a1a1a",
-                    color: "#eeeeee",
-                    borderWidth: "2px",
-                    fontWeight: "bold"
-                  },
-                  hovered: { backgroundColor: "#1672d4", color: "#eeeeee" },
-                  selected: { backgroundColor: "#1a1a1a", color: "#FF66AA" },
-                  root: { maxWidth: "fit-content" },
-                  label: { color: "#eeeeee" }
-                }}
               />
               <ErrorMessage text={error?.message} />
             </div>
@@ -206,14 +182,8 @@ const TabOptions = ({
                 radius={"lg"}
                 size={"md"}
                 styles={{
-                  label: { color: "#eeeeee" },
                   root: { maxWidth: "fit-content" },
-                  input: {
-                    backgroundColor: "#1a1a1a",
-                    color: "#eeeeee",
-                    borderWidth: "2px",
-                    fontWeight: "bold"
-                  }
+                  input: { backgroundColor: "#1a1a1a" }
                 }}
               />
               <ErrorMessage text={error?.message} />

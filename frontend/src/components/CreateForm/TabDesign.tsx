@@ -19,11 +19,11 @@ const TabDesign = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-5 pb-8 px-14 relative overflow-clip">
+      <div className="flex flex-col gap-y-1 rounded-35 bg-black-lighter pt-5 pb-8 px-14 relative overflow-clip">
         <div className="absolute left-0 top-0 bg-pink h-2 w-full" />
         {/* post title */}
         <input
-          className="input--inline input--title"
+          className="input--inline bg-transparent text-2xl font-medium  border-b border-dotted border-white border-opacity-20 p-2 relative transition-colors input--title"
           type="text"
           placeholder={t("placeholders.title")}
           value={title}
@@ -35,7 +35,7 @@ const TabDesign = () => {
         />
         {/* post description */}
         <input
-          className="input--inline"
+          className="input--inline bg-transparent text-xl font-medium  border-b border-dotted border-white border-opacity-20 p-2 relative transition-colors"
           type="text"
           placeholder={t("placeholders.excerpt")}
           required={true}

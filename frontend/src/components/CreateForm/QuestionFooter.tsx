@@ -2,8 +2,9 @@ import React, { memo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { MdDeleteOutline, MdMoreVert } from "react-icons/md";
 import Switch from "react-switch";
-import { Select } from "@mantine/core";
 import { useTranslations } from "next-intl";
+
+import DropdownSelect from "../DropdownSelect";
 
 import { QUESTIONS_TYPES } from "./QuestionFieldArray";
 
@@ -21,7 +22,7 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
         name={`questions.${nestIndex}.type`}
         control={control}
         render={({ field }) => (
-          <Select
+          <DropdownSelect
             aria-label="Select question type"
             value={field.value || QUESTIONS_TYPES[0]}
             onChange={field.onChange}
@@ -29,21 +30,6 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
               value: type,
               label: t(`inputs.${type}`)
             }))}
-            // https://mantine.dev/core/select/?t=styles
-            radius={"lg"}
-            size={"md"}
-            styles={{
-              dropdown: { backgroundColor: "black", color: "#eeeeee" },
-              item: { backgroundColor: "black", color: "#eeeeee" },
-              input: {
-                backgroundColor: "#1a1a1a",
-                color: "#eeeeee",
-                borderWidth: "2px",
-                fontWeight: "bold"
-              },
-              hovered: { backgroundColor: "#1672d4", color: "#eeeeee" },
-              selected: { backgroundColor: "#1a1a1a", color: "#FF66AA" }
-            }}
           />
         )}
       />
@@ -77,7 +63,6 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
                 activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
                 height={32}
                 width={58}
-                className="border-[2px] border-current"
               />
             )}
           />
