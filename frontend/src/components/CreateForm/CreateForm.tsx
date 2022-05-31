@@ -4,7 +4,7 @@ import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@reach/tabs";
 import Head from "next/head";
 import { useTranslations } from "next-intl";
 
-import { MinimalPostContract } from "../../../openapi";
+import { PostWithQuestionsContract } from "../../../openapi";
 import DefaultLayout from "../../layouts";
 import { isEmpty } from "../../utils/misc";
 import { useFormData } from "../FormContext";
@@ -12,21 +12,26 @@ import { useFormData } from "../FormContext";
 import TabDesign from "./TabDesign";
 import TabOptions from "./TabOptions";
 import TabPost from "./TabPost";
-import TabQuestions from "./TabQuestions";
+import TabQuestions, { QuestionEntry } from "./TabQuestions";
 
 interface ICreateForm {
-  post?: MinimalPostContract;
+  post?: PostWithQuestionsContract;
 }
 const CreateForm = ({ post }: ICreateForm) => {
   const t = useTranslations();
   const { data, setValues } = useFormData();
 
+  const convertedQuestions = post?.questions?.map((val) => {
+    const formattedQuestions = val.questionInfo?.map((str) => ({ value: str }));
+    return { ...val, questionInfo: formattedQuestions, required: !val.isOptional };
+  });
+
   useEffect(() => {
     // @ts-ignore
     if (!isEmpty(post) && isEmpty(data)) {
-      setValues(post);
+      setValues({ ...post, questions: { questions: convertedQuestions } });
     }
-  }, [post, setValues, data]);
+  }, [post, setValues, data, convertedQuestions]);
 
   return (
     <DefaultLayout>
@@ -61,7 +66,11 @@ const CreateForm = ({ post }: ICreateForm) => {
             </TabPanel>
             {/* Questions */}
             <TabPanel className="relative">
-              <TabQuestions />
+              <TabQuestions
+                defaultValues={{
+                  questions: convertedQuestions as QuestionEntry[]
+                }}
+              />
             </TabPanel>
             <TabPanel>
               <TabOptions
