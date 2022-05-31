@@ -47,11 +47,18 @@ let answerSchema = object({
 });
 
 const TabOptions = ({
-  defaultValues = { accessibility: "Public", gamemode: "None", activeTo: null }
+  accessibility = Accessibility.Public,
+  gamemode = Gamemode.None,
+  activeTo
+}: {
+  accessibility?: Accessibility;
+  gamemode?: Gamemode;
+  activeTo?: Date;
 }) => {
   const t = useTranslations();
   const router = useRouter();
   const { data, setValues } = useFormData();
+  const defaultValues = { accessibility, gamemode, activeTo };
 
   const { mutateAsync: mutatePost } = useMutation(
     (validatedData: InferType<typeof answerSchema>) => {
