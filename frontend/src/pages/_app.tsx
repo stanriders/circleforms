@@ -6,6 +6,7 @@ import NextNProgress from "nextjs-progressbar";
 
 import ErrorFallback from "../components/ErrorFallback";
 import { FormDataProvider } from "../components/FormContext";
+import { MantineStyles } from "../components/MantineStyles";
 import UserContext from "../context/UserContext";
 import useAuth from "../hooks/useAuth";
 
@@ -26,7 +27,9 @@ function MyApp({ Component, pageProps }: AppProps) {
           <UserContext.Provider value={{ user }}>
             <NextNProgress color="#FF66AA" />
             <ErrorBoundary FallbackComponent={ErrorFallback}>
-              <Component {...pageProps} />
+              <MantineStyles>
+                <Component {...pageProps} />
+              </MantineStyles>
             </ErrorBoundary>
           </UserContext.Provider>
         </FormDataProvider>

@@ -48,7 +48,7 @@ export default function Dashboard() {
 
       <section className="container bg-black-lightest rounded-40 px-8 py-5">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-10">
-          <Link href="/create-a-form" passHref>
+          <Link href="/create-new-form" passHref>
             <a
               className="flex justify-center items-center bg-pink rounded-20 h-40 transition-transform ease-out-cubic hover:scale-99"
               title="Create your form"

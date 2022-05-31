@@ -13,7 +13,7 @@ const FreeformInputQuestion = ({ question, register, errors, disableEdit }: IQue
       </label>
       <input
         placeholder="Your answer"
-        className="input--inline"
+        className="input--inline bg-transparent text-2xl font-medium  border-b border-dotted border-white border-opacity-20 p-2 relative transition-colors"
         type="text"
         autoComplete="off"
         {...register(String(question.questionId), {

@@ -3,12 +3,6 @@ label {
 }
 
 .input--inline {
-  @apply bg-transparent text-2xl font-medium text-white border-b border-dotted border-white border-opacity-20 p-2 relative transition-colors;
-
-  &.input--static {
-    @apply text-opacity-50;
-  }
-
   &::placeholder {
     @apply text-white text-opacity-30;
   }
