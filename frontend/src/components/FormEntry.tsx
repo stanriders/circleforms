@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import Link from "next/link";
 import * as timeago from "timeago.js";
 
@@ -20,7 +21,11 @@ export default function FormEntry({
   previewBanner,
   isPreview
 }: IFormEntry) {
-  const bannerImg = getImage({ banner, id, type: "banner" });
+  // const bannerImg = getImage({ banner, id, type: "banner" });
+
+  const bannerImg = useMemo(() => {
+    return getImage({ banner, id, type: "banner" });
+  }, [banner, id]);
 
   return (
     <Link href={isPreview ? "/create-new-form" : `/form/${id}`}>
