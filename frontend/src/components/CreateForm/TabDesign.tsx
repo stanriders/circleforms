@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { useFormData } from "../FormContext";
@@ -11,10 +11,11 @@ const TabDesign = () => {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
-  let previewUrl;
-  try {
-    previewUrl = URL.createObjectURL(data?.banner);
-  } catch (e) {}
+  const previewUrl = useMemo(() => {
+    try {
+      return URL.createObjectURL(data?.banner);
+    } catch (e) {}
+  }, [data?.banner]);
 
   return (
     <div className="flex flex-col gap-6">
