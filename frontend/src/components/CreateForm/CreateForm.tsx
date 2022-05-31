@@ -57,14 +57,18 @@ const CreateForm = ({ post }: ICreateForm) => {
             </TabPanel>
 
             <TabPanel className="relative">
-              <TabPost />
+              <TabPost defaultDescription={post?.description as string} />
             </TabPanel>
             {/* Questions */}
             <TabPanel className="relative">
               <TabQuestions />
             </TabPanel>
             <TabPanel>
-              <TabOptions />
+              <TabOptions
+                accessibility={post?.accessibility}
+                gamemode={post?.gamemode}
+                activeTo={post?.activeTo}
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>
