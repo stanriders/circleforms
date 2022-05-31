@@ -14,8 +14,15 @@ interface IImageDropzone {
   headingText: string;
   classname?: string;
   fileAcceptCallback: (args: any) => void;
+  defaultPreview?: string;
 }
-const ImageDropzone = ({ name, headingText, classname, fileAcceptCallback }: IImageDropzone) => {
+const ImageDropzone = ({
+  name,
+  headingText,
+  classname,
+  fileAcceptCallback,
+  defaultPreview
+}: IImageDropzone) => {
   const t = useTranslations("global.inputs");
   const [file, setFile] = useState<File>();
 
@@ -72,6 +79,20 @@ const ImageDropzone = ({ name, headingText, classname, fileAcceptCallback }: IIm
     </li>
   ));
 
+  const ImageSelectText = () => (
+    <>
+      <p className="font-semibold text-xl mb-1 select-none">{t("file.dragImageHere")}</p>
+      <p className="font-medium text-xs text-white text-opacity-20 select-none">
+        {t("file.orPressButton")}
+      </p>
+      <Button theme="secondary" classname="my-2 pointer-events-none">
+        {t("file.chooseFile")}
+      </Button>
+    </>
+  );
+
+  const imageSelectShow = !(file || defaultPreview);
+
   return (
     <div
       className={classNames("flex flex-col text-center w-full h-full cursor-pointer", classname)}
@@ -84,11 +105,20 @@ const ImageDropzone = ({ name, headingText, classname, fileAcceptCallback }: IIm
           isDragActive ? "brightness-150" : ""
         )}
       >
-        {(file && (
+        {!file && defaultPreview && (
+          <img
+            className="h-56 object-contain"
+            src={defaultPreview}
+            alt={"Image preview"}
+            key={defaultPreview}
+          />
+        )}
+
+        {file && (
           <div>
             <img
               className="h-56 object-contain"
-              src={URL.createObjectURL(file)}
+              src={URL.createObjectURL(file) || defaultPreview}
               alt={file.name}
               key={file.name}
               onLoad={() => {
@@ -96,17 +126,10 @@ const ImageDropzone = ({ name, headingText, classname, fileAcceptCallback }: IIm
               }}
             />
           </div>
-        )) || (
-          <>
-            <p className="font-semibold text-xl mb-1 select-none">{t("file.dragImageHere")}</p>
-            <p className="font-medium text-xs text-white text-opacity-20 select-none">
-              {t("file.orPressButton")}
-            </p>
-            <Button theme="secondary" classname="my-2 pointer-events-none">
-              {t("file.chooseFile")}
-            </Button>
-          </>
         )}
+
+        {imageSelectShow && <ImageSelectText />}
+
         <input {...getInputProps()} type="file" className="hidden" name={name} />
       </div>
       <ul>{fileRejectionItems}</ul>

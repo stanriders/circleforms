@@ -1,21 +1,59 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 
+import getImage from "../../utils/getImage";
+import FormCard from "../FormCard";
 import { useFormData } from "../FormContext";
 import FormEntry from "../FormEntry";
 import ImageDropzone from "../ImageDropzone";
 
-const TabDesign = () => {
+interface ITabDesign {
+  initialTitle?: string;
+  initialDescription?: string;
+  initialPostid?: string;
+  initialBanner?: string;
+  initialIcon?: string;
+}
+
+const TabDesign = ({
+  initialTitle,
+  initialDescription,
+  initialPostid,
+  initialBanner,
+  initialIcon
+}: ITabDesign) => {
   const t = useTranslations();
   const { data, setValues } = useFormData();
-  const [title, setTitle] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
+  const [title, setTitle] = useState<string>(initialTitle || "");
+  const [description, setDescription] = useState<string>(initialDescription || "");
 
-  const previewUrl = useMemo(() => {
+  const [bannerPreview, setBannerPreview] = useState("");
+  const [iconPreview, setIconPreview] = useState("");
+
+  useEffect(() => {
     try {
-      return URL.createObjectURL(data?.banner);
+      const src = URL.createObjectURL(data?.banner);
+      setBannerPreview(src);
     } catch (e) {}
   }, [data?.banner]);
+
+  useEffect(() => {
+    try {
+      const src = URL.createObjectURL(data?.icon);
+      setIconPreview(src);
+    } catch (e) {}
+  }, [data?.icon]);
+
+  useEffect(() => {
+    const bannerImg = getImage({ id: initialPostid, banner: initialBanner, type: "banner" });
+    const iconImg = getImage({ id: initialPostid, icon: initialIcon, type: "icon" });
+    if (bannerImg) {
+      setBannerPreview(bannerImg);
+    }
+    if (iconImg) {
+      setIconPreview(iconImg);
+    }
+  }, [initialBanner, initialIcon, initialPostid]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -55,14 +93,22 @@ const TabDesign = () => {
             headingText="Icon"
             name="icon"
             fileAcceptCallback={setValues}
+            defaultPreview={iconPreview}
           />
         </div>
         <div className="lg:col-span-4">
-          <ImageDropzone headingText="Banner" name="banner" fileAcceptCallback={setValues} />
+          <ImageDropzone
+            headingText="Banner"
+            name="banner"
+            fileAcceptCallback={setValues}
+            defaultPreview={bannerPreview}
+          />
         </div>
       </div>
 
       <FormEntry
+        title={title}
+        excerpt={description}
         user={{
           id: "0",
           avatarUrl: "/images/avatar-guest.png",
@@ -70,9 +116,14 @@ const TabDesign = () => {
           username: "Username"
         }}
         isPreview={true}
+        previewBanner={bannerPreview}
+      />
+      <FormCard
+        id={initialPostid}
         title={title}
         excerpt={description}
-        previewBanner={previewUrl}
+        isPreview={true}
+        previewIcon={iconPreview}
       />
     </div>
   );
