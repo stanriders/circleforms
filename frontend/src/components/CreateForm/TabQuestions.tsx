@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { DevTool } from "@hookform/devtools";
 
@@ -13,7 +14,7 @@ export interface QuestionEntry {
   title: string;
 }
 export interface IFormValues {
-  questions: QuestionEntry[];
+  questions?: QuestionEntry[];
 }
 
 const TabQuestions = ({ defaultValues }: { defaultValues?: IFormValues }) => {
@@ -23,7 +24,10 @@ const TabQuestions = ({ defaultValues }: { defaultValues?: IFormValues }) => {
     defaultValues,
     mode: "onBlur"
   });
-  // console.log(data);
+
+  useEffect(() => {
+    methods.reset({ ...defaultValues });
+  }, [defaultValues, methods]);
 
   return (
     <div className="">

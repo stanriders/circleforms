@@ -12,7 +12,6 @@ type ServerSideProps = InferNextPropsType<typeof getServerSideProps>;
 
 const EditForm = (props: ServerSideProps) => {
   const { user } = useContext(UserContext);
-  console.log(props);
 
   if (!user) {
     return <Unauthorized />;
@@ -36,8 +35,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const [translations, global, post] = promises.map((p) =>
     p.status === "fulfilled" ? p?.value : null
   );
-
-
 
   if (!post?.id) {
     return {
