@@ -1,5 +1,6 @@
 import { Control, Controller, FieldValues, useWatch } from "react-hook-form";
 
+import { QuestionType } from "../../../openapi";
 import ErrorMessage from "../ErrorMessage";
 
 import ItemCheckbox from "./ItemCheckbox";
@@ -13,7 +14,7 @@ interface IConditionalInput {
 }
 
 const ConditionalInput = ({ index, nestIndex, remove, control }: IConditionalInput) => {
-  const value = useWatch({
+  const questionType: QuestionType = useWatch({
     name: `questions.${nestIndex}.type`,
     control: control
   });
@@ -27,7 +28,7 @@ const ConditionalInput = ({ index, nestIndex, remove, control }: IConditionalInp
         name={`questions.${nestIndex}.questionInfo.${index}.value`}
         rules={{ required: "Option text cannot be blank" }}
         render={({ field, fieldState: { error } }) => {
-          switch (value) {
+          switch (questionType) {
             case "Freeform":
               return <></>;
             case "Checkbox":
@@ -47,7 +48,7 @@ const ConditionalInput = ({ index, nestIndex, remove, control }: IConditionalInp
             case undefined:
               return <></>;
             default:
-              console.error("Cant render question of type: ", value);
+              console.error("Cant render question of type: ", questionType);
               return <></>;
           }
         }}
