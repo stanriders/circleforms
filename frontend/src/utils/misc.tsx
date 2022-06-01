@@ -27,3 +27,8 @@ export function withEvent(func: Function): React.ChangeEventHandler<any> {
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+export function arraysEqual<T>(a1: Array<T>, a2: Array<T>) {
+  /* WARNING: arrays must not contain {objects} or behavior may be undefined */
+  return JSON.stringify(a1) == JSON.stringify(a2);
+}
