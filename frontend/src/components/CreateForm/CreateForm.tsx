@@ -23,7 +23,7 @@ const CreateForm = ({ post }: ICreateForm) => {
 
   const convertedQuestions = post?.questions?.map((val) => {
     const formattedQuestions = val.questionInfo?.map((str) => ({ value: str }));
-    return { ...val, questionInfo: formattedQuestions, required: !val.isOptional };
+    return { ...val, questionInfo: formattedQuestions };
   });
 
   useEffect(() => {
@@ -73,11 +73,7 @@ const CreateForm = ({ post }: ICreateForm) => {
               />
             </TabPanel>
             <TabPanel>
-              <TabOptions
-                accessibility={post?.accessibility}
-                gamemode={post?.gamemode}
-                activeTo={post?.activeTo}
-              />
+              <TabOptions post={post} isEdit={post?.activeTo ? true : false} />
             </TabPanel>
           </TabPanels>
         </Tabs>
