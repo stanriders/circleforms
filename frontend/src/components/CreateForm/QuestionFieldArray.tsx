@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 
 import { QuestionType } from "../../../openapi";
 import ErrorMessage from "../ErrorMessage";
+import { useFormData } from "../FormContext";
 import Wysiwyg from "../Wysiwyg";
 
 import NestedOptionFieldArray from "./NestedFieldArray";
@@ -21,8 +22,8 @@ export const QUESTIONS_ICONS: Record<QuestionType, IconType> = {
 
 const QuestionFieldArray = () => {
   const t = useTranslations();
-
-  const { control } = useFormContext();
+  const { setValues } = useFormData();
+  const { control, getValues } = useFormContext();
 
   const { fields, append, remove } = useFieldArray({
     control: control,
@@ -65,7 +66,15 @@ const QuestionFieldArray = () => {
                 </div>
 
                 <NestedOptionFieldArray nestIndex={index} />
-                <QuestionFooter onRemove={() => remove(index)} nestIndex={index} />
+                <QuestionFooter
+                  onRemove={() => {
+                    remove(index);
+                    // we have to setValues here because remove doesnt trigger onBlur event
+                    // and we could be missing data, if user instantly switches tabs after deleting
+                    setValues({ questions: getValues() });
+                  }}
+                  nestIndex={index}
+                />
               </div>
             </li>
           ))}

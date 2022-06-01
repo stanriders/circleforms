@@ -32,4 +32,5 @@ export const answerSchema = object({
       })
     )
     .required("Create at least one question")
+    .min(1, "Create at least one question")
 });
