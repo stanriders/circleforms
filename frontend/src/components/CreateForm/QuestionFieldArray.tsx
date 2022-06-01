@@ -81,7 +81,7 @@ const QuestionFieldArray = () => {
                   key={type}
                   className="button--icon"
                   onClick={() => {
-                    append({ title: undefined, type: type, required: true });
+                    append({ title: undefined, type: type, isOptional: false });
                   }}
                 >
                   <span className="sr-only">

@@ -44,10 +44,10 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
           <MdDeleteOutline className="h-8 w-8" />
         </button>
         <label className="flex items-center gap-x-4 text-2xl font-medium border-l-2 border-white border-opacity-5 pl-8">
-          <span>Required</span>
+          <span>Optional</span>
 
           <Controller
-            name={`questions.${nestIndex}.required`}
+            name={`questions.${nestIndex}.isOptional`}
             control={control}
             render={({ field }) => (
               <Switch
