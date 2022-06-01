@@ -58,8 +58,6 @@ export default function Form({ post, authorUser }: IFormProps) {
   const bannerImg = getImage({ id, banner, type: "banner" });
   const iconImg = getImage({ id, icon, type: "icon" });
 
-  useEffect(() => {}, []);
-
   useEffect(() => {
     if (sort === "rank") {
       let sorted = [...(usersAndAnswers?.users || [])];

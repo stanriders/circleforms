@@ -4,18 +4,18 @@ import toast, { Toaster } from "react-hot-toast";
 import { DatePicker } from "@mantine/dates";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
-import { isEqual, isMatch } from "underscore";
+import { isEmpty, isMatch } from "underscore";
 import { InferType } from "yup";
 
-import { Accessibility, Gamemode, PostContract, PostWithQuestionsContract } from "../../../openapi";
+import { Accessibility, Gamemode, PostWithQuestionsContract } from "../../../openapi";
+import { arraysEqual } from "../../utils/misc";
 import Button from "../Button";
 import DropdownSelect from "../DropdownSelect";
 import ErrorMessage from "../ErrorMessage";
 import { useFormData } from "../FormContext";
 
-import { usePublishPost, useSubmitImage, useSubmitPost } from "./TabOptions.hooks";
+import { usePatchPost, usePublishPost, useSubmitImage, useSubmitPost } from "./TabOptions.hooks";
 import { ACCESSABILITY_OPTIONS, answerSchema, GAMEMODE_OPTIONS } from "./TabOptions.utils";
-import { arraysEqual } from "../../utils/misc";
 
 interface ITabOptions {
   post?: PostWithQuestionsContract;
@@ -29,6 +29,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
   const { mutateAsync: submitPost } = useSubmitPost();
   const { mutate: mutateImage } = useSubmitImage();
   const { mutateAsync: publishPost } = usePublishPost();
+  const { mutate: patchPost } = usePatchPost();
 
   // init form state (if editing)
   const defaultValues = {
@@ -63,8 +64,8 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
 
     const submitData = await submitPost(validatedData);
     if (submitData?.id) {
-      mutateImage({ postid: submitData.id, file: data.icon, isIcon: true });
-      mutateImage({ postid: submitData.id, file: data.banner, isIcon: false });
+      if (data.icon) mutateImage({ postid: submitData.id, file: data.icon, isIcon: true });
+      if (data.banner) mutateImage({ postid: submitData.id, file: data.banner, isIcon: false });
     }
     router.push("/dashboard");
   }
@@ -163,33 +164,16 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
                 let validatedData = await getValidatedData();
                 if (!validatedData) return;
 
+                const postQuestions = [...post?.questions!];
                 const validatedQuestions = [...validatedData.questions];
+
                 // typescript is yelling, so we delete property questions in object that references the original
                 let tmp: Partial<InferType<typeof answerSchema>> = validatedData;
                 delete tmp["questions"];
 
-                console.log(post);
-                console.log("VALIDATED DATA: ");
-
-                console.log(validatedData);
-
-                const getNonObjectFieldChanges = (
-                  oldObj: Record<string, any>,
-                  newObj: Record<string, any>
-                ) => {
-                  // only append fields that changed compared to old object
-                  let resObj: any = {};
-                  for (const [key, value] of Object.entries(newObj)) {
-                    if (typeof value === "object") continue;
-                    if (oldObj?.[key] !== value) {
-                      resObj[key] = value;
-                    }
-                  }
-                  return resObj;
-                };
-
                 // parse all strings and dates that changed
-                let resObj: any = {};
+                // like: title/description etc
+                let finalChanges: any = {};
                 for (const [key, value] of Object.entries(validatedData)) {
                   const keyWithType = key as keyof typeof post;
                   if (
@@ -197,36 +181,25 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
                     key !== "questions" &&
                     !isMatch(post[keyWithType], value)
                   ) {
-                    resObj[key] = value;
+                    finalChanges[key] = value;
                     continue;
                   }
 
                   if (post?.[keyWithType] !== value) {
-                    resObj[key] = value;
+                    finalChanges[key] = value;
                   }
                 }
 
-                const resultQuestions = [];
-
-                console.log("res obj: ", resObj);
-                console.log("questions ", validatedQuestions);
-
-                // iterate over post.questions
-                // if question info is the same, add changes to the title
-                // if the question info changes add it with delete:true
-
+                let changedQuestions = [];
                 for (let question of validatedQuestions) {
-                  // console.log(question);
-
                   const apiId = question?.questionId;
 
                   // question came from api, because it has questionId
                   if (apiId) {
-                    console.log("apiId", apiId);
-
                     const sameQuestion = post.questions?.find(
                       ({ questionId }) => questionId === apiId
                     );
+
                     // check if question info did change
                     // or if some property has changed
                     if (
@@ -234,22 +207,46 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
                         question?.questionInfo as string[],
                         sameQuestion?.questionInfo as string[]
                       ) ||
-                      !isMatch(sameQuestion, question)
+                      !isMatch(
+                        { ...sameQuestion, questionInfo: null },
+                        { ...question, questionInfo: null }
+                      )
                     ) {
                       // add old post marked as delete
-                      resultQuestions.push({ ...sameQuestion, delete: true });
+                      changedQuestions.push({ ...sameQuestion, _delete: true });
                       // also add new one
-                      resultQuestions.push(question);
-                    } else {
-                      // question info is the same, check for changes in title/type etc
-                      // const filteredQuestion = question?.filter(Object);
-                      // if ()
+                      changedQuestions.push({ question, questionId: null });
                     }
-                    console.log("SAMEE:");
-                    console.log(sameQuestion);
+                  } else {
+                    // question not from api, add to result
+                    changedQuestions.push(question);
                   }
                 }
-                console.log(resultQuestions);
+
+                // if there are some API posts left, that were not added before,
+                // means that they were deleted
+                const submittedQuestionIds = validatedQuestions.map((q) => q?.questionId);
+                let deletedQuestions = postQuestions.filter(
+                  (q) => !submittedQuestionIds.includes(q.questionId)
+                );
+                // mark deleted questions with delete:true
+                deletedQuestions = deletedQuestions.map((question) => ({
+                  ...question,
+                  _delete: true
+                }));
+
+                if (deletedQuestions) {
+                  changedQuestions = changedQuestions.concat(deletedQuestions);
+                }
+                if (changedQuestions.length > 0) {
+                  finalChanges["questions"] = changedQuestions;
+                }
+
+                console.log(finalChanges);
+                // apiClient.posts.postsIdPatch();
+                if (!isEmpty(finalChanges)) {
+                  patchPost({ postid: post.id!, data: finalChanges });
+                }
               }}
             >
               Update draft

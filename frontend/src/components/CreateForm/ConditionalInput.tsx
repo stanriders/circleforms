@@ -1,7 +1,8 @@
-import { Control, Controller, FieldValues, useWatch } from "react-hook-form";
+import { Control, Controller, FieldValues, useFormContext, useWatch } from "react-hook-form";
 
 import { QuestionType } from "../../../openapi";
 import ErrorMessage from "../ErrorMessage";
+import { useFormData } from "../FormContext";
 
 import ItemCheckbox from "./ItemCheckbox";
 import ItemRadio from "./ItemRadio";
@@ -14,12 +15,20 @@ interface IConditionalInput {
 }
 
 const ConditionalInput = ({ index, nestIndex, remove, control }: IConditionalInput) => {
+  const { getValues } = useFormContext();
+  const { setValues } = useFormData();
+
   const questionType: QuestionType = useWatch({
     name: `questions.${nestIndex}.type`,
     control: control
   });
 
-  const onDelete = () => remove(index);
+  const onDelete = () => {
+    remove(index);
+    // we have to setValues here because remove doesnt trigger onBlur event
+    // and we could be missing data, if user instantly switches tabs after deleting
+    setValues({ questions: getValues() });
+  };
 
   return (
     <div>

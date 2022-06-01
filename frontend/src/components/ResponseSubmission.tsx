@@ -163,7 +163,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
                 <img
                   className="h-20 w-20 rounded-full"
                   src={iconImg}
-                  alt={`${post.title}'s thumbnail`}
+                  alt={`${post.title} thumbnail`}
                 />
                 <img
                   className="h-10 w-10 rounded-full absolute bottom-0 right-0"
