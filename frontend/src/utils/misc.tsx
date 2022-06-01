@@ -23,3 +23,7 @@ export function withEvent(func: Function): React.ChangeEventHandler<any> {
     func(target.value);
   };
 }
+
+export function sleep(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

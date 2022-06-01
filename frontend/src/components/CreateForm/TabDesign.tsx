@@ -1,11 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 
-import getImage from "../../utils/getImage";
 import FormCard from "../FormCard";
 import { useFormData } from "../FormContext";
 import FormEntry from "../FormEntry";
 import ImageDropzone from "../ImageDropzone";
+
+import {
+  useBannerPreview,
+  useCleanupContext as useCleanupContextOnUnmount,
+  useIconPreview
+} from "./TabDesign.hooks";
 
 interface ITabDesign {
   initialTitle?: string;
@@ -23,37 +28,16 @@ const TabDesign = ({
   initialIcon
 }: ITabDesign) => {
   const t = useTranslations();
-  const { data, setValues } = useFormData();
+  const { setValues } = useFormData();
   const [title, setTitle] = useState<string>(initialTitle || "");
   const [description, setDescription] = useState<string>(initialDescription || "");
 
-  const [bannerPreview, setBannerPreview] = useState("");
-  const [iconPreview, setIconPreview] = useState("");
+  // delete data from context on unmount
+  // MUST be BEFORE banner/icon preview
+  useCleanupContextOnUnmount();
 
-  useEffect(() => {
-    try {
-      const src = URL.createObjectURL(data?.banner);
-      setBannerPreview(src);
-    } catch (e) {}
-  }, [data?.banner]);
-
-  useEffect(() => {
-    try {
-      const src = URL.createObjectURL(data?.icon);
-      setIconPreview(src);
-    } catch (e) {}
-  }, [data?.icon]);
-
-  useEffect(() => {
-    const bannerImg = getImage({ id: initialPostid, banner: initialBanner, type: "banner" });
-    const iconImg = getImage({ id: initialPostid, icon: initialIcon, type: "icon" });
-    if (bannerImg) {
-      setBannerPreview(bannerImg);
-    }
-    if (iconImg) {
-      setIconPreview(iconImg);
-    }
-  }, [initialBanner, initialIcon, initialPostid]);
+  const bannerPreview = useBannerPreview(initialPostid, initialBanner);
+  const iconPreview = useIconPreview(initialPostid, initialIcon);
 
   return (
     <div className="flex flex-col gap-6">
@@ -118,13 +102,7 @@ const TabDesign = ({
         isPreview={true}
         previewBanner={bannerPreview}
       />
-      <FormCard
-        id={initialPostid}
-        title={title}
-        excerpt={description}
-        isPreview={true}
-        previewIcon={iconPreview}
-      />
+      <FormCard id={initialPostid} title={title} excerpt={description} previewIcon={iconPreview} />
     </div>
   );
 };

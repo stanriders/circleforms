@@ -1,4 +1,4 @@
-import React, { createContext, useContext,useState } from "react";
+import React, { createContext, useCallback, useContext, useState } from "react";
 
 const FormContext = createContext<any>(null);
 
@@ -13,7 +13,13 @@ export const FormDataProvider = ({ children }: { children: React.ReactNode }) =>
     }));
   };
 
-  return <FormContext.Provider value={{ data, setValues }}>{children}</FormContext.Provider>;
+  const eraseValues = useCallback(() => {
+    setData({});
+  }, []);
+
+  return (
+    <FormContext.Provider value={{ data, setValues, eraseValues }}>{children}</FormContext.Provider>
+  );
 };
 
 export const useFormData = () => useContext(FormContext);
