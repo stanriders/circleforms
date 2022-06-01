@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
@@ -26,10 +26,9 @@ const ImageDropzone = ({
   const t = useTranslations("global.inputs");
   const [file, setFile] = useState<File>();
 
-  useEffect(() => {
-    // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
-    return () => URL.revokeObjectURL(file?.name as string);
-  }, [file?.name]);
+  const imgSrc = useMemo(() => {
+    return file && URL.createObjectURL(file);
+  }, [file]);
 
   function filesizeValidator(file: { size: number }) {
     if (file.size > ONE_MB) {
@@ -92,6 +91,7 @@ const ImageDropzone = ({
   );
 
   const imageSelectShow = !(file || defaultPreview);
+  const showDefaultPreview = !file && defaultPreview;
 
   return (
     <div
@@ -105,12 +105,15 @@ const ImageDropzone = ({
           isDragActive ? "brightness-150" : ""
         )}
       >
-        {!file && defaultPreview && (
+        {showDefaultPreview && (
           <img
             className="h-56 object-contain"
             src={defaultPreview}
             alt={"Image preview"}
             key={defaultPreview}
+            onLoad={() => {
+              URL.revokeObjectURL(defaultPreview!);
+            }}
           />
         )}
 
@@ -118,11 +121,11 @@ const ImageDropzone = ({
           <div>
             <img
               className="h-56 object-contain"
-              src={URL.createObjectURL(file) || defaultPreview}
+              src={imgSrc}
               alt={file.name}
               key={file.name}
               onLoad={() => {
-                URL.revokeObjectURL(file.name);
+                URL.revokeObjectURL(imgSrc!);
               }}
             />
           </div>

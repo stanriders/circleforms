@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import Link from "next/link";
 import * as timeago from "timeago.js";
 
@@ -26,6 +26,14 @@ export default function FormEntry({
   const bannerImg = useMemo(() => {
     return getImage({ banner, id, type: "banner" });
   }, [banner, id]);
+
+  useEffect(() => {
+    return () => {
+      if (previewBanner) {
+        URL.revokeObjectURL(previewBanner);
+      }
+    };
+  }, [previewBanner]);
 
   return (
     <Link href={isPreview ? "#" : `/form/${id}`}>

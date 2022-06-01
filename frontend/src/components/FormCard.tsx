@@ -1,3 +1,4 @@
+import { memo, useMemo, useRef } from "react";
 import Link from "next/link";
 
 import { PostWithQuestionsContract } from "../../openapi";
@@ -5,20 +6,15 @@ import getImage from "../utils/getImage";
 
 interface IFormCard
   extends Pick<PostWithQuestionsContract, "id" | "icon" | "title" | "published" | "excerpt"> {
-  isPreview?: boolean;
   previewIcon?: string;
 }
-
-export default function FormCard({
-  id,
-  icon,
-  title,
-  published,
-  excerpt,
-  isPreview,
-  previewIcon
-}: IFormCard) {
+const FormCard = ({ id, icon, title, published, excerpt, previewIcon }: IFormCard) => {
   const iconImg = getImage({ icon, type: "icon", id });
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  const previewSrc = useMemo(() => {
+    return previewIcon;
+  }, [previewIcon]);
 
   return (
     <Link href={published ? `/form/${id}` : `/dashboard/${id}`}>
@@ -28,9 +24,11 @@ export default function FormCard({
       >
         <div className="flex flex-row gap-5 items-center ">
           <img
+            ref={imgRef}
             className="object-contain h-[71px] rounded-9"
-            src={previewIcon ? previewIcon : iconImg}
+            src={previewIcon ? previewSrc : iconImg}
             alt={title || ""}
+            onLoad={() => URL.revokeObjectURL(imgRef.current?.src!)}
           />
           <div className="flex flex-col">
             <h2 className="text-lg font-bold">{title}</h2>
@@ -40,4 +38,6 @@ export default function FormCard({
       </a>
     </Link>
   );
-}
+};
+
+export default memo(FormCard);
