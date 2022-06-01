@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import SVG from "react-inlinesvg";
-import { Menu, MenuButton, MenuItem,MenuList } from "@reach/menu-button";
+import { Menu, MenuButton, MenuItem, MenuList } from "@reach/menu-button";
 import VisuallyHidden from "@reach/visually-hidden";
 import classNames from "classnames";
 import Cookies from "js-cookie";

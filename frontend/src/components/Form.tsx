@@ -1,6 +1,6 @@
-import { ChangeEvent, useContext,useEffect, useState } from "react";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Tab, TabList, TabPanel,TabPanels, Tabs } from "@reach/tabs";
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@reach/tabs";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 
