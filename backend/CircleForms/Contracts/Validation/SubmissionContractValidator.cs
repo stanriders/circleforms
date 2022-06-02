@@ -21,8 +21,10 @@ public class SubmissionContractValidator : AbstractValidator<(Question Question,
         {
             RuleFor(x => x.Contract.Answers)
                 .NotNull()
+                .Must(x => x.Distinct().Count() == x.Length)
+                .WithMessage("Answers could not be repeated")
                 .Must((data, answers) =>
-                    answers.All(x => !string.IsNullOrEmpty(x) && data.Question.QuestionInfo.Contains(x)))
+                    answers.All(x => int.TryParse(x, out var v) && v < data.Question.QuestionInfo.Count))
                 .WithMessage("Invalid answer array");
         });
 
@@ -32,7 +34,7 @@ public class SubmissionContractValidator : AbstractValidator<(Question Question,
                 .NotEmpty()
                 .Must(x => x.Length == 1)
                 .WithMessage("There can't be more than one answer for a Choice question")
-                .Must((data, answers) => !string.IsNullOrEmpty(answers[0]) && data.Question.QuestionInfo.Contains(answers[0]))
+                .Must((data, answers) => !int.TryParse(answers[0], out var v) && v < data.Question.QuestionInfo.Count)
                 .WithMessage(x => $"{x.Contract.Answers[0]} is not a valid choice");
         });
     }
