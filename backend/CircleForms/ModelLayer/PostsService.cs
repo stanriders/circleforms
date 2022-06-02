@@ -307,7 +307,7 @@ public class PostsService
         }
 
         await using var stream = image.OpenReadStream();
-        var filename = await _staticFilesService.WriteImageAsync(stream, id, image.FileName);
+        var filename = await _staticFilesService.WriteImageAsync(stream, id, image.FileName, query);
 
         switch (query)
         {
