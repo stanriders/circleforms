@@ -41,4 +41,19 @@ public class AnswerRepository : IAnswerRepository
 
         return answer;
     }
+
+    public async Task<Answer> Update(string postId, string oldAnswerId, List<Submission> submissions, string user)
+    {
+        var answer = new Answer
+        {
+            ID = oldAnswerId,
+            Submissions = submissions,
+            UserRelation = user,
+            PostRelation = postId
+        };
+
+        await answer.SaveAsync();
+
+        return answer;
+    }
 }

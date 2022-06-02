@@ -50,6 +50,9 @@ public class FullPostContract
     [JsonProperty("published")]
     public bool Published { get; set; }
 
+    [JsonProperty("allow_answer_edit")]
+    public bool AllowAnswerEdit { get; set; }
+
     [JsonProperty("questions")]
     public List<Question> Questions { get; set; }
 
