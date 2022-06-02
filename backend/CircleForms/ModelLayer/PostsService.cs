@@ -37,17 +37,25 @@ public class PostsService
         _cache = cache;
     }
 
-    private static void ValidateQuestionOrder(IReadOnlyList<Question> questions)
+    private static void FillQuestions(Post post)
     {
-        var expected = questions[0].Order + 1;
-        for (var i = 1; i < questions.Count; i++)
+        foreach (var question in post.Questions)
         {
-            if (questions[i].Order != expected)
+            question.Id = ObjectId.GenerateNewId().ToString();
+            if (question.QuestionType == QuestionType.Freeform)
             {
-                questions[i].Order = expected;
+                question.QuestionInfo = new List<string>();
             }
+        }
 
-            expected++;
+        ReorderQuestions(post.Questions);
+    }
+
+    private static void ReorderQuestions(IReadOnlyList<Question> questions)
+    {
+        for (var i = 0; i < questions.Count; i++)
+        {
+            questions[i].Order = i;
         }
     }
 
@@ -79,16 +87,7 @@ public class PostsService
             post.AccessKey = GenerateAccessKey(6);
         }
 
-        foreach (var question in post.Questions)
-        {
-            question.Id = ObjectId.GenerateNewId().ToString();
-            if (question.QuestionType == QuestionType.Freeform)
-            {
-                question.QuestionInfo = new List<string>();
-            }
-        }
-
-        ValidateQuestionOrder(post.Questions);
+        FillQuestions(post);
 
         var result = await _postRepository.Add(userId, post);
 
@@ -99,81 +98,41 @@ public class PostsService
 
 
     public async Task<Result<PostWithQuestionsContract>> UpdatePost(string userId,
-        PostUpdateContract updateContract, string id)
+        PostContract updateContract, string id)
     {
         var post = await _postRepository.Get(id);
+        if (post is null)
+        {
+            return Result<PostWithQuestionsContract>.NotFound(id);
+        }
+
         if (post.AuthorRelation.ID != userId)
         {
             return new Result<PostWithQuestionsContract>(HttpStatusCode.Unauthorized, "You can't update this post");
         }
 
-        if (post.Published && updateContract.Questions is not null)
+        var updatedPost = _mapper.Map(updateContract, post);
+        if (post.Published)
         {
-            return new Result<PostWithQuestionsContract>("Question change is not allowed in published posts");
+            updateContract.Questions = post.Questions;
+            updateContract.ActiveTo = post.ActiveTo;
+        }
+        else
+        {
+            FillQuestions(updatedPost);
         }
 
         _logger.LogInformation("User {Claim} updated the post {Id}", userId, post.ID);
         _logger.LogDebug("User {Claim} updated the post {Id} with {@Contract}", userId, post.ID, updateContract);
 
-        var questions = post.Questions;
-        var updatedPost = _mapper.Map(updateContract, post);
-        if (updateContract.Questions is not null)
+        await _postRepository.Update(updatedPost);
+        await _cache.AddOrUpdate(updatedPost);
+        if (updatedPost.Published)
         {
-            foreach (var updatedPostQuestion in updateContract.Questions)
-            {
-                if (updatedPostQuestion.Delete)
-                {
-                    var question = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
-                    if (question is null)
-                    {
-                        return new Result<PostWithQuestionsContract>($"Question {updatedPostQuestion} is not found");
-                    }
-
-                    questions.Remove(question);
-
-                    continue;
-                }
-
-                var newQuestion = _mapper.Map<Question>(updatedPostQuestion);
-                //New question
-                if (updatedPostQuestion.Id is null)
-                {
-                    newQuestion.Id = ObjectId.GenerateNewId().ToString();
-                    if (newQuestion.QuestionType != QuestionType.Choice)
-                    {
-                        newQuestion.QuestionInfo = new List<string>();
-                    }
-
-                    questions.Add(newQuestion);
-
-                    continue;
-                }
-
-                //Update question
-                var postToUpdate = questions.FirstOrDefault(x => x.Id == updatedPostQuestion.Id);
-                if (postToUpdate is null)
-                {
-                    return new Result<PostWithQuestionsContract>($"Question {updatedPostQuestion.Id} is not found");
-                }
-
-                questions.Remove(postToUpdate);
-                questions.Add(newQuestion);
-            }
+            await _cache.Publish(updatedPost);
         }
 
-        questions.Sort((x, y) => x.Order.CompareTo(y.Order));
-
-        ValidateQuestionOrder(questions);
-        updatedPost.Questions = questions;
-
-        await _postRepository.Update(post);
-        await _cache.AddOrUpdate(post);
-        if (post.Published)
-        {
-            await _cache.Publish(post);
-        }
-
-        return new Result<PostWithQuestionsContract>(_mapper.Map<PostWithQuestionsContract>(post));
+        return new Result<PostWithQuestionsContract>(_mapper.Map<PostWithQuestionsContract>(updatedPost));
     }
 
     private async Task<Result<object>> DetailedPostResponseForNonAuthor(PostRedis post, string key,
