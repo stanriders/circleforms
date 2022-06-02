@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
@@ -16,6 +15,7 @@ using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace CircleForms.ModelLayer;
 
@@ -135,38 +135,6 @@ public class PostsService
         return new Result<PostWithQuestionsContract>(_mapper.Map<PostWithQuestionsContract>(updatedPost));
     }
 
-    private async Task<Result<object>> DetailedPostResponseForNonAuthor(PostRedis post, string key,
-        Post prefetchedPost = null)
-    {
-        if (post.Accessibility == Accessibility.Link)
-        {
-            if (prefetchedPost is null)
-            {
-                var privatePost = await _postRepository.Get(post.ID);
-                if (privatePost is null)
-                {
-                    return Result<object>.NotFound(post.ID);
-                }
-
-                prefetchedPost = privatePost;
-            }
-
-            if (prefetchedPost.AccessKey != key || !prefetchedPost.Published)
-            {
-                return Result<object>.NotFound(post.ID);
-            }
-
-            return _mapper.Map<PostWithQuestionsContract>(post);
-        }
-
-        if (post.Accessibility == Accessibility.Public)
-        {
-            return _mapper.Map<PostWithQuestionsContract>(post);
-        }
-
-        return Result<object>.NotFound(post.ID);
-    }
-
     private async Task<Result<PostRedis>> GetCachedPostPrivate(string id)
     {
         var post = await _cache.GetPost(id);
@@ -186,30 +154,44 @@ public class PostsService
         var cachedResult = await GetCachedPostPrivate(id);
         var cached = cachedResult.Value;
 
-        if (!cachedResult.IsError) //If post in cache (it means the post is public)
+        if (string.IsNullOrEmpty(claim))
         {
-            if (cached.AuthorId != claim)
+            if (cachedResult.IsError)
             {
-                return await DetailedPostResponseForNonAuthor(cached, key);
+                return Result<object>.NotFound(id);
             }
+
+            var contract = _mapper.Map<PostWithQuestionsContract>(cached);
+            contract.AnswerCount = await _cache.GetAnswerCount(cached.ID);
+
+            return contract;
         }
 
-        //The post isn't public or author requests it
         var post = await _postRepository.Get(id);
         if (post is null)
         {
             return Result<object>.NotFound(id);
         }
 
-        //If post isn't public and non-author requests it
-        if (post.AuthorRelation.ID != claim)
+        if (post.AuthorId == claim)
         {
-            return await DetailedPostResponseForNonAuthor(_mapper.Map<Post, PostRedis>(post), key, post);
+            return _mapper.Map<FullPostContract>(post);
         }
 
-        var contract = _mapper.Map<FullPostContract>(post); //If author requests post
+        if (!post.Published || post.Accessibility == Accessibility.Link && key != post.AccessKey)
+        {
+            return Result<object>.NotFound(id);
+        }
 
-        return contract;
+        var response = _mapper.Map<PostWithQuestionsContract>(post);
+        var answer =  await post.Answers
+            .ChildrenFluent()
+            .Match(x => x.UserRelation.ID == claim)
+            .FirstOrDefaultAsync();
+
+        response.Answer = answer.Submissions;
+
+        return response;
     }
 
     public async Task<Result<FullPostContract>> Get(string id)
