@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Contracts.ContractModels.Response.Users;
+using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Services.Abstract;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
@@ -91,6 +93,19 @@ public class UsersController : ControllerBase
         await HttpContext.SignOutAsync("InternalCookies");
 
         return Unauthorized();
+    }
+
+    /// <summary>
+    ///     Get user's answers
+    /// </summary>
+    [Authorize]
+    [HttpGet(ApiEndpoints.UsersGetMeAnswers)]
+    public async Task<IActionResult> GetMeAnswers()
+    {
+        var user = await _usersService.Get(_claim);
+        var answers = await user.Answers.ChildrenFluent().ToListAsync();
+
+        return Ok(answers.Select(x => new {id = x.ID, post = x.PostRelation.ID, submissions = x.Submissions}));
     }
 
     /// <summary>
