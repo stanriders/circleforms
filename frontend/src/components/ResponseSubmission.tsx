@@ -13,7 +13,7 @@ import {
   SubmissionContract,
   UserContract
 } from "../../openapi";
-import { apiClient } from "../libs/apiClient";
+import { apiClient } from "../utils/apiClient";
 import getImage from "../utils/getImage";
 
 import CheckboxQuestion from "./Questions/CheckboxQuestion";

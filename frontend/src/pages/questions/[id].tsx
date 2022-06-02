@@ -6,7 +6,7 @@ import ResponseSubmission from "../../components/ResponseSubmission";
 import Unauthorized from "../../components/Unauthorized";
 import UserContext from "../../context/UserContext";
 import DefaultLayout from "../../layouts";
-import { apiClient } from "../../libs/apiClient";
+import { apiClient } from "../../utils/apiClient";
 
 type StaticSideProps = InferGetStaticPropsType<typeof getStaticProps>;
 

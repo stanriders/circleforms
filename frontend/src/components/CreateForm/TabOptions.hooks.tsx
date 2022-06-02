@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { InferType } from "yup";
 
 import { ImageQuery, PostContract, PostUpdateContract } from "../../../openapi";
-import { apiClient } from "../../libs/apiClient";
+import { apiClient } from "../../utils/apiClient";
 import { sleep } from "../../utils/misc";
 
 import { answerSchema } from "./TabOptions.utils";

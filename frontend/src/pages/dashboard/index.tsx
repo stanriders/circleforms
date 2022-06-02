@@ -12,8 +12,8 @@ import Title from "../../components/Title";
 import Unauthorized from "../../components/Unauthorized";
 import UserContext from "../../context/UserContext";
 import DefaultLayout from "../../layouts";
-import { apiClient } from "../../libs/apiClient";
 import { Locales } from "../../types/common-types";
+import { apiClient } from "../../utils/apiClient";
 
 export default function Dashboard() {
   const t = useTranslations();

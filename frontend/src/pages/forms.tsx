@@ -11,8 +11,8 @@ import FormEntrySkeletonList from "../components/FormEntrySkeletonList";
 import StatusRadio from "../components/StatusRadio";
 import SubTitle from "../components/SubTitle";
 import DefaultLayout from "../layouts";
-import { apiClient } from "../libs/apiClient";
 import { Locales } from "../types/common-types";
+import { apiClient } from "../utils/apiClient";
 
 export default function FormsList() {
   const router = useRouter();

@@ -11,8 +11,8 @@ import { useTranslations } from "next-intl";
 import { navLinks } from "../constants";
 import UserContext from "../context/UserContext";
 import useAuth from "../hooks/useAuth";
-import i18n from "../libs/i18n";
 import { Locales } from "../types/common-types";
+import i18n from "../utils/i18n";
 
 import Button from "./Button";
 import Flag from "./Flag";
