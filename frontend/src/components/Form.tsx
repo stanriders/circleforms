@@ -11,8 +11,8 @@ import {
   UserInAnswerContract
 } from "../../openapi";
 import UserContext from "../context/UserContext";
-import { apiClient } from "../libs/apiClient";
-import bbcode from "../libs/bbcode";
+import { apiClient } from "../utils/apiClient";
+import bbcode from "../utils/bbcode";
 import getImage from "../utils/getImage";
 import { dynamicSort } from "../utils/objectSort";
 

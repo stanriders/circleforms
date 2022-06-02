@@ -12,10 +12,10 @@ import Button from "../components/Button";
 import FormEntry from "../components/FormEntry";
 import Loading from "../components/Loading";
 import DefaultLayout from "../layouts";
-import { apiClient } from "../libs/apiClient";
 import { Locales } from "../types/common-types";
+import { apiClient } from "../utils/apiClient";
 
-const Home: NextPage = () => {
+const Index: NextPage = () => {
   const router = useRouter();
   const { isLoading, error, data } = useQuery(["posts", 1], () =>
     apiClient.pages.postsPagePageGet({ page: 1, filter: PostFilter.Active, pageSize: 4 })
@@ -125,4 +125,4 @@ export async function getStaticProps({ locale }: { locale: Locales }) {
   };
 }
 
-export default Home;
+export default Index;

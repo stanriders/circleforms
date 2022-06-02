@@ -13,7 +13,7 @@ import autosize from "autosize";
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
 
-import bbcode from "../libs/bbcode";
+import bbcode from "../utils/bbcode";
 import { withEvent } from "../utils/misc";
 
 const TOOLBAR_ICONS = {
