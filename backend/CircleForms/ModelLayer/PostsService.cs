@@ -37,17 +37,25 @@ public class PostsService
         _cache = cache;
     }
 
-    private static void ValidateQuestionOrder(IReadOnlyList<Question> questions)
+    private static void FillQuestions(Post post)
     {
-        var expected = questions[0].Order + 1;
-        for (var i = 1; i < questions.Count; i++)
+        foreach (var question in post.Questions)
         {
-            if (questions[i].Order != expected)
+            question.Id = ObjectId.GenerateNewId().ToString();
+            if (question.QuestionType == QuestionType.Freeform)
             {
-                questions[i].Order = expected;
+                question.QuestionInfo = new List<string>();
             }
+        }
 
-            expected++;
+        ReorderQuestions(post.Questions);
+    }
+
+    private static void ReorderQuestions(IReadOnlyList<Question> questions)
+    {
+        for (var i = 0; i < questions.Count; i++)
+        {
+            questions[i].Order = i;
         }
     }
 
@@ -79,16 +87,7 @@ public class PostsService
             post.AccessKey = GenerateAccessKey(6);
         }
 
-        foreach (var question in post.Questions)
-        {
-            question.Id = ObjectId.GenerateNewId().ToString();
-            if (question.QuestionType == QuestionType.Freeform)
-            {
-                question.QuestionInfo = new List<string>();
-            }
-        }
-
-        ValidateQuestionOrder(post.Questions);
+        FillQuestions(post);
 
         var result = await _postRepository.Add(userId, post);
 
@@ -112,6 +111,7 @@ public class PostsService
             return new Result<PostWithQuestionsContract>(HttpStatusCode.Unauthorized, "You can't update this post");
         }
 
+        var updatedPost = _mapper.Map(updateContract, post);
         if (post.Published)
         {
             updateContract.Questions = post.Questions;
@@ -119,13 +119,11 @@ public class PostsService
         }
         else
         {
-            ValidateQuestionOrder(updateContract.Questions);
+            FillQuestions(updatedPost);
         }
 
         _logger.LogInformation("User {Claim} updated the post {Id}", userId, post.ID);
         _logger.LogDebug("User {Claim} updated the post {Id} with {@Contract}", userId, post.ID, updateContract);
-
-        var updatedPost = _mapper.Map(updateContract, post);
 
         await _postRepository.Update(updatedPost);
         await _cache.AddOrUpdate(updatedPost);
