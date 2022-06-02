@@ -16,21 +16,18 @@ import messages from "../messages/global/en-US.json";
 export const AllTheProviders: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const { user } = useAuth();
   const queryClient = new QueryClient();
 
   return (
-    <QueryClientProvider client={queryClient} contextSharing={true}>
-      <NextIntlProvider messages={messages}>
-        <FormDataProvider>
-          <UserContext.Provider value={{ user }}>
-            <NextNProgress color="#FF66AA" />
-            <ErrorBoundary FallbackComponent={ErrorFallback}>
-              <MantineStyles>{children}</MantineStyles>
-            </ErrorBoundary>
-          </UserContext.Provider>
-        </FormDataProvider>
-      </NextIntlProvider>
-    </QueryClientProvider>
+    <NextIntlProvider locale="en" messages={messages}>
+      <ErrorBoundary FallbackComponent={ErrorFallback}>
+        <QueryClientProvider client={queryClient} contextSharing={true}>
+          <FormDataProvider>
+           
+            <MantineStyles>{children}</MantineStyles>
+          </FormDataProvider>
+        </QueryClientProvider>
+      </ErrorBoundary>
+    </NextIntlProvider>
   );
 };

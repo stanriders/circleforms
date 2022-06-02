@@ -24,6 +24,6 @@
       "testUtils": ["./testUtils"]
     }
   },
-  "include": ["next-env.d.ts", "src", "jest.config.js"],
+  "include": ["next-env.d.ts", "src", "jest.config.js", "jest.setup.ts", "."],
   "exclude": ["node_modules"]
 }
