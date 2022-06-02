@@ -6,7 +6,7 @@ import indexMessages from "../messages/index/en-US.json";
 
 const messages = { ...globalMessages, ...indexMessages };
 
-import Index from "./index";
+import Index from "../pages/index";
 
 jest.mock("src/hooks/useAuth", () => ({
   __esModule: true,

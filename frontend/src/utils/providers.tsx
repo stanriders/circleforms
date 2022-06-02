@@ -2,12 +2,9 @@ import React from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { NextIntlProvider } from "next-intl";
-import NextNProgress from "nextjs-progressbar";
 import ErrorFallback from "src/components/ErrorFallback";
 import { FormDataProvider } from "src/components/FormContext";
 import { MantineStyles } from "src/components/MantineStyles";
-import UserContext from "src/context/UserContext";
-import useAuth from "src/hooks/useAuth";
 
 // should probably import all messages somehow
 // or manually import correct messages for each test
