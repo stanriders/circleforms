@@ -64,29 +64,40 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
 
   const onSubmit = handleSubmit((data) => {
     const answers: SubmissionContract[] = [];
+    const postTypes = post?.questions?.map((question) => question.type);
+    const postQuestions = post?.questions?.map((question) => question.questionInfo);
 
-    // convert data to correct format for backend
+    Object.entries(data).map((curr, index) => {
+      const [questionId, questionInfo] = curr;
 
-    // delete all objects that are null, empty strings, or boolean array
-    let filteredData = Object.fromEntries(
-      Object.entries(data).filter(([_, v]) => v != null && v != "" && typeof v[0] !== "boolean")
-    );
+      switch (postTypes?.[index]) {
+        case "Freeform":
+          answers.push({
+            questionId: questionId,
+            answers: [questionInfo as string]
+          });
+          break;
 
-    Object.entries(filteredData).map((curr) => {
-      const [questionId, questionValue] = curr;
+        case "Choice":
+          answers.push({
+            questionId: questionId,
+            answers: [String(postQuestions?.[index]?.indexOf(questionInfo as string))]
+          });
+          break;
 
-      // convert string to array
-      if (typeof questionValue === "string") {
-        answers.push({
-          questionId: questionId,
-          answers: [questionValue]
-        });
-        // or just push array of answers
-      } else {
-        answers.push({
-          questionId: questionId,
-          answers: questionValue!
-        });
+        case "Checkbox":
+          console.log("checkboxxx");
+          const questionIndex = (questionInfo as string[])?.map((q, ind) => {
+            return postQuestions?.[index]?.indexOf(q) != -1 ? undefined : String(ind);
+          });
+          answers.push({
+            questionId: questionId,
+            answers: questionIndex as string[]
+          });
+
+        default:
+          console.error("Unknown question type");
+          break;
       }
     });
 

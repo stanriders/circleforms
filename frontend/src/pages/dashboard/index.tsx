@@ -21,8 +21,8 @@ export default function Dashboard() {
 
   const { error, data, isLoading } = useQuery("mePostsGet", () => apiClient.users.mePostsGet());
 
-  const unpublishedPosts = data?.filter((val) => val.published === false);
-  const publishedPosts = data?.filter((val) => val.published === true);
+  const unpublishedPosts = data?.filter((val) => val.published === false).reverse();
+  const publishedPosts = data?.filter((val) => val.published === true).reverse();
 
   if (error instanceof Error) return <p>{"An error has occurred: " + error.message}</p>;
 
