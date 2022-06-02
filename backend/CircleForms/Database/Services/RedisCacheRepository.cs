@@ -233,7 +233,10 @@ public class RedisCacheRepository : ICacheRepository
         var ids = await _redis.SortedSetRangeByScoreAsync(_postsSet, order: Order.Descending);
 
         // a bit of a hack, but since redis ids are the same as post ids this saves us redundant object fetches
-        return ids.Select(x => x.ToString().Replace("post:", string.Empty)).ToArray();
+        // post:6297eb5ec906f452947baaad
+        //      ^---------------------^
+        //      5                     24
+        return ids.Select(x => x.ToString().Substring(5, 24)).ToArray();
     }
     #endregion
 

@@ -148,9 +148,9 @@ public class PostsController : ControllerBase
     ///     Update post.
     /// </summary>
     [Authorize]
-    [HttpPatch(ApiEndpoints.PostsUpdatePost)]
+    [HttpPut(ApiEndpoints.PostsUpdatePost)]
     [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdatePost([FromBody] PostUpdateContract updateContract, string id)
+    public async Task<IActionResult> UpdatePost([FromBody] PostContract updateContract, string id)
     {
         var result = await _posts.UpdatePost(_claim, updateContract, id);
 

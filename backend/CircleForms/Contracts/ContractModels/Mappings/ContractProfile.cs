@@ -22,8 +22,5 @@ public class ContractProfile : IRegister
 
         config.NewConfig<Answer, AnswerContract>()
             .Map(x => x.UserId, x => x.UserRelation.ID);
-
-        config.NewConfig<PostUpdateContract, Post>()
-            .IgnoreNullValues(true);
     }
 }
