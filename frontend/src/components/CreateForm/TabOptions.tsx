@@ -4,11 +4,9 @@ import toast, { Toaster } from "react-hot-toast";
 import { DatePicker } from "@mantine/dates";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
-import { isEmpty, isMatch } from "underscore";
-import { InferType } from "yup";
 
-import { Accessibility, Gamemode, PostWithQuestionsContract } from "../../../openapi";
-import { arraysEqual } from "../../utils/misc";
+import { Accessibility, Gamemode, PostContract, PostWithQuestionsContract } from "../../../openapi";
+import { sleep } from "../../utils/misc";
 import Button from "../Button";
 import DropdownSelect from "../DropdownSelect";
 import ErrorMessage from "../ErrorMessage";
@@ -29,7 +27,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
   const { mutateAsync: submitPost } = useSubmitPost();
   const { mutate: mutateImage } = useSubmitImage();
   const { mutateAsync: publishPost } = usePublishPost();
-  const { mutate: patchPost } = usePatchPost();
+  const { mutate: postPUT } = usePatchPost();
 
   // init form state (if editing)
   const defaultValues = {
@@ -58,7 +56,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
     }
   };
 
-  async function handleFormSubmit() {
+  const handleFormSubmit = async () => {
     const validatedData = await getValidatedData();
     if (!validatedData) return;
 
@@ -68,12 +66,30 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
       if (data.banner) mutateImage({ postid: submitData.id, file: data.banner, isIcon: false });
     }
     router.push("/dashboard");
-  }
+  };
+
+  const handleUpdate = async () => {
+    if (!post) return;
+    let validatedData = await getValidatedData();
+    if (!validatedData) return;
+    postPUT({ postid: data.id as string, data: validatedData as PostContract });
+    if (data.icon) mutateImage({ postid: data.id, file: data.icon, isIcon: true });
+    if (data.banner) mutateImage({ postid: data.id, file: data.banner, isIcon: false });
+    sleep(600);
+    router.push("/dashboard");
+  };
+
+  const handlePublish = () => {
+    if (!post?.id) {
+      toast.error(t("toast.error"));
+      return;
+    }
+    publishPost({ postid: post?.id });
+  };
 
   return (
     <>
       <Toaster />
-
       <form
         className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14 relative overflow-clip"
         onSubmit={methods.handleSubmit(handleFormSubmit)}
@@ -157,111 +173,10 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
 
         {isEdit && (
           <div className="flex flex-row gap-16 self-center">
-            <Button
-              {...{ type: "button" }}
-              onClick={async () => {
-                if (!post) return;
-                let validatedData = await getValidatedData();
-                if (!validatedData) return;
-
-                const postQuestions = [...post?.questions!];
-                const validatedQuestions = [...validatedData.questions];
-
-                // typescript is yelling, so we delete property questions in object that references the original
-                let tmp: Partial<InferType<typeof answerSchema>> = validatedData;
-                delete tmp["questions"];
-
-                // parse all strings and dates that changed
-                // like: title/description etc
-                let finalChanges: any = {};
-                for (const [key, value] of Object.entries(validatedData)) {
-                  const keyWithType = key as keyof typeof post;
-                  if (
-                    typeof value === "object" &&
-                    key !== "questions" &&
-                    !isMatch(post[keyWithType], value)
-                  ) {
-                    finalChanges[key] = value;
-                    continue;
-                  }
-
-                  if (post?.[keyWithType] !== value) {
-                    finalChanges[key] = value;
-                  }
-                }
-
-                let changedQuestions = [];
-                for (let question of validatedQuestions) {
-                  const apiId = question?.questionId;
-
-                  // question came from api, because it has questionId
-                  if (apiId) {
-                    const sameQuestion = post.questions?.find(
-                      ({ questionId }) => questionId === apiId
-                    );
-
-                    // check if question info did change
-                    // or if some property has changed
-                    if (
-                      !arraysEqual(
-                        question?.questionInfo as string[],
-                        sameQuestion?.questionInfo as string[]
-                      ) ||
-                      !isMatch(
-                        { ...sameQuestion, questionInfo: null },
-                        { ...question, questionInfo: null }
-                      )
-                    ) {
-                      // add old post marked as delete
-                      changedQuestions.push({ ...sameQuestion, _delete: true });
-                      // also add new one
-                      changedQuestions.push({ question, questionId: null });
-                    }
-                  } else {
-                    // question not from api, add to result
-                    changedQuestions.push(question);
-                  }
-                }
-
-                // if there are some API posts left, that were not added before,
-                // means that they were deleted
-                const submittedQuestionIds = validatedQuestions.map((q) => q?.questionId);
-                let deletedQuestions = postQuestions.filter(
-                  (q) => !submittedQuestionIds.includes(q.questionId)
-                );
-                // mark deleted questions with delete:true
-                deletedQuestions = deletedQuestions.map((question) => ({
-                  ...question,
-                  _delete: true
-                }));
-
-                if (deletedQuestions) {
-                  changedQuestions = changedQuestions.concat(deletedQuestions);
-                }
-                if (changedQuestions.length > 0) {
-                  finalChanges["questions"] = changedQuestions;
-                }
-
-                console.log(finalChanges);
-                // apiClient.posts.postsIdPatch();
-                if (!isEmpty(finalChanges)) {
-                  patchPost({ postid: post.id!, data: finalChanges });
-                }
-              }}
-            >
+            <Button {...{ type: "button" }} onClick={handleUpdate}>
               Update draft
             </Button>
-            <Button
-              theme="secondary"
-              {...{ type: "button" }}
-              onClick={() => {
-                if (!post?.id) {
-                  toast.error(t("toast.error"));
-                  return;
-                }
-                publishPost({ postid: post?.id });
-              }}
-            >
+            <Button theme="secondary" {...{ type: "button" }} onClick={handlePublish}>
               Publish
             </Button>
           </div>

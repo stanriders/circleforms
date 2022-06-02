@@ -31,9 +31,6 @@ import {
     PostContract,
     PostContractFromJSON,
     PostContractToJSON,
-    PostUpdateContract,
-    PostUpdateContractFromJSON,
-    PostUpdateContractToJSON,
     PostWithQuestionsContract,
     PostWithQuestionsContractFromJSON,
     PostWithQuestionsContractToJSON,
@@ -65,13 +62,13 @@ export interface PostsIdGetRequest {
     key?: string;
 }
 
-export interface PostsIdPatchRequest {
-    id: string;
-    postUpdateContract?: PostUpdateContract;
-}
-
 export interface PostsIdPublishPostRequest {
     id: string;
+}
+
+export interface PostsIdPutRequest {
+    id: string;
+    postContract?: PostContract;
 }
 
 export interface PostsIdUnpublishPostRequest {
@@ -264,39 +261,6 @@ export class PostsApi extends runtime.BaseAPI {
     }
 
     /**
-     * Update post. (Auth)
-     */
-    async postsIdPatchRaw(requestParameters: PostsIdPatchRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<FullPostContract>> {
-        if (requestParameters.id === null || requestParameters.id === undefined) {
-            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling postsIdPatch.');
-        }
-
-        const queryParameters: any = {};
-
-        const headerParameters: runtime.HTTPHeaders = {};
-
-        headerParameters['Content-Type'] = 'application/json-patch+json';
-
-        const response = await this.request({
-            path: `/posts/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
-            method: 'PATCH',
-            headers: headerParameters,
-            query: queryParameters,
-            body: PostUpdateContractToJSON(requestParameters.postUpdateContract),
-        }, initOverrides);
-
-        return new runtime.JSONApiResponse(response, (jsonValue) => FullPostContractFromJSON(jsonValue));
-    }
-
-    /**
-     * Update post. (Auth)
-     */
-    async postsIdPatch(requestParameters: PostsIdPatchRequest, initOverrides?: RequestInit): Promise<FullPostContract> {
-        const response = await this.postsIdPatchRaw(requestParameters, initOverrides);
-        return await response.value();
-    }
-
-    /**
      * Publish a post. (Auth)
      */
     async postsIdPublishPostRaw(requestParameters: PostsIdPublishPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<FullPostContract>> {
@@ -323,6 +287,39 @@ export class PostsApi extends runtime.BaseAPI {
      */
     async postsIdPublishPost(requestParameters: PostsIdPublishPostRequest, initOverrides?: RequestInit): Promise<FullPostContract> {
         const response = await this.postsIdPublishPostRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Update post. (Auth)
+     */
+    async postsIdPutRaw(requestParameters: PostsIdPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<FullPostContract>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling postsIdPut.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json-patch+json';
+
+        const response = await this.request({
+            path: `/posts/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: PostContractToJSON(requestParameters.postContract),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => FullPostContractFromJSON(jsonValue));
+    }
+
+    /**
+     * Update post. (Auth)
+     */
+    async postsIdPut(requestParameters: PostsIdPutRequest, initOverrides?: RequestInit): Promise<FullPostContract> {
+        const response = await this.postsIdPutRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

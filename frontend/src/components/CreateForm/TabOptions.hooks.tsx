@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 import { InferType } from "yup";
 
-import { ImageQuery, PostContract, PostUpdateContract } from "../../../openapi";
+import { ImageQuery, PostContract } from "../../../openapi";
 import { apiClient } from "../../utils/apiClient";
 import { sleep } from "../../utils/misc";
 
@@ -72,8 +72,8 @@ export const usePublishPost = () => {
 export const usePatchPost = () => {
   const t = useTranslations();
   return useMutation(
-    ({ postid, data }: { postid: string; data: PostUpdateContract }) =>
-      apiClient.posts.postsIdPatch({ id: postid, postUpdateContract: data }),
+    ({ postid, data }: { postid: string; data: PostContract }) =>
+      apiClient.posts.postsIdPut({ id: postid, postContract: data }),
     {
       onSuccess: async () => {
         toast.success("Form has been updated");

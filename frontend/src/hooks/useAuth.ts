@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
 import localforage from "localforage";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+
 import { UserContract } from "../../openapi";
 import { apiClient } from "../utils/apiClient";
 

@@ -1,5 +1,4 @@
-// import { render } from "testUtils";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render } from "testUtils";
 
 import Footer from "./Footer";
 
