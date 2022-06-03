@@ -3,7 +3,7 @@ import InferNextPropsType from "infer-next-props-type";
 import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
 
-import { Question } from "../../../../openapi";
+import { Question, QuestionType } from "../../../../openapi";
 import ResponseSubmission from "../../../components/ResponseSubmission";
 import DefaultLayout from "../../../layouts";
 import { getApiClient } from "../../../utils/getApiClient";
@@ -28,18 +28,44 @@ const UserFormSubmission = (props: ServerSideProps) => {
 };
 
 const convertServerAnswerStateToLocal = (
-  answers: Record<string, string | string[]>,
+  answers: Record<string, string[]>,
   questions: Question[]
 ) => {
   // we need a data structure to check which type question id is
-  const checkType = Object.fromEntries(questions.map((q) => [q.questionId, q.type]));
+  const questionTypeById: Record<string, QuestionType> = Object.fromEntries(
+    questions.map((q) => [q.questionId, q.type])
+  );
+  const questionInfoById: Record<string, string[]> = Object.fromEntries(
+    questions.map((q) => [q.questionId, q.questionInfo])
+  );
 
-  // we need to convert radio answers back to string
   return Object.fromEntries(
-    Object.entries(answers).map(([questionId, answer]) => {
-      if (checkType[questionId] === "Choice") {
-        return [questionId, answer[0]];
-      } else return [questionId, answer];
+    Object.entries(answers).map(([questionId, answers]) => {
+      let resultQuestionInfo;
+      switch (questionTypeById[questionId]) {
+        case "Choice":
+          resultQuestionInfo = questionInfoById?.[questionId]?.[Number(answers[0])];
+          break;
+
+        case "Checkbox":
+          const questionInfo = questionInfoById[questionId];
+          let resArr = Array(questionInfo?.length).fill(false);
+          for (const answer of answers) {
+            const answerInd = Number(answer);
+            resArr[answerInd] = questionInfo?.[answerInd];
+          }
+          resultQuestionInfo = resArr;
+          break;
+
+        case "Freeform":
+          resultQuestionInfo = answers[0];
+          break;
+
+        default:
+          console.error("Question type doesnt exist: ", questionTypeById[questionId]);
+          break;
+      }
+      return [questionId, resultQuestionInfo];
     })
   );
 };
@@ -60,7 +86,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const authorUser = await apiClient.users.usersIdGet({ id: post.authorId as string });
 
   // Try to get user`s post answers
-  let defaultUserAnswers: Record<string, string | string[]> = {};
+  let defaultUserAnswers: Record<string, string[]> = {};
   const userAnswer = usersAndAnswers.answers?.filter((answer) => answer.user === osuid)[0];
 
   userAnswer?.submissions?.forEach((submission) => {
