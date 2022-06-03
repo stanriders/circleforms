@@ -65,6 +65,8 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
 
   const onSubmit = handleSubmit((data) => {
     const answers: SubmissionContract[] = [];
+    const postTypes = post?.questions?.map((question) => question.type);
+    const postQuestions = post?.questions?.map((question) => question.questionInfo);
 
     const postTypes = post?.questions?.map((question) => question.type);
     const postQuestions = post?.questions?.map((question) => question.questionInfo);
