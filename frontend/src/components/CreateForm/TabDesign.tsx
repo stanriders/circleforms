@@ -90,6 +90,7 @@ const TabDesign = ({
         </div>
       </div>
 
+      <h2 className="text-lg text-center">Preview</h2>
       <FormEntry
         title={title}
         excerpt={description}

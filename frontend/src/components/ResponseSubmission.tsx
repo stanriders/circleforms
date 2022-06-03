@@ -5,6 +5,7 @@ import { useMutation } from "react-query";
 import { DevTool } from "@hookform/devtools";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
+import { sleep } from "src/utils/misc";
 
 import {
   PostsIdAnswersPostRequest,
@@ -51,16 +52,8 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
     formState: { errors }
   } = useForm<FormData>({ mode: "onBlur", defaultValues: defaultUserAnswers });
 
-  const { mutate } = useMutation(
-    (obj: PostsIdAnswersPostRequest) => apiClient.posts.postsIdAnswersPost(obj),
-    {
-      onSuccess: () => {
-        toast.success(t("toast.success"));
-      },
-      onError: () => {
-        toast.error(t("toast.error"));
-      }
-    }
+  const { mutate } = useMutation((obj: PostsIdAnswersPostRequest) =>
+    apiClient.posts.postsIdAnswersPost(obj)
   );
 
   const onSubmit = handleSubmit((data) => {
@@ -106,11 +99,23 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
       }
     });
 
-    mutate({
-      id: post.id as string,
-      submissionContract: answers
-    });
-    router.push(`/form/${post.id}`);
+    mutate(
+      {
+        id: post.id as string,
+        submissionContract: answers
+      },
+      {
+        onSuccess: async () => {
+          toast.success(t("toast.success"));
+          await sleep(600);
+          router.push(`/form/${post.id}`);
+        },
+        onError: async () => {
+          await sleep(600);
+          toast.error(t("toast.error"));
+        }
+      }
+    );
   });
 
   const switchQuestionType = (

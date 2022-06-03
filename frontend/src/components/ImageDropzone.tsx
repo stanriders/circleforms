@@ -98,7 +98,7 @@ const ImageDropzone = ({
       className={classNames("flex flex-col text-center w-full h-full cursor-pointer", classname)}
       {...getRootProps()}
     >
-      <p className="font-medium text-3xl">{headingText}</p>
+      <p className="text-2xl">{headingText}</p>
       <div
         className={classNames(
           "flex flex-col items-center justify-center bg-black-lighter h-full w-full rounded-20 border-4 border-dashed border-grey-border mt-1 py-10 transition hover:brightness-110 focus:brightness-150",

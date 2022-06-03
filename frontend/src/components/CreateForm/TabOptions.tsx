@@ -2,6 +2,7 @@ import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { DatePicker } from "@mantine/dates";
+import { useModals } from "@mantine/modals";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 
@@ -23,10 +24,11 @@ interface ITabOptions {
 const TabOptions = ({ post, isEdit }: ITabOptions) => {
   const t = useTranslations();
   const router = useRouter();
+  const modals = useModals();
   const { data, setValues } = useFormData();
-  const { mutateAsync: submitPost } = useSubmitPost();
+  const { mutate: submitPost } = useSubmitPost();
   const { mutate: mutateImage } = useSubmitImage();
-  const { mutateAsync: publishPost } = usePublishPost();
+  const { mutate: publishPost } = usePublishPost();
   const { mutate: postPUT } = usePatchPost();
 
   // init form state (if editing)
@@ -60,35 +62,75 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
     const validatedData = await getValidatedData();
     if (!validatedData) return;
 
-    const submitData = await submitPost(validatedData);
-    if (submitData?.id) {
-      if (data.icon) mutateImage({ postid: submitData.id, file: data.icon, isIcon: true });
-      if (data.banner) mutateImage({ postid: submitData.id, file: data.banner, isIcon: false });
-    }
-    router.push("/dashboard");
+    submitPost(validatedData, {
+      onSuccess: async (submitData) => {
+        toast.success(t("toast.success"));
+        if (data.icon) mutateImage({ postid: submitData.id!, file: data.icon, isIcon: true });
+        if (data.banner) mutateImage({ postid: submitData.id!, file: data.banner, isIcon: false });
+        await sleep(600);
+        router.push("/dashboard");
+      }
+    });
   };
 
   const handleUpdate = async () => {
-    if (!post) return;
+    if (!post) return false;
     let validatedData = await getValidatedData();
-    if (!validatedData) return;
-    postPUT({ postid: data.id as string, data: validatedData as PostContract });
-    if (data.icon) mutateImage({ postid: data.id, file: data.icon, isIcon: true });
-    if (data.banner) mutateImage({ postid: data.id, file: data.banner, isIcon: false });
-    sleep(600);
-    router.push("/dashboard");
+    if (!validatedData) return false;
+
+    postPUT(
+      { postid: data.id as string, data: validatedData as PostContract },
+      {
+        onSuccess: async () => {
+          if (data.icon) mutateImage({ postid: data.id, file: data.icon, isIcon: true });
+          if (data.banner) mutateImage({ postid: data.id, file: data.banner, isIcon: false });
+          toast.success("Update successful");
+        },
+        onError: (err) => {
+          console.error(err);
+          toast.error("There was an error updating your post");
+        }
+      }
+    );
+
+    return true;
   };
 
-  const handlePublish = () => {
+  const handlePublish = async () => {
     if (!post?.id) {
       toast.error(t("toast.error"));
       return;
     }
-    publishPost({ postid: post?.id });
+    const didUpdate = await handleUpdate();
+    if (!didUpdate) return;
+    publishPost(
+      { postid: post?.id },
+      {
+        onSuccess: async () => {
+          toast.success("Post published");
+          await sleep(600);
+          router.push("/dashboard");
+        },
+        onError: async () => {
+          toast.success("Failed to publish the post");
+        }
+      }
+    );
   };
 
+  const confirmPublishModal = () =>
+    modals.openContextModal("publish", {
+      centered: true,
+      title: "Please confirm your action",
+      innerProps: {
+        modalBody: "You will not be able to edit the post after publishing it.",
+        onConfirm: handlePublish,
+        confirmLabel: "Publish"
+      }
+    });
+
   return (
-    <>
+    <div className="flex flex-col gap-6">
       <Toaster />
       <form
         className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14 relative overflow-clip"
@@ -166,23 +208,37 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
           )}
         />
         {!isEdit && (
-          <div className="flex justify-center">
-            <Button {...{ type: "submit" }}>Create draft</Button>
-          </div>
+          <Button classname="w-fit self-center" {...{ type: "submit" }}>
+            Create draft
+          </Button>
         )}
 
         {isEdit && (
-          <div className="flex flex-row gap-16 self-center">
-            <Button {...{ type: "button" }} onClick={handleUpdate}>
-              Update draft
-            </Button>
-            <Button theme="secondary" {...{ type: "button" }} onClick={handlePublish}>
-              Publish
-            </Button>
-          </div>
+          <Button
+            classname="mt-4 w-fit"
+            {...{ type: "button" }}
+            onClick={async () => {
+              const didUpdate = await handleUpdate();
+              if (!didUpdate) return;
+              sleep(650);
+              router.push(`/dashboard/${post?.id || ""}`);
+            }}
+          >
+            Update draft
+          </Button>
         )}
       </form>
-    </>
+      {isEdit && (
+        <Button
+          classname="mt-4 self-center"
+          theme="secondary"
+          {...{ type: "button" }}
+          onClick={confirmPublishModal}
+        >
+          Publish
+        </Button>
+      )}
+    </div>
   );
 };
 
