@@ -68,9 +68,6 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
     const postTypes = post?.questions?.map((question) => question.type);
     const postQuestions = post?.questions?.map((question) => question.questionInfo);
 
-    const postTypes = post?.questions?.map((question) => question.type);
-    const postQuestions = post?.questions?.map((question) => question.questionInfo);
-
     Object.entries(data).map((curr, index) => {
       const [questionId, questionInfo] = curr;
 
