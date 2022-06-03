@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { FieldError, FieldErrors, FieldValues, useForm, UseFormRegister } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { useMutation } from "react-query";
@@ -64,6 +65,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
 
   const onSubmit = handleSubmit((data) => {
     const answers: SubmissionContract[] = [];
+
     const postTypes = post?.questions?.map((question) => question.type);
     const postQuestions = post?.questions?.map((question) => question.questionInfo);
 
@@ -72,31 +74,35 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
 
       switch (postTypes?.[index]) {
         case "Freeform":
-          answers.push({
-            questionId: questionId,
-            answers: [questionInfo as string]
-          });
+          questionInfo &&
+            answers.push({
+              questionId: questionId,
+              answers: [questionInfo as string]
+            });
           break;
 
         case "Choice":
+          const questionPosition = postQuestions?.[index]?.indexOf(questionInfo as string);
+          if (questionPosition === -1) break;
           answers.push({
             questionId: questionId,
-            answers: [String(postQuestions?.[index]?.indexOf(questionInfo as string))]
+            answers: [String(questionPosition)]
           });
           break;
 
         case "Checkbox":
-          console.log("checkboxxx");
           const questionIndex = (questionInfo as string[])?.map((q, ind) => {
-            return postQuestions?.[index]?.indexOf(q) != -1 ? undefined : String(ind);
+            const questionPosition = postQuestions?.[index]?.indexOf(q);
+            if (questionPosition !== -1) return String(ind);
           });
           answers.push({
             questionId: questionId,
-            answers: questionIndex as string[]
+            answers: questionIndex.filter(Boolean) as string[]
           });
+          break;
 
         default:
-          console.error("Unknown question type");
+          console.error("Unknown question type: ", postTypes?.[index]);
           break;
       }
     });
@@ -105,6 +111,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
       id: post.id as string,
       submissionContract: answers
     });
+    router.push(`/form/${post.id}`);
   });
 
   const switchQuestionType = (
@@ -149,8 +156,15 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
     }
   };
 
-  const bannerImg = getImage({ banner: post.banner, id: post.id, type: "banner" });
-  const iconImg = getImage({ banner: post.icon, id: post.id, type: "icon" });
+  const bannerImg = useMemo(
+    () => getImage({ banner: post.banner, id: post.id, type: "banner" }),
+    [post.banner, post.id]
+  );
+
+  const iconImg = useMemo(
+    () => getImage({ banner: post.icon, id: post.id, type: "icon" }),
+    [post.icon, post.id]
+  );
 
   return (
     <>
