@@ -47,6 +47,9 @@ public class PostRedis
     [JsonProperty("limitations")]
     public Limitations Limitations { get; set; }
 
+    [JsonProperty("allow_answer_edit")]
+    public bool AllowAnswerEdit { get; set; }
+
     [JsonProperty("questions")]
     public List<Question> Questions { get; set; }
 

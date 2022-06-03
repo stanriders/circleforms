@@ -31,6 +31,9 @@ public class PostContract
     [JsonProperty("active_to")]
     public DateTime ActiveTo { get; set; }
 
+    [JsonProperty("allow_answer_edit")]
+    public bool AllowAnswerEdit { get; set; }
+
     [Required]
     [JsonProperty("questions")]
     public List<Question> Questions { get; set; }

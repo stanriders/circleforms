@@ -64,7 +64,8 @@ public class AnswerService : IAnswerService
             return new Error(HttpStatusCode.BadRequest, "The post is inactive or unpublished");
         }
 
-        if (post.Answers.Any(x => x.UserRelation.ID == user))
+        var repeatedAnswer = post.Answers.FirstOrDefault(x => x.UserRelation.ID == user);
+        if (repeatedAnswer is not null && !post.AllowAnswerEdit)
         {
             return new Error(HttpStatusCode.Conflict, "You already voted");
         }
@@ -81,8 +82,15 @@ public class AnswerService : IAnswerService
             return result.ToError();
         }
 
-        await _answerRepository.Add(post.ID, result.Value, user);
-        await _cache.IncrementAnswers(post.ID);
+        if (repeatedAnswer is null)
+        {
+            await _answerRepository.Add(post.ID, result.Value, user);
+            await _cache.IncrementAnswers(post.ID);
+        }
+        else
+        {
+            await _answerRepository.Update(post.ID, repeatedAnswer.ID, result.Value, user);
+        }
 
         return new Error();
     }

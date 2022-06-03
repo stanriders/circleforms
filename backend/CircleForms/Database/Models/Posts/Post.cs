@@ -64,6 +64,9 @@ public class Post : Entity
     [Field("published")]
     public bool Published { get; set; }
 
+    [Field("allow_answer_edit")]
+    public bool AllowAnswerEdit { get; set; }
+
     [Field("questions")]
     public List<Question> Questions { get; set; }
 
