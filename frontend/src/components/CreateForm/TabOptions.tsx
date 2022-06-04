@@ -103,6 +103,8 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
     }
     const didUpdate = await handleUpdate();
     if (!didUpdate) return;
+    //  i have no fucking idea why it doesnt await handleUpdate above
+    await sleep(1); // if we remove this, it publishes before updating and everything breaks
     publishPost(
       { postid: post?.id },
       {
