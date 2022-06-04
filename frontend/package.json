@@ -55,6 +55,7 @@
     "react-switch": "^6.0.0",
     "superjson": "^1.9.1",
     "timeago.js": "^4.0.2",
+    "ts-debounce": "^4.0.0",
     "underscore": "^1.13.3",
     "yup": "^0.32.11"
   },

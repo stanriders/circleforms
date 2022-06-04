@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { DatePicker } from "@mantine/dates";
 import { useModals } from "@mantine/modals";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
+import { debounce } from "ts-debounce";
 
 import { Accessibility, Gamemode, PostContract, PostWithQuestionsContract } from "../../../openapi";
 import { sleep } from "../../utils/misc";
@@ -15,7 +16,6 @@ import { useFormData } from "../FormContext";
 
 import { usePatchPost, usePublishPost, useSubmitImage, useSubmitPost } from "./TabOptions.hooks";
 import { ACCESSABILITY_OPTIONS, answerSchema, GAMEMODE_OPTIONS } from "./TabOptions.utils";
-
 interface ITabOptions {
   post?: PostWithQuestionsContract;
   isEdit?: boolean;
@@ -26,10 +26,11 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
   const router = useRouter();
   const modals = useModals();
   const { data, setValues } = useFormData();
-  const { mutate: submitPost } = useSubmitPost();
-  const { mutate: mutateImage } = useSubmitImage();
-  const { mutate: publishPost } = usePublishPost();
-  const { mutate: postPUT } = usePatchPost();
+  const [isLoading, setIsLoading] = useState(false);
+  const { mutateAsync: submitPost } = useSubmitPost();
+  const { mutateAsync: mutateImage } = useSubmitImage();
+  const { mutateAsync: publishPost } = usePublishPost();
+  const { mutateAsync: postPUT } = usePatchPost();
 
   // init form state (if editing)
   const defaultValues = {
@@ -61,14 +62,20 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
   const handleFormSubmit = async () => {
     const validatedData = await getValidatedData();
     if (!validatedData) return;
+    setIsLoading(true);
 
-    submitPost(validatedData, {
+    await submitPost(validatedData, {
       onSuccess: async (submitData) => {
         toast.success(t("toast.success"));
-        if (data.icon) mutateImage({ postid: submitData.id!, file: data.icon, isIcon: true });
-        if (data.banner) mutateImage({ postid: submitData.id!, file: data.banner, isIcon: false });
+        if (data.icon) await mutateImage({ postid: submitData.id!, file: data.icon, isIcon: true });
+        if (data.banner)
+          await mutateImage({ postid: submitData.id!, file: data.banner, isIcon: false });
         await sleep(600);
         router.push("/dashboard");
+        setIsLoading(false);
+      },
+      onError: () => {
+        setIsLoading(false);
       }
     });
   };
@@ -78,12 +85,12 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
     let validatedData = await getValidatedData();
     if (!validatedData) return false;
 
-    postPUT(
+    await postPUT(
       { postid: data.id as string, data: validatedData as PostContract },
       {
         onSuccess: async () => {
-          if (data.icon) mutateImage({ postid: data.id, file: data.icon, isIcon: true });
-          if (data.banner) mutateImage({ postid: data.id, file: data.banner, isIcon: false });
+          if (data.icon) await mutateImage({ postid: data.id, file: data.icon, isIcon: true });
+          if (data.banner) await mutateImage({ postid: data.id, file: data.banner, isIcon: false });
           toast.success("Update successful");
         },
         onError: (err) => {
@@ -99,13 +106,16 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
   const handlePublish = async () => {
     if (!post?.id) {
       toast.error(t("toast.error"));
+
       return;
     }
+
     const didUpdate = await handleUpdate();
-    if (!didUpdate) return;
-    //  i have no fucking idea why it doesnt await handleUpdate above
-    await sleep(1); // if we remove this, it publishes before updating and everything breaks
-    publishPost(
+    if (!didUpdate) {
+      return;
+    }
+
+    await publishPost(
       { postid: post?.id },
       {
         onSuccess: async () => {
@@ -120,13 +130,15 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
     );
   };
 
+  const debouncedHandlePublish = debounce(handlePublish, 500);
+
   const confirmPublishModal = () =>
     modals.openContextModal("publish", {
       centered: true,
       title: "Please confirm your action",
       innerProps: {
         modalBody: "You will not be able to edit the post after publishing it.",
-        onConfirm: handlePublish,
+        onConfirm: debouncedHandlePublish,
         confirmLabel: "Publish"
       },
       styles: {
@@ -261,36 +273,38 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
         <hr className="border-t-2 border-t-grey-border" />
 
         {!isEdit && (
-          <Button classname="w-fit self-center" {...{ type: "submit" }}>
+          <Button classname="w-fit self-center" {...{ type: "submit", disabled: isLoading }}>
             Create draft
           </Button>
         )}
 
-        {isEdit && (
-          <Button
-            classname="mt-4 w-fit"
-            {...{ type: "button" }}
-            onClick={async () => {
-              const didUpdate = await handleUpdate();
-              if (!didUpdate) return;
-              sleep(650);
-              router.push(`/dashboard/${post?.id || ""}`);
-            }}
-          >
-            Update draft
-          </Button>
-        )}
+        <div className="flex flex-row justify-between">
+          {isEdit && (
+            <Button
+              classname="w-fit"
+              {...{ type: "button", disabled: isLoading }}
+              onClick={async () => {
+                const didUpdate = await handleUpdate();
+                if (!didUpdate) return;
+                sleep(650);
+                router.push(`/dashboard/${post?.id || ""}`);
+              }}
+            >
+              Update draft
+            </Button>
+          )}
+          {isEdit && (
+            <Button
+              classname="w-fit"
+              theme="secondary"
+              {...{ type: "button", disabled: isLoading }}
+              onClick={confirmPublishModal}
+            >
+              Publish
+            </Button>
+          )}
+        </div>
       </form>
-      {isEdit && (
-        <Button
-          classname="mt-4 self-center"
-          theme="secondary"
-          {...{ type: "button" }}
-          onClick={confirmPublishModal}
-        >
-          Publish
-        </Button>
-      )}
     </div>
   );
 };

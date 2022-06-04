@@ -8,7 +8,12 @@ const PublishModal = ({
   context,
   id,
   innerProps
-}: ContextModalProps<{ modalBody: string; onConfirm: () => void; confirmLabel: string }>) => {
+}: ContextModalProps<{
+  modalBody: string;
+  onConfirm: () => void;
+  confirmLabel: string;
+  isDisabled: boolean;
+}>) => {
   return (
     <div className="flex flex-col gap-20">
       <ErrorMessage classname="text-2xl font-medium">{innerProps.modalBody}</ErrorMessage>
