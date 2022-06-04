@@ -10,9 +10,9 @@ const PublishModal = ({
   innerProps
 }: ContextModalProps<{ modalBody: string; onConfirm: () => void; confirmLabel: string }>) => {
   return (
-    <div className="flex flex-col gap-4">
-      <ErrorMessage>{innerProps.modalBody}</ErrorMessage>
-      <div className="flex flex-row gap-4 self-end mt-3">
+    <div className="flex flex-col gap-20">
+      <ErrorMessage classname="text-2xl font-medium">{innerProps.modalBody}</ErrorMessage>
+      <div className="flex flex-row gap-4 self-end">
         <Button theme="dark" onClick={() => context.closeModal(id)}>
           Back
         </Button>

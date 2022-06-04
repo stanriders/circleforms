@@ -8,14 +8,17 @@ const DropdownSelect = React.forwardRef<HTMLInputElement, SelectProps>((props, r
       radius={"lg"}
       size={"md"}
       styles={{
-        root: { color: "#eee", fontSize: "1.5rem", maxWidth: "fit-content" },
+        root: { color: "#eee", maxWidth: "fit-content", width: "fit-content" },
+
         dropdown: { backgroundColor: "black", color: "#eeeeee" },
-        item: { backgroundColor: "black", color: "#eeeeee" },
+        item: { backgroundColor: "black", color: "#eeeeee", fontSize: "1.5rem" },
         input: {
           backgroundColor: "#1a1a1a",
           color: "#eeeeee",
           borderWidth: "2px",
-          fontWeight: "bold"
+          fontWeight: "lighter",
+          fontSize: "1.5rem",
+          width: "fit-content"
         },
         hovered: { backgroundColor: "#1672d4", color: "#eeeeee" },
         selected: { backgroundColor: "#1a1a1a", color: "#FF66AA" }

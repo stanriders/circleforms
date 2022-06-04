@@ -128,87 +128,138 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
         modalBody: "You will not be able to edit the post after publishing it.",
         onConfirm: handlePublish,
         confirmLabel: "Publish"
+      },
+      styles: {
+        modal: {
+          borderRadius: "55px",
+          display: "flex",
+          flexDirection: "column",
+          flexBasis: " 750px"
+        },
+        header: {
+          "padding-top": "22px",
+          "padding-left": "22px"
+        },
+        title: {
+          "font-size": "2rem"
+        },
+
+        body: {
+          padding: "22px",
+          "padding-top": "0px"
+        },
+        close: {
+          display: "none"
+        }
       }
     });
 
   return (
     <div className="flex flex-col gap-6">
       <Toaster />
+
       <form
-        className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14 relative overflow-clip"
+        className="flex flex-col gap-y-16 rounded-35 bg-black-lighter p-9 py-14 relative overflow-clip"
         onSubmit={methods.handleSubmit(handleFormSubmit)}
       >
-        <div className="absolute left-0 top-0 bg-pink h-full w-2" />
-        <Controller
-          name={`accessibility`}
-          control={methods.control}
-          rules={{ required: "True" }}
-          render={({ field, fieldState: { error } }) => (
-            <div>
-              <DropdownSelect
-                aria-label="Select post accessibility"
-                label="Accessibility"
-                required={true}
-                {...field}
-                onBlur={() => setValues({ accessibility: field.value })}
-                data={ACCESSABILITY_OPTIONS.map((type) => ({
-                  value: type,
-                  label: type
-                }))}
-                radius={"lg"}
-                size={"md"}
-              />
-              <ErrorMessage text={error?.message} />
-            </div>
-          )}
-        />
-        <Controller
-          name={`gamemode`}
-          control={methods.control}
-          rules={{ required: "Game mode is required" }}
-          render={({ field, fieldState: { error } }) => (
-            <div>
-              <DropdownSelect
-                aria-label="Select game mode"
-                label="Game mode"
-                required={true}
-                {...field}
-                onBlur={() => setValues({ gamemode: field.value })}
-                data={GAMEMODE_OPTIONS.map((type) => ({
-                  value: type,
-                  label: type
-                }))}
-                radius={"lg"}
-                size={"md"}
-              />
-              <ErrorMessage text={error?.message} />
-            </div>
-          )}
-        />
-        <Controller
-          name={`activeTo`}
-          control={methods.control}
-          rules={{ required: "Please pick post end date" }}
-          render={({ field, fieldState: { error } }) => (
-            <div>
-              <DatePicker
-                locale="en"
-                label="Active to"
-                placeholder="Pick a date"
-                required
-                {...field}
-                onBlur={() => setValues({ activeTo: field.value })}
-                radius={"lg"}
-                size={"md"}
-                styles={{
-                  root: { maxWidth: "fit-content" },
-                  input: { backgroundColor: "#1a1a1a" }
-                }}
-              />
-              <ErrorMessage text={error?.message} />
-            </div>
-          )}
-        />
+        <h2 className="text-4xl font-bold -my-8 ">Settings</h2>
+        <hr className="border-t-2 border-t-grey-border" />
+
+        <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-col">
+            <p className="text-3xl">Form Privacy Level</p>
+            <p className="text-2xl text-grey-secondary">Manage who sees the form</p>
+          </div>
+          <Controller
+            name={`accessibility`}
+            control={methods.control}
+            rules={{ required: "True" }}
+            render={({ field, fieldState: { error } }) => (
+              <div>
+                <DropdownSelect
+                  aria-label="Select post accessibility"
+                  required={true}
+                  {...field}
+                  onBlur={() => setValues({ accessibility: field.value })}
+                  data={ACCESSABILITY_OPTIONS.map((type) => ({
+                    value: type,
+                    label: type
+                  }))}
+                  radius={"lg"}
+                  size={"md"}
+                />
+                <ErrorMessage text={error?.message} />
+              </div>
+            )}
+          />
+        </div>
+        <hr className="border-t-2 border-t-grey-border" />
+
+        <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-col">
+            <p className="text-3xl">Select Game Mode</p>
+            <p className="text-2xl text-grey-secondary">
+              Leave it as None if it applies to all game modes
+            </p>
+          </div>
+          <Controller
+            name={`gamemode`}
+            control={methods.control}
+            rules={{ required: "Game mode is required" }}
+            render={({ field, fieldState: { error } }) => (
+              <div>
+                <DropdownSelect
+                  aria-label="Select game mode"
+                  required={true}
+                  {...field}
+                  onBlur={() => setValues({ gamemode: field.value })}
+                  data={GAMEMODE_OPTIONS.map((type) => ({
+                    value: type,
+                    label: type
+                  }))}
+                  radius={"lg"}
+                  size={"md"}
+                />
+                <ErrorMessage text={error?.message} />
+              </div>
+            )}
+          />
+        </div>
+        <hr className="border-t-2 border-t-grey-border" />
+
+        <div className="flex flex-row justify-between items-center">
+          <div className="flex flex-col">
+            <p className="text-3xl">Select end date</p>
+            <p className="text-2xl text-grey-secondary">
+              No new submissions can be made afterwards
+            </p>
+          </div>
+          <Controller
+            name={`activeTo`}
+            control={methods.control}
+            rules={{ required: "Please pick post end date" }}
+            render={({ field, fieldState: { error } }) => (
+              <div>
+                <DatePicker
+                  locale="en"
+                  placeholder="Pick a date"
+                  required
+                  {...field}
+                  onBlur={() => setValues({ activeTo: field.value })}
+                  radius={"lg"}
+                  size={"md"}
+                  styles={{
+                    root: { maxWidth: "fit-content" },
+                    input: { backgroundColor: "#1a1a1a", fontSize: "1.5rem", width: "fit-content" }
+                  }}
+                />
+                <ErrorMessage text={error?.message} />
+              </div>
+            )}
+          />
+        </div>
+        <hr className="border-t-2 border-t-grey-border" />
+
         {!isEdit && (
           <Button classname="w-fit self-center" {...{ type: "submit" }}>
             Create draft

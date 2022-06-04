@@ -77,7 +77,7 @@ svg {
 }
 
 .button {
-  @apply font-body text-lg font-bold rounded-3xl px-5 py-2 transition ease-out-cubic select-none;
+  @apply font-body text-2xl font-bold rounded-3xl px-5 py-2 transition ease-out-cubic select-none;
 
   &.primary {
     @apply bg-black outline outline-3 outline-pink text-pink;
