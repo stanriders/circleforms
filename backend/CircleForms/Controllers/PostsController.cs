@@ -128,7 +128,7 @@ public class PostsController : ControllerBase
     {
         var result = await _publish.Unpublish(id, _claim);
 
-        return result.Unwrap();
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public class PostsController : ControllerBase
     {
         var result = await _publish.Publish(id, _claim);
 
-        return result.Unwrap();
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -154,7 +154,7 @@ public class PostsController : ControllerBase
     {
         var result = await _posts.UpdatePost(_claim, updateContract, id);
 
-        return result.Unwrap();
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public class PostsController : ControllerBase
     {
         var result = await _posts.GetDetailedPost(_claim, id, key);
 
-        return result.Unwrap();
+        return result.ToActionResult();
     }
 
     /// <summary>

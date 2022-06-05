@@ -160,18 +160,8 @@ public readonly struct Result<T>
         return ok(Value);
     }
 
-    public IActionResult Unwrap()
+    public IActionResult ToActionResult()
     {
-        return Map(_ => _);
-    }
-
-    public IActionResult Map<TR>(Func<T, TR> mapOk)
-    {
-        if (!IsError)
-        {
-            return new OkObjectResult(mapOk(Value));
-        }
-
-        return Errors.ToActionResult();
+        return Map(x => new OkObjectResult(x), error => error.ToActionResult());
     }
 }

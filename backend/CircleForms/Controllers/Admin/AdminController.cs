@@ -111,7 +111,7 @@ public class AdminController : ControllerBase
 
         var result = await _posts.Get(id);
 
-        return result.Unwrap();
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -152,7 +152,7 @@ public class AdminController : ControllerBase
     {
         var post = await _posts.GetCachedPost(id);
 
-        return post.Unwrap();
+        return post.ToActionResult();
     }
     #endregion
 }
