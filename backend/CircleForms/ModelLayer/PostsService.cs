@@ -275,11 +275,11 @@ public class PostsService
         return new Result<string>(filename);
     }
 
-    public async Task<Result<bool>> AddPinned(string postId)
+    public async Task<Maybe<Error>> AddPinned(string postId)
     {
         var result = await _cache.PinPost(postId);
 
-        return !result ? Result<bool>.NotFound(postId) : new Result<bool>(true);
+        return !result ? Maybe<Error>.Some(Error.NotFound(postId)) : Maybe<Error>.None();
     }
 
     public async Task<MinimalPostContract[]> GetPinned()

@@ -112,6 +112,6 @@ public class PagesController : ControllerBase
     {
         var result = await _posts.AddPinned(post);
 
-        return result.Map();
+        return result.Unwrap(x => x.ToActionResult(), () => Ok());
     }
 }

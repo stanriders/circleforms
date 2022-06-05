@@ -23,6 +23,16 @@ public readonly struct Error
         StatusCode = status;
     }
 
+    public static Error NotFound(string id)
+    {
+        return new Error($"Entity {id} is not found", HttpStatusCode.NotFound);
+    }
+
+    public static Error Forbidden()
+    {
+        return new Error("You're not allowed to access that resource", HttpStatusCode.Forbidden);
+    }
+
     public ErrorData[] Errors { get; }
     public HttpStatusCode StatusCode { get; }
     public IActionResult ToActionResult()
@@ -122,13 +132,14 @@ public readonly struct Result<T>
 
     public static Result<T> NotFound(string id)
     {
-        return new Result<T>(new Error($"Entity {id} is not found", HttpStatusCode.NotFound));
+        return new Result<T>(ModelLayer.Error.NotFound(id));
     }
 
     public static Result<T> Forbidden()
     {
-        return new Result<T>(new Error("You're not allowed to access that resource", HttpStatusCode.Forbidden));
+        return new Result<T>(ModelLayer.Error.Forbidden());
     }
+
     public IActionResult Map()
     {
         return !IsError ? new OkResult() : Map(_ => _);
