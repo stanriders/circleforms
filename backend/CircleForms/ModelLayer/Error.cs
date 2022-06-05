@@ -43,7 +43,7 @@ public readonly struct Error
 
 public readonly struct Maybe<T>
 {
-    public T Value { get; init; }
+    public T Value { get; private init; }
     public bool IsSome { get; init; }
     public bool IsNone => !IsSome;
 
