@@ -189,7 +189,7 @@ public class PostsService
             .Match(x => x.UserRelation.ID == claim)
             .FirstOrDefaultAsync();
 
-        response.Answer = answer.Submissions;
+        response.Answer = answer?.Submissions;
 
         return response;
     }
