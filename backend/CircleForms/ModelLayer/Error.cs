@@ -75,14 +75,14 @@ public readonly struct Maybe<T>
         };
     }
 
-    public TR Unwrap<TR>(Func<T, TR> some, Func<TR> none)
+    public TR Map<TR>(Func<T, TR> some, Func<TR> none)
     {
         return IsSome ? some(Value) : none();
     }
 
-    public async Task<TR> UnwrapAsync<TR>(Func<T, Task<TR>> some, Func<Task<TR>> none)
+    public async Task<TR> MapAsync<TR>(Func<T, Task<TR>> some, Func<TR> none)
     {
-        return IsSome ? await some(Value) : await none();
+        return IsSome ? await some(Value) : none();
     }
 
     public static Maybe<T> None()
@@ -138,11 +138,6 @@ public readonly struct Result<T>
     public static Result<T> Forbidden()
     {
         return new Result<T>(ModelLayer.Error.Forbidden());
-    }
-
-    public IActionResult Map()
-    {
-        return !IsError ? new OkResult() : Map(_ => _);
     }
 
     public async Task<TR> MapAsync<TR>(Func<T, Task<TR>> ok, Func<Error, TR> error)

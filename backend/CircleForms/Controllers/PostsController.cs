@@ -57,7 +57,7 @@ public class PostsController : ControllerBase
     {
         var postResult = await _answer.Answer(_claim, id, answerContracts);
 
-        return await postResult.UnwrapAsync(async error =>
+        return await postResult.MapAsync(async error =>
         {
             if (error.StatusCode is HttpStatusCode.Unauthorized)
             {
@@ -66,7 +66,7 @@ public class PostsController : ControllerBase
             }
 
             return error.ToActionResult();
-        }, () => Task.FromResult<IActionResult>(new OkResult()));
+        }, () => Ok());
     }
 
     /// <summary>
@@ -98,7 +98,7 @@ public class PostsController : ControllerBase
 
         var result = await _posts.SaveImage(_claim, id, image, query);
 
-        return result.Unwrap(x => x.ToActionResult(), () => Ok());
+        return result.Map(x => x.ToActionResult(), () => Ok());
     }
 
     /// <summary>
