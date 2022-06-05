@@ -48,8 +48,8 @@ public class OsuApiProvider : IOsuApiProvider
         return response.StatusCode switch
         {
             HttpStatusCode.OK => new Result<OsuUser>(response.Data),
-            HttpStatusCode.Unauthorized => new Result<OsuUser>(HttpStatusCode.Unauthorized, string.Empty),
-            _ => new Result<OsuUser>(response.StatusCode, "An error occurred on osu! user request")
+            HttpStatusCode.Unauthorized => Result<OsuUser>.Error("", HttpStatusCode.Unauthorized),
+            _ => Result<OsuUser>.Error("An error occurred on osu! user request", response.StatusCode)
         };
     }
 
@@ -68,6 +68,6 @@ public class OsuApiProvider : IOsuApiProvider
 
         return response.IsSuccessful
             ? new Result<TokenResponse>(response.Data)
-            : new Result<TokenResponse>(response.StatusCode, "Could not refresh token");
+            : Result<TokenResponse>.Error("Could not refresh token", response.StatusCode);
     }
 }

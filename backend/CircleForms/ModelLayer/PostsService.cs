@@ -92,7 +92,7 @@ public class PostsService
         var result = await _postRepository.Add(userId, post);
 
         return result is null
-            ? new Result<PostWithQuestionsContract>(HttpStatusCode.InternalServerError, "Can't add new post :/")
+            ? Result<PostWithQuestionsContract>.Error("Can't add new post :/", HttpStatusCode.InternalServerError)
             : new Result<PostWithQuestionsContract>(_mapper.Map<PostWithQuestionsContract>(result));
     }
 
@@ -108,7 +108,7 @@ public class PostsService
 
         if (post.AuthorRelation.ID != userId)
         {
-            return new Result<PostWithQuestionsContract>(HttpStatusCode.Unauthorized, "You can't update this post");
+            return Result<PostWithQuestionsContract>.Error("You can't update this post", HttpStatusCode.Unauthorized);
         }
 
         var updatedPost = _mapper.Map(updateContract, post);
@@ -145,7 +145,7 @@ public class PostsService
 
         post.AnswerCount = await _cache.GetAnswerCount(id);
 
-        return post;
+        return new Result<PostRedis>(post);
     }
 
     //Produces: PostDetailedResponseContract | PostResponseContract
@@ -164,7 +164,7 @@ public class PostsService
             var contract = _mapper.Map<PostWithQuestionsContract>(cached);
             contract.AnswerCount = await _cache.GetAnswerCount(cached.ID);
 
-            return contract;
+            return new Result<object>(contract);
         }
 
         var post = await _postRepository.Get(id);
@@ -175,7 +175,7 @@ public class PostsService
 
         if (post.AuthorId == claim)
         {
-            return _mapper.Map<FullPostContract>(post);
+            return new Result<object>(_mapper.Map<FullPostContract>(post));
         }
 
         if (!post.Published || post.Accessibility == Accessibility.Link && key != post.AccessKey)
@@ -191,14 +191,19 @@ public class PostsService
 
         response.Answer = answer?.Submissions;
 
-        return response;
+        return new Result<object>(response);
     }
 
     public async Task<Result<FullPostContract>> Get(string id)
     {
         var post = await _postRepository.Get(id);
 
-        return _mapper.Map<FullPostContract>(post) ?? Result<FullPostContract>.NotFound(id);
+        if (post is null)
+        {
+            return Result<FullPostContract>.NotFound(id);
+        }
+
+        return new Result<FullPostContract>(_mapper.Map<FullPostContract>(post));
     }
 
     public async Task<List<FullPostContract>> GetAll()
@@ -224,10 +229,10 @@ public class PostsService
         var post = await GetCachedPostPrivate(id);
         if (post.IsError)
         {
-            return new Result<MinimalPostContract>(post.StatusCode, post.Errors);
+            return Result<MinimalPostContract>.Error(post.Errors);
         }
 
-        return _mapper.Map<MinimalPostContract>(post);
+        return new Result<MinimalPostContract>(_mapper.Map<MinimalPostContract>(post));
     }
 
     public async Task<MinimalPostContract[]> GetPage(int page, int pageSize, PostFilter filter)
@@ -267,14 +272,14 @@ public class PostsService
         await _postRepository.Update(post);
         await _cache.AddOrUpdate(post);
 
-        return filename;
+        return new Result<string>(filename);
     }
 
     public async Task<Result<bool>> AddPinned(string postId)
     {
         var result = await _cache.PinPost(postId);
 
-        return !result ? Result<bool>.NotFound(postId) : true;
+        return !result ? Result<bool>.NotFound(postId) : new Result<bool>(true);
     }
 
     public async Task<MinimalPostContract[]> GetPinned()

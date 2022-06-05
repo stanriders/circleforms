@@ -1,90 +1,123 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CircleForms.ModelLayer;
 
-public class Error : Result<object>
+public readonly struct ErrorData
 {
-    public Error() : base(value: null)
+    public string Source { get; init; }
+    public string Message { get; init; }
+}
+
+public readonly struct Error
+{
+    public Error(string message, HttpStatusCode status) : this(new []{new ErrorData {Message = message}}, status)
     {
     }
 
-    public Error(HttpStatusCode code) : base(code, "")
+    public Error(ErrorData[] errors, HttpStatusCode status)
     {
+        Errors = errors;
+        StatusCode = status;
     }
 
-    public Error(HttpStatusCode code, string message) : base(code, message)
+    public ErrorData[] Errors { get; }
+    public HttpStatusCode StatusCode { get; }
+    public IActionResult ToActionResult()
     {
+        var payload = new { errors = Errors };
+
+        return StatusCode switch
+        {
+            HttpStatusCode.BadRequest => new BadRequestObjectResult(payload),
+            HttpStatusCode.Conflict => new ConflictObjectResult(payload),
+            HttpStatusCode.NotFound => new NotFoundObjectResult(payload),
+            HttpStatusCode.Forbidden => new ForbidResult(),
+            HttpStatusCode.Unauthorized => new UnauthorizedObjectResult(payload),
+            _ => new ObjectResult(payload) { StatusCode = (int) StatusCode }
+        };
     }
 
-    public Error(HttpStatusCode code, ErrorData[] errors) : base(code, errors)
+}
+
+public readonly struct Maybe<T>
+{
+    public T Value { get; init; }
+    public bool IsSome { get; init; }
+    public bool IsNone => !IsSome;
+
+    /// <summary>
+    ///     Factory constructor <see cref="Maybe{T}.Some(x)"/> is better
+    /// </summary>
+    public Maybe(T value)
     {
+        Value = value;
+        IsSome = true;
+    }
+    public static Maybe<T> Some(T value)
+    {
+        return new Maybe<T>
+        {
+            Value = value,
+            IsSome = true
+        };
+    }
+
+    public static Maybe<T> None()
+    {
+        return new Maybe<T>
+        {
+            Value = default,
+            IsSome = false
+        };
     }
 }
 
-public class ErrorData
-{
-    public string Source { get; set; }
-    public string Message { get; set; }
-}
-
-public class Result<T>
+public readonly struct Result<T>
 {
     public Result(T value)
     {
         Value = value;
+        Errors = default;
+        IsError = false;
     }
 
-    public Result(HttpStatusCode code, string message)
+    private Result(Error errors)
     {
-        StatusCode = code;
-        Errors = new ErrorData[] { new() {Message = message} };
-    }
-
-    public Result(string message)
-    {
-        StatusCode = HttpStatusCode.BadRequest;
-        Errors = new ErrorData[] { new() { Message = message } };
-    }
-
-    public Result(HttpStatusCode code, ErrorData[] errors)
-    {
-        StatusCode = code;
         Errors = errors;
+        IsError = true;
+        Value = default;
     }
 
-    public Result(ErrorData[] errors)
-    {
-        StatusCode = HttpStatusCode.BadRequest;
-        Errors = errors;
-    }
-
+    public bool IsError { get; }
     public T Value { get; }
+    public Error Errors { get; }
 
-    public HttpStatusCode StatusCode { get; }
-    public ErrorData[] Errors { get; }
+    public static Result<T> Error(string message, HttpStatusCode status = HttpStatusCode.BadRequest)
+    {
+        return new Result<T>(new Error(message, status));
+    }
 
-    public bool IsError => Errors?.Length > 0;
+    public static Result<T> Error(Error error)
+    {
+        return new Result<T>(error);
+    }
 
-    public string Message => string.Join(", ", Errors.Select(x => $"{x.Source} - {x.Message}"));
+    public static Result<T> Error(ErrorData[] errorData, HttpStatusCode status = HttpStatusCode.BadRequest)
+    {
+        return new Result<T>(new Error(errorData, status));
+    }
 
     public static Result<T> NotFound(string id)
     {
-        return new Result<T>(HttpStatusCode.NotFound, $"Entity {id} is not found");
+        return new Result<T>(new Error($"Entity {id} is not found", HttpStatusCode.NotFound));
     }
 
     public static Result<T> Forbidden()
     {
-        return new Result<T>(HttpStatusCode.Forbidden, "You're not allowed to access that resource");
+        return new Result<T>(new Error("You're not allowed to access that resource", HttpStatusCode.Forbidden));
     }
-
-    public Error ToError()
-    {
-        return new Error(StatusCode, Errors);
-    }
-
     public IActionResult Map()
     {
         return !IsError ? new OkResult() : Map(_ => _);
@@ -102,21 +135,6 @@ public class Result<T>
             return new OkObjectResult(mapOk(Value));
         }
 
-        var payload = new {errors = Errors};
-
-        return StatusCode switch
-        {
-            HttpStatusCode.BadRequest => new BadRequestObjectResult(payload),
-            HttpStatusCode.Conflict => new ConflictObjectResult(payload),
-            HttpStatusCode.NotFound => new NotFoundObjectResult(payload),
-            HttpStatusCode.Forbidden => new ForbidResult(),
-            HttpStatusCode.Unauthorized => new UnauthorizedObjectResult(payload),
-            _ => new ObjectResult(payload) {StatusCode = (int) StatusCode}
-        };
-    }
-
-    public static implicit operator Result<T>(T value)
-    {
-        return new Result<T>(value);
+        return Errors.ToActionResult();
     }
 }

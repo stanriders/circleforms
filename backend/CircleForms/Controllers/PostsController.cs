@@ -57,14 +57,21 @@ public class PostsController : ControllerBase
     {
         var postResult = await _answer.Answer(_claim, id, answerContracts);
 
-        if (postResult.IsError && postResult.StatusCode is HttpStatusCode.Unauthorized)
+        if (postResult.IsNone)
+        {
+            return Ok();
+        }
+
+        var error = postResult.Value;
+
+        if (error.StatusCode is HttpStatusCode.Unauthorized)
         {
             _logger.LogWarning("User was not authorized to post answers to a post - probably outdated refresh token, logging them out...");
 
             await HttpContext.SignOutAsync("InternalCookies");
         }
 
-        return postResult.Map();
+        return error.ToActionResult();
     }
 
     /// <summary>
