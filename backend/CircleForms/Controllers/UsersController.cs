@@ -88,7 +88,7 @@ public class UsersController : ControllerBase
             return Ok(_mapper.Map<List<MinimalPostContract>>(posts));
         }
 
-        _logger.LogWarning("User had a valid claim ({Claim}), but doesn't exist in the database!", _claim);
+        _logger.LogCritical("User had a valid claim ({Claim}), but doesn't exist in the database!", _claim);
 
         await HttpContext.SignOutAsync("InternalCookies");
 
