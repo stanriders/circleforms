@@ -49,7 +49,7 @@ public readonly struct Maybe<T>
     public bool IsNone => !IsSome;
 
     /// <summary>
-    ///     Factory constructor <see cref="Maybe{T}.Some(x)"/> is better
+    ///     Factory constructor <see cref="Maybe{T}.Some(T)"/> is better
     /// </summary>
     public Maybe(T value)
     {
