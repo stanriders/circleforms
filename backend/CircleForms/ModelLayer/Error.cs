@@ -134,6 +134,26 @@ public readonly struct Result<T>
         return !IsError ? new OkResult() : Map(_ => _);
     }
 
+    public async Task<TR> MapAsync<TR>(Func<T, Task<TR>> ok, Func<Error, TR> error)
+    {
+        if (IsError)
+        {
+            return error(Errors);
+        }
+
+        return await ok(Value);
+    }
+
+    public TR Map<TR>(Func<T, TR> ok, Func<Error, TR> error)
+    {
+        if (IsError)
+        {
+            return error(Errors);
+        }
+
+        return ok(Value);
+    }
+
     public IActionResult Unwrap()
     {
         return Map(_ => _);

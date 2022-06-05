@@ -110,14 +110,12 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> Post(PostContract postContract)
     {
         var result = await _posts.AddPost(_claim, postContract);
-        if (!result.IsError)
+        return result.Map(ok =>
         {
-            _logger.LogInformation("User {User} posts a post {PostId}", _claim, result.Value.ID);
+            _logger.LogInformation("User {User} posts a post {PostId}", _claim, ok.ID);
 
-            return CreatedAtAction("GetDetailed", new {id = result.Value.ID}, result.Value);
-        }
-
-        return result.Unwrap();
+            return CreatedAtAction("GetDetailed", new {id = ok.ID}, ok);
+        }, error => error.ToActionResult());
     }
 
     /// <summary>
@@ -183,18 +181,18 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> GetAnswers(string id)
     {
         var result = await _answer.GetAnswers(_claim, id);
-        if (result.IsError)
-        {
-            return result.Map();
-        }
 
-        var contract = new AnswersUsersContract
+        return await result.MapAsync<IActionResult>(async ok =>
         {
-            Answers = result.Value.Adapt<List<AnswerContract>>(),
-            Users = (await Task.WhenAll(result.Value.Select(x => x.UserRelation.ToEntityAsync()))).Adapt<List<UserInAnswerContract>>()
-        };
+            var users = await Task.WhenAll(ok.Select(x => x.UserRelation.ToEntityAsync()));
+            var contract = new AnswersUsersContract
+            {
+                Answers = ok.Adapt<List<AnswerContract>>(),
+                Users = users.Adapt<List<UserInAnswerContract>>()
+            };
 
-        return Ok(contract);
+            return Ok(contract);
+        }, error => error.ToActionResult());
     }
 
     /// <summary>
