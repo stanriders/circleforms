@@ -57,7 +57,16 @@ public class PostsController : ControllerBase
     {
         var postResult = await _answer.Answer(_claim, id, answerContracts);
 
-        return postResult.Unwrap(error => error.ToActionResult(), () => new OkResult());
+        return await postResult.UnwrapAsync(async error =>
+        {
+            if (error.StatusCode is HttpStatusCode.Unauthorized)
+            {
+                _logger.LogWarning("User {UserId} was not authorized to post answers to a post {PostId} - {@ErrorData}", _claim, id, error.Errors);
+                await HttpContext.SignOutAsync("InternalCookies");
+            }
+
+            return error.ToActionResult();
+        }, () => Task.FromResult<IActionResult>(new OkResult()));
     }
 
     /// <summary>
