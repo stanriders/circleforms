@@ -63,11 +63,11 @@ public class OsuApiProvider : IOsuApiProvider
 
         if (!response.IsSuccessful)
         {
-            _logger.LogWarning(response.Content);
+            _logger.LogWarning("An error occured on token refreshing: {Response}", response.Content);
+
+            return new Result<TokenResponse>(response.Data);
         }
 
-        return response.IsSuccessful
-            ? new Result<TokenResponse>(response.Data)
-            : Result<TokenResponse>.Error("Could not refresh token", response.StatusCode);
+        return Result<TokenResponse>.Error("Could not refresh token", response.StatusCode);
     }
 }
