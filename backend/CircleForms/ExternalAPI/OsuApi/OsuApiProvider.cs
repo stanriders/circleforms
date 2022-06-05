@@ -65,9 +65,9 @@ public class OsuApiProvider : IOsuApiProvider
         {
             _logger.LogWarning("An error occured on token refreshing: {Response}", response.Content);
 
-            return new Result<TokenResponse>(response.Data);
+            return Result<TokenResponse>.Error("Could not refresh token", response.StatusCode);
         }
 
-        return Result<TokenResponse>.Error("Could not refresh token", response.StatusCode);
+        return new Result<TokenResponse>(response.Data);
     }
 }
