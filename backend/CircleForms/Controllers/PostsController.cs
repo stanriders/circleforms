@@ -98,7 +98,7 @@ public class PostsController : ControllerBase
 
         var result = await _posts.SaveImage(_claim, id, image, query);
 
-        return result.Map();
+        return result.Unwrap(x => x.ToActionResult(), () => Ok());
     }
 
     /// <summary>

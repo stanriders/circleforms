@@ -242,14 +242,14 @@ public class PostsService
         return _mapper.Map<PostRedis[], MinimalPostContract[]>(await MapWithAnswerCounts(posts));
     }
 
-    public async Task<Result<string>> SaveImage(string claim, string id, IFormFile image, ImageQuery query)
+    public async Task<Maybe<Error>> SaveImage(string claim, string id, IFormFile image, ImageQuery query)
     {
         var post = await _postRepository.Get(id);
         if (post.AuthorRelation.ID != claim)
         {
             _logger.LogWarning("User {User} tries to upload an image to {Post} as non-author", claim, post.ID);
 
-            return new Result<string>("You can't upload images to this post");
+            return Maybe<Error>.Some(new Error("You can't upload images to this post", HttpStatusCode.Unauthorized));
         }
 
         await using var stream = image.OpenReadStream();
@@ -272,7 +272,7 @@ public class PostsService
         await _postRepository.Update(post);
         await _cache.AddOrUpdate(post);
 
-        return new Result<string>(filename);
+        return Maybe<Error>.None();
     }
 
     public async Task<Maybe<Error>> AddPinned(string postId)
