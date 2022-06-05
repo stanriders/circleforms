@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CircleForms.ModelLayer;
@@ -62,6 +63,16 @@ public readonly struct Maybe<T>
             Value = value,
             IsSome = true
         };
+    }
+
+    public TR Unwrap<TR>(Func<T, TR> some, Func<TR> none)
+    {
+        return IsSome ? some(Value) : none();
+    }
+
+    public async Task<TR> UnwrapAsync<TR>(Func<T, Task<TR>> some, Func<Task<TR>> none)
+    {
+        return IsSome ? await some(Value) : await none();
     }
 
     public static Maybe<T> None()
