@@ -1,7 +1,6 @@
 ﻿using System;
 using CircleForms.Database.Models.Posts;
 using CircleForms.ExternalAPI.OsuApi.Contracts;
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Entities;
 
@@ -32,7 +31,7 @@ public class User : IEntity
     public Roles Roles { get; set; }
 
     [Field("osu")]
-    public BsonDocument Osu { get; set; }
+    public OsuUser Osu { get; set; }
 
     public string GenerateNewID()
     {

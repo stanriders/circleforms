@@ -149,7 +149,7 @@ public class AnswerService : IAnswerService
             return Maybe<Error>.None();
         }
 
-        var statistics = await _gamemodeService.GetOrAddStatistics(userId, gamemode);
+        var statistics = await _gamemodeService.GetStatistics(userId, gamemode);
         if (statistics.IsError)
         {
             return Maybe<Error>.Some(statistics.Errors);
@@ -160,8 +160,8 @@ public class AnswerService : IAnswerService
             return Maybe<Error>.None();
         }
 
-        var pp = (int) Math.Round(statistics.Value["Pp"].AsDouble);
-        var rank = statistics.Value["GlobalRank"].AsInt32;
+        var pp = (int) Math.Round(statistics.Value.Pp);
+        var rank = statistics.Value.GlobalRank;
 
         if (post.Limitations.Pp is not null && !pp.IsInRange(post.Limitations.Pp))
         {

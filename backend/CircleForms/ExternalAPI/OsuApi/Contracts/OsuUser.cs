@@ -137,6 +137,21 @@ public class RankHistory
     public List<int> Data { get; set; }
 }
 
+public class StatisticsRulesets
+{
+    [JsonProperty("osu")]
+    public Statistics Osu { get; set; }
+
+    [JsonProperty("taiko")]
+    public Statistics Taiko { get; set; }
+
+    [JsonProperty("fruits")]
+    public Statistics Catch { get; set; }
+
+    [JsonProperty("mania")]
+    public Statistics Mania { get; set; }
+}
+
 public class OsuUser
 {
     [JsonProperty("avatar_url")]
@@ -218,9 +233,8 @@ public class OsuUser
     [JsonProperty("ranked_beatmapset_count")]
     public int RankedBeatmapsetCount { get; set; }
 
-    [JsonProperty("statistics")]
-    [BsonIgnore]
-    public Statistics Statistics { get; set; }
+    [JsonProperty("statistics_rulesets")]
+    public StatisticsRulesets Statistics { get; set; }
 
     [JsonProperty("rank_history")]
     public RankHistory RankHistory { get; set; }
