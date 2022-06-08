@@ -1,8 +1,10 @@
 import React from "react";
-import { IQuestionProps } from "../types/common-types";
-import InputRadio from "./InputRadio";
-import QuestionError from "./QuestionError";
 
+import { IQuestionProps } from "../../types/common-types";
+import ErrorMessage from "../ErrorMessage";
+import InputRadio from "../InputRadio";
+
+// meant to be used inside React Hook Form
 const ChoiceRadioQuestion = ({ question, register, errors, disableEdit }: IQuestionProps) => {
   return (
     <div className="flex flex-col gap-2 bg-black-lighter px-8 py-5 rounded-3xl">
@@ -31,7 +33,7 @@ const ChoiceRadioQuestion = ({ question, register, errors, disableEdit }: IQuest
           );
         })}
         {errors[String(question.questionId)] &&
-          QuestionError({ text: "This question is required*" })}
+          ErrorMessage({ text: "This question is required*" })}
       </div>
     </div>
   );

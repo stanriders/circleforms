@@ -1,5 +1,6 @@
-import Head from "next/head";
 import { FallbackProps } from "react-error-boundary";
+import Head from "next/head";
+
 import DefaultLayout from "../layouts";
 
 const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {

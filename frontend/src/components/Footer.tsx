@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function Header() {
+export default function Footer() {
   return (
     <footer className="bg-black-darker text-white py-1 w-full">
       <div className="flex flex-col items-center">

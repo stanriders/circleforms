@@ -6,6 +6,7 @@ interface ImageProps {
 }
 
 export default function getImage({ id, banner, icon, type = "banner" }: ImageProps) {
+  if (!id) return;
   const isDev = process.env.NODE_ENV === "development";
 
   if (type === "icon") {

@@ -1,24 +1,25 @@
-import { Tabs, TabList, Tab, TabPanels, TabPanel } from "@reach/tabs";
+import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@reach/tabs";
 import { useRouter } from "next/router";
-import { ChangeEvent, useState, useEffect, useContext } from "react";
 import { useTranslations } from "next-intl";
-import getImage from "../utils/getImage";
-import Tag from "./Tag";
-import InputRadio from "./InputRadio";
-import Player from "./Player";
-import Button from "./Button";
-import bbcode from "../libs/bbcode";
 
-import { dynamicSort } from "../utils/objectSort";
 import {
   OsuAnswerContract,
   PostWithQuestionsContract,
   UserContract,
   UserInAnswerContract
 } from "../../openapi";
-import { useQuery } from "react-query";
-import { apiClient } from "../libs/apiClient";
 import UserContext from "../context/UserContext";
+import { apiClient } from "../utils/apiClient";
+import bbcode from "../utils/bbcode";
+import getImage from "../utils/getImage";
+import { dynamicSort } from "../utils/objectSort";
+
+import Button from "./Button";
+import InputRadio from "./InputRadio";
+import Player from "./Player";
+import Tag from "./Tag";
 
 interface IFormProps {
   post: PostWithQuestionsContract;
@@ -56,8 +57,6 @@ export default function Form({ post, authorUser }: IFormProps) {
 
   const bannerImg = getImage({ id, banner, type: "banner" });
   const iconImg = getImage({ id, icon, type: "icon" });
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     if (sort === "rank") {

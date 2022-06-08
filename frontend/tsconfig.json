@@ -13,13 +13,17 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
+    "baseUrl": ".",
 
     // extra
     "incremental": false,
     "noUncheckedIndexedAccess": true,
     "strictNullChecks": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "paths": {
+      "testUtils": ["./testUtils"]
+    }
   },
-  "include": ["next-env.d.ts", "src"],
+  "include": ["next-env.d.ts", "src", "jest.config.js", "jest.setup.ts", "."],
   "exclude": ["node_modules"]
 }

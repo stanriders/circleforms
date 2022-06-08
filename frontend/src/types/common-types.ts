@@ -1,6 +1,6 @@
 import { FieldValues, UseFormRegister } from "react-hook-form";
 import { Question } from "../../openapi";
-import LOCALES from "../libs/i18n";
+import LOCALES from "../utils/i18n";
 
 export type Locales = keyof typeof LOCALES;
 

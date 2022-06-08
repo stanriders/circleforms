@@ -1,5 +1,7 @@
 import Head from "next/head";
+
 import DefaultLayout from "../layouts";
+
 import Hero from "./Hero";
 
 export default function Unauthorized({

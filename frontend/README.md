@@ -18,6 +18,17 @@
 
 1.  You can use localhost:3000 now to still have HMR, and be logged in
 
-## Possible errors
+### Possible errors
 
 1. if you get ERR_SOCKET_RESET during docker build try changing node:16 to node:14 in Dockerfile
+
+1. dont use VPN or you`ll get some weird network errors
+
+# Important info
+
+- Tests for pages should go into `__tests__` directory, otherwise they are going to be included in the build and fail. Tests for regular components can be placed near them.
+
+## How to update api client when backend changes:
+
+1. `npm run generate-api-client`
+2. either manually add `// @ts-nocheck` at the top of new files, or use the script i wrote: `npm run tsignore-openapi`, that adds ts-nocheck to every file in `openapi` folder.

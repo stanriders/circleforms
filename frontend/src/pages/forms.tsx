@@ -1,19 +1,18 @@
-import Head from "next/head";
 import { Fragment, useEffect, useState } from "react";
+import { useQuery } from "react-query";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 
-import DefaultLayout from "../layouts";
+import { PostFilter } from "../../openapi";
+import Button from "../components/Button";
+import FormEntry from "../components/FormEntry";
+import FormEntrySkeletonList from "../components/FormEntrySkeletonList";
 import StatusRadio from "../components/StatusRadio";
 import SubTitle from "../components/SubTitle";
-import FormEntrySkeletonList from "../components/FormEntrySkeletonList";
-import FormEntry from "../components/FormEntry";
-import Button from "../components/Button";
-
+import DefaultLayout from "../layouts";
 import { Locales } from "../types/common-types";
-import { PostFilter } from "../../openapi";
-import { apiClient } from "../libs/apiClient";
-import { useQuery } from "react-query";
+import { apiClient } from "../utils/apiClient";
 
 export default function FormsList() {
   const router = useRouter();
@@ -146,7 +145,17 @@ export default function FormsList() {
                   <div className="flex flex-col gap-y-3">
                     {pinnedForms?.posts?.map((form) => {
                       const user = pinnedForms?.users?.find((user) => user.id === form.authorId);
-                      return <FormEntry key={form.id} user={user} {...form} />;
+                      return (
+                        <FormEntry
+                          key={form.id}
+                          user={user}
+                          id={form.id}
+                          banner={form.banner}
+                          title={form.title}
+                          excerpt={form.excerpt}
+                          publishTime={form.publishTime}
+                        />
+                      );
                     })}
                   </div>
                 </Fragment>
@@ -159,7 +168,17 @@ export default function FormsList() {
                 {showFormEntries &&
                   data?.posts?.map((form) => {
                     const user = data?.users?.find((user) => user.id === form.authorId);
-                    return <FormEntry key={form.id} user={user} {...form} />;
+                    return (
+                      <FormEntry
+                        key={form.id}
+                        user={user}
+                        id={form.id}
+                        banner={form.banner}
+                        title={form.title}
+                        excerpt={form.excerpt}
+                        publishTime={form.publishTime}
+                      />
+                    );
                   })}
               </div>
             </div>

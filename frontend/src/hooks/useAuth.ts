@@ -1,8 +1,9 @@
+import { useEffect, useState } from "react";
 import localforage from "localforage";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+
 import { UserContract } from "../../openapi";
-import { apiClient } from "../libs/apiClient";
+import { apiClient } from "../utils/apiClient";
 
 // user cache
 const FIVE_MINUTES = 1000 * 60 * 5;

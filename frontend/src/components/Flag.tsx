@@ -1,5 +1,5 @@
-import LOCALES from "../libs/i18n";
 import { Locales } from "../types/common-types";
+import LOCALES from "../utils/i18n";
 
 interface ILocale {
   flag?: string;

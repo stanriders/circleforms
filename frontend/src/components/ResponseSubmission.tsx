@@ -1,9 +1,12 @@
-import { DevTool } from "@hookform/devtools";
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/router";
+import { useMemo } from "react";
 import { FieldError, FieldErrors, FieldValues, useForm, UseFormRegister } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { useMutation } from "react-query";
+import { DevTool } from "@hookform/devtools";
+import { useRouter } from "next/router";
+import { useTranslations } from "next-intl";
+import { sleep } from "src/utils/misc";
+
 import {
   PostsIdAnswersPostRequest,
   PostWithQuestionsContract,
@@ -12,11 +15,12 @@ import {
   SubmissionContract,
   UserContract
 } from "../../openapi";
-import { apiClient } from "../libs/apiClient";
+import { apiClient } from "../utils/apiClient";
 import getImage from "../utils/getImage";
-import CheckboxQuestion from "./CheckboxQuestion";
-import ChoiceRadioQuestion from "./ChoiceRadioQuestion";
-import FreeformInputQuestion from "./FreeformInputQuestion";
+
+import CheckboxQuestion from "./Questions/CheckboxQuestion";
+import ChoiceRadioQuestion from "./Questions/ChoiceRadioQuestion";
+import FreeformInputQuestion from "./Questions/FreeformInputQuestion";
 import Tag from "./Tag";
 
 type FormData = {
@@ -48,50 +52,70 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
     formState: { errors }
   } = useForm<FormData>({ mode: "onBlur", defaultValues: defaultUserAnswers });
 
-  const { mutate } = useMutation(
-    (obj: PostsIdAnswersPostRequest) => apiClient.posts.postsIdAnswersPost(obj),
-    {
-      onSuccess: () => {
-        toast.success(t("toast.success"));
-      },
-      onError: () => {
-        toast.error(t("toast.error"));
-      }
-    }
+  const { mutate } = useMutation((obj: PostsIdAnswersPostRequest) =>
+    apiClient.posts.postsIdAnswersPost(obj)
   );
 
   const onSubmit = handleSubmit((data) => {
     const answers: SubmissionContract[] = [];
+    const postTypes = post?.questions?.map((question) => question.type);
+    const postQuestions = post?.questions?.map((question) => question.questionInfo);
 
-    // convert data to correct format for backend
+    Object.entries(data).map((curr, index) => {
+      const [questionId, questionInfo] = curr;
 
-    // delete all objects that are null, empty strings, or boolean array
-    let filteredData = Object.fromEntries(
-      Object.entries(data).filter(([_, v]) => v != null && v != "" && typeof v[0] !== "boolean")
-    );
+      switch (postTypes?.[index]) {
+        case "Freeform":
+          questionInfo &&
+            answers.push({
+              questionId: questionId,
+              answers: [questionInfo as string]
+            });
+          break;
 
-    Object.entries(filteredData).map((curr) => {
-      const [questionId, questionValue] = curr;
+        case "Choice":
+          const questionPosition = postQuestions?.[index]?.indexOf(questionInfo as string);
+          if (questionPosition === -1) break;
+          answers.push({
+            questionId: questionId,
+            answers: [String(questionPosition)]
+          });
+          break;
 
-      // convert string to array
-      if (typeof questionValue === "string") {
-        answers.push({
-          questionId: questionId,
-          answers: [questionValue]
-        });
-        // or just push array of answers
-      } else {
-        answers.push({
-          questionId: questionId,
-          answers: questionValue!
-        });
+        case "Checkbox":
+          const questionIndex = (questionInfo as string[])?.map((q, ind) => {
+            const questionPosition = postQuestions?.[index]?.indexOf(q);
+            if (questionPosition !== -1) return String(ind);
+          });
+          answers.push({
+            questionId: questionId,
+            answers: questionIndex.filter(Boolean) as string[]
+          });
+          break;
+
+        default:
+          console.error("Unknown question type: ", postTypes?.[index]);
+          break;
       }
     });
 
-    mutate({
-      id: post.id as string,
-      submissionContract: answers
-    });
+    mutate(
+      {
+        id: post.id as string,
+        submissionContract: answers
+      },
+      {
+        onSuccess: async () => {
+          toast.success(t("toast.success"));
+          await sleep(600);
+          router.push(`/form/${post.id}`);
+        },
+        onError: async () => {
+          await sleep(600);
+          toast.error(t("toast.error"));
+        }
+      }
+    );
   });
 
   const switchQuestionType = (
@@ -136,8 +160,15 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
     }
   };
 
-  const bannerImg = getImage({ banner: post.banner, id: post.id, type: "banner" });
-  const iconImg = getImage({ banner: post.icon, id: post.id, type: "icon" });
+  const bannerImg = useMemo(
+    () => getImage({ banner: post.banner, id: post.id, type: "banner" }),
+    [post.banner, post.id]
+  );
+
+  const iconImg = useMemo(
+    () => getImage({ banner: post.icon, id: post.id, type: "icon" }),
+    [post.icon, post.id]
+  );
 
   return (
     <>
@@ -161,7 +192,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
                 <img
                   className="h-20 w-20 rounded-full"
                   src={iconImg}
-                  alt={`${post.title}'s thumbnail`}
+                  alt={`${post.title} thumbnail`}
                 />
                 <img
                   className="h-10 w-10 rounded-full absolute bottom-0 right-0"

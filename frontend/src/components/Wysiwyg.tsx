@@ -1,18 +1,20 @@
-import React from "react";
+import React, { ChangeEventHandler, Dispatch, InputHTMLAttributes, SetStateAction } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+  MdEdit,
+  MdFormatBold,
+  MdFormatItalic,
+  MdImage,
+  MdLink,
+  MdPreview,
+  MdStrikethroughS
+} from "react-icons/md";
 import autosize from "autosize";
 import classNames from "classnames";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
-import {
-  MdFormatBold,
-  MdFormatItalic,
-  MdStrikethroughS,
-  MdLink,
-  MdImage,
-  MdEdit,
-  MdPreview
-} from "react-icons/md";
-import bbcode from "../libs/bbcode";
+
+import bbcode from "../utils/bbcode";
+import { withEvent } from "../utils/misc";
 
 const TOOLBAR_ICONS = {
   b: MdFormatBold,
@@ -43,20 +45,27 @@ function insertAtCaret(input: HTMLTextAreaElement, type: ToolbarIcon) {
 
   input.setRangeText(rangeText);
   input.focus();
-  input.dispatchEvent(new Event("input"));
+  input.dispatchEvent(new Event("input", { bubbles: true }));
 }
+
 interface IWysiwyg {
   value: string;
   placeholder: string;
-  onTextAreaChange: (text: string) => void;
+  onTextAreaChange: ChangeEventHandler<HTMLTextAreaElement> | Dispatch<SetStateAction<string>>;
   toolbarItems?: ToolbarIcon[];
+  inputProps?: InputHTMLAttributes<HTMLTextAreaElement>;
+  onBlur: React.FocusEventHandler<HTMLTextAreaElement>;
+  name: string;
 }
-function Wysiwyg({
+const Wysiwyg = ({
   value = "",
   placeholder = "Placeholder",
   onTextAreaChange,
-  toolbarItems = ["b", "i", "s", "url", "img"]
-}: IWysiwyg) {
+  toolbarItems = ["b", "i", "s", "url", "img"],
+  inputProps,
+  onBlur,
+  name
+}: IWysiwyg) => {
   const textarea = useRef<HTMLTextAreaElement>(null);
   const t = useTranslations("global.inputs.wysiwyg");
   const [preview, setPreview] = useState(bbcode(value));
@@ -71,12 +80,12 @@ function Wysiwyg({
     if (hasPreview) {
       setPreview(bbcode(value));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hasPreview]);
+  }, [hasPreview, value]);
 
   return (
-    <div className="relative overflow-clip">
+    <div className={`relative overflow-clip`}>
       <button
+        type="button"
         onClick={() => setHasPreview(!hasPreview)}
         className="button--icon mb-2"
         title={hasPreview ? t("write") : t("preview")}
@@ -88,11 +97,12 @@ function Wysiwyg({
         <textarea
           ref={textarea}
           value={value}
-          onChange={(e) => {
-            onTextAreaChange(e.target.value);
-          }}
+          onChange={withEvent(onTextAreaChange)}
           placeholder={placeholder}
-          className="w-full bg-black-lightest border-b-2 border-white pl-3 pt-2 text-2xl font-medium"
+          className={`w-full bg-black-lightest border-b-2 border-white pl-3 pt-2 text-2xl font-medium`}
+          onBlur={onBlur}
+          name={name}
+          {...inputProps}
         ></textarea>
       )) || (
         <div
@@ -118,7 +128,7 @@ function Wysiwyg({
       </div>
     </div>
   );
-}
+};
 
 interface IToolbarItem {
   type: keyof typeof TOOLBAR_ICONS;
@@ -128,7 +138,7 @@ function ToolbarItem({ type, onClick }: IToolbarItem) {
   const Icon = TOOLBAR_ICONS[type];
 
   return (
-    <button onClick={onClick} className="button--icon">
+    <button type="button" onClick={onClick} className="button--icon">
       <Icon className="w-8 h-8" />
     </button>
   );

@@ -46,7 +46,8 @@ module.exports = {
         grey: {
           dark: "#2D2D2D",
           DEFAULT: "#999999",
-          border: "rgba(255, 255, 255, 0.15)",
+          secondary: "#BABABA",
+          border: "rgba(255, 255, 255, 0.1)",
           skeleton: "rgba(255, 255, 255, 0.02)"
         },
         pink: {

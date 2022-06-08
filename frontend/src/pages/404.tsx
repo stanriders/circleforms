@@ -1,10 +1,10 @@
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { useTranslations } from "next-intl";
+
+import Button from "../components/Button";
 import Hero from "../components/Hero";
 import DefaultLayout from "../layouts";
-
-import { useTranslations } from "next-intl";
-import { useRouter } from "next/router";
-import Button from "../components/Button";
 import { Locales } from "../types/common-types";
 
 export default function Error404() {

@@ -8,9 +8,9 @@
     "options": "Options"
   },
   "inputs": {
-    "Checkbox": "Checkboxes",
-    "Freeform": "Paragraph",
-    "Choice": "Multiple choice"
+    "Checkbox": "Multiple choice",
+    "Freeform": "Text",
+    "Choice": "Single choice"
   },
   "placeholders": {
     "title": "A form title",

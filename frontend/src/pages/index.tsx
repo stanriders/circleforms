@@ -1,20 +1,21 @@
-import Head from "next/head";
-import SVG from "react-inlinesvg";
-import { useTranslations } from "next-intl";
-import type { NextPage } from "next";
-import DefaultLayout from "../layouts";
-import Button from "../components/Button";
-import Loading from "../components/Loading";
-import FormEntry from "../components/FormEntry";
-import { Locales } from "../types/common-types";
-import VisuallyHidden from "@reach/visually-hidden";
-import { useQuery } from "react-query";
-import { apiClient } from "../libs/apiClient";
-import { PostFilter } from "../../openapi";
 import React, { useRef } from "react";
+import SVG from "react-inlinesvg";
+import { useQuery } from "react-query";
+import VisuallyHidden from "@reach/visually-hidden";
+import type { NextPage } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
+import { useTranslations } from "next-intl";
 
-const Home: NextPage = () => {
+import { PostFilter } from "../../openapi";
+import Button from "../components/Button";
+import FormEntry from "../components/FormEntry";
+import Loading from "../components/Loading";
+import DefaultLayout from "../layouts";
+import { Locales } from "../types/common-types";
+import { apiClient } from "../utils/apiClient";
+
+const Index: NextPage = () => {
   const router = useRouter();
   const { isLoading, error, data } = useQuery(["posts", 1], () =>
     apiClient.pages.postsPagePageGet({ page: 1, filter: PostFilter.Active, pageSize: 4 })
@@ -124,4 +125,4 @@ export async function getStaticProps({ locale }: { locale: Locales }) {
   };
 }
 
-export default Home;
+export default Index;

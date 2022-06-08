@@ -3,9 +3,9 @@
 // ggwp
 
 import bbobHTML from "@bbob/html";
-import { createPreset } from "@bbob/preset";
 import { getUniqAttr, isStringNode, isTagNode } from "@bbob/plugin-helper";
 import TagNode from "@bbob/plugin-helper/lib/TagNode";
+import { createPreset } from "@bbob/preset";
 
 const isStartsWith = (node, type) => node[0] === type;
 

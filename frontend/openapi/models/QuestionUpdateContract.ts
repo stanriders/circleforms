@@ -1,4 +1,5 @@
 // @ts-nocheck
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -32,7 +33,7 @@ export interface QuestionUpdateContract {
      * @type {string}
      * @memberof QuestionUpdateContract
      */
-    id?: string | null;
+    questionId?: string | null;
     /**
      * 
      * @type {boolean}
@@ -81,7 +82,7 @@ export function QuestionUpdateContractFromJSONTyped(json: any, ignoreDiscriminat
     }
     return {
         
-        'id': !exists(json, 'id') ? undefined : json['id'],
+        'questionId': !exists(json, 'question_id') ? undefined : json['question_id'],
         '_delete': !exists(json, 'delete') ? undefined : json['delete'],
         'order': !exists(json, 'order') ? undefined : json['order'],
         'type': !exists(json, 'type') ? undefined : QuestionTypeFromJSON(json['type']),
@@ -100,7 +101,7 @@ export function QuestionUpdateContractToJSON(value?: QuestionUpdateContract | nu
     }
     return {
         
-        'id': value.id,
+        'question_id': value.questionId,
         'delete': value._delete,
         'order': value.order,
         'type': QuestionTypeToJSON(value.type),

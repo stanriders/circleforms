@@ -1,4 +1,3 @@
-.openapi-generator-ignore
 apis/AdminApi.ts
 apis/OAuthApi.ts
 apis/PagesApi.ts
@@ -19,12 +18,10 @@ models/OsuAnswerContract.ts
 models/PageContract.ts
 models/PostContract.ts
 models/PostFilter.ts
-models/PostUpdateContract.ts
 models/PostWithQuestionsContract.ts
 models/ProblemDetails.ts
 models/Question.ts
 models/QuestionType.ts
-models/QuestionUpdateContract.ts
 models/Submission.ts
 models/SubmissionContract.ts
 models/UserContract.ts
