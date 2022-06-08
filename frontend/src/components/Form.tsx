@@ -35,7 +35,7 @@ interface FullUserInAnswerContract extends UserInAnswerContract {
 
 export default function Form({ post, authorUser }: IFormProps) {
   const { user } = useContext(UserContext);
-  const { banner, description, icon, id, isActive, title } = post;
+  const { description, id, isActive, title } = post;
 
   const [showResponseButton, setShowResponseButton] = useState<boolean>();
 
