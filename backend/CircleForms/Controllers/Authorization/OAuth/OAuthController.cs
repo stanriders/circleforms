@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using MongoDB.Bson;
 
 namespace CircleForms.Controllers.Authorization.OAuth;
 
@@ -100,7 +99,7 @@ public class OAuthController : ControllerBase
             await _usersRepository.Create(user);
         }
 
-        user.Osu = osuUser.ToBsonDocument();
+        user.Osu = osuUser;
 
         user.Token = new TokenResponse
         {
