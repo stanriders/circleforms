@@ -27,7 +27,7 @@ public class GamemodeService : IGamemodeService
     {
         if (mode is Gamemode.None)
         {
-            return new Result<BsonDocument>(HttpStatusCode.BadRequest, "Tried fetching statistics for None gamemode!");
+            return Result<BsonDocument>.Error("Tried fetching statistics for None gamemode!");
         }
 
         var user = await _usersService.Get(userId);
@@ -43,7 +43,7 @@ public class GamemodeService : IGamemodeService
             var statisticsList = user.Osu[_statisticsKey].AsBsonDocument;
             if (statisticsList.Contains(modeName))
             {
-                return statisticsList[modeName].AsBsonDocument;
+                return new Result<BsonDocument>(statisticsList[modeName].AsBsonDocument);
             }
         }
 
@@ -54,7 +54,7 @@ public class GamemodeService : IGamemodeService
     {
         if (mode is Gamemode.None)
         {
-            return new Result<BsonDocument>(HttpStatusCode.BadRequest, "Tried updating statistics for None gamemode!");
+            return Result<BsonDocument>.Error("Tried updating statistics for None gamemode!");
         }
 
         var user = await _usersService.Get(userId);
@@ -78,12 +78,12 @@ public class GamemodeService : IGamemodeService
         var osuUserResult = await _osuApiProvider.GetUser(user.Token.AccessToken, mode);
         if (osuUserResult.IsError)
         {
-            if (osuUserResult.StatusCode is HttpStatusCode.Unauthorized)
+            if (osuUserResult.Errors.StatusCode is HttpStatusCode.Unauthorized)
             {
                 var newToken = await _osuApiProvider.RefreshToken(user.Token.RefreshToken);
                 if (newToken.IsError)
                 {
-                    return new Result<BsonDocument>(newToken.StatusCode, newToken.Errors);
+                    return Result<BsonDocument>.Error(newToken.Errors);
                 }
 
                 user.Token = newToken.Value;
@@ -91,20 +91,20 @@ public class GamemodeService : IGamemodeService
             }
         }
 
-        var statictics = osuUserResult.Value.Statistics.ToBsonDocument();
+        var statistics = osuUserResult.Value.Statistics.ToBsonDocument();
 
         var statisticsList = user.Osu[_statisticsKey].AsBsonDocument;
         if (statisticsList.Contains(modeName))
         {
-            statisticsList[modeName] = statictics;
+            statisticsList[modeName] = statistics;
         }
         else
         {
-            statisticsList.Add(modeName, statictics);
+            statisticsList.Add(modeName, statistics);
         }
 
         await _usersService.Update(user.ID, user);
 
-        return statictics;
+        return new Result<BsonDocument>(statistics);
     }
 }

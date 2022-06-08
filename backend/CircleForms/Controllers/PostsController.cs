@@ -57,14 +57,16 @@ public class PostsController : ControllerBase
     {
         var postResult = await _answer.Answer(_claim, id, answerContracts);
 
-        if (postResult.IsError && postResult.StatusCode is HttpStatusCode.Unauthorized)
+        return await postResult.MapAsync(async error =>
         {
-            _logger.LogWarning("User was not authorized to post answers to a post - probably outdated refresh token, logging them out...");
+            if (error.StatusCode is HttpStatusCode.Unauthorized)
+            {
+                _logger.LogWarning("User {UserId} was not authorized to post answers to a post {PostId} - {@ErrorData}", _claim, id, error.Errors);
+                await HttpContext.SignOutAsync("InternalCookies");
+            }
 
-            await HttpContext.SignOutAsync("InternalCookies");
-        }
-
-        return postResult.Map();
+            return error.ToActionResult();
+        }, () => Ok());
     }
 
     /// <summary>
@@ -96,7 +98,7 @@ public class PostsController : ControllerBase
 
         var result = await _posts.SaveImage(_claim, id, image, query);
 
-        return result.Map();
+        return result.Map(x => x.ToActionResult(), () => Ok());
     }
 
     /// <summary>
@@ -108,14 +110,12 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> Post(PostContract postContract)
     {
         var result = await _posts.AddPost(_claim, postContract);
-        if (!result.IsError)
+        return result.Map(ok =>
         {
-            _logger.LogInformation("User {User} posts a post {PostId}", _claim, result.Value.ID);
+            _logger.LogInformation("User {User} posts a post {PostId}", _claim, ok.ID);
 
-            return CreatedAtAction("GetDetailed", new {id = result.Value.ID}, result.Value);
-        }
-
-        return result.Unwrap();
+            return CreatedAtAction("GetDetailed", new {id = ok.ID}, ok);
+        }, error => error.ToActionResult());
     }
 
     /// <summary>
@@ -128,7 +128,7 @@ public class PostsController : ControllerBase
     {
         var result = await _publish.Unpublish(id, _claim);
 
-        return result.Unwrap();
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -141,7 +141,7 @@ public class PostsController : ControllerBase
     {
         var result = await _publish.Publish(id, _claim);
 
-        return result.Unwrap();
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -154,7 +154,7 @@ public class PostsController : ControllerBase
     {
         var result = await _posts.UpdatePost(_claim, updateContract, id);
 
-        return result.Unwrap();
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -168,7 +168,7 @@ public class PostsController : ControllerBase
     {
         var result = await _posts.GetDetailedPost(_claim, id, key);
 
-        return result.Unwrap();
+        return result.ToActionResult();
     }
 
     /// <summary>
@@ -181,18 +181,18 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> GetAnswers(string id)
     {
         var result = await _answer.GetAnswers(_claim, id);
-        if (result.IsError)
-        {
-            return result.Map();
-        }
 
-        var contract = new AnswersUsersContract
+        return await result.MapAsync<IActionResult>(async ok =>
         {
-            Answers = result.Value.Adapt<List<AnswerContract>>(),
-            Users = (await Task.WhenAll(result.Value.Select(x => x.UserRelation.ToEntityAsync()))).Adapt<List<UserInAnswerContract>>()
-        };
+            var users = await Task.WhenAll(ok.Select(x => x.UserRelation.ToEntityAsync()));
+            var contract = new AnswersUsersContract
+            {
+                Answers = ok.Adapt<List<AnswerContract>>(),
+                Users = users.Adapt<List<UserInAnswerContract>>()
+            };
 
-        return Ok(contract);
+            return Ok(contract);
+        }, error => error.ToActionResult());
     }
 
     /// <summary>

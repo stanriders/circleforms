@@ -29,13 +29,13 @@ public class PublishService : IPublishService
         var postResult = await GetAndValidate(id, claim);
         if (postResult.IsError)
         {
-            return new Result<FullPostContract>(postResult.StatusCode, postResult.Errors);
+            return Result<FullPostContract>.Error(postResult.Errors);
         }
 
         var post = postResult.Value;
         if (post.Published)
         {
-            return _mapper.Map<FullPostContract>(post);
+            return new Result<FullPostContract>(_mapper.Map<FullPostContract>(post));
         }
 
         post.Published = true;
@@ -47,7 +47,7 @@ public class PublishService : IPublishService
             _activity.EnqueueSetInactive(post.ID, post.ActiveTo);
         }
 
-        return _mapper.Map<FullPostContract>(post);
+        return new Result<FullPostContract>(_mapper.Map<FullPostContract>(post));
     }
 
     public async Task<Result<FullPostContract>> Unpublish(string id, string claim)
@@ -55,20 +55,20 @@ public class PublishService : IPublishService
         var postResult = await GetAndValidate(id, claim);
         if (postResult.IsError)
         {
-            return new Result<FullPostContract>(postResult.StatusCode, postResult.Errors);
+            return Result<FullPostContract>.Error(postResult.Errors);
         }
 
         var post = postResult.Value;
         if (!post.Published)
         {
-            return _mapper.Map<FullPostContract>(post);
+            return new Result<FullPostContract>(_mapper.Map<FullPostContract>(post));
         }
 
         post.Published = false;
         await _postRepository.Update(post);
         await _cache.Unpublish(post.ID);
 
-        return _mapper.Map<FullPostContract>(post);
+        return new Result<FullPostContract>(_mapper.Map<FullPostContract>(post));
     }
 
     private async Task<Result<Post>> GetAndValidate(string id, string claim)
@@ -79,6 +79,6 @@ public class PublishService : IPublishService
             return Result<Post>.NotFound(id);
         }
 
-        return post;
+        return new Result<Post>(post);
     }
 }

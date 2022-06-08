@@ -1,108 +1,43 @@
 ﻿using System;
-using System.Linq;
 using System.Net;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CircleForms.ModelLayer;
 
-public class Error : Result<object>
+public readonly struct ErrorData
 {
-    public Error() : base(value: null)
-    {
-    }
-
-    public Error(HttpStatusCode code) : base(code, "")
-    {
-    }
-
-    public Error(HttpStatusCode code, string message) : base(code, message)
-    {
-    }
-
-    public Error(HttpStatusCode code, ErrorData[] errors) : base(code, errors)
-    {
-    }
+    public string Source { get; init; }
+    public string Message { get; init; }
 }
 
-public class ErrorData
+public readonly struct Error
 {
-    public string Source { get; set; }
-    public string Message { get; set; }
-}
-
-public class Result<T>
-{
-    public Result(T value)
+    public Error(string message, HttpStatusCode status) : this(new []{new ErrorData {Message = message}}, status)
     {
-        Value = value;
     }
 
-    public Result(HttpStatusCode code, string message)
+    public Error(ErrorData[] errors, HttpStatusCode status)
     {
-        StatusCode = code;
-        Errors = new ErrorData[] { new() {Message = message} };
-    }
-
-    public Result(string message)
-    {
-        StatusCode = HttpStatusCode.BadRequest;
-        Errors = new ErrorData[] { new() { Message = message } };
-    }
-
-    public Result(HttpStatusCode code, ErrorData[] errors)
-    {
-        StatusCode = code;
         Errors = errors;
+        StatusCode = status;
     }
 
-    public Result(ErrorData[] errors)
+    public static Error NotFound(string id)
     {
-        StatusCode = HttpStatusCode.BadRequest;
-        Errors = errors;
+        return new Error($"Entity {id} is not found", HttpStatusCode.NotFound);
     }
 
-    public T Value { get; }
+    public static Error Forbidden()
+    {
+        return new Error("You're not allowed to access that resource", HttpStatusCode.Forbidden);
+    }
 
-    public HttpStatusCode StatusCode { get; }
     public ErrorData[] Errors { get; }
-
-    public bool IsError => Errors?.Length > 0;
-
-    public string Message => string.Join(", ", Errors.Select(x => $"{x.Source} - {x.Message}"));
-
-    public static Result<T> NotFound(string id)
+    public HttpStatusCode StatusCode { get; }
+    public IActionResult ToActionResult()
     {
-        return new Result<T>(HttpStatusCode.NotFound, $"Entity {id} is not found");
-    }
-
-    public static Result<T> Forbidden()
-    {
-        return new Result<T>(HttpStatusCode.Forbidden, "You're not allowed to access that resource");
-    }
-
-    public Error ToError()
-    {
-        return new Error(StatusCode, Errors);
-    }
-
-    public IActionResult Map()
-    {
-        return !IsError ? new OkResult() : Map(_ => _);
-    }
-
-    public IActionResult Unwrap()
-    {
-        return Map(_ => _);
-    }
-
-    public IActionResult Map<TR>(Func<T, TR> mapOk)
-    {
-        if (!IsError)
-        {
-            return new OkObjectResult(mapOk(Value));
-        }
-
-        var payload = new {errors = Errors};
+        var payload = new { errors = Errors };
 
         return StatusCode switch
         {
@@ -111,12 +46,122 @@ public class Result<T>
             HttpStatusCode.NotFound => new NotFoundObjectResult(payload),
             HttpStatusCode.Forbidden => new ForbidResult(),
             HttpStatusCode.Unauthorized => new UnauthorizedObjectResult(payload),
-            _ => new ObjectResult(payload) {StatusCode = (int) StatusCode}
+            _ => new ObjectResult(payload) { StatusCode = (int) StatusCode }
         };
     }
 
-    public static implicit operator Result<T>(T value)
+}
+
+public readonly struct Maybe<T>
+{
+    public T Value { get; private init; }
+    public bool IsSome { get; init; }
+    public bool IsNone => !IsSome;
+
+    /// <summary>
+    ///     Factory constructor <see cref="Maybe{T}.Some(T)"/> is better
+    /// </summary>
+    public Maybe(T value)
     {
-        return new Result<T>(value);
+        Value = value;
+        IsSome = true;
+    }
+    public static Maybe<T> Some(T value)
+    {
+        return new Maybe<T>
+        {
+            Value = value,
+            IsSome = true
+        };
+    }
+
+    public TR Map<TR>(Func<T, TR> some, Func<TR> none)
+    {
+        return IsSome ? some(Value) : none();
+    }
+
+    public async Task<TR> MapAsync<TR>(Func<T, Task<TR>> some, Func<TR> none)
+    {
+        return IsSome ? await some(Value) : none();
+    }
+
+    public static Maybe<T> None()
+    {
+        return new Maybe<T>
+        {
+            Value = default,
+            IsSome = false
+        };
+    }
+}
+
+public readonly struct Result<T>
+{
+    public Result(T value)
+    {
+        Value = value;
+        Errors = default;
+        IsError = false;
+    }
+
+    private Result(Error errors)
+    {
+        Errors = errors;
+        IsError = true;
+        Value = default;
+    }
+
+    public bool IsError { get; }
+    public T Value { get; }
+    public Error Errors { get; }
+
+    public static Result<T> Error(string message, HttpStatusCode status = HttpStatusCode.BadRequest)
+    {
+        return new Result<T>(new Error(message, status));
+    }
+
+    public static Result<T> Error(Error error)
+    {
+        return new Result<T>(error);
+    }
+
+    public static Result<T> Error(ErrorData[] errorData, HttpStatusCode status = HttpStatusCode.BadRequest)
+    {
+        return new Result<T>(new Error(errorData, status));
+    }
+
+    public static Result<T> NotFound(string id)
+    {
+        return new Result<T>(ModelLayer.Error.NotFound(id));
+    }
+
+    public static Result<T> Forbidden()
+    {
+        return new Result<T>(ModelLayer.Error.Forbidden());
+    }
+
+    public async Task<TR> MapAsync<TR>(Func<T, Task<TR>> ok, Func<Error, TR> error)
+    {
+        if (IsError)
+        {
+            return error(Errors);
+        }
+
+        return await ok(Value);
+    }
+
+    public TR Map<TR>(Func<T, TR> ok, Func<Error, TR> error)
+    {
+        if (IsError)
+        {
+            return error(Errors);
+        }
+
+        return ok(Value);
+    }
+
+    public IActionResult ToActionResult()
+    {
+        return Map(x => new OkObjectResult(x), error => error.ToActionResult());
     }
 }

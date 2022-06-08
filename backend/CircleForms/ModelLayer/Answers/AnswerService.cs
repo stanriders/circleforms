@@ -50,28 +50,28 @@ public class AnswerService : IAnswerService
         return new Result<List<Answer>>(await answersTask);
     }
 
-    public async Task<Error> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
+    public async Task<Maybe<Error>> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
     {
         var post = await _postRepository.Get(id);
 
         if (post is null)
         {
-            return new Error(HttpStatusCode.BadRequest, "Could not find post with this id");
+            return Maybe<Error>.Some(new Error("Could not find post with this id", HttpStatusCode.BadRequest));
         }
 
         if (!post.IsActive)
         {
-            return new Error(HttpStatusCode.BadRequest, "The post is inactive or unpublished");
+            return Maybe<Error>.Some(new Error("The post is inactive or unpublished", HttpStatusCode.BadRequest));
         }
 
         var repeatedAnswer = post.Answers.FirstOrDefault(x => x.UserRelation.ID == user);
         if (repeatedAnswer is not null && !post.AllowAnswerEdit)
         {
-            return new Error(HttpStatusCode.Conflict, "You already voted");
+            return Maybe<Error>.Some(new Error("You already voted", HttpStatusCode.Conflict));
         }
 
         var limitationsResult = await ProcessLimitations(post, user);
-        if (limitationsResult.IsError)
+        if (!limitationsResult.IsNone)
         {
             return limitationsResult;
         }
@@ -79,7 +79,7 @@ public class AnswerService : IAnswerService
         var result = await ProcessAnswer(post, answerContracts);
         if (result.IsError)
         {
-            return result.ToError();
+            return Maybe<Error>.Some(result.Errors);
         }
 
         if (repeatedAnswer is null)
@@ -92,7 +92,7 @@ public class AnswerService : IAnswerService
             await _answerRepository.Update(post.ID, repeatedAnswer.ID, result.Value, user);
         }
 
-        return new Error();
+        return Maybe<Error>.None();
     }
 
     private async Task<Result<List<Submission>>> ProcessAnswer(Post post,
@@ -106,7 +106,7 @@ public class AnswerService : IAnswerService
         {
             if (!questions.ContainsKey(answer.QuestionId))
             {
-                return new Result<List<Submission>>($"Question with id {answer.QuestionId} is not found");
+                return Result<List<Submission>>.Error($"Question with id {answer.QuestionId} is not found");
             }
 
             var question = questions[answer.QuestionId];
@@ -130,35 +130,34 @@ public class AnswerService : IAnswerService
 
         if (required.Count != 0)
         {
-            return new Result<List<Submission>>(
-                $"Following required questions are not filled: {string.Join(", ", required)}");
+            return Result<List<Submission>>.Error($"Following required questions are not filled: {string.Join(", ", required)}");
         }
 
         if (validationErrors.Count != 0)
         {
-            return new Result<List<Submission>>(validationErrors.ToArray());
+            return Result<List<Submission>>.Error(validationErrors.ToArray());
         }
 
         return new Result<List<Submission>>(answers.Adapt<List<Submission>>());
     }
 
-    private async Task<Error> ProcessLimitations(Post post, string userId)
+    private async Task<Maybe<Error>> ProcessLimitations(Post post, string userId)
     {
         var gamemode = post.Gamemode;
         if (gamemode is Gamemode.None)
         {
-            return new Error();
+            return Maybe<Error>.None();
         }
 
         var statistics = await _gamemodeService.GetOrAddStatistics(userId, gamemode);
         if (statistics.IsError)
         {
-            return new Error(statistics.StatusCode, statistics.Errors);
+            return Maybe<Error>.Some(statistics.Errors);
         }
 
         if (post.Limitations is null)
         {
-            return new Error();
+            return Maybe<Error>.None();
         }
 
         var pp = (int) Math.Round(statistics.Value["Pp"].AsDouble);
@@ -166,14 +165,14 @@ public class AnswerService : IAnswerService
 
         if (post.Limitations.Pp is not null && !pp.IsInRange(post.Limitations.Pp))
         {
-            return new Error(HttpStatusCode.Conflict, "Your pp is not in the allowed range of this post!");
+            return Maybe<Error>.Some(new Error("Your pp is not in the allowed range of this post!", HttpStatusCode.Conflict));
         }
 
         if (post.Limitations.Rank is not null && !rank.IsInRange(post.Limitations.Rank))
         {
-            return new Error(HttpStatusCode.Conflict, "Your rank is not in the allowed range of this post!");
+            return Maybe<Error>.Some(new Error("Your rank is not in the allowed range of this post!", HttpStatusCode.Conflict));
         }
 
-        return new Error();
+        return Maybe<Error>.None();
     }
 }
