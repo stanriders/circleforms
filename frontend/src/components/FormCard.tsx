@@ -25,7 +25,7 @@ const FormCard = ({ id, icon, title, published, excerpt, previewIcon }: IFormCar
         <div className="flex flex-row gap-5 items-center ">
           <img
             ref={imgRef}
-            className="object-contain h-[71px] rounded-9"
+            className="object-contain h-[70px] w-[70px] rounded-9"
             src={previewIcon ? previewSrc : iconImg}
             alt={title || ""}
             onLoad={() => URL.revokeObjectURL(imgRef.current?.src!)}

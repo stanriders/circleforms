@@ -10,14 +10,12 @@ export default function getImage({ id, type = "banner" }: ImageProps) {
   const isDev = process.env.NODE_ENV === "development";
 
   if (type === "icon") {
-    return isDev
-      ? `/images/form-entry-test-thumbnail.png`
-      : `https://assets.circleforms.net/${id}/icon.jpg`;
+    return isDev ? `/images/icon-placeholder.png` : `https://assets.circleforms.net/${id}/icon.jpg`;
   }
 
   if (type === "banner") {
     return isDev
-      ? `/images/form-entry-test.jpg`
+      ? `/images/banner-placeholder.png`
       : `https://assets.circleforms.net/${id}/banner.jpg`;
   }
 }
