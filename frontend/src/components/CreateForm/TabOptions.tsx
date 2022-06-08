@@ -176,16 +176,16 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
           flexBasis: " 750px"
         },
         header: {
-          "padding-top": "22px",
-          "padding-left": "22px"
+          paddingTop: "22px",
+          paddingLeft: "22px"
         },
         title: {
-          "font-size": "2rem"
+          fontSize: "2rem"
         },
 
         body: {
           padding: "22px",
-          "padding-top": "0px"
+          paddingTop: "0px"
         },
         close: {
           display: "none"
