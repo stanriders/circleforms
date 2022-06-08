@@ -158,6 +158,7 @@ export default function Form({ post, authorUser }: IFormProps) {
                         name={player.osu?.username as string}
                         countryRanking={country_rank}
                         discordTag={player.discord as string}
+                        osuId={player.id!}
                         ranking={global_rank}
                         onClickHandler={() => {
                           router.push(window.location.href + `/${player.id}`);
