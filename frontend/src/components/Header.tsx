@@ -100,8 +100,6 @@ export default function Header() {
           </MenuButton>
           <MenuList className="slide-down">
             {languages.map((language) => {
-              console.log(language.flag);
-
               return (
                 <MenuItem
                   className="menu-language__item group"

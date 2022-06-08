@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import { FieldError, FieldErrors, FieldValues, useForm, UseFormRegister } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { useMutation } from "react-query";
@@ -160,15 +159,9 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
     }
   };
 
-  const bannerImg = useMemo(
-    () => getImage({ banner: post.banner, id: post.id, type: "banner" }),
-    [post.banner, post.id]
-  );
+  const bannerImg = getImage({ id: post.id, type: "banner" });
 
-  const iconImg = useMemo(
-    () => getImage({ banner: post.icon, id: post.id, type: "icon" }),
-    [post.icon, post.id]
-  );
+  const iconImg = getImage({ id: post.id, type: "icon" });
 
   return (
     <>

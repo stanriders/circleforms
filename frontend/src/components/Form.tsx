@@ -55,8 +55,8 @@ export default function Form({ post, authorUser }: IFormProps) {
   const t = useTranslations();
   const router = useRouter();
 
-  const bannerImg = getImage({ id, banner, type: "banner" });
-  const iconImg = getImage({ id, icon, type: "icon" });
+  const bannerImg = getImage({ id, type: "banner" });
+  const iconImg = getImage({ id, type: "icon" });
 
   useEffect(() => {
     if (sort === "rank") {

@@ -39,7 +39,7 @@ export const useBannerPreview = (initialPostid?: string, initialBanner?: string)
     // if there is a banner src already - exit
     if (bannerSrc) return;
     // otherwise fetch image from postid and set it
-    const bannerImg = getImage({ id: initialPostid, banner: initialBanner, type: "banner" });
+    const bannerImg = getImage({ id: initialPostid, type: "banner" });
     if (bannerImg) {
       setBannerPreview(bannerImg);
     }
@@ -73,7 +73,7 @@ export const useIconPreview = (initialPostid?: string, initialIcon?: string) => 
     if (iconSrc) return;
 
     // otherwise fetch image from postid and set it
-    const iconImg = getImage({ id: initialPostid, icon: initialIcon, type: "icon" });
+    const iconImg = getImage({ id: initialPostid, type: "icon" });
     if (iconImg) {
       setIconPreview(iconImg);
     }

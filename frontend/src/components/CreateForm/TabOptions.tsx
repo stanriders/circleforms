@@ -89,8 +89,12 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
       { postid: data.id as string, data: validatedData as PostContract },
       {
         onSuccess: async () => {
-          if (data.icon) await mutateImage({ postid: data.id, file: data.icon, isIcon: true });
-          if (data.banner) await mutateImage({ postid: data.id, file: data.banner, isIcon: false });
+          if (typeof data.icon !== "string") {
+            await mutateImage({ postid: data.id, file: data.icon, isIcon: true });
+          }
+          if (typeof data.banner !== "string") {
+            await mutateImage({ postid: data.id, file: data.banner, isIcon: false });
+          }
           toast.success("Update successful");
         },
         onError: (err) => {
