@@ -13,17 +13,17 @@ const LOCALES = {
     flag: "fr",
     name: "Français",
     locale: "fr"
-  }
-  /* 'de': {
-    flag: 'de',
-    name: 'Deutsch',
-    locale: 'de',
   },
-  'ja': {
-    flag: 'jp',
-    name: '日本語',
-    locale: 'ja',
-  }, */
+  de: {
+    flag: "de",
+    name: "Deutsch",
+    locale: "de"
+  },
+  ja: {
+    flag: "jp",
+    name: "日本語",
+    locale: "ja"
+  }
 };
 
 export default LOCALES;
