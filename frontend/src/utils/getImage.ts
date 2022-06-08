@@ -5,17 +5,22 @@ interface ImageProps {
   banner?: string | null;
 }
 
-export default function getImage({ id, type = "banner" }: ImageProps) {
+export default function getImage({ id, banner, icon, type = "banner" }: ImageProps) {
   if (!id) return;
+  if (type === banner && !banner) return `/images/banner-placeholder.png`;
+  if (type === icon && !icon) return `/images/icon-placeholder.png`;
+
   const isDev = process.env.NODE_ENV === "development";
 
   if (type === "icon") {
-    return isDev ? `/images/icon-placeholder.png` : `https://assets.circleforms.net/${id}/icon.jpg`;
+    return isDev ? `/images/icon-placeholder.png` : `https://assets.circleforms.net/${id}/${icon}`;
+    // return `https://assets.circleforms.net/${id}/${icon}`;
   }
 
   if (type === "banner") {
     return isDev
       ? `/images/banner-placeholder.png`
-      : `https://assets.circleforms.net/${id}/banner.jpg`;
+      : `https://assets.circleforms.net/${id}/${banner}`;
+    // return `https://assets.circleforms.net/${id}/${banner}`;
   }
 }

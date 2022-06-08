@@ -159,9 +159,9 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
     }
   };
 
-  const bannerImg = getImage({ id: post.id, type: "banner" });
+  const bannerImg = getImage({ id: post.id, banner: post.banner, type: "banner" });
 
-  const iconImg = getImage({ id: post.id, type: "icon" });
+  const iconImg = getImage({ id: post.id, icon: post.icon, type: "icon" });
 
   return (
     <>

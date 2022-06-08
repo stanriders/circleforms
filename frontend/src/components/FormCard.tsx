@@ -9,7 +9,7 @@ interface IFormCard
   previewIcon?: string;
 }
 const FormCard = ({ id, icon, title, published, excerpt, previewIcon }: IFormCard) => {
-  const iconImg = getImage({ type: "icon", id });
+  const iconImg = getImage({ icon, type: "icon", id });
   const imgRef = useRef<HTMLImageElement>(null);
 
   const previewSrc = useMemo(() => {

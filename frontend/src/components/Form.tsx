@@ -35,7 +35,7 @@ interface FullUserInAnswerContract extends UserInAnswerContract {
 
 export default function Form({ post, authorUser }: IFormProps) {
   const { user } = useContext(UserContext);
-  const { description, id, isActive, title } = post;
+  const { description, id, isActive, title, banner, icon } = post;
 
   const [showResponseButton, setShowResponseButton] = useState<boolean>();
 
@@ -55,8 +55,8 @@ export default function Form({ post, authorUser }: IFormProps) {
   const t = useTranslations();
   const router = useRouter();
 
-  const bannerImg = getImage({ id, type: "banner" });
-  const iconImg = getImage({ id, type: "icon" });
+  const bannerImg = getImage({ id, banner, type: "banner" });
+  const iconImg = getImage({ id, icon, type: "icon" });
 
   useEffect(() => {
     if (sort === "rank") {
