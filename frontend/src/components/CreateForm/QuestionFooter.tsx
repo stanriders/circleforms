@@ -1,8 +1,14 @@
 import React, { memo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import { MdDeleteOutline, MdMoreVert } from "react-icons/md";
+import {
+  MdCheckBox,
+  MdDeleteOutline,
+  MdMoreVert,
+  MdRadioButtonChecked,
+  MdShortText} from "react-icons/md";
 import Switch from "react-switch";
 import { useTranslations } from "next-intl";
+import { QuestionType } from "openapi";
 
 import DropdownSelect from "../DropdownSelect";
 
@@ -16,13 +22,29 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
   const t = useTranslations();
   const { control } = useFormContext();
 
+  const getIconFromType = (type: QuestionType) => {
+    if (!type) return null;
+    switch (type) {
+      case "Checkbox":
+        return <MdCheckBox size={25} color="white" />;
+      case "Freeform":
+        return <MdShortText size={25} color="white" />;
+      case "Choice":
+        return <MdRadioButtonChecked size={25} color="white" />;
+      default:
+        console.error(`icon for type ${type} not found`);
+        return null;
+    }
+  };
+
   return (
-    <div className="flex justify-between border-t-2 border-white border-opacity-5 pt-4 mt-14">
+    <div className="flex justify-between border-t-2 border-white border-opacity-5 pt-4 mt-auto">
       <Controller
         name={`questions.${nestIndex}.type`}
         control={control}
         render={({ field }) => (
           <DropdownSelect
+            icon={getIconFromType(field.value)}
             aria-label="Select question type"
             value={field.value || QUESTIONS_TYPES[0]}
             onChange={field.onChange}

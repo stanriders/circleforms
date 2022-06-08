@@ -42,7 +42,7 @@ const QuestionFieldArray = () => {
         <ul className="flex flex-col gap-6">
           {fields.map((item, index) => (
             <li key={item.id}>
-              <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14 relative overflow-clip">
+              <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14 relative overflow-clip min-h-[360px]">
                 <div className="absolute left-0 top-0 bg-pink h-full w-2" />
                 {/* wysiwyg acts as input for question title */}
                 <div>
