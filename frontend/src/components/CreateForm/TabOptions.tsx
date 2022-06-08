@@ -67,14 +67,27 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
     await submitPost(validatedData, {
       onSuccess: async (submitData) => {
         toast.success(t("toast.success"));
-        if (data.icon) await mutateImage({ postid: submitData.id!, file: data.icon, isIcon: true });
-        if (data.banner)
-          await mutateImage({ postid: submitData.id!, file: data.banner, isIcon: false });
+        if (data.icon) {
+          try {
+            await mutateImage({ postid: submitData.id!, file: data.icon, isIcon: true });
+          } catch (err) {
+            toast.error("There was an error uploading your icon image");
+            await sleep(500);
+          }
+        }
+        if (data.banner) {
+          try {
+            await mutateImage({ postid: submitData.id!, file: data.banner, isIcon: false });
+          } catch (err) {
+            toast.error("There was an error uploading your banner image");
+            await sleep(500);
+          }
+        }
         await sleep(600);
         router.push("/dashboard");
-        setIsLoading(false);
       },
-      onError: () => {
+
+      onSettled: () => {
         setIsLoading(false);
       }
     });
@@ -90,10 +103,20 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
       {
         onSuccess: async () => {
           if (typeof data.icon !== "string") {
-            await mutateImage({ postid: data.id, file: data.icon, isIcon: true });
+            try {
+              await mutateImage({ postid: data.id, file: data.icon, isIcon: true });
+            } catch (err) {
+              toast.error("There was an error uploading your icon image");
+              await sleep(500);
+            }
           }
           if (typeof data.banner !== "string") {
-            await mutateImage({ postid: data.id, file: data.banner, isIcon: false });
+            try {
+              await mutateImage({ postid: data.id, file: data.banner, isIcon: false });
+            } catch (err) {
+              toast.error("There was an error uploading your banner image");
+              await sleep(500);
+            }
           }
           toast.success("Update successful");
         },
