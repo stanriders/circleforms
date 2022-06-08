@@ -35,7 +35,7 @@ interface FullUserInAnswerContract extends UserInAnswerContract {
 
 export default function Form({ post, authorUser }: IFormProps) {
   const { user } = useContext(UserContext);
-  const { banner, description, icon, id, isActive, title } = post;
+  const { description, id, isActive, title } = post;
 
   const [showResponseButton, setShowResponseButton] = useState<boolean>();
 
@@ -55,8 +55,8 @@ export default function Form({ post, authorUser }: IFormProps) {
   const t = useTranslations();
   const router = useRouter();
 
-  const bannerImg = getImage({ id, banner, type: "banner" });
-  const iconImg = getImage({ id, icon, type: "icon" });
+  const bannerImg = getImage({ id, type: "banner" });
+  const iconImg = getImage({ id, type: "icon" });
 
   useEffect(() => {
     if (sort === "rank") {
@@ -158,6 +158,7 @@ export default function Form({ post, authorUser }: IFormProps) {
                         name={player.osu?.username as string}
                         countryRanking={country_rank}
                         discordTag={player.discord as string}
+                        osuId={player.id!}
                         ranking={global_rank}
                         onClickHandler={() => {
                           router.push(window.location.href + `/${player.id}`);

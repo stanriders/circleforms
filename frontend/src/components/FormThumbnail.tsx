@@ -4,7 +4,7 @@ import { PostWithQuestionsContract } from "../../openapi";
 import getImage from "../utils/getImage";
 
 export default function FormThumbnail({ id, icon, title }: PostWithQuestionsContract) {
-  const iconImg = getImage({ icon, id, type: "icon" });
+  const iconImg = getImage({ id, type: "icon" });
 
   return (
     <Link href={`/form/${id}`}>

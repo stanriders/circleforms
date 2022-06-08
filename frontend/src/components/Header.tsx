@@ -99,19 +99,24 @@ export default function Header() {
             </div>
           </MenuButton>
           <MenuList className="slide-down">
-            {languages.map((language) => (
-              <MenuItem
-                className="menu-language__item group"
-                key={language.locale}
-                onSelect={() => changeLocale(language.locale as Locales)}
-              >
-                <div
-                  className={classNames("pill", language.locale === router.locale ? "active" : "")}
-                />
-                <Flag flag={language.flag} />
-                <span className="ml-3">{language.name}</span>
-              </MenuItem>
-            ))}
+            {languages.map((language) => {
+              return (
+                <MenuItem
+                  className="menu-language__item group"
+                  key={language.locale}
+                  onSelect={() => changeLocale(language.locale as Locales)}
+                >
+                  <div
+                    className={classNames(
+                      "pill",
+                      language.locale === router.locale ? "active" : ""
+                    )}
+                  />
+                  <Flag locale={language.locale as Locales} />
+                  <span className="ml-3">{language.name}</span>
+                </MenuItem>
+              );
+            })}
           </MenuList>
         </Menu>
       </div>

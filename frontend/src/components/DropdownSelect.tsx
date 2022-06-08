@@ -1,4 +1,5 @@
 import React from "react";
+import { MdArrowDropDown } from "react-icons/md";
 import { Select, SelectProps } from "@mantine/core";
 
 const DropdownSelect = React.forwardRef<HTMLInputElement, SelectProps>((props, ref) => {
@@ -7,11 +8,13 @@ const DropdownSelect = React.forwardRef<HTMLInputElement, SelectProps>((props, r
       ref={ref}
       radius={"lg"}
       size={"md"}
+      rightSection={<MdArrowDropDown size={30} />}
+      maxDropdownHeight={600}
       styles={{
         root: { color: "#eee", maxWidth: "fit-content", width: "fit-content" },
 
         dropdown: { backgroundColor: "black", color: "#eeeeee" },
-        item: { backgroundColor: "black", color: "#eeeeee", fontSize: "1.5rem" },
+        item: { backgroundColor: "black", color: "#eeeeee", fontSize: "1rem" },
         input: {
           backgroundColor: "#1a1a1a",
           color: "#eeeeee",

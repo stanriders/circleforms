@@ -22,8 +22,8 @@ export default function FormEntry({
   isPreview
 }: IFormEntry) {
   const bannerImg = useMemo(() => {
-    return getImage({ banner, id, type: "banner" });
-  }, [banner, id]);
+    return getImage({ id, type: "banner" });
+  }, [id]);
 
   useEffect(() => {
     return () => {
