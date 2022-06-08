@@ -1,11 +1,7 @@
 import React, { memo } from "react";
 import { Controller, useFormContext } from "react-hook-form";
-import {
-  MdCheckBox,
-  MdDeleteOutline,
-  MdMoreVert,
-  MdRadioButtonChecked,
-  MdShortText} from "react-icons/md";
+import { GrTextAlignFull } from "react-icons/gr";
+import { MdCheckBox, MdDeleteOutline, MdMoreVert, MdRadioButtonChecked } from "react-icons/md";
 import Switch from "react-switch";
 import { useTranslations } from "next-intl";
 import { QuestionType } from "openapi";
@@ -28,7 +24,7 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
       case "Checkbox":
         return <MdCheckBox size={25} color="white" />;
       case "Freeform":
-        return <MdShortText size={25} color="white" />;
+        return <GrTextAlignFull size={20} color="white" />;
       case "Choice":
         return <MdRadioButtonChecked size={25} color="white" />;
       default:
