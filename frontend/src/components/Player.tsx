@@ -7,6 +7,7 @@ export interface IPlayerProps {
   discordTag: string;
   onClickHandler: () => void;
   osuId: string;
+  country: string;
 }
 
 export default function Player({
@@ -15,7 +16,8 @@ export default function Player({
   countryRanking,
   discordTag = "",
   onClickHandler,
-  osuId
+  osuId,
+  country
 }: IPlayerProps) {
   const t = useTranslations("Player");
 
@@ -30,7 +32,7 @@ export default function Player({
           src={`http://s.ppy.sh/a/${osuId}`}
           alt="{player name}'s avatar"
         />
-        <span className="fi fi-pe"></span>
+        <span className={`fi fi-${country.toLowerCase()}`}></span>
         <span className="text-2xl font-bold">{name}</span>
       </div>
 
