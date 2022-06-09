@@ -20,7 +20,7 @@ import getImage from "../utils/getImage";
 import CheckboxQuestion from "./Questions/CheckboxQuestion";
 import ChoiceRadioQuestion from "./Questions/ChoiceRadioQuestion";
 import FreeformInputQuestion from "./Questions/FreeformInputQuestion";
-import Tag from "./Tag";
+import FormHeader from "./FormHeader";
 
 type FormData = {
   [key: string]: string | string[] | undefined;
@@ -177,37 +177,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
             `
           }}
         />
-        {/* form header */}
-        <div className="bg-black-dark2 p-16 relative rounded-b-70">
-          <div className="absolute top-0 left-16 right-16 flex items-start justify-between">
-            <div className="flex items-center gap-x-3">
-              <div className="relative shrink-0 min-w-fit">
-                <img
-                  className="h-20 w-20 rounded-full"
-                  src={iconImg}
-                  alt={`${post.title} thumbnail`}
-                />
-                <img
-                  className="h-10 w-10 rounded-full absolute bottom-0 right-0"
-                  src={authorUser?.osu?.avatar_url}
-                  alt={`${authorUser.osu?.username}'s avatar`}
-                />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold">{post.title}</h1>
-                <p className="text-white text-opacity-50 text-2xl">
-                  {post.answerCount ?? post.answerCount} {t("answersCount")}
-                </p>
-              </div>
-            </div>
-            <div className="p-4 pr-0 mt-[-6px]">
-              <Tag
-                label={post.isActive ? t("active") : t("inactive")}
-                theme={post.isActive ? "success" : "stale"}
-              />
-            </div>
-          </div>
-        </div>
+        <FormHeader post={post} authorUser={authorUser} iconImg={iconImg || ""} />
         {/* questions */}
         <form onSubmit={onSubmit} className="flex flex-col gap-6 p-16 pt-12">
           {post.questions?.map((question) => switchQuestionType(question, register, errors))}
