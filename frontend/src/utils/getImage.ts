@@ -5,10 +5,10 @@ interface ImageProps {
   banner?: string | null;
 }
 
-export default function getImage({ id, banner, icon, type = "banner" }: ImageProps) {
+export default function getImage({ id, banner, icon, type }: ImageProps) {
   if (!id) return;
-  if (type === banner && !banner) return `/images/banner-placeholder.png`;
-  if (type === icon && !icon) return `/images/icon-placeholder.png`;
+  if (type === "banner" && !banner) return `/images/banner-placeholder.png`;
+  if (type === "icon" && !icon) return `/images/icon-placeholder.png`;
 
   const isDev = process.env.NODE_ENV === "development";
 
