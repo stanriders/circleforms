@@ -11,7 +11,7 @@ public interface IPostRepository
     Task<Post> Add(string userId, Post post);
     Task<List<Post>> Get();
     Task<Post> Get(string postId);
-    public Task<List<Post>> Get(List<string> posts);
+    Task<List<Post>> Get(List<string> posts);
     Task<Post> Get(string postId, Expression<Func<Post, Post>> projection);
     Task Update(Post post);
 }
