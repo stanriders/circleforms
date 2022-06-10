@@ -40,6 +40,11 @@ public class RedisCacheRepository : ICacheRepository
         await _redis.StringIncrementAsync(id.ToPostAnswersCount());
     }
 
+    public async Task DecrementAnswers(string id)
+    {
+        await _redis.StringDecrementAsync(id.ToPostAnswersCount());
+    }
+
     public async Task<bool> PinPost(string id)
     {
         var key = id.ToPostId();

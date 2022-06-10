@@ -196,6 +196,21 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
+    ///     Delete user's answer from a post
+    /// </summary>
+    [Authorize]
+    [HttpDelete(ApiEndpoints.PostsAnswer)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteAnswer(string id)
+    {
+        var result = await _answer.DeleteAnswer(_claim, id);
+
+        return result.Map(error => error.ToActionResult(), Ok);
+    }
+
+    /// <summary>
     ///     Get IDs of all published posts
     /// </summary>
     [HttpGet(ApiEndpoints.PostsPublishedIds)]

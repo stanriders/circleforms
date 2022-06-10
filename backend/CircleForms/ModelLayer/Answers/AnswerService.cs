@@ -11,6 +11,7 @@ using CircleForms.Database.Models.Posts.Questions.Submissions;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.Database.Services.Extensions;
 using Mapster;
+using MongoDB.Entities;
 
 namespace CircleForms.ModelLayer.Answers;
 
@@ -48,6 +49,25 @@ public class AnswerService : IAnswerService
         }
 
         return new Result<List<Answer>>(await answersTask);
+    }
+
+    public async Task<Maybe<Error>> DeleteAnswer(string claim, string postId)
+    {
+        var post = await _postRepository.Get(postId);
+        if (!post.AllowAnswerEdit)
+        {
+            return Maybe<Error>.Some(new Error("You can't delete your answer", HttpStatusCode.Forbidden));
+        }
+
+        var answer = post.Answers.FirstOrDefault(x => x.UserRelation.ID == claim);
+        if (answer is null)
+        {
+            return Maybe<Error>.Some(new Error($"Answer for user {claim} is not found", HttpStatusCode.NotFound));
+        }
+
+        await _cache.DecrementAnswers(postId);
+        await answer.DeleteAsync();
+        return Maybe<Error>.None();
     }
 
     public async Task<Maybe<Error>> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)

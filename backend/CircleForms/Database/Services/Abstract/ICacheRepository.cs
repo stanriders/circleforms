@@ -8,6 +8,7 @@ namespace CircleForms.Database.Services.Abstract;
 public interface ICacheRepository
 {
     Task IncrementAnswers(string id);
+    Task DecrementAnswers(string id);
     Task<bool> PinPost(string id);
     Task<PostRedis> Publish(Post post);
     Task Unpublish(string id);
