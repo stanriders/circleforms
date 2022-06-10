@@ -18,7 +18,11 @@ const FormHeader = ({ iconImg, post, authorUser }: IFormHeader) => {
       <div className="absolute top-0 left-16 right-16 flex items-start justify-between">
         <div className="flex items-center gap-x-3">
           <div className="relative shrink-0 min-w-fit">
-            <img className="h-20 w-20 rounded-full" src={iconImg} alt={`${post.title} thumbnail`} />
+            <img
+              className="h-20 w-20 rounded-full object-cover"
+              src={iconImg}
+              alt={`${post.title} thumbnail`}
+            />
             <img
               className="h-10 w-10 rounded-full absolute bottom-0 right-0"
               src={authorUser?.osu?.avatar_url}
