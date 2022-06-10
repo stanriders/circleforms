@@ -1,7 +1,5 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Threading.Tasks;
-using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.ExternalAPI.OsuApi.Configurations;
 using CircleForms.ExternalAPI.OsuApi.Contracts;
 using CircleForms.ModelLayer;
@@ -23,8 +21,8 @@ public class OsuApiProvider : IOsuApiProvider
         .UseNewtonsoftJson();
 
     private readonly OsuApiConfig _config;
-    private readonly IMapper _mapper;
     private readonly ILogger<OsuApiProvider> _logger;
+    private readonly IMapper _mapper;
 
     public OsuApiProvider(IOptions<OsuApiConfig> config, IMapper mapper, ILogger<OsuApiProvider> logger)
     {

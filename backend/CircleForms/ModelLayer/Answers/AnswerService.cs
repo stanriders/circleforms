@@ -17,12 +17,13 @@ namespace CircleForms.ModelLayer.Answers;
 
 public class AnswerService : IAnswerService
 {
+    private readonly IAnswerRepository _answerRepository;
     private readonly ICacheRepository _cache;
     private readonly IGamemodeService _gamemodeService;
     private readonly IPostRepository _postRepository;
-    private readonly IAnswerRepository _answerRepository;
 
-    public AnswerService(IPostRepository postRepository, IAnswerRepository answerRepository, ICacheRepository cache, IGamemodeService gamemodeService)
+    public AnswerService(IPostRepository postRepository, IAnswerRepository answerRepository, ICacheRepository cache,
+        IGamemodeService gamemodeService)
     {
         _postRepository = postRepository;
         _answerRepository = answerRepository;
@@ -67,6 +68,7 @@ public class AnswerService : IAnswerService
 
         await _cache.DecrementAnswers(postId);
         await answer.DeleteAsync();
+
         return Maybe<Error>.None();
     }
 
@@ -150,7 +152,8 @@ public class AnswerService : IAnswerService
 
         if (required.Count != 0)
         {
-            return Result<List<Submission>>.Error($"Following required questions are not filled: {string.Join(", ", required)}");
+            return Result<List<Submission>>.Error(
+                $"Following required questions are not filled: {string.Join(", ", required)}");
         }
 
         if (validationErrors.Count != 0)
@@ -185,12 +188,14 @@ public class AnswerService : IAnswerService
 
         if (post.Limitations.Pp is not null && !pp.IsInRange(post.Limitations.Pp))
         {
-            return Maybe<Error>.Some(new Error("Your pp is not in the allowed range of this post!", HttpStatusCode.Conflict));
+            return Maybe<Error>.Some(new Error("Your pp is not in the allowed range of this post!",
+                HttpStatusCode.Conflict));
         }
 
         if (post.Limitations.Rank is not null && !rank.IsInRange(post.Limitations.Rank))
         {
-            return Maybe<Error>.Some(new Error("Your rank is not in the allowed range of this post!", HttpStatusCode.Conflict));
+            return Maybe<Error>.Some(new Error("Your rank is not in the allowed range of this post!",
+                HttpStatusCode.Conflict));
         }
 
         return Maybe<Error>.None();

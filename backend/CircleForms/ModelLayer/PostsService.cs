@@ -178,13 +178,13 @@ public class PostsService
             return new Result<object>(_mapper.Map<FullPostContract>(post));
         }
 
-        if (!post.Published || post.Accessibility == Accessibility.Link && key != post.AccessKey)
+        if (!post.Published || (post.Accessibility == Accessibility.Link && key != post.AccessKey))
         {
             return Result<object>.NotFound(id);
         }
 
         var response = _mapper.Map<PostWithQuestionsContract>(post);
-        var answer =  await post.Answers
+        var answer = await post.Answers
             .ChildrenFluent()
             .Match(x => x.UserRelation.ID == claim)
             .FirstOrDefaultAsync();
@@ -305,6 +305,4 @@ public class PostsService
 
         return posts;
     }
-
-
 }

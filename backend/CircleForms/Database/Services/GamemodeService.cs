@@ -10,8 +10,8 @@ namespace CircleForms.Database.Services;
 
 public class GamemodeService : IGamemodeService
 {
-    private readonly IUserRepository _usersService;
     private readonly IOsuApiProvider _osuApiProvider;
+    private readonly IUserRepository _usersService;
 
     public GamemodeService(IUserRepository usersService, IOsuApiProvider osuApiProvider)
     {

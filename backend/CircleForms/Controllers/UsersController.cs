@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Contracts.ContractModels.Response.Users;
-using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Services.Abstract;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
@@ -105,7 +104,7 @@ public class UsersController : ControllerBase
         var user = await _usersService.Get(_claim);
         var answers = await user.Answers.ChildrenFluent().ToListAsync();
 
-        return Ok(answers.Select(x => new {id = x.ID, post = x.PostRelation.ID, submissions = x.Submissions}));
+        return Ok(answers.Select(x => new { id = x.ID, post = x.PostRelation.ID, submissions = x.Submissions }));
     }
 
     /// <summary>

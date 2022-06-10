@@ -13,7 +13,7 @@ public readonly struct ErrorData
 
 public readonly struct Error
 {
-    public Error(string message, HttpStatusCode status) : this(new []{new ErrorData {Message = message}}, status)
+    public Error(string message, HttpStatusCode status) : this(new[] { new ErrorData { Message = message } }, status)
     {
     }
 
@@ -35,6 +35,7 @@ public readonly struct Error
 
     public ErrorData[] Errors { get; }
     public HttpStatusCode StatusCode { get; }
+
     public IActionResult ToActionResult()
     {
         var payload = new { errors = Errors };
@@ -49,7 +50,6 @@ public readonly struct Error
             _ => new ObjectResult(payload) { StatusCode = (int) StatusCode }
         };
     }
-
 }
 
 public readonly struct Maybe<T>
@@ -59,13 +59,14 @@ public readonly struct Maybe<T>
     public bool IsNone => !IsSome;
 
     /// <summary>
-    ///     Factory constructor <see cref="Maybe{T}.Some(T)"/> is better
+    ///     Factory constructor <see cref="Maybe{T}.Some(T)" /> is better
     /// </summary>
     public Maybe(T value)
     {
         Value = value;
         IsSome = true;
     }
+
     public static Maybe<T> Some(T value)
     {
         return new Maybe<T>

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Users;
 
