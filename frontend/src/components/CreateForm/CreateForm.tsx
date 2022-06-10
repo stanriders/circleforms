@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Toaster } from "react-hot-toast";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@reach/tabs";
 import Head from "next/head";
@@ -21,15 +21,23 @@ const CreateForm = ({ post }: ICreateForm) => {
   const t = useTranslations();
   const { data, setValues } = useFormData();
 
-  const convertedQuestions = post?.questions?.map((val) => {
-    const formattedQuestions = val.questionInfo?.map((str) => ({ value: str }));
-    return { ...val, questionInfo: formattedQuestions };
-  });
+  const convertedQuestions = useMemo(
+    () =>
+      post?.questions?.map((val) => {
+        const formattedQuestions = val.questionInfo?.map((str) => ({ value: str }));
+        return { ...val, questionInfo: formattedQuestions };
+      }),
+    [post]
+  );
 
+  // set form data for editing
   useEffect(() => {
     // @ts-ignore
     if (!isEmpty(post) && isEmpty(data)) {
-      setValues({ ...post, questions: { questions: convertedQuestions } });
+      setValues({
+        ...post,
+        questions: { questions: convertedQuestions }
+      });
     }
   }, [post, setValues, data, convertedQuestions]);
 
