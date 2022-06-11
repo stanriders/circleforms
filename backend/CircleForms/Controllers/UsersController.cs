@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
+using CircleForms.Contracts.ContractModels.Response.Compound;
 using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Contracts.ContractModels.Response.Users;
 using CircleForms.Database.Services.Abstract;
@@ -103,18 +104,21 @@ public class UsersController : ControllerBase
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMeAnswers)]
     [ProducesResponseType(typeof(List<PostWithQuestionsContract>), StatusCodes.Status200OK)]
-    public async Task<List<PostWithQuestionsContract>> GetMeAnswers()
+    public async Task<List<AnswerPostWithQuestionsContract>> GetMeAnswers()
     {
         var user = await _usersService.Get(_claim);
         var answers = await user.Answers.ChildrenFluent().ToListAsync();
 
         var posts = await _posts.Get(answers.Select(x => x.PostRelation.ID).ToList());
-        foreach (var post in posts)
-        {
-            post.Answer = answers.FirstOrDefault(x => x.PostRelation.ID == post.ID)?.Submissions;
-        }
+        var result = posts.Select(post =>
+            new AnswerPostWithQuestionsContract
+            {
+                Answer = answers.FirstOrDefault(x => x.PostRelation.ID == post.ID)?.Submissions,
+                Post = post
+            }
+        );
 
-        return posts;
+        return result.ToList();
     }
 
     /// <summary>

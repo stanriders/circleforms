@@ -12,7 +12,4 @@ public class PostWithQuestionsContract : MinimalPostContract
 
     [JsonProperty("questions")]
     public List<Question> Questions { get; set; }
-
-    [JsonProperty("answer")]
-    public List<Submission> Answer { get; set; }
 }

@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using CircleForms.Contracts.ContractModels.Request;
+using CircleForms.Contracts.ContractModels.Response.Compound;
 using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Database.Models.Posts;
 using CircleForms.Database.Models.Posts.Enums;
@@ -149,7 +150,7 @@ public class PostsService
         return new Result<PostRedis>(post);
     }
 
-    //Produces: PostDetailedResponseContract | PostResponseContract
+    //Produces: AnswerPostWithQuestionsContract | AnswersFullPostContract
     public async Task<Result<object>> GetDetailedPost(string claim, string id, string key)
     {
         var cachedResult = await GetCachedPostPrivate(id);
@@ -165,7 +166,11 @@ public class PostsService
             var contract = _mapper.Map<PostWithQuestionsContract>(cached);
             contract.AnswerCount = await _cache.GetAnswerCount(cached.ID);
 
-            return new Result<object>(contract);
+            return new Result<object>(new AnswerPostWithQuestionsContract
+            {
+                Answer = null,
+                Post = contract
+            });
         }
 
         var post = await _postRepository.Get(id);
@@ -174,9 +179,18 @@ public class PostsService
             return Result<object>.NotFound(id);
         }
 
+        var answer =  await post.Answers
+                    .ChildrenFluent()
+                    .Match(x => x.UserRelation.ID == claim)
+                    .FirstOrDefaultAsync();
+
         if (post.AuthorId == claim)
         {
-            return new Result<object>(_mapper.Map<FullPostContract>(post));
+            return new Result<object>(new AnswerFullPostContract
+            {
+                Answer = answer.Submissions,
+                Post = _mapper.Map<FullPostContract>(post)
+            });
         }
 
         if (!post.Published || post.Accessibility == Accessibility.Link && key != post.AccessKey)
@@ -184,13 +198,11 @@ public class PostsService
             return Result<object>.NotFound(id);
         }
 
-        var response = _mapper.Map<PostWithQuestionsContract>(post);
-        var answer =  await post.Answers
-            .ChildrenFluent()
-            .Match(x => x.UserRelation.ID == claim)
-            .FirstOrDefaultAsync();
-
-        response.Answer = answer?.Submissions;
+        var response = new AnswerPostWithQuestionsContract
+        {
+            Answer = answer.Submissions,
+            Post = _mapper.Map<PostWithQuestionsContract>(post)
+        };
 
         return new Result<object>(response);
     }
