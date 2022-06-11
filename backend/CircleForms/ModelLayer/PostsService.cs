@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using MongoDB.Entities;
 
 namespace CircleForms.ModelLayer;
 
@@ -314,4 +315,20 @@ public class PostsService
     }
 
 
+    public async Task<Maybe<Error>> DeletePost(string claim, string id)
+    {
+        var post = await _postRepository.Get(id);
+        if (claim != post.AuthorId)
+        {
+            return Maybe<Error>.Some(Error.Forbidden());
+        }
+
+        if (post.Published)
+        {
+            return Maybe<Error>.Some(new Error("You can't delete published post", HttpStatusCode.BadRequest));
+        }
+
+        await post.DeleteAsync();
+        return Maybe<Error>.None();
+    }
 }
