@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.ExternalAPI.OsuApi.Contracts;
 using CircleForms.ModelLayer;
 

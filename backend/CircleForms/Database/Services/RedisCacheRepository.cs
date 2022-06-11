@@ -23,7 +23,7 @@ public class RedisCacheRepository : ICacheRepository
 
     private readonly ILogger<RedisCacheRepository> _logger;
     private readonly IMapper _mapper;
-    private readonly string[] _postOccupation = {_postsSet, _activeSet, _pinnedSet, _inactiveSet};
+    private readonly string[] _postOccupation = { _postsSet, _activeSet, _pinnedSet, _inactiveSet };
     private readonly IDatabase _redis;
     private readonly IConnectionMultiplexer _redisMultiplexer;
 
@@ -38,6 +38,11 @@ public class RedisCacheRepository : ICacheRepository
     public async Task IncrementAnswers(string id)
     {
         await _redis.StringIncrementAsync(id.ToPostAnswersCount());
+    }
+
+    public async Task DecrementAnswers(string id)
+    {
+        await _redis.StringDecrementAsync(id.ToPostAnswersCount());
     }
 
     public async Task<bool> PinPost(string id)
@@ -202,6 +207,7 @@ public class RedisCacheRepository : ICacheRepository
         transaction.AddCondition(Condition.SortedSetContains(_activeSet, postId));
         transaction.SortedSetRemoveAsync(_activeSet, postId);
         transaction.SortedSetAddAsync(_inactiveSet, postId, score.Value);
+
         return transaction.Execute();
     }
 

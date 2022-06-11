@@ -11,8 +11,8 @@ namespace CircleForms.ModelLayer.Publish;
 
 public class PublishService : IPublishService
 {
-    private readonly ICacheRepository _cache;
     private readonly IActivityJob _activity;
+    private readonly ICacheRepository _cache;
     private readonly IMapper _mapper;
     private readonly IPostRepository _postRepository;
 

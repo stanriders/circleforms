@@ -7,8 +7,8 @@ namespace CircleForms.Hangfire;
 
 public class ActivityJob : IActivityJob
 {
-    private readonly IBackgroundJobClient _client;
     private readonly ICacheRepository _cache;
+    private readonly IBackgroundJobClient _client;
 
     public ActivityJob(IBackgroundJobClient client, ICacheRepository cache)
     {

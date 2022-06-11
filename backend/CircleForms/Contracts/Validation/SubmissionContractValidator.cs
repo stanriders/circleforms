@@ -13,7 +13,7 @@ public class SubmissionContractValidator : AbstractValidator<(Question Question,
         {
             RuleFor(x => x.Contract.Answers)
                 .NotEmpty()
-                .Must(x=> x.Length == 1)
+                .Must(x => x.Length == 1)
                 .WithMessage("There can't be more than one answer for a Freeform question");
         });
 

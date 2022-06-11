@@ -27,7 +27,7 @@ namespace CircleForms.Controllers;
 [Route("posts")]
 public class PostsController : ControllerBase
 {
-    private static readonly string[] _imageUploadExtensions = {".jpg", ".png", ".jpeg"};
+    private static readonly string[] _imageUploadExtensions = { ".jpg", ".png", ".jpeg" };
     private readonly IAnswerService _answer;
     private readonly ILogger<PostsController> _logger;
     private readonly PostsService _posts;
@@ -61,7 +61,8 @@ public class PostsController : ControllerBase
         {
             if (error.StatusCode is HttpStatusCode.Unauthorized)
             {
-                _logger.LogWarning("User {UserId} was not authorized to post answers to a post {PostId} - {@ErrorData}", _claim, id, error.Errors);
+                _logger.LogWarning("User {UserId} was not authorized to post answers to a post {PostId} - {@ErrorData}",
+                    _claim, id, error.Errors);
                 await HttpContext.SignOutAsync("InternalCookies");
             }
 
@@ -110,11 +111,12 @@ public class PostsController : ControllerBase
     public async Task<IActionResult> Post(PostContract postContract)
     {
         var result = await _posts.AddPost(_claim, postContract);
+
         return result.Map(ok =>
         {
             _logger.LogInformation("User {User} posts a post {PostId}", _claim, ok.ID);
 
-            return CreatedAtAction("GetDetailed", new {id = ok.ID}, ok);
+            return CreatedAtAction("GetDetailed", new { id = ok.ID }, ok);
         }, error => error.ToActionResult());
     }
 
@@ -206,6 +208,21 @@ public class PostsController : ControllerBase
 
             return Ok(contract);
         }, error => error.ToActionResult());
+    }
+
+    /// <summary>
+    ///     Delete user's answer from a post
+    /// </summary>
+    [Authorize]
+    [HttpDelete(ApiEndpoints.PostsAnswer)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteAnswer(string id)
+    {
+        var result = await _answer.DeleteAnswer(_claim, id);
+
+        return result.Map(error => error.ToActionResult(), Ok);
     }
 
     /// <summary>

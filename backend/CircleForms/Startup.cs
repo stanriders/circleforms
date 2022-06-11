@@ -169,13 +169,14 @@ public class Startup
 
             var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-            
+
             c.OperationFilter<AppendAuthorizeToSummaryOperationFilter>();
             c.OperationFilter<SecurityRequirementsOperationFilter>();
 
             c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
             {
-                Description = "Main authorization cookie. Get by going to .../OAuth/auth and completing authorization using you osu! account.",
+                Description =
+                    "Main authorization cookie. Get by going to .../OAuth/auth and completing authorization using you osu! account.",
                 In = ParameterLocation.Cookie,
                 Name = ".AspNetCore.InternalCookies",
                 Type = SecuritySchemeType.ApiKey

@@ -193,7 +193,7 @@ public class PostsService
             });
         }
 
-        if (!post.Published || post.Accessibility == Accessibility.Link && key != post.AccessKey)
+        if (!post.Published || (post.Accessibility == Accessibility.Link && key != post.AccessKey))
         {
             return Result<object>.NotFound(id);
         }
@@ -325,7 +325,6 @@ public class PostsService
 
         return posts;
     }
-
 
     public async Task<Maybe<Error>> DeletePost(string claim, string id)
     {

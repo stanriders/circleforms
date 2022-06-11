@@ -11,17 +11,19 @@ using CircleForms.Database.Models.Posts.Questions.Submissions;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.Database.Services.Extensions;
 using Mapster;
+using MongoDB.Entities;
 
 namespace CircleForms.ModelLayer.Answers;
 
 public class AnswerService : IAnswerService
 {
+    private readonly IAnswerRepository _answerRepository;
     private readonly ICacheRepository _cache;
     private readonly IGamemodeService _gamemodeService;
     private readonly IPostRepository _postRepository;
-    private readonly IAnswerRepository _answerRepository;
 
-    public AnswerService(IPostRepository postRepository, IAnswerRepository answerRepository, ICacheRepository cache, IGamemodeService gamemodeService)
+    public AnswerService(IPostRepository postRepository, IAnswerRepository answerRepository, ICacheRepository cache,
+        IGamemodeService gamemodeService)
     {
         _postRepository = postRepository;
         _answerRepository = answerRepository;
@@ -48,6 +50,26 @@ public class AnswerService : IAnswerService
         }
 
         return new Result<List<Answer>>(await answersTask);
+    }
+
+    public async Task<Maybe<Error>> DeleteAnswer(string claim, string postId)
+    {
+        var post = await _postRepository.Get(postId);
+        if (!post.AllowAnswerEdit)
+        {
+            return Maybe<Error>.Some(new Error("You can't delete your answer", HttpStatusCode.Forbidden));
+        }
+
+        var answer = post.Answers.FirstOrDefault(x => x.UserRelation.ID == claim);
+        if (answer is null)
+        {
+            return Maybe<Error>.Some(new Error($"Answer for user {claim} is not found", HttpStatusCode.NotFound));
+        }
+
+        await _cache.DecrementAnswers(postId);
+        await answer.DeleteAsync();
+
+        return Maybe<Error>.None();
     }
 
     public async Task<Maybe<Error>> Answer(string user, string id, IEnumerable<SubmissionContract> answerContracts)
@@ -130,7 +152,8 @@ public class AnswerService : IAnswerService
 
         if (required.Count != 0)
         {
-            return Result<List<Submission>>.Error($"Following required questions are not filled: {string.Join(", ", required)}");
+            return Result<List<Submission>>.Error(
+                $"Following required questions are not filled: {string.Join(", ", required)}");
         }
 
         if (validationErrors.Count != 0)
@@ -165,12 +188,14 @@ public class AnswerService : IAnswerService
 
         if (post.Limitations.Pp is not null && !pp.IsInRange(post.Limitations.Pp))
         {
-            return Maybe<Error>.Some(new Error("Your pp is not in the allowed range of this post!", HttpStatusCode.Conflict));
+            return Maybe<Error>.Some(new Error("Your pp is not in the allowed range of this post!",
+                HttpStatusCode.Conflict));
         }
 
         if (post.Limitations.Rank is not null && !rank.IsInRange(post.Limitations.Rank))
         {
-            return Maybe<Error>.Some(new Error("Your rank is not in the allowed range of this post!", HttpStatusCode.Conflict));
+            return Maybe<Error>.Some(new Error("Your rank is not in the allowed range of this post!",
+                HttpStatusCode.Conflict));
         }
 
         return Maybe<Error>.None();
