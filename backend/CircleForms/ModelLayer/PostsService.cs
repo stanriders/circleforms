@@ -188,7 +188,7 @@ public class PostsService
         {
             return new Result<object>(new AnswerFullPostContract
             {
-                Answer = answer.Submissions,
+                Answer = answer?.Submissions,
                 Post = _mapper.Map<FullPostContract>(post)
             });
         }
@@ -200,7 +200,7 @@ public class PostsService
 
         var response = new AnswerPostWithQuestionsContract
         {
-            Answer = answer.Submissions,
+            Answer = answer?.Submissions,
             Post = _mapper.Map<PostWithQuestionsContract>(post)
         };
 
