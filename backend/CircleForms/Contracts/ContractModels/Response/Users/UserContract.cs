@@ -15,7 +15,7 @@ public class UserContract
     public string Discord { get; set; }
 
     [JsonProperty("osu")]
-    public OsuUser Osu { get; set; }
+    public OsuUserContract Osu { get; set; }
 }
 
 public class OsuUserContract
