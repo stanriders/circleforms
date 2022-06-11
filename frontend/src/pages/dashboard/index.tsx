@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import SVG from "react-inlinesvg";
 import { useQuery } from "react-query";
 import Head from "next/head";
@@ -21,8 +21,14 @@ export default function Dashboard() {
 
   const { error, data, isLoading } = useQuery("mePostsGet", () => apiClient.users.mePostsGet());
 
-  const unpublishedPosts = data?.filter((val) => val.published === false).reverse();
-  const publishedPosts = data?.filter((val) => val.published === true).reverse();
+  const unpublishedPosts = useMemo(
+    () => data?.filter((val) => val.published === false).reverse(),
+    [data]
+  );
+  const publishedPosts = useMemo(
+    () => data?.filter((val) => val.published === true).reverse(),
+    [data]
+  );
 
   if (error instanceof Error) return <p>{"An error has occurred: " + error.message}</p>;
 

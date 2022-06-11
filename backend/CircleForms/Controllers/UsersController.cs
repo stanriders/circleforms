@@ -6,6 +6,7 @@ using CircleForms.Contracts;
 using CircleForms.Contracts.ContractModels.Response.Posts;
 using CircleForms.Contracts.ContractModels.Response.Users;
 using CircleForms.Database.Services.Abstract;
+using CircleForms.ModelLayer;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -23,13 +24,15 @@ public class UsersController : ControllerBase
     private readonly ICacheRepository _cache;
     private readonly ILogger<UsersController> _logger;
     private readonly IMapper _mapper;
+    private readonly PostsService _posts;
     private readonly IUserRepository _usersService;
 
-    public UsersController(ILogger<UsersController> logger, IMapper mapper, IUserRepository usersService,
+    public UsersController(ILogger<UsersController> logger, IMapper mapper, PostsService posts, IUserRepository usersService,
         ICacheRepository cache)
     {
         _logger = logger;
         _mapper = mapper;
+        _posts = posts;
         _usersService = usersService;
         _cache = cache;
     }
@@ -99,12 +102,19 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMeAnswers)]
-    public async Task<IActionResult> GetMeAnswers()
+    [ProducesResponseType(typeof(List<PostWithQuestionsContract>), StatusCodes.Status200OK)]
+    public async Task<List<PostWithQuestionsContract>> GetMeAnswers()
     {
         var user = await _usersService.Get(_claim);
         var answers = await user.Answers.ChildrenFluent().ToListAsync();
 
-        return Ok(answers.Select(x => new { id = x.ID, post = x.PostRelation.ID, submissions = x.Submissions }));
+        var posts = await _posts.Get(answers.Select(x => x.PostRelation.ID).ToList());
+        foreach (var post in posts)
+        {
+            post.Answer = answers.FirstOrDefault(x => x.PostRelation.ID == post.ID)?.Submissions;
+        }
+
+        return posts;
     }
 
     /// <summary>

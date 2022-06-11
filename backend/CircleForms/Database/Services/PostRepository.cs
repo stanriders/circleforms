@@ -39,6 +39,13 @@ public class PostRepository : IPostRepository
         return await DB.Fluent<Post>().ToListAsync();
     }
 
+    public async Task<List<Post>> Get(List<string> posts)
+    {
+        return await DB.Fluent<Post>()
+            .Match(x => x.In(v => v.ID, posts))
+            .ToListAsync();
+    }
+
     public async Task<Post> Get(string postId)
     {
         return await DB.Find<Post>().OneAsync(postId);

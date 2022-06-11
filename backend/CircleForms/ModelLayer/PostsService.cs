@@ -194,6 +194,13 @@ public class PostsService
         return new Result<object>(response);
     }
 
+    public async Task<List<PostWithQuestionsContract>> Get(List<string> ids)
+    {
+        var result = await _postRepository.Get(ids);
+
+        return _mapper.Map<List<PostWithQuestionsContract>>(result);
+    }
+
     public async Task<Result<FullPostContract>> Get(string id)
     {
         var post = await _postRepository.Get(id);
