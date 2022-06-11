@@ -163,8 +163,8 @@ public class PostsController : ControllerBase
     ///     Get full info about a page if you are the creator of the page, otherwise return cached version.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsDetailedPost)]
-    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(PostWithQuestionsContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AnswerPostWithQuestionsContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AnswerFullPostContract), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {

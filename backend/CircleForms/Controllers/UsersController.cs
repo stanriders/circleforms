@@ -103,7 +103,7 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMeAnswers)]
-    [ProducesResponseType(typeof(List<PostWithQuestionsContract>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<AnswerPostWithQuestionsContract>), StatusCodes.Status200OK)]
     public async Task<List<AnswerPostWithQuestionsContract>> GetMeAnswers()
     {
         var user = await _usersService.Get(_claim);
