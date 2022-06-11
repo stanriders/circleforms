@@ -174,6 +174,19 @@ public class PostsController : ControllerBase
     }
 
     /// <summary>
+    ///     Delete post if not published.
+    /// </summary>
+    [HttpDelete(ApiEndpoints.PostsDetailedPost)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeletePost(string id)
+    {
+        var result = await _posts.DeletePost(_claim, id);
+
+        return result.Map(x => x.ToActionResult(), Ok);
+    }
+
+    /// <summary>
     ///     Get posts' answers.
     /// </summary>
     [Authorize]
