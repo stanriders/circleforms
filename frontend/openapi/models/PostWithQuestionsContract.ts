@@ -28,12 +28,6 @@ import {
   LimitationsToJSON
 } from "./Limitations";
 import { Question, QuestionFromJSON, QuestionFromJSONTyped, QuestionToJSON } from "./Question";
-import {
-  Submission,
-  SubmissionFromJSON,
-  SubmissionFromJSONTyped,
-  SubmissionToJSON
-} from "./Submission";
 
 /**
  *
@@ -53,12 +47,6 @@ export interface PostWithQuestionsContract {
    * @memberof PostWithQuestionsContract
    */
 
-  /**
-   *
-   * @type {Array<Submission>}
-   * @memberof PostWithQuestionsContract
-   */
-  answer?: Array<Submission> | null;
   /**
    *
    * @type {string}
@@ -169,11 +157,6 @@ export function PostWithQuestionsContractFromJSONTyped(
       : json["questions"] === null
       ? null
       : (json["questions"] as Array<any>).map(QuestionFromJSON),
-    answer: !exists(json, "answer")
-      ? undefined
-      : json["answer"] === null
-      ? null
-      : (json["answer"] as Array<any>).map(SubmissionFromJSON),
     id: !exists(json, "id") ? undefined : json["id"],
     authorId: !exists(json, "author_id") ? undefined : json["author_id"],
     isActive: !exists(json, "is_active") ? undefined : json["is_active"],
@@ -215,12 +198,6 @@ export function PostWithQuestionsContractToJSON(value?: PostWithQuestionsContrac
         : value.questions === null
         ? null
         : (value.questions as Array<any>).map(QuestionToJSON),
-    answer:
-      value.answer === undefined
-        ? undefined
-        : value.answer === null
-        ? null
-        : (value.answer as Array<any>).map(SubmissionToJSON),
     id: value.id,
     author_id: value.authorId,
     is_active: value.isActive,

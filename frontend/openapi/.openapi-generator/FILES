@@ -7,6 +7,8 @@ apis/index.ts
 index.ts
 models/Accessibility.ts
 models/AnswerContract.ts
+models/AnswerFullPostContract.ts
+models/AnswerPostWithQuestionsContract.ts
 models/AnswersUsersContract.ts
 models/FullPostContract.ts
 models/Gamemode.ts
