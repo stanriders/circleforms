@@ -30,6 +30,8 @@ public class MinimalOsuUserContract
     public string AvatarUrl { get; set; }
     public string Username { get; set; }
     public string CountryCode { get; set; }
+
+    [JsonProperty("statistics_ruleset")]
     public StatisticsRulesets Statistics { get; set; }
 }
 
@@ -98,7 +100,7 @@ public class OsuUserContract
     [JsonProperty("ranked_beatmapset_count")]
     public int RankedBeatmapsetCount { get; set; }
 
-    [JsonProperty("statistics")]
+    [JsonProperty("statistics_ruleset")]
     public StatisticsRulesets Statistics { get; set; }
 
     [JsonProperty("rank_history")]
