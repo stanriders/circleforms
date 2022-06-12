@@ -4,23 +4,23 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
-using CircleForms.Contracts.ContractModels.Request;
-using CircleForms.Contracts.ContractModels.Response;
-using CircleForms.Contracts.ContractModels.Response.Compound;
-using CircleForms.Contracts.ContractModels.Response.Posts;
-using CircleForms.Contracts.ContractModels.Response.Users;
+using CircleForms.Contracts.Request;
+using CircleForms.Contracts.Response;
+using CircleForms.Contracts.Response.Compound;
+using CircleForms.Contracts.Response.Posts;
+using CircleForms.Contracts.Response.Users;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Users;
-using CircleForms.ModelLayer;
-using CircleForms.ModelLayer.Answers;
-using CircleForms.ModelLayer.Publish;
+using CircleForms.Domain;
+using CircleForms.Domain.Answers;
+using CircleForms.Domain.Publishing;
 using Mapster;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using PostContract = CircleForms.Contracts.ContractModels.Response.Posts.PostContract;
+using PostContract = CircleForms.Contracts.Response.Posts.PostContract;
 
 namespace CircleForms.Controllers;
 
@@ -109,7 +109,7 @@ public class PostsController : ControllerBase
     [Authorize]
     [HttpPost(ApiEndpoints.PostsAddPost)]
     [ProducesResponseType(typeof(MinimalPostContract), StatusCodes.Status201Created)]
-    public async Task<IActionResult> Post(Contracts.ContractModels.Request.PostContractRequest postContract)
+    public async Task<IActionResult> Post(PostContractRequest postContract)
     {
         var result = await _posts.AddPost(_claim, postContract);
 
@@ -153,7 +153,7 @@ public class PostsController : ControllerBase
     [Authorize]
     [HttpPut(ApiEndpoints.PostsUpdatePost)]
     [ProducesResponseType(typeof(PostContract), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdatePost([FromBody] Contracts.ContractModels.Request.PostContractRequest updateContract, string id)
+    public async Task<IActionResult> UpdatePost([FromBody] PostContractRequest updateContract, string id)
     {
         var result = await _posts.UpdatePost(_claim, updateContract, id);
 

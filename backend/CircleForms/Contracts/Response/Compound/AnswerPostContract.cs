@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using CircleForms.Contracts.ContractModels.Response.Posts;
+using CircleForms.Contracts.Response.Posts;
 using CircleForms.Database.Models.Posts.Questions.Submissions;
 using Newtonsoft.Json;
 
-namespace CircleForms.Contracts.ContractModels.Response.Compound;
+namespace CircleForms.Contracts.Response.Compound;
 
 public class AnswerPostContract
 {

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using CircleForms.Domain;
 using CircleForms.ExternalAPI.OsuApi.Contracts;
-using CircleForms.ModelLayer;
 
 namespace CircleForms.ExternalAPI.OsuApi;
 

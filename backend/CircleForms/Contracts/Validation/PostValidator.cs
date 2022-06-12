@@ -1,5 +1,5 @@
 ﻿using System;
-using CircleForms.Contracts.ContractModels.Request;
+using CircleForms.Contracts.Request;
 using CircleForms.Database.Models.Posts.Enums;
 using FluentValidation;
 

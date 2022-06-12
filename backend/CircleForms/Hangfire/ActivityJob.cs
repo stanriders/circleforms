@@ -1,6 +1,6 @@
 using System;
 using CircleForms.Database.Services.Abstract;
-using CircleForms.ModelLayer.Jobs.Abstract;
+using CircleForms.Domain.Jobs.Abstract;
 using Hangfire;
 
 namespace CircleForms.Hangfire;

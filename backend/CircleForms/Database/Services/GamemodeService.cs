@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Services.Abstract;
+using CircleForms.Domain;
 using CircleForms.ExternalAPI.OsuApi;
 using CircleForms.ExternalAPI.OsuApi.Contracts;
-using CircleForms.ModelLayer;
 
 namespace CircleForms.Database.Services;
 

@@ -1,8 +1,8 @@
 ﻿using System.Net;
 using System.Threading.Tasks;
+using CircleForms.Domain;
 using CircleForms.ExternalAPI.OsuApi.Configurations;
 using CircleForms.ExternalAPI.OsuApi.Contracts;
-using CircleForms.ModelLayer;
 using MapsterMapper;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
