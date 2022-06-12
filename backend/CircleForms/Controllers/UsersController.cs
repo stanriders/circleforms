@@ -103,15 +103,15 @@ public class UsersController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpGet(ApiEndpoints.UsersGetMeAnswers)]
-    [ProducesResponseType(typeof(List<AnswerPostWithQuestionsContract>), StatusCodes.Status200OK)]
-    public async Task<List<AnswerPostWithQuestionsContract>> GetMeAnswers()
+    [ProducesResponseType(typeof(List<AnswerPostContract>), StatusCodes.Status200OK)]
+    public async Task<List<AnswerPostContract>> GetMeAnswers()
     {
         var user = await _usersService.Get(_claim);
         var answers = await user.Answers.ChildrenFluent().ToListAsync();
 
         var posts = await _posts.Get(answers.Select(x => x.PostRelation.ID).ToList());
         var result = posts.Select(post =>
-            new AnswerPostWithQuestionsContract
+            new AnswerPostContract
             {
                 Answer = answers.FirstOrDefault(x => x.PostRelation.ID == post.ID)?.Submissions,
                 Post = post

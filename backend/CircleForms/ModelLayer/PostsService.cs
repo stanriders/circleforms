@@ -18,6 +18,7 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Entities;
+using PostContract = CircleForms.Contracts.ContractModels.Response.Posts.PostContract;
 
 namespace CircleForms.ModelLayer;
 
@@ -80,7 +81,7 @@ public class PostsService
         return result.ToString();
     }
 
-    public async Task<Result<PostWithQuestionsContract>> AddPost(string userId, PostContract postRequest)
+    public async Task<Result<PostContract>> AddPost(string userId, Contracts.ContractModels.Request.PostContractRequest postRequest)
     {
         var post = _mapper.Map<Post>(postRequest);
         post.AuthorRelation = userId;
@@ -94,23 +95,23 @@ public class PostsService
         var result = await _postRepository.Add(userId, post);
 
         return result is null
-            ? Result<PostWithQuestionsContract>.Error("Can't add new post :/", HttpStatusCode.InternalServerError)
-            : new Result<PostWithQuestionsContract>(_mapper.Map<PostWithQuestionsContract>(result));
+            ? Result<PostContract>.Error("Can't add new post :/", HttpStatusCode.InternalServerError)
+            : new Result<PostContract>(_mapper.Map<PostContract>(result));
     }
 
 
-    public async Task<Result<PostWithQuestionsContract>> UpdatePost(string userId,
-        PostContract updateContract, string id)
+    public async Task<Result<PostContract>> UpdatePost(string userId,
+        Contracts.ContractModels.Request.PostContractRequest updateContract, string id)
     {
         var post = await _postRepository.Get(id);
         if (post is null)
         {
-            return Result<PostWithQuestionsContract>.NotFound(id);
+            return Result<PostContract>.NotFound(id);
         }
 
         if (post.AuthorRelation.ID != userId)
         {
-            return Result<PostWithQuestionsContract>.Error("You can't update this post", HttpStatusCode.Unauthorized);
+            return Result<PostContract>.Error("You can't update this post", HttpStatusCode.Unauthorized);
         }
 
         var updatedPost = _mapper.Map(updateContract, post);
@@ -134,7 +135,7 @@ public class PostsService
             await _cache.Publish(updatedPost);
         }
 
-        return new Result<PostWithQuestionsContract>(_mapper.Map<PostWithQuestionsContract>(updatedPost));
+        return new Result<PostContract>(_mapper.Map<PostContract>(updatedPost));
     }
 
     private async Task<Result<PostRedis>> GetCachedPostPrivate(string id)
@@ -151,7 +152,7 @@ public class PostsService
     }
 
     //Produces: AnswerPostWithQuestionsContract | AnswersFullPostContract
-    public async Task<Result<object>> GetDetailedPost(string claim, string id, string key)
+    public async Task<Result<AnswerPostContract>> GetDetailedPost(string claim, string id, string key)
     {
         var cachedResult = await GetCachedPostPrivate(id);
         var cached = cachedResult.Value;
@@ -160,13 +161,13 @@ public class PostsService
         {
             if (cachedResult.IsError)
             {
-                return Result<object>.NotFound(id);
+                return Result<AnswerPostContract>.NotFound(id);
             }
 
-            var contract = _mapper.Map<PostWithQuestionsContract>(cached);
+            var contract = _mapper.Map<PostContract>(cached);
             contract.AnswerCount = await _cache.GetAnswerCount(cached.ID);
 
-            return new Result<object>(new AnswerPostWithQuestionsContract
+            return new Result<AnswerPostContract>(new AnswerPostContract
             {
                 Answer = null,
                 Post = contract
@@ -176,7 +177,7 @@ public class PostsService
         var post = await _postRepository.Get(id);
         if (post is null)
         {
-            return Result<object>.NotFound(id);
+            return Result<AnswerPostContract>.NotFound(id);
         }
 
         var answer =  await post.Answers
@@ -186,51 +187,51 @@ public class PostsService
 
         if (post.AuthorId == claim)
         {
-            return new Result<object>(new AnswerFullPostContract
+            return new Result<AnswerPostContract>(new AnswerPostContract
             {
                 Answer = answer?.Submissions,
-                Post = _mapper.Map<FullPostContract>(post)
+                Post = _mapper.Map<PostContract>(post)
             });
         }
 
         if (!post.Published || (post.Accessibility == Accessibility.Link && key != post.AccessKey))
         {
-            return Result<object>.NotFound(id);
+            return Result<AnswerPostContract>.NotFound(id);
         }
 
-        var response = new AnswerPostWithQuestionsContract
+        var response = new AnswerPostContract
         {
             Answer = answer?.Submissions,
-            Post = _mapper.Map<PostWithQuestionsContract>(post)
+            Post = _mapper.Map<PostContract>(post)
         };
 
-        return new Result<object>(response);
+        return new Result<AnswerPostContract>(response);
     }
 
-    public async Task<List<PostWithQuestionsContract>> Get(List<string> ids)
+    public async Task<List<PostContract>> Get(List<string> ids)
     {
         var result = await _postRepository.Get(ids);
 
-        return _mapper.Map<List<PostWithQuestionsContract>>(result);
+        return _mapper.Map<List<PostContract>>(result);
     }
 
-    public async Task<Result<FullPostContract>> Get(string id)
+    public async Task<Result<PostContract>> Get(string id)
     {
         var post = await _postRepository.Get(id);
 
         if (post is null)
         {
-            return Result<FullPostContract>.NotFound(id);
+            return Result<PostContract>.NotFound(id);
         }
 
-        return new Result<FullPostContract>(_mapper.Map<FullPostContract>(post));
+        return new Result<PostContract>(_mapper.Map<PostContract>(post));
     }
 
-    public async Task<List<FullPostContract>> GetAll()
+    public async Task<List<PostContract>> GetAll()
     {
         var posts = await _postRepository.Get();
 
-        return _mapper.Map<List<Post>, List<FullPostContract>>(posts);
+        return _mapper.Map<List<Post>, List<PostContract>>(posts);
     }
 
     public async Task<MinimalPostContract[]> GetAllCached()

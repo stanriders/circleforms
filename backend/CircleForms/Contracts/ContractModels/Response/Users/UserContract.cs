@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace CircleForms.Contracts.ContractModels.Response.Users;
 
-public class UserContract
+public class UserContractBase<T>
 {
     [JsonProperty("id")]
     public string ID { get; set; }
@@ -15,7 +15,23 @@ public class UserContract
     public string Discord { get; set; }
 
     [JsonProperty("osu")]
-    public OsuUserContract Osu { get; set; }
+    public T Osu { get; set; }
+}
+
+public class UserContract : UserContractBase<OsuUserContract>
+{
+}
+
+public class UserInAnswerContract : UserContractBase<MinimalOsuUserContract>
+{
+}
+
+public class MinimalOsuUserContract
+{
+    public string AvatarUrl { get; set; }
+    public string Username { get; set; }
+    public string CountryCode { get; set; }
+    public StatisticsRulesets Statistics { get; set; }
 }
 
 public class OsuUserContract

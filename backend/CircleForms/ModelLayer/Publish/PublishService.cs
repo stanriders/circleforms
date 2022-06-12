@@ -24,18 +24,18 @@ public class PublishService : IPublishService
         _cache = cache;
     }
 
-    public async Task<Result<FullPostContract>> Publish(string id, string claim)
+    public async Task<Result<PostContract>> Publish(string id, string claim)
     {
         var postResult = await GetAndValidate(id, claim);
         if (postResult.IsError)
         {
-            return Result<FullPostContract>.Error(postResult.Errors);
+            return Result<PostContract>.Error(postResult.Errors);
         }
 
         var post = postResult.Value;
         if (post.Published)
         {
-            return new Result<FullPostContract>(_mapper.Map<FullPostContract>(post));
+            return new Result<PostContract>(_mapper.Map<PostContract>(post));
         }
 
         post.Published = true;
@@ -47,28 +47,28 @@ public class PublishService : IPublishService
             _activity.EnqueueSetInactive(post.ID, post.ActiveTo);
         }
 
-        return new Result<FullPostContract>(_mapper.Map<FullPostContract>(post));
+        return new Result<PostContract>(_mapper.Map<PostContract>(post));
     }
 
-    public async Task<Result<FullPostContract>> Unpublish(string id, string claim)
+    public async Task<Result<PostContract>> Unpublish(string id, string claim)
     {
         var postResult = await GetAndValidate(id, claim);
         if (postResult.IsError)
         {
-            return Result<FullPostContract>.Error(postResult.Errors);
+            return Result<PostContract>.Error(postResult.Errors);
         }
 
         var post = postResult.Value;
         if (!post.Published)
         {
-            return new Result<FullPostContract>(_mapper.Map<FullPostContract>(post));
+            return new Result<PostContract>(_mapper.Map<PostContract>(post));
         }
 
         post.Published = false;
         await _postRepository.Update(post);
         await _cache.Unpublish(post.ID);
 
-        return new Result<FullPostContract>(_mapper.Map<FullPostContract>(post));
+        return new Result<PostContract>(_mapper.Map<PostContract>(post));
     }
 
     private async Task<Result<Post>> GetAndValidate(string id, string claim)

@@ -103,7 +103,7 @@ public class AdminController : ControllerBase
     ///     Get uncached post.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsOneDatabasePost)]
-    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(PostContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(string id)
     {
@@ -118,7 +118,7 @@ public class AdminController : ControllerBase
     ///     Get all uncached posts.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsAllDatabasePosts)]
-    public async Task<List<FullPostContract>> Get()
+    public async Task<List<PostContract>> Get()
     {
         _logger.LogInformation("User {User} requested database posts dump", _claim);
 

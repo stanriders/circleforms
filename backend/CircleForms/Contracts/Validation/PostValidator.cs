@@ -5,7 +5,7 @@ using FluentValidation;
 
 namespace CircleForms.Contracts.Validation;
 
-public class PostValidator : AbstractValidator<PostContract>
+public class PostValidator : AbstractValidator<PostContractRequest>
 {
     public PostValidator()
     {

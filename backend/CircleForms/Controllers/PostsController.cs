@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using PostContract = CircleForms.Contracts.ContractModels.Response.Posts.PostContract;
 
 namespace CircleForms.Controllers;
 
@@ -108,7 +109,7 @@ public class PostsController : ControllerBase
     [Authorize]
     [HttpPost(ApiEndpoints.PostsAddPost)]
     [ProducesResponseType(typeof(MinimalPostContract), StatusCodes.Status201Created)]
-    public async Task<IActionResult> Post(PostContract postContract)
+    public async Task<IActionResult> Post(Contracts.ContractModels.Request.PostContractRequest postContract)
     {
         var result = await _posts.AddPost(_claim, postContract);
 
@@ -125,7 +126,7 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize(Roles = $"{RoleConstants.Admin},{RoleConstants.Moderator}")]
     [HttpPost(ApiEndpoints.PostUnpublish)]
-    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PostContract), StatusCodes.Status200OK)]
     public async Task<IActionResult> Unpublish(string id)
     {
         var result = await _publish.Unpublish(id, _claim);
@@ -138,7 +139,7 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPost(ApiEndpoints.PostPublish)]
-    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(PostContract), StatusCodes.Status200OK)]
     public async Task<IActionResult> Publish(string id)
     {
         var result = await _publish.Publish(id, _claim);
@@ -151,8 +152,8 @@ public class PostsController : ControllerBase
     /// </summary>
     [Authorize]
     [HttpPut(ApiEndpoints.PostsUpdatePost)]
-    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK)]
-    public async Task<IActionResult> UpdatePost([FromBody] PostContract updateContract, string id)
+    [ProducesResponseType(typeof(PostContract), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdatePost([FromBody] Contracts.ContractModels.Request.PostContractRequest updateContract, string id)
     {
         var result = await _posts.UpdatePost(_claim, updateContract, id);
 
@@ -163,8 +164,7 @@ public class PostsController : ControllerBase
     ///     Get full info about a page if you are the creator of the page, otherwise return cached version.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsDetailedPost)]
-    [ProducesResponseType(typeof(AnswerPostWithQuestionsContract), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(AnswerFullPostContract), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AnswerPostContract), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetDetailed(string id, [FromQuery] string key = "")
     {

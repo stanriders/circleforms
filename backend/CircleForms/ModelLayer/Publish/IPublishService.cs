@@ -5,6 +5,6 @@ namespace CircleForms.ModelLayer.Publish;
 
 public interface IPublishService
 {
-    public Task<Result<FullPostContract>> Publish(string id, string claim);
-    public Task<Result<FullPostContract>> Unpublish(string id, string claim);
+    public Task<Result<PostContract>> Publish(string id, string claim);
+    public Task<Result<PostContract>> Unpublish(string id, string claim);
 }
