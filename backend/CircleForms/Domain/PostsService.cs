@@ -151,7 +151,6 @@ public class PostsService
         return new Result<PostRedis>(post);
     }
 
-    //Produces: AnswerPostWithQuestionsContract | AnswersFullPostContract
     public async Task<Result<AnswerPostContract>> GetDetailedPost(string claim, string id, string key)
     {
         var cachedResult = await GetCachedPostPrivate(id);
