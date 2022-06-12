@@ -98,7 +98,7 @@ public class OsuUserContract
     [JsonProperty("ranked_beatmapset_count")]
     public int RankedBeatmapsetCount { get; set; }
 
-    [JsonProperty("statistics_rulesets")]
+    [JsonProperty("statistics")]
     public StatisticsRulesets Statistics { get; set; }
 
     [JsonProperty("rank_history")]
