@@ -1,9 +1,10 @@
 import React from "react";
-
-import { UserContract, UserInAnswerContract } from "../../openapi";
+import { apiClient } from "src/utils/apiClient";
+import { AsyncReturnType } from "src/utils/misc";
 
 interface IUserContext {
-  user: UserContract | null | UserInAnswerContract;
+  // user: UserContract | null | UserInAnswerContract;
+  user: AsyncReturnType<typeof apiClient.users.meGet> | null;
 }
 
 const UserContext = React.createContext({} as IUserContext);

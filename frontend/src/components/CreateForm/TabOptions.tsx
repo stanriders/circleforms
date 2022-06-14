@@ -6,10 +6,11 @@ import { DatePicker } from "@mantine/dates";
 import { useModals } from "@mantine/modals";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
+import { apiClient } from "src/utils/apiClient";
 import { debounce } from "ts-debounce";
 
-import { Accessibility, Gamemode, PostContract, PostWithQuestionsContract } from "../../../openapi";
-import { sleep } from "../../utils/misc";
+import { Accessibility, Gamemode, PostContractRequest } from "../../../openapi";
+import { AsyncReturnType, sleep } from "../../utils/misc";
 import Button from "../Button";
 import DropdownSelect from "../DropdownSelect";
 import ErrorMessage from "../ErrorMessage";
@@ -18,8 +19,9 @@ import { useFormData } from "../FormContext";
 import OptionTabEntry from "./OptionTabEntry";
 import { usePatchPost, usePublishPost, useSubmitImage, useSubmitPost } from "./TabOptions.hooks";
 import { ACCESSABILITY_OPTIONS, answerSchema, GAMEMODE_OPTIONS } from "./TabOptions.utils";
+
 interface ITabOptions {
-  post?: PostWithQuestionsContract;
+  post?: AsyncReturnType<typeof apiClient.posts.postsIdGet>["post"];
   isEdit?: boolean;
 }
 
@@ -39,8 +41,8 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
   const defaultValues = {
     accessibility: post?.accessibility || Accessibility.Public,
     gamemode: post?.gamemode || Gamemode.None,
-    activeTo: post?.activeTo,
-    allowAnswerEdit: post?.allowAnswerEdit || false
+    active_to: post?.active_to,
+    allow_answer_edit: post?.allow_answer_edit || false
   };
   const methods = useForm({
     defaultValues,
@@ -51,7 +53,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
     const resObj = {
       ...data,
       questions: data?.questions?.questions,
-      allowAnswerEdit: methods.getValues().allowAnswerEdit
+      allow_answer_edit: methods.getValues().allow_answer_edit
     };
     let validatedData;
 
@@ -108,7 +110,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
     if (!validatedData) return false;
 
     await postPUT(
-      { postid: data.id as string, data: validatedData as PostContract },
+      { postid: data.id as string, data: validatedData as PostContractRequest },
       {
         onSuccess: async () => {
           if (typeof data.icon !== "string") {
@@ -270,7 +272,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
           subText=" No new submissions can be made afterwards"
         >
           <Controller
-            name={`activeTo`}
+            name={`active_to`}
             control={methods.control}
             rules={{ required: "Please pick post end date" }}
             render={({ field, fieldState: { error } }) => (
@@ -280,7 +282,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
                   placeholder="Pick a date"
                   required
                   {...field}
-                  onBlur={() => setValues({ activeTo: field.value })}
+                  onBlur={() => setValues({ active_to: field.value })}
                   radius={"lg"}
                   size={"md"}
                   styles={{
@@ -296,7 +298,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
 
         <OptionTabEntry mainHeading="Answer editing" subText="Allow users to edit their answers">
           <Controller
-            name={`allowAnswerEdit`}
+            name={`allow_answer_edit`}
             control={methods.control}
             render={({ field }) => (
               <Switch

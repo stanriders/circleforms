@@ -1,25 +1,33 @@
-import React from "react";
+import React, { useContext } from "react";
+import InferNextPropsType from "infer-next-props-type";
 import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
 import ResponseSubmission from "src/components/ResponseSubmission";
+import UserContext from "src/context/UserContext";
 import DefaultLayout from "src/layouts";
 import { getApiClient } from "src/utils/getApiClient";
+import { AsyncReturnType } from "src/utils/misc";
 
 import { convertServerAnswerStateToLocal } from "../form/[formid]/[osuid]";
-import { AnswersUsersContract, PostWithQuestionsContract } from "openapi";
 
-export const AnswerPage = () => {
+// https://github.com/vercel/next.js/issues/15913#issuecomment-950330472
+type ServerSideProps = InferNextPropsType<typeof getServerSideProps>;
+
+// TODO fixme
+const AnswerPage = (props: ServerSideProps) => {
+  const { user } = useContext(UserContext);
+
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - {props.post.title}</title>
+        <title>CircleForms - {props.post?.title}</title>
       </Head>
 
       <ResponseSubmission
         post={props.post}
         authorUser={props.authorUser}
         initialUserAnswers={props.filteredUserAnswers}
-        urlOsuId={props.osuid as string}
+        urlOsuId={user?.id!}
       />
     </DefaultLayout>
   );
@@ -31,17 +39,17 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const formid = context.params?.id || "";
 
   const promises = await Promise.allSettled([
-    import(`../../../messages/single-form/${context.locale}.json`),
-    import(`../../../messages/global/${context.locale}.json`),
+    import(`../../messages/single-form/${context.locale}.json`),
+    import(`../../messages/global/${context.locale}.json`),
     apiClient.posts.postsIdGet({ id: formid as string })
   ]);
 
-  const [translations, global, post] = promises.map((p) =>
+  const [translations, global, postData] = promises.map((p) =>
     p.status === "fulfilled" ? p?.value : null
   );
 
   // typescript doesnt infer these types :(
-  const typedPost = post as PostWithQuestionsContract;
+  const typedPost = postData as AsyncReturnType<typeof apiClient.posts.postsIdGet>;
 
   // if there are no answers, go look at not found screen
   if (!typedPost.answer) {
@@ -52,22 +60,21 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
   // fetch author info
   const authorUser = await apiClient.users.usersIdGet({
-    id: typedPost.authorId as string
+    id: typedPost.post?.author_id as string
   });
 
   // Try to get user`s post answers
+  let mappedAnswers: Record<string, string[]> = {};
+  typedPost.answer?.forEach((submission) => {
+    if (submission.question_id) {
+      mappedAnswers[submission.question_id] = submission.answers || [];
+    }
+  });
 
   const filteredUserAnswers = convertServerAnswerStateToLocal(
-    typedPost.answer,
-    typedPost.questions!
+    mappedAnswers,
+    typedPost.post?.questions!
   );
-
-  // if there are no answers from this osu id, return not found
-  if (Object.keys(filteredUserAnswers).length === 0) {
-    return {
-      notFound: true
-    };
-  }
 
   const messages = {
     ...translations,
@@ -76,11 +83,12 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
   return {
     props: {
-      post,
+      post: typedPost.post,
       authorUser,
       messages,
-      filteredUserAnswers,
-      osuid
+      filteredUserAnswers
     }
   };
 };
+
+export default AnswerPage;

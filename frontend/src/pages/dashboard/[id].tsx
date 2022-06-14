@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import InferNextPropsType from "infer-next-props-type";
 import { GetServerSidePropsContext } from "next";
+import { AsyncReturnType } from "src/utils/misc";
 
 import CreateForm from "../../components/CreateForm/CreateForm";
 import Unauthorized from "../../components/Unauthorized";
@@ -17,7 +18,7 @@ const EditForm = (props: ServerSideProps) => {
     return <Unauthorized />;
   }
 
-  return <CreateForm post={props.post} />;
+  return <CreateForm postData={props.postData} />;
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
@@ -34,8 +35,9 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const [translations, global, post] = promises.map((p) =>
     p.status === "fulfilled" ? p?.value : null
   );
+  const typedPost = post as AsyncReturnType<typeof apiClient.posts.postsIdGet>;
 
-  if (!post?.id) {
+  if (!typedPost?.post?.id) {
     return {
       notFound: true
     };
@@ -48,7 +50,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
   return {
     props: {
-      post,
+      postData: typedPost,
       messages
     }
   };

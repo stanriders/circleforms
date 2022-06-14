@@ -90,7 +90,7 @@ const Index: NextPage = () => {
                 {data &&
                   data?.posts?.length! > 0 &&
                   data.posts?.map((form) => {
-                    const user = data.users?.find((user) => user.id === form.authorId);
+                    const user = data.users?.find((user) => user.id === form.author_id);
                     return (
                       <FormEntry href={`/form/${form.id}`} key={form.id} user={user} {...form} />
                     );

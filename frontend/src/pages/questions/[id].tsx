@@ -11,7 +11,7 @@ import { apiClient } from "../../utils/apiClient";
 type StaticSideProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 const Questions: NextPage<StaticSideProps> = (props) => {
-  const { post, authorUser } = props;
+  const { postData, authorUser } = props;
 
   const { user } = useContext(UserContext);
   if (!user) {
@@ -21,10 +21,10 @@ const Questions: NextPage<StaticSideProps> = (props) => {
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - {post.title}</title>
+        <title>CircleForms - {postData.post?.title}</title>
       </Head>
 
-      <ResponseSubmission post={post} authorUser={authorUser} />
+      <ResponseSubmission post={postData.post} authorUser={authorUser} />
     </DefaultLayout>
   );
 };
@@ -35,7 +35,7 @@ const Questions: NextPage<StaticSideProps> = (props) => {
 export async function getStaticProps(context: GetStaticPropsContext) {
   const id = context.params?.id;
 
-  const [translations, global, post] = await Promise.all([
+  const [translations, global, postData] = await Promise.all([
     import(`../../messages/single-form/${context.locale}.json`),
     import(`../../messages/global/${context.locale}.json`),
     apiClient.posts.postsIdGet({ id: id as string })
@@ -45,11 +45,11 @@ export async function getStaticProps(context: GetStaticPropsContext) {
     ...global
   };
 
-  const authorUser = await apiClient.users.usersIdGet({ id: post.authorId as string });
+  const authorUser = await apiClient.users.usersIdGet({ id: postData.post?.author_id as string });
 
   return {
     props: {
-      post,
+      postData,
       messages,
       authorUser
     },

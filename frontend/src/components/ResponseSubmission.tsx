@@ -6,15 +6,13 @@ import { DevTool } from "@hookform/devtools";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 import UserContext from "src/context/UserContext";
-import { sleep } from "src/utils/misc";
+import { AsyncReturnType, sleep } from "src/utils/misc";
 
 import {
   PostsIdAnswersPostRequest,
-  PostWithQuestionsContract,
   Question,
   QuestionType,
-  SubmissionContract,
-  UserContract
+  SubmissionContract
 } from "../../openapi";
 import { apiClient } from "../utils/apiClient";
 import getImage from "../utils/getImage";
@@ -29,8 +27,8 @@ type FormData = {
 };
 
 interface IResponseSubmission {
-  post: PostWithQuestionsContract;
-  authorUser: UserContract;
+  post: AsyncReturnType<typeof apiClient.posts.postsIdGet>["post"];
+  authorUser: AsyncReturnType<typeof apiClient.users.usersIdGet>;
 
   // these props are passed if we want to view user`s answers
   initialUserAnswers?: FormData;
@@ -52,7 +50,7 @@ const ResponseSubmission = ({
     showSubmitButton = Object.keys(initialUserAnswers).length === 0;
   }
 
-  const showEditSubmission = urlOsuId === user?.id && post.allowAnswerEdit;
+  const showEditSubmission = urlOsuId === user?.id && post?.allow_answer_edit;
 
   // Form settings
   const {
@@ -69,36 +67,36 @@ const ResponseSubmission = ({
   const onSubmit = handleSubmit((data) => {
     const answers: SubmissionContract[] = [];
     const postTypes = post?.questions?.map((question) => question.type);
-    const postQuestions = post?.questions?.map((question) => question.questionInfo);
+    const postQuestions = post?.questions?.map((question) => question.question_info);
 
     Object.entries(data).map((curr, index) => {
-      const [questionId, questionInfo] = curr;
+      const [question_id, question_info] = curr;
 
       switch (postTypes?.[index]) {
         case "Freeform":
-          questionInfo &&
+          question_info &&
             answers.push({
-              questionId: questionId,
-              answers: [questionInfo as string]
+              question_id: question_id,
+              answers: [question_info as string]
             });
           break;
 
         case "Choice":
-          const questionPosition = postQuestions?.[index]?.indexOf(questionInfo as string);
+          const questionPosition = postQuestions?.[index]?.indexOf(question_info as string);
           if (questionPosition === -1) break;
           answers.push({
-            questionId: questionId,
+            question_id: question_id,
             answers: [String(questionPosition)]
           });
           break;
 
         case "Checkbox":
-          const questionIndex = (questionInfo as string[])?.map((q, ind) => {
+          const questionIndex = (question_info as string[])?.map((q, ind) => {
             const questionPosition = postQuestions?.[index]?.indexOf(q);
             if (questionPosition !== -1) return String(ind);
           });
           answers.push({
-            questionId: questionId,
+            question_id: question_id,
             answers: questionIndex.filter(Boolean) as string[]
           });
           break;
@@ -111,14 +109,14 @@ const ResponseSubmission = ({
 
     mutate(
       {
-        id: post.id as string,
+        id: post?.id as string,
         submissionContract: answers
       },
       {
         onSuccess: async () => {
           toast.success(t("toast.success"));
           await sleep(600);
-          router.push(`/form/${post.id}`);
+          router.push(`/form/${post?.id}`);
         },
         onError: async () => {
           await sleep(600);
@@ -137,7 +135,7 @@ const ResponseSubmission = ({
       case QuestionType.Freeform:
         return (
           <FreeformInputQuestion
-            key={question.questionId}
+            key={question.question_id}
             question={question}
             register={register}
             errors={errors}
@@ -147,7 +145,7 @@ const ResponseSubmission = ({
       case QuestionType.Checkbox:
         return (
           <CheckboxQuestion
-            key={question.questionId}
+            key={question.question_id}
             question={question}
             register={register}
             errors={errors}
@@ -157,7 +155,7 @@ const ResponseSubmission = ({
       case QuestionType.Choice:
         return (
           <ChoiceRadioQuestion
-            key={question.questionId}
+            key={question.question_id}
             question={question}
             register={register}
             errors={errors}
@@ -170,9 +168,9 @@ const ResponseSubmission = ({
     }
   };
 
-  const bannerImg = getImage({ id: post.id, banner: post.banner, type: "banner" });
+  const bannerImg = getImage({ id: post?.id, banner: post?.banner, type: "banner" });
 
-  const iconImg = getImage({ id: post.id, icon: post.icon, type: "icon" });
+  const iconImg = getImage({ id: post?.id, icon: post?.icon, type: "icon" });
 
   return (
     <>
@@ -191,7 +189,7 @@ const ResponseSubmission = ({
         <FormHeader post={post} authorUser={authorUser} iconImg={iconImg || ""} />
         {/* questions */}
         <form onSubmit={onSubmit} className="flex flex-col gap-6 p-16 pt-12">
-          {post.questions?.map((question) => switchQuestionType(question, register, errors))}
+          {post?.questions?.map((question) => switchQuestionType(question, register, errors))}
           <div className="flex justify-between">
             <button type="button" className="button dark" onClick={() => router.back()}>
               Back

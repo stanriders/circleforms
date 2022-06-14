@@ -1,11 +1,13 @@
 import React from "react";
 import { useTranslations } from "next-intl";
-import { PostWithQuestionsContract, UserContract } from "openapi";
+import { UserContract } from "openapi";
+import { apiClient } from "src/utils/apiClient";
+import { AsyncReturnType } from "src/utils/misc";
 
 import Tag from "./Tag";
 
 interface IFormHeader {
-  post: PostWithQuestionsContract;
+  post: AsyncReturnType<typeof apiClient.posts.postsIdGet>["post"];
   authorUser: UserContract;
   iconImg: string;
 }
@@ -21,25 +23,25 @@ const FormHeader = ({ iconImg, post, authorUser }: IFormHeader) => {
             <img
               className="h-20 w-20 rounded-full object-cover"
               src={iconImg}
-              alt={`${post.title} thumbnail`}
+              alt={`${post?.title} thumbnail`}
             />
             <img
               className="h-10 w-10 rounded-full absolute bottom-0 right-0"
-              src={authorUser?.osu?.avatar_url}
+              src={authorUser?.osu?.avatar_url!}
               alt={`${authorUser.osu?.username}'s avatar`}
             />
           </div>
           <div>
-            <h1 className="text-4xl font-bold">{post.title}</h1>
+            <h1 className="text-4xl font-bold">{post?.title}</h1>
             <p className="text-white text-opacity-50 text-2xl">
-              {post.answerCount ?? post.answerCount} {t("answersCount")}
+              {post?.answer_count ?? post?.answer_count} {t("answersCount")}
             </p>
           </div>
         </div>
         <div className="p-4 pr-0 mt-[-6px]">
           <Tag
-            label={post.isActive ? t("active") : t("inactive")}
-            theme={post.isActive ? "success" : "stale"}
+            label={post?.is_active ? t("active") : t("inactive")}
+            theme={post?.is_active ? "success" : "stale"}
           />
         </div>
       </div>

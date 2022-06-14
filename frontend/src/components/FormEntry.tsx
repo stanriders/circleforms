@@ -17,7 +17,7 @@ export default function FormEntry({
   banner,
   title,
   excerpt,
-  publishTime,
+  publish_time,
   previewBanner,
   href
 }: IFormEntry) {
@@ -33,7 +33,6 @@ export default function FormEntry({
 
   return (
     <Link href={href}>
-      {/*  <Link href={isPreview ? "#" : `/form/${id}`}> */}
       <a className="flex rounded-5 overflow-clip bg-black-light z-0 transform transition-transform ease-out-cubic hover:scale-99 hover:z-10">
         <div
           className="flex-1 bg-cover"
@@ -55,12 +54,11 @@ export default function FormEntry({
               <span className="font-semibold">
                 posted by <span className="font-bold">{user?.username}</span>
               </span>
-              {/* FIXME im not sure about this, maybe publish time needs to be converted to datetime first? */}
-              <span className="text-green">{timeago.format(publishTime!)}</span>
+              <span className="text-green">{timeago.format(publish_time!)}</span>
             </div>
             <img
               className="h-10 w-10 rounded-full"
-              src={user?.avatarUrl || ""}
+              src={user?.avatar_url || ""}
               alt="Profile user {name}"
             />
           </div>

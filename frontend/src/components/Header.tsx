@@ -72,7 +72,7 @@ export default function Header() {
                 <img
                   className="h-9 w-9 rounded-70 m-1"
                   src={user?.osu?.avatar_url || ""}
-                  alt={user?.osu?.username}
+                  alt={user?.osu?.username!}
                 />
               </div>
             </MenuButton>

@@ -15,7 +15,7 @@ const SingleForm: NextPage<ServerSideProps> = (props) => {
       </Head>
 
       <section className="container mb-12">
-        <Form post={props.postData.post} authorUser={props.authorUser} />
+        <Form postData={props.postData} authorUser={props.authorUser} />
       </section>
     </DefaultLayout>
   );
@@ -32,7 +32,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     apiClient.posts.postsIdGet({ id: formid as string })
   ]);
 
-  const authorUser = await apiClient.users.usersIdGet({ id: postData.post?.authorId as string });
+  const authorUser = await apiClient.users.usersIdGet({ id: postData.post?.author_id as string });
 
   const messages = {
     ...translations,

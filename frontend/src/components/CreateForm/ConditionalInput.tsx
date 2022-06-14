@@ -34,7 +34,7 @@ const ConditionalInput = ({ index, nestIndex, remove, control }: IConditionalInp
     <div>
       <Controller
         control={control}
-        name={`questions.${nestIndex}.questionInfo.${index}.value`}
+        name={`questions.${nestIndex}.question_info.${index}.value`}
         rules={{ required: "Option text cannot be blank" }}
         render={({ field, fieldState: { error } }) => {
           switch (questionType) {

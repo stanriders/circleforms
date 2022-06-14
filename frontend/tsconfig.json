@@ -16,7 +16,7 @@
     "baseUrl": ".",
 
     // extra
-    "incremental": false,
+    "incremental": true,
     "noUncheckedIndexedAccess": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,

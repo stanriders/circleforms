@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { apiClient } from "src/utils/apiClient";
+import { AsyncReturnType } from "src/utils/misc";
 
 import FormCard from "../FormCard";
 import { useFormData } from "../FormContext";
@@ -13,20 +15,16 @@ import {
 } from "./TabDesign.hooks";
 
 interface ITabDesign {
-  initialTitle?: string;
-  initialDescription?: string;
-  initialPostid?: string;
-  initialBanner?: string;
-  initialIcon?: string;
+  post: AsyncReturnType<typeof apiClient.posts.postsIdGet>["post"];
 }
 
-const TabDesign = ({
-  initialTitle,
-  initialDescription,
-  initialPostid,
-  initialBanner,
-  initialIcon
-}: ITabDesign) => {
+const TabDesign = ({ post }: ITabDesign) => {
+  const initialTitle = post?.title;
+  const initialDescription = post?.description;
+  const initialPostid = post?.id;
+  const initialBanner = post?.banner;
+  const initialIcon = post?.icon;
+
   const t = useTranslations();
   const { setValues } = useFormData();
   const [title, setTitle] = useState<string>(initialTitle || "");
@@ -36,8 +34,8 @@ const TabDesign = ({
   // MUST be BEFORE banner/icon preview
   useCleanupContextOnUnmount();
 
-  const bannerPreview = useBannerPreview(initialPostid, initialBanner);
-  const iconPreview = useIconPreview(initialPostid, initialIcon);
+  const bannerPreview = useBannerPreview(initialPostid!, initialBanner!);
+  const iconPreview = useIconPreview(initialPostid!, initialIcon!);
 
   return (
     <div className="flex flex-col gap-6">
@@ -97,13 +95,13 @@ const TabDesign = ({
         excerpt={description}
         user={{
           id: "0",
-          avatarUrl: "/images/avatar-guest.png",
+          avatar_url: "/images/avatar-guest.png",
           discord: "",
           username: "Username"
         }}
         previewBanner={bannerPreview}
       />
-      <FormCard id={initialPostid} title={title} excerpt={description} previewIcon={iconPreview} />
+      <FormCard post={post} previewIcon={iconPreview} />
     </div>
   );
 };

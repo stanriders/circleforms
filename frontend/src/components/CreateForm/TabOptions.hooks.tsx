@@ -1,7 +1,7 @@
 import { useMutation } from "react-query";
 import { InferType } from "yup";
 
-import { ImageQuery, PostContract } from "../../../openapi";
+import { ImageQuery, PostContractRequest } from "../../../openapi";
 import { apiClient } from "../../utils/apiClient";
 
 import { answerSchema } from "./TabOptions.utils";
@@ -9,7 +9,7 @@ import { answerSchema } from "./TabOptions.utils";
 export const useSubmitPost = () => {
   const mutatation = useMutation((validatedData: InferType<typeof answerSchema>) => {
     return apiClient.posts.postsPost({
-      postContract: validatedData as PostContract
+      postContractRequest: validatedData as PostContractRequest
     });
   });
 
@@ -35,7 +35,7 @@ export const usePublishPost = () => {
 };
 
 export const usePatchPost = () => {
-  return useMutation(({ postid, data }: { postid: string; data: PostContract }) =>
-    apiClient.posts.postsIdPut({ id: postid, postContract: data })
+  return useMutation(({ postid, data }: { postid: string; data: PostContractRequest }) =>
+    apiClient.posts.postsIdPut({ id: postid, postContractRequest: data })
   );
 };

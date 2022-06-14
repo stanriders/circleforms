@@ -7,9 +7,9 @@ import { useFormData } from "../FormContext";
 import QuestionFieldArray from "./QuestionFieldArray";
 
 export interface QuestionEntry {
-  questionInfo: Array<Record<"value", string>>;
+  question_info: Array<Record<"value", string>>;
   type: QuestionType;
-  isOptional: boolean;
+  is_optional: boolean;
   title: string;
 }
 export interface IFormValues {

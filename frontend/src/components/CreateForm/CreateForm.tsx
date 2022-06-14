@@ -3,10 +3,10 @@ import { Toaster } from "react-hot-toast";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@reach/tabs";
 import Head from "next/head";
 import { useTranslations } from "next-intl";
+import { apiClient } from "src/utils/apiClient";
 
-import { PostWithQuestionsContract } from "../../../openapi";
 import DefaultLayout from "../../layouts";
-import { isEmpty } from "../../utils/misc";
+import { AsyncReturnType, isEmpty } from "../../utils/misc";
 import { useFormData } from "../FormContext";
 
 import TabDesign from "./TabDesign";
@@ -15,31 +15,33 @@ import TabPost from "./TabPost";
 import TabQuestions, { QuestionEntry } from "./TabQuestions";
 
 interface ICreateForm {
-  post?: PostWithQuestionsContract;
+  postData?: AsyncReturnType<typeof apiClient.posts.postsIdGet>;
 }
-const CreateForm = ({ post }: ICreateForm) => {
+const CreateForm = ({ postData }: ICreateForm) => {
+  const post = postData?.post;
+
   const t = useTranslations();
   const { data, setValues } = useFormData();
 
   const convertedQuestions = useMemo(
     () =>
       post?.questions?.map((val) => {
-        const formattedQuestions = val.questionInfo?.map((str) => ({ value: str }));
-        return { ...val, questionInfo: formattedQuestions };
+        const formattedQuestions = val.question_info?.map((str) => ({ value: str }));
+        return { ...val, question_info: formattedQuestions };
       }),
-    [post]
+    [post?.questions]
   );
 
   // set form data for editing
   useEffect(() => {
-    // @ts-ignore
-    if (!isEmpty(post) && isEmpty(data)) {
+    // kind of a hack, but idk how to make isEmpty function work with custom types
+    if (!isEmpty(post as Record<any, unknown>) && isEmpty(data)) {
       setValues({
         ...post,
         questions: { questions: convertedQuestions }
       });
     }
-  }, [post, setValues, data, convertedQuestions]);
+  }, [setValues, data, convertedQuestions, postData?.post, post]);
 
   return (
     <DefaultLayout>
@@ -60,13 +62,7 @@ const CreateForm = ({ post }: ICreateForm) => {
 
           <TabPanels className="bg-black-lightest px-8 py-5 rounded-b-3xl">
             <TabPanel>
-              <TabDesign
-                initialTitle={post?.title as string}
-                initialDescription={post?.excerpt as string}
-                initialPostid={post?.id as string}
-                initialBanner={post?.banner as string}
-                initialIcon={post?.icon as string}
-              />
+              <TabDesign post={post} />
             </TabPanel>
 
             <TabPanel className="relative">
@@ -81,7 +77,7 @@ const CreateForm = ({ post }: ICreateForm) => {
               />
             </TabPanel>
             <TabPanel>
-              <TabOptions post={post} isEdit={post?.activeTo ? true : false} />
+              <TabOptions post={post} isEdit={post?.active_to ? true : false} />
             </TabPanel>
           </TabPanels>
         </Tabs>
