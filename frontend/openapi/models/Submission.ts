@@ -25,7 +25,7 @@ export interface Submission {
      * @type {string}
      * @memberof Submission
      */
-    questionId?: string | null;
+    question_id?: string | null;
     /**
      * 
      * @type {Array<string>}
@@ -44,7 +44,7 @@ export function SubmissionFromJSONTyped(json: any, ignoreDiscriminator: boolean)
     }
     return {
         
-        'questionId': !exists(json, 'question_id') ? undefined : json['question_id'],
+        'question_id': !exists(json, 'question_id') ? undefined : json['question_id'],
         'answers': !exists(json, 'answers') ? undefined : json['answers'],
     };
 }
@@ -58,7 +58,7 @@ export function SubmissionToJSON(value?: Submission | null): any {
     }
     return {
         
-        'question_id': value.questionId,
+        'question_id': value.question_id,
         'answers': value.answers,
     };
 }

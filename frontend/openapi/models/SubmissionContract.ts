@@ -25,7 +25,7 @@ export interface SubmissionContract {
      * @type {string}
      * @memberof SubmissionContract
      */
-    questionId: string;
+    question_id: string;
     /**
      * 
      * @type {Array<string>}
@@ -44,7 +44,7 @@ export function SubmissionContractFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
-        'questionId': json['question_id'],
+        'question_id': json['question_id'],
         'answers': json['answers'],
     };
 }
@@ -58,7 +58,7 @@ export function SubmissionContractToJSON(value?: SubmissionContract | null): any
     }
     return {
         
-        'question_id': value.questionId,
+        'question_id': value.question_id,
         'answers': value.answers,
     };
 }
