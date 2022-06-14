@@ -15,15 +15,12 @@
 
 import * as runtime from "../runtime";
 import {
-  AnswerFullPostContract,
-  AnswerFullPostContractFromJSON,
-  AnswerFullPostContractToJSON,
+  AnswerPostContract,
+  AnswerPostContractFromJSON,
+  AnswerPostContractToJSON,
   AnswersUsersContract,
   AnswersUsersContractFromJSON,
   AnswersUsersContractToJSON,
-  FullPostContract,
-  FullPostContractFromJSON,
-  FullPostContractToJSON,
   ImageQuery,
   ImageQueryFromJSON,
   ImageQueryToJSON,
@@ -33,6 +30,9 @@ import {
   PostContract,
   PostContractFromJSON,
   PostContractToJSON,
+  PostContractRequest,
+  PostContractRequestFromJSON,
+  PostContractRequestToJSON,
   ProblemDetails,
   ProblemDetailsFromJSON,
   ProblemDetailsToJSON,
@@ -75,7 +75,7 @@ export interface PostsIdPublishPostRequest {
 
 export interface PostsIdPutRequest {
   id: string;
-  postContract?: PostContract;
+  postContractRequest?: PostContractRequest;
 }
 
 export interface PostsIdUnpublishPostRequest {
@@ -83,7 +83,7 @@ export interface PostsIdUnpublishPostRequest {
 }
 
 export interface PostsPostRequest {
-  postContract?: PostContract;
+  postContractRequest?: PostContractRequest;
 }
 
 /**
@@ -371,7 +371,7 @@ export class PostsApi extends runtime.BaseAPI {
   async postsIdGetRaw(
     requestParameters: PostsIdGetRequest,
     initOverrides?: RequestInit
-  ): Promise<runtime.ApiResponse<AnswerFullPostContract>> {
+  ): Promise<runtime.ApiResponse<AnswerPostContract>> {
     if (requestParameters.id === null || requestParameters.id === undefined) {
       throw new runtime.RequiredError(
         "id",
@@ -398,7 +398,7 @@ export class PostsApi extends runtime.BaseAPI {
     );
 
     return new runtime.JSONApiResponse(response, (jsonValue) =>
-      AnswerFullPostContractFromJSON(jsonValue)
+      AnswerPostContractFromJSON(jsonValue)
     );
   }
 
@@ -408,7 +408,7 @@ export class PostsApi extends runtime.BaseAPI {
   async postsIdGet(
     requestParameters: PostsIdGetRequest,
     initOverrides?: RequestInit
-  ): Promise<AnswerFullPostContract> {
+  ): Promise<AnswerPostContract> {
     const response = await this.postsIdGetRaw(requestParameters, initOverrides);
     return await response.value();
   }
@@ -419,7 +419,7 @@ export class PostsApi extends runtime.BaseAPI {
   async postsIdPublishPostRaw(
     requestParameters: PostsIdPublishPostRequest,
     initOverrides?: RequestInit
-  ): Promise<runtime.ApiResponse<FullPostContract>> {
+  ): Promise<runtime.ApiResponse<PostContract>> {
     if (requestParameters.id === null || requestParameters.id === undefined) {
       throw new runtime.RequiredError(
         "id",
@@ -444,9 +444,7 @@ export class PostsApi extends runtime.BaseAPI {
       initOverrides
     );
 
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
-      FullPostContractFromJSON(jsonValue)
-    );
+    return new runtime.JSONApiResponse(response, (jsonValue) => PostContractFromJSON(jsonValue));
   }
 
   /**
@@ -455,7 +453,7 @@ export class PostsApi extends runtime.BaseAPI {
   async postsIdPublishPost(
     requestParameters: PostsIdPublishPostRequest,
     initOverrides?: RequestInit
-  ): Promise<FullPostContract> {
+  ): Promise<PostContract> {
     const response = await this.postsIdPublishPostRaw(requestParameters, initOverrides);
     return await response.value();
   }
@@ -466,7 +464,7 @@ export class PostsApi extends runtime.BaseAPI {
   async postsIdPutRaw(
     requestParameters: PostsIdPutRequest,
     initOverrides?: RequestInit
-  ): Promise<runtime.ApiResponse<FullPostContract>> {
+  ): Promise<runtime.ApiResponse<PostContract>> {
     if (requestParameters.id === null || requestParameters.id === undefined) {
       throw new runtime.RequiredError(
         "id",
@@ -486,14 +484,12 @@ export class PostsApi extends runtime.BaseAPI {
         method: "PUT",
         headers: headerParameters,
         query: queryParameters,
-        body: PostContractToJSON(requestParameters.postContract)
+        body: PostContractRequestToJSON(requestParameters.postContractRequest)
       },
       initOverrides
     );
 
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
-      FullPostContractFromJSON(jsonValue)
-    );
+    return new runtime.JSONApiResponse(response, (jsonValue) => PostContractFromJSON(jsonValue));
   }
 
   /**
@@ -502,7 +498,7 @@ export class PostsApi extends runtime.BaseAPI {
   async postsIdPut(
     requestParameters: PostsIdPutRequest,
     initOverrides?: RequestInit
-  ): Promise<FullPostContract> {
+  ): Promise<PostContract> {
     const response = await this.postsIdPutRaw(requestParameters, initOverrides);
     return await response.value();
   }
@@ -513,7 +509,7 @@ export class PostsApi extends runtime.BaseAPI {
   async postsIdUnpublishPostRaw(
     requestParameters: PostsIdUnpublishPostRequest,
     initOverrides?: RequestInit
-  ): Promise<runtime.ApiResponse<FullPostContract>> {
+  ): Promise<runtime.ApiResponse<PostContract>> {
     if (requestParameters.id === null || requestParameters.id === undefined) {
       throw new runtime.RequiredError(
         "id",
@@ -538,9 +534,7 @@ export class PostsApi extends runtime.BaseAPI {
       initOverrides
     );
 
-    return new runtime.JSONApiResponse(response, (jsonValue) =>
-      FullPostContractFromJSON(jsonValue)
-    );
+    return new runtime.JSONApiResponse(response, (jsonValue) => PostContractFromJSON(jsonValue));
   }
 
   /**
@@ -549,7 +543,7 @@ export class PostsApi extends runtime.BaseAPI {
   async postsIdUnpublishPost(
     requestParameters: PostsIdUnpublishPostRequest,
     initOverrides?: RequestInit
-  ): Promise<FullPostContract> {
+  ): Promise<PostContract> {
     const response = await this.postsIdUnpublishPostRaw(requestParameters, initOverrides);
     return await response.value();
   }
@@ -573,7 +567,7 @@ export class PostsApi extends runtime.BaseAPI {
         method: "POST",
         headers: headerParameters,
         query: queryParameters,
-        body: PostContractToJSON(requestParameters.postContract)
+        body: PostContractRequestToJSON(requestParameters.postContractRequest)
       },
       initOverrides
     );

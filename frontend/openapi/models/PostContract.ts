@@ -40,7 +40,61 @@ export interface PostContract {
    * @type {string}
    * @memberof PostContract
    */
-  title: string;
+  accessKey?: string | null;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PostContract
+   */
+  allowAnswerEdit?: boolean;
+  /**
+   *
+   * @type {Array<Question>}
+   * @memberof PostContract
+   */
+  questions?: Array<Question> | null;
+  /**
+   *
+   * @type {string}
+   * @memberof PostContract
+   */
+  id?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof PostContract
+   */
+  authorId?: string | null;
+  /**
+   *
+   * @type {boolean}
+   * @memberof PostContract
+   */
+  isActive?: boolean;
+  /**
+   *
+   * @type {Date}
+   * @memberof PostContract
+   */
+  activeTo?: Date;
+  /**
+   *
+   * @type {string}
+   * @memberof PostContract
+   */
+  icon?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof PostContract
+   */
+  banner?: string | null;
+  /**
+   *
+   * @type {string}
+   * @memberof PostContract
+   */
+  title?: string | null;
   /**
    *
    * @type {string}
@@ -61,6 +115,18 @@ export interface PostContract {
   gamemode?: Gamemode;
   /**
    *
+   * @type {boolean}
+   * @memberof PostContract
+   */
+  published?: boolean;
+  /**
+   *
+   * @type {Date}
+   * @memberof PostContract
+   */
+  publishTime?: Date | null;
+  /**
+   *
    * @type {Accessibility}
    * @memberof PostContract
    */
@@ -73,22 +139,10 @@ export interface PostContract {
   limitations?: Limitations;
   /**
    *
-   * @type {Date}
+   * @type {number}
    * @memberof PostContract
    */
-  activeTo?: Date;
-  /**
-   *
-   * @type {boolean}
-   * @memberof PostContract
-   */
-  allowAnswerEdit?: boolean;
-  /**
-   *
-   * @type {Array<Question>}
-   * @memberof PostContract
-   */
-  questions: Array<Question>;
+  answerCount?: number;
 }
 
 export function PostContractFromJSON(json: any): PostContract {
@@ -100,19 +154,36 @@ export function PostContractFromJSONTyped(json: any, ignoreDiscriminator: boolea
     return json;
   }
   return {
-    title: json["title"],
+    accessKey: !exists(json, "access_key") ? undefined : json["access_key"],
+    allowAnswerEdit: !exists(json, "allow_answer_edit") ? undefined : json["allow_answer_edit"],
+    questions: !exists(json, "questions")
+      ? undefined
+      : json["questions"] === null
+      ? null
+      : (json["questions"] as Array<any>).map(QuestionFromJSON),
+    id: !exists(json, "id") ? undefined : json["id"],
+    authorId: !exists(json, "author_id") ? undefined : json["author_id"],
+    isActive: !exists(json, "is_active") ? undefined : json["is_active"],
+    activeTo: !exists(json, "active_to") ? undefined : new Date(json["active_to"]),
+    icon: !exists(json, "icon") ? undefined : json["icon"],
+    banner: !exists(json, "banner") ? undefined : json["banner"],
+    title: !exists(json, "title") ? undefined : json["title"],
     description: !exists(json, "description") ? undefined : json["description"],
     excerpt: !exists(json, "excerpt") ? undefined : json["excerpt"],
     gamemode: !exists(json, "gamemode") ? undefined : GamemodeFromJSON(json["gamemode"]),
+    published: !exists(json, "published") ? undefined : json["published"],
+    publishTime: !exists(json, "publish_time")
+      ? undefined
+      : json["publish_time"] === null
+      ? null
+      : new Date(json["publish_time"]),
     accessibility: !exists(json, "accessibility")
       ? undefined
       : AccessibilityFromJSON(json["accessibility"]),
     limitations: !exists(json, "limitations")
       ? undefined
       : LimitationsFromJSON(json["limitations"]),
-    activeTo: !exists(json, "active_to") ? undefined : new Date(json["active_to"]),
-    allowAnswerEdit: !exists(json, "allow_answer_edit") ? undefined : json["allow_answer_edit"],
-    questions: (json["questions"] as Array<any>).map(QuestionFromJSON)
+    answerCount: !exists(json, "answer_count") ? undefined : json["answer_count"]
   };
 }
 
@@ -124,14 +195,33 @@ export function PostContractToJSON(value?: PostContract | null): any {
     return null;
   }
   return {
+    access_key: value.accessKey,
+    allow_answer_edit: value.allowAnswerEdit,
+    questions:
+      value.questions === undefined
+        ? undefined
+        : value.questions === null
+        ? null
+        : (value.questions as Array<any>).map(QuestionToJSON),
+    id: value.id,
+    author_id: value.authorId,
+    is_active: value.isActive,
+    active_to: value.activeTo === undefined ? undefined : value.activeTo.toISOString(),
+    icon: value.icon,
+    banner: value.banner,
     title: value.title,
     description: value.description,
     excerpt: value.excerpt,
     gamemode: GamemodeToJSON(value.gamemode),
+    published: value.published,
+    publish_time:
+      value.publishTime === undefined
+        ? undefined
+        : value.publishTime === null
+        ? null
+        : value.publishTime.toISOString(),
     accessibility: AccessibilityToJSON(value.accessibility),
     limitations: LimitationsToJSON(value.limitations),
-    active_to: value.activeTo === undefined ? undefined : value.activeTo.toISOString(),
-    allow_answer_edit: value.allowAnswerEdit,
-    questions: (value.questions as Array<any>).map(QuestionToJSON)
+    answer_count: value.answerCount
   };
 }

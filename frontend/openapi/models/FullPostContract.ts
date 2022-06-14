@@ -1,4 +1,5 @@
 // @ts-nocheck
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -136,7 +137,6 @@ export interface FullPostContract {
    * @type {Date}
    * @memberof FullPostContract
    */
-
 }
 
 export function FullPostContractFromJSON(json: any): FullPostContract {

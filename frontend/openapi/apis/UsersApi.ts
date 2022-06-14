@@ -15,9 +15,9 @@
 
 import * as runtime from "../runtime";
 import {
-  AnswerPostWithQuestionsContract,
-  AnswerPostWithQuestionsContractFromJSON,
-  AnswerPostWithQuestionsContractToJSON,
+  AnswerPostContract,
+  AnswerPostContractFromJSON,
+  AnswerPostContractToJSON,
   MinimalPostContract,
   MinimalPostContractFromJSON,
   MinimalPostContractToJSON,
@@ -49,7 +49,7 @@ export class UsersApi extends runtime.BaseAPI {
    */
   async meAnswersGetRaw(
     initOverrides?: RequestInit
-  ): Promise<runtime.ApiResponse<Array<AnswerPostWithQuestionsContract>>> {
+  ): Promise<runtime.ApiResponse<Array<AnswerPostContract>>> {
     const queryParameters: any = {};
 
     const headerParameters: runtime.HTTPHeaders = {};
@@ -65,14 +65,14 @@ export class UsersApi extends runtime.BaseAPI {
     );
 
     return new runtime.JSONApiResponse(response, (jsonValue) =>
-      jsonValue.map(AnswerPostWithQuestionsContractFromJSON)
+      jsonValue.map(AnswerPostContractFromJSON)
     );
   }
 
   /**
    * Get user\'s answers (Auth)
    */
-  async meAnswersGet(initOverrides?: RequestInit): Promise<Array<AnswerPostWithQuestionsContract>> {
+  async meAnswersGet(initOverrides?: RequestInit): Promise<Array<AnswerPostContract>> {
     const response = await this.meAnswersGetRaw(initOverrides);
     return await response.value();
   }
