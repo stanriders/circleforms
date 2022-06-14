@@ -7,8 +7,8 @@ import getImage from "../utils/getImage";
 
 interface IFormEntry extends MinimalPostContract {
   user: UserMinimalContract | undefined;
-  isPreview?: boolean;
   previewBanner?: string;
+  href: string;
 }
 
 export default function FormEntry({
@@ -19,7 +19,7 @@ export default function FormEntry({
   excerpt,
   publishTime,
   previewBanner,
-  isPreview
+  href
 }: IFormEntry) {
   const bannerImg = getImage({ banner, id, type: "banner" });
 
@@ -32,7 +32,8 @@ export default function FormEntry({
   }, [previewBanner]);
 
   return (
-    <Link href={isPreview ? "#" : `/form/${id}`}>
+    <Link href={href}>
+      {/*  <Link href={isPreview ? "#" : `/form/${id}`}> */}
       <a className="flex rounded-5 overflow-clip bg-black-light z-0 transform transition-transform ease-out-cubic hover:scale-99 hover:z-10">
         <div
           className="flex-1 bg-cover"

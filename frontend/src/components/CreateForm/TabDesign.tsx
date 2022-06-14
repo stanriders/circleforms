@@ -92,6 +92,7 @@ const TabDesign = ({
 
       <h2 className="text-lg text-center">Preview</h2>
       <FormEntry
+        href="#"
         title={title}
         excerpt={description}
         user={{
@@ -100,7 +101,6 @@ const TabDesign = ({
           discord: "",
           username: "Username"
         }}
-        isPreview={true}
         previewBanner={bannerPreview}
       />
       <FormCard id={initialPostid} title={title} excerpt={description} previewIcon={iconPreview} />

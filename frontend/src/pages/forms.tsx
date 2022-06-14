@@ -147,6 +147,7 @@ export default function FormsList() {
                       const user = pinnedForms?.users?.find((user) => user.id === form.authorId);
                       return (
                         <FormEntry
+                          href={`/form/${form.id}`}
                           key={form.id}
                           user={user}
                           id={form.id}
@@ -170,6 +171,7 @@ export default function FormsList() {
                     const user = data?.users?.find((user) => user.id === form.authorId);
                     return (
                       <FormEntry
+                        href={`/form/${form.id}`}
                         key={form.id}
                         user={user}
                         id={form.id}

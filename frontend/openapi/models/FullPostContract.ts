@@ -40,43 +40,43 @@ export interface FullPostContract {
    * @type {string}
    * @memberof FullPostContract
    */
-  id?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof FullPostContract
    */
-  authorId?: string | null;
+
   /**
    *
    * @type {boolean}
    * @memberof FullPostContract
    */
-  isActive?: boolean;
+
   /**
    *
    * @type {Date}
    * @memberof FullPostContract
    */
-  activeTo?: Date;
+
   /**
    *
    * @type {string}
    * @memberof FullPostContract
    */
-  icon?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof FullPostContract
    */
-  banner?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof FullPostContract
    */
-  title?: string | null;
+
   /**
    *
    * @type {string}
@@ -88,55 +88,55 @@ export interface FullPostContract {
    * @type {string}
    * @memberof FullPostContract
    */
-  description?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof FullPostContract
    */
-  excerpt?: string | null;
+
   /**
    *
    * @type {Gamemode}
    * @memberof FullPostContract
    */
-  gamemode?: Gamemode;
+
   /**
    *
    * @type {Accessibility}
    * @memberof FullPostContract
    */
-  accessibility?: Accessibility;
+
   /**
    *
    * @type {Limitations}
    * @memberof FullPostContract
    */
-  limitations?: Limitations;
+
   /**
    *
    * @type {boolean}
    * @memberof FullPostContract
    */
-  published?: boolean;
+
   /**
    *
    * @type {boolean}
    * @memberof FullPostContract
    */
-  allowAnswerEdit?: boolean;
+
   /**
    *
    * @type {Array<Question>}
    * @memberof FullPostContract
    */
-  questions?: Array<Question> | null;
+
   /**
    *
    * @type {Date}
    * @memberof FullPostContract
    */
-  publishTime?: Date | null;
+
 }
 
 export function FullPostContractFromJSON(json: any): FullPostContract {

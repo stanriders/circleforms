@@ -46,13 +46,13 @@ export interface PostWithQuestionsContract {
    * @type {boolean}
    * @memberof PostWithQuestionsContract
    */
-  allowAnswerEdit?: boolean;
+
   /**
    *
    * @type {Array<Question>}
    * @memberof PostWithQuestionsContract
    */
-  questions?: Array<Question> | null;
+
   /**
    *
    * @type {Array<Submission>}
@@ -64,85 +64,85 @@ export interface PostWithQuestionsContract {
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  id?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  authorId?: string | null;
+
   /**
    *
    * @type {boolean}
    * @memberof PostWithQuestionsContract
    */
-  isActive?: boolean;
+
   /**
    *
    * @type {Date}
    * @memberof PostWithQuestionsContract
    */
-  activeTo?: Date;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  icon?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  banner?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  title?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  description?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  excerpt?: string | null;
+ 
   /**
    *
    * @type {Gamemode}
    * @memberof PostWithQuestionsContract
    */
-  gamemode?: Gamemode;
+
   /**
    *
    * @type {boolean}
    * @memberof PostWithQuestionsContract
    */
-  published?: boolean;
+
   /**
    *
    * @type {Date}
    * @memberof PostWithQuestionsContract
    */
-  publishTime?: Date | null;
+
   /**
    *
    * @type {Accessibility}
    * @memberof PostWithQuestionsContract
    */
-  accessibility?: Accessibility;
+
   /**
    *
    * @type {Limitations}
    * @memberof PostWithQuestionsContract
    */
-  limitations?: Limitations;
+
   /**
    *
    * @type {number}

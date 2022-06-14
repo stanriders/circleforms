@@ -1,4 +1,5 @@
 import React from "react";
+
 import { UserContract, UserInAnswerContract } from "../../openapi";
 
 interface IUserContext {

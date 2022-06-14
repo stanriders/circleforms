@@ -26,7 +26,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const formid = context.params?.id || "";
   const locale = context.locale;
 
-  // [translations, global, post]
   const promises = await Promise.allSettled([
     import(`../../messages/create-a-form/${locale}.json`),
     import(`../../messages/global/${locale}.json`),

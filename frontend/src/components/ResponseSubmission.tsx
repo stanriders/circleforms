@@ -1,9 +1,11 @@
+import { useContext } from "react";
 import { FieldError, FieldErrors, FieldValues, useForm, UseFormRegister } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { useMutation } from "react-query";
 import { DevTool } from "@hookform/devtools";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
+import UserContext from "src/context/UserContext";
 import { sleep } from "src/utils/misc";
 
 import {
@@ -31,17 +33,26 @@ interface IResponseSubmission {
   authorUser: UserContract;
 
   // these props are passed if we want to view user`s answers
-  defaultUserAnswers?: FormData;
+  initialUserAnswers?: FormData;
+  urlOsuId?: string;
 }
 
-const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseSubmission) => {
+const ResponseSubmission = ({
+  post,
+  authorUser,
+  initialUserAnswers,
+  urlOsuId
+}: IResponseSubmission) => {
   const t = useTranslations();
   const router = useRouter();
+  const { user } = useContext(UserContext);
 
   let showSubmitButton = true;
-  if (defaultUserAnswers) {
-    showSubmitButton = Object.keys(defaultUserAnswers).length === 0;
+  if (initialUserAnswers) {
+    showSubmitButton = Object.keys(initialUserAnswers).length === 0;
   }
+
+  const showEditSubmission = urlOsuId === user?.id && post.allowAnswerEdit;
 
   // Form settings
   const {
@@ -49,7 +60,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
     control,
     handleSubmit,
     formState: { errors }
-  } = useForm<FormData>({ mode: "onBlur", defaultValues: defaultUserAnswers });
+  } = useForm<FormData>({ mode: "onBlur", defaultValues: initialUserAnswers });
 
   const { mutate } = useMutation((obj: PostsIdAnswersPostRequest) =>
     apiClient.posts.postsIdAnswersPost(obj)
@@ -130,7 +141,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
             question={question}
             register={register}
             errors={errors}
-            disableEdit={!showSubmitButton}
+            disableEdit={!showEditSubmission && !showSubmitButton}
           />
         );
       case QuestionType.Checkbox:
@@ -140,7 +151,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
             question={question}
             register={register}
             errors={errors}
-            disableEdit={!showSubmitButton}
+            disableEdit={!showEditSubmission && !showSubmitButton}
           />
         );
       case QuestionType.Choice:
@@ -150,7 +161,7 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
             question={question}
             register={register}
             errors={errors}
-            disableEdit={!showSubmitButton}
+            disableEdit={!showEditSubmission && !showSubmitButton}
           />
         );
       default:
@@ -189,6 +200,12 @@ const ResponseSubmission = ({ post, authorUser, defaultUserAnswers }: IResponseS
             {showSubmitButton && (
               <button type="submit" className="button secondary">
                 Submit response
+              </button>
+            )}
+
+            {showEditSubmission && (
+              <button type="submit" className="button secondary">
+                Edit submission
               </button>
             )}
           </div>

@@ -77,6 +77,7 @@ export default function Header() {
               </div>
             </MenuButton>
             <MenuList className="slide-down">
+              <MenuItem onSelect={() => router.push("/answers")}>Answers</MenuItem>
               <MenuItem onSelect={() => router.push("/dashboard")}>
                 {t("navbar.dashboard")}
               </MenuItem>

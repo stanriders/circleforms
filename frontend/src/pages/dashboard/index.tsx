@@ -75,6 +75,7 @@ export default function Dashboard() {
             publishedPosts?.map((form) => {
               return (
                 <FormEntry
+                  href={`/form/${form.id}`}
                   key={form.id}
                   user={{
                     username: user.osu?.username,
