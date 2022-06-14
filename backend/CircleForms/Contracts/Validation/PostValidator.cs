@@ -1,11 +1,11 @@
 ﻿using System;
-using CircleForms.Contracts.ContractModels.Request;
+using CircleForms.Contracts.Request;
 using CircleForms.Database.Models.Posts.Enums;
 using FluentValidation;
 
 namespace CircleForms.Contracts.Validation;
 
-public class PostValidator : AbstractValidator<PostContract>
+public class PostValidator : AbstractValidator<PostContractRequest>
 {
     public PostValidator()
     {

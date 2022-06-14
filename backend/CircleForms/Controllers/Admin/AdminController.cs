@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
-using CircleForms.Contracts.ContractModels.Response.Posts;
-using CircleForms.Contracts.ContractModels.Response.Users;
+using CircleForms.Contracts.Response.Posts;
+using CircleForms.Contracts.Response.Users;
 using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
-using CircleForms.ModelLayer;
+using CircleForms.Domain;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -103,7 +103,7 @@ public class AdminController : ControllerBase
     ///     Get uncached post.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsOneDatabasePost)]
-    [ProducesResponseType(typeof(FullPostContract), StatusCodes.Status200OK, "application/json")]
+    [ProducesResponseType(typeof(PostContract), StatusCodes.Status200OK, "application/json")]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Get(string id)
     {
@@ -118,7 +118,7 @@ public class AdminController : ControllerBase
     ///     Get all uncached posts.
     /// </summary>
     [HttpGet(ApiEndpoints.PostsAllDatabasePosts)]
-    public async Task<List<FullPostContract>> Get()
+    public async Task<List<PostContract>> Get()
     {
         _logger.LogInformation("User {User} requested database posts dump", _claim);
 
