@@ -35,8 +35,8 @@ const Index: NextPage = () => {
       <div className="flex flex-col justify-center items-center min-h-screen">
         <VisuallyHidden>Circle Forms</VisuallyHidden>
         <SVG className="w-3/4 max-w-6xl" src="/svg/logo.svg" />
-        <p className="font-museo lg:text-4xl mt-4 text-center">{t("description")}</p>
-        <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
+        <p className="mt-4 font-museo text-center lg:text-4xl">{t("description")}</p>
+        <div className="flex flex-col gap-8 pb-2 mt-14 lg:flex-row lg:pb-0">
           <Button onClick={() => router.push("/dashboard")} theme="secondary" large>
             {t("createForm")}
           </Button>
@@ -46,30 +46,30 @@ const Index: NextPage = () => {
         </div>
       </div>
 
-      <div className="bg-black-darker w-full py-32">
+      <div className="py-32 w-full bg-black-darker">
         <section className="small-container">
-          <div className="flex flex-col lg:flex-row justify-between items-center mb-8">
-            <h2 ref={scrollRef} className="text-6xl uppercase font-semibold">
+          <div className="flex flex-col justify-between items-center mb-8 lg:flex-row">
+            <h2 ref={scrollRef} className="text-6xl font-semibold uppercase">
               {t("about.title")}
             </h2>
 
-            <SVG className="h-8 lg:h-11 lg:-ml-8" src="/svg/circles-sliders.svg" />
+            <SVG className="h-8 lg:-ml-8 lg:h-11" src="/svg/circles-sliders.svg" />
           </div>
-          <div className="flex flex-col lg:flex-row gap-8 text-xl font-medium">
+          <div className="flex flex-col gap-8 text-xl font-medium lg:flex-row">
             <p className="lg:flex-1">{t("about.first")}</p>
             <p className="lg:flex-1">{t("about.second")}</p>
           </div>
         </section>
       </div>
 
-      <div className="bg-black w-full py-24">
+      <div className="py-24 w-full bg-black">
         <section className="container">
           <div className="mb-8 text-center">
-            <h2 className="type-h1 uppercase">{t("recentForms.title")}</h2>
-            <p className="text-white text-opacity-50 text-2xl">{t("recentForms.description")}</p>
+            <h2 className="uppercase type-h1">{t("recentForms.title")}</h2>
+            <p className="text-2xl text-white text-opacity-50">{t("recentForms.description")}</p>
           </div>
-          <div className="rounded-3xl bg-black-darker p-6">
-            <div className="flex flex-col gap-y-2 z-10 relative">
+          <div className="p-6 bg-black-darker rounded-3xl">
+            <div className="flex relative z-10 flex-col gap-y-2">
               <div
                 className="absolute inset-0 z-20 pointer-events-none"
                 style={{
@@ -78,7 +78,7 @@ const Index: NextPage = () => {
               ></div>
               <div className="relative space-y-3">
                 {isLoading && (
-                  <div className="flex justify-center absolute top-4 z-50 left-1/2 transform -translate-x-1/2">
+                  <div className="flex absolute top-4 left-1/2 z-50 justify-center -translate-x-1/2">
                     <Loading />
                   </div>
                 )}

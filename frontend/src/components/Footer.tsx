@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-black-darker text-white py-1 w-full">
+    <footer className="py-1 w-full text-white bg-black-darker">
       <div className="flex flex-col items-center">
         <ul className="flex gap-x-11 text-sm lg:text-xl">
           <li>
@@ -19,7 +19,7 @@ export default function Footer() {
             <a href="https://github.com/stanriders/circleforms">Source code</a>
           </li>
         </ul>
-        <span className="text-xs text-white opacity-50 mt-1">© 2022 All Rights Reserved</span>
+        <span className="mt-1 text-xs text-white opacity-50">© 2022 All Rights Reserved</span>
       </div>
     </footer>
   );

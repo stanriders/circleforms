@@ -87,15 +87,15 @@ export default function FormsList() {
       </Head>
 
       <section className="container max-height">
-        <div className="flex flex-col justify-between mb-12 bg-black-dark2 rounded-70 h-full">
+        <div className="flex flex-col justify-between mb-12 h-full bg-black-dark2 rounded-70">
           <div className="h-full">
-            <div className="flex flex-col lg:flex-row justify-between bg-black-lighter rounded-full">
-              <div className="pl-20 pt-7 pb-4">
-                <h2 className="uppercase text-5xl font-bold">{t("subtitle")}</h2>
+            <div className="flex flex-col justify-between bg-black-lighter rounded-full lg:flex-row">
+              <div className="pt-7 pb-4 pl-20">
+                <h2 className="text-5xl font-bold uppercase">{t("subtitle")}</h2>
                 <p className="text-white text-opacity-50">{t("description")}</p>
               </div>
-              <div className="flex flex-col items-center justify-center bg-black-lightest h-auto rounded-full px-8">
-                <h3 className="text-3xl font-medium flex gap-x-2 mb-1">
+              <div className="flex flex-col justify-center items-center px-8 h-auto bg-black-lightest rounded-full">
+                <h3 className="flex gap-x-2 mb-1 text-3xl font-medium">
                   {t("filters.title")}
                   <svg
                     width="145"
@@ -138,7 +138,7 @@ export default function FormsList() {
                 </div>
               </div>
             </div>
-            <div className="mt-6 px-7">
+            <div className="px-7 mt-6">
               {showPinnedPosts && (
                 <Fragment>
                   <SubTitle>{t("pinnedForms")}</SubTitle>
@@ -163,7 +163,7 @@ export default function FormsList() {
               )}
 
               <SubTitle>{t("title")}</SubTitle>
-              <div className="flex flex-col gap-y-3 relative">
+              <div className="flex relative flex-col gap-y-3">
                 {!data && isLoadingPosts && <FormEntrySkeletonList length={10} />}
                 {!showFormEntries && <p className="font-semibold text-center">{t("noForms")}</p>}
                 {showFormEntries &&
@@ -185,7 +185,7 @@ export default function FormsList() {
               </div>
             </div>
           </div>
-          <div className="flex justify-center gap-x-6 py-8">
+          <div className="flex gap-x-6 justify-center py-8">
             <Button theme="grey" onClick={handlePrevClick}>
               {t("prev")}
             </Button>

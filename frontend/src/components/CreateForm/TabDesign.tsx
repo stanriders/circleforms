@@ -39,11 +39,11 @@ const TabDesign = ({ post }: ITabDesign) => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-y-1 rounded-35 bg-black-lighter pt-5 pb-8 px-14 relative overflow-clip">
-        <div className="absolute left-0 top-0 bg-pink h-2 w-full" />
+      <div className="flex relative flex-col gap-y-1 px-14 pt-5 pb-8 text-clip bg-black-lighter rounded-35">
+        <div className="absolute top-0 left-0 w-full h-2 bg-pink" />
         {/* post title */}
         <input
-          className="input--inline bg-transparent text-2xl font-medium  border-b border-dotted border-white border-opacity-20 p-2 relative transition-colors input--title"
+          className="relative p-2 text-2xl font-medium  bg-transparent border-b border-white/20  border-dotted transition-colors input--inline input--title"
           type="text"
           placeholder={t("placeholders.title")}
           value={title}
@@ -55,7 +55,7 @@ const TabDesign = ({ post }: ITabDesign) => {
         />
         {/* post description */}
         <input
-          className="input--inline bg-transparent text-xl font-medium  border-b border-dotted border-white border-opacity-20 p-2 relative transition-colors"
+          className="relative p-2 text-xl font-medium  bg-transparent border-b border-white/20  border-dotted transition-colors input--inline"
           type="text"
           placeholder={t("placeholders.excerpt")}
           required={true}
@@ -68,7 +68,7 @@ const TabDesign = ({ post }: ITabDesign) => {
       </div>
 
       {/* image select */}
-      <div className="grid grid-cols-1 lg:grid-cols-6 gap-y-8 gap-x-24">
+      <div className="grid grid-cols-1 gap-x-24 gap-y-8 lg:grid-cols-6">
         <div className="lg:col-span-2">
           <ImageDropzone
             classname="aspect-square"

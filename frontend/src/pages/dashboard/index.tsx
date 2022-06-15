@@ -44,13 +44,13 @@ export default function Dashboard() {
 
       <Title title={t("subtitle")}>{t("description")}</Title>
 
-      <div className="container bg-black-dark2 rounded-40 px-8 py-5 flex flex-col gap-8">
+      <div className="container flex flex-col gap-8 py-5 px-8 bg-black-dark2 rounded-40">
         <p className="text-xl text-center">Unpublished</p>
         <section>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
             <Link href="/create-new-form" passHref>
               <a
-                className="flex justify-center items-center bg-pink rounded-20 h-[88px]  transition-transform ease-out-cubic hover:scale-99"
+                className="flex justify-center items-center h-[88px] bg-pink rounded-20  transition-transform hover:scale-99 ease-out-cubic"
                 title="Create your form"
               >
                 <SVG src="/svg/plus.svg" />
@@ -62,7 +62,7 @@ export default function Dashboard() {
           </div>
         </section>
         {publishedPosts?.length !== 0 && <p className="text-xl text-center">Published</p>}
-        <section className="flex flex-col gap-y-3 relative">
+        <section className="flex relative flex-col gap-y-3">
           {!data && isLoading && <FormEntrySkeletonList length={10} />}
           {publishedPosts &&
             publishedPosts?.map((form) => {

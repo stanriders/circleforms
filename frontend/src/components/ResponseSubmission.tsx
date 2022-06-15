@@ -178,7 +178,7 @@ const ResponseSubmission = ({
       <section className="container mb-12">
         {/* background rounded image */}
         <div
-          className="bg-cover h-60 w-full rounded-t-70"
+          className="w-full h-60 bg-cover rounded-t-70"
           style={{
             backgroundImage: `
               linear-gradient(180deg, rgba(19, 19, 19, 0) -35.06%, #0F0F0F 100%),

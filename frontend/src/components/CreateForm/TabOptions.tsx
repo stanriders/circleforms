@@ -209,10 +209,10 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
       <Toaster />
 
       <form
-        className="flex flex-col gap-y-16 rounded-35 bg-black-lighter p-9 py-14 relative overflow-clip"
+        className="flex relative flex-col gap-y-16 p-9 py-14 text-clip bg-black-lighter rounded-35"
         onSubmit={methods.handleSubmit(handleSubmit)}
       >
-        <h2 className="text-4xl font-bold -my-8 ">Settings</h2>
+        <h2 className="-my-8 text-4xl font-bold ">Settings</h2>
         <hr className="border-t-2 border-t-grey-border" />
         <OptionTabEntry mainHeading="Form Privacy Level" subText="Manage who sees the form">
           <Controller

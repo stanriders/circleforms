@@ -27,9 +27,9 @@ export default function Player({
   return (
     <div
       onClick={onClickHandler}
-      className="bg-gradient w-full rounded-14 flex justify-between items-center pr-4"
+      className="flex justify-between items-center pr-4 w-full rounded-14 bg-gradient"
     >
-      <div className="flex items-center gap-x-3">
+      <div className="flex gap-x-3 items-center">
         <img
           className="w-14 h-14 rounded-14"
           src={`http://s.ppy.sh/a/${osuId}`}

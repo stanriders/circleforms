@@ -87,7 +87,7 @@ const Wysiwyg = ({
       <button
         type="button"
         onClick={() => setHasPreview(!hasPreview)}
-        className="button--icon mb-2"
+        className="mb-2 button--icon"
         title={hasPreview ? t("write") : t("preview")}
       >
         <span className="sr-only">{hasPreview ? t("write") : t("preview")}</span>
@@ -106,7 +106,7 @@ const Wysiwyg = ({
         ></textarea>
       )) || (
         <div
-          className="w-full bg-black-lightest border-b-2 border-white p-4"
+          className="p-4 w-full bg-black-lightest border-b-2 border-white"
           dangerouslySetInnerHTML={{ __html: preview }}
         ></div>
       )}

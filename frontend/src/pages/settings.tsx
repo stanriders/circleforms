@@ -25,25 +25,25 @@ export default function Settings() {
       </Head>
 
       <Title title={t("subtitle")}>
-        <p className="text-2xl mt-2">{t("description")}</p>
+        <p className="mt-2 text-2xl">{t("description")}</p>
       </Title>
 
-      <section className="container bg-black-dark2 rounded-70 px-10 py-8">
+      <section className="container py-8 px-10 bg-black-dark2 rounded-70">
         <div className="space-y-8">
           {/* osu! integration */}
-          <div className="flex justify-between bg-black-lightest rounded-40 px-6 py-4">
+          <div className="flex justify-between py-4 px-6 bg-black-lightest rounded-40">
             <div className="flex items-center">
               <img
-                className="h-28 w-28 rounded-full"
+                className="w-28 h-28 rounded-full"
                 src={user.osu?.avatar_url!}
                 alt={user.osu?.username!}
               />
               <div className="pl-3">
-                <h2 className="font-bold text-3xl">osu!</h2>
+                <h2 className="text-3xl font-bold">osu!</h2>
                 <p className="text-sm">{t("integrations.osu.description")}</p>
               </div>
             </div>
-            <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
+            <div className="flex flex-col justify-center text-lg text-right text-white text-opacity-50">
               <p>
                 {t("integrations.osu.connectedTo")} {user.id} ({user.osu?.username})
               </p>
@@ -56,17 +56,17 @@ export default function Settings() {
           </div>
 
           {/* Discord integration */}
-          <div className="flex justify-between bg-black-lightest rounded-40 px-6 py-4">
+          <div className="flex justify-between py-4 px-6 bg-black-lightest rounded-40">
             <div className="flex items-center">
-              <div className="w-28 h-28 flex items-center justify-center">
-                <SVG className="w-full p-4" src="/svg/discord.svg" />
+              <div className="flex justify-center items-center w-28 h-28">
+                <SVG className="p-4 w-full" src="/svg/discord.svg" />
               </div>
               <div className="pl-3">
-                <h2 className="font-bold text-3xl">Discord</h2>
+                <h2 className="text-3xl font-bold">Discord</h2>
                 <p className="text-sm">{t("integrations.discord.description")}</p>
               </div>
             </div>
-            <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
+            <div className="flex flex-col justify-center text-lg text-right text-white text-opacity-50">
               <Button
                 // @ts-ignore
                 disabled
