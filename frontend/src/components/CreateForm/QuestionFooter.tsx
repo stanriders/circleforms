@@ -3,6 +3,7 @@ import { Controller, useFormContext } from "react-hook-form";
 import { GrTextAlignFull } from "react-icons/gr";
 import { MdCheckBox, MdDeleteOutline, MdMoreVert, MdRadioButtonChecked } from "react-icons/md";
 import Switch from "react-switch";
+import VisuallyHidden from "@reach/visually-hidden";
 import { useTranslations } from "next-intl";
 import { QuestionType } from "openapi";
 
@@ -86,6 +87,7 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
           />
         </label>
         <button type="button" className="button--icon">
+          <VisuallyHidden>Show more</VisuallyHidden>
           <MdMoreVert className="w-8 h-8" />
         </button>
       </div>

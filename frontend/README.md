@@ -26,6 +26,8 @@
 
 # Important info
 
+- Api endpoints: http://localhost/swagger/index.html
+
 - Tests for pages should go into `__tests__` directory, otherwise they are going to be included in the build and fail. Tests for regular components can be placed near them.
 
 ## How to update api client when backend changes:

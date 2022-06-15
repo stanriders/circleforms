@@ -101,7 +101,12 @@ const TabDesign = ({ post }: ITabDesign) => {
         }}
         previewBanner={bannerPreview}
       />
-      <FormCard post={post} previewIcon={iconPreview} />
+      <FormCard
+        post={post}
+        previewIcon={iconPreview}
+        previewTitle={title}
+        previewDescription={description}
+      />
     </div>
   );
 };
