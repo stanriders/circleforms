@@ -1,4 +1,4 @@
-import React, { useContext, useMemo } from "react";
+import React, { useContext } from "react";
 import { useQuery } from "react-query";
 import Head from "next/head";
 import FormEntry from "src/components/FormEntry";
@@ -14,8 +14,6 @@ const Answers = () => {
   const { isLoading: isLoadingPosts, data } = useQuery(["meAnswersGet"], () =>
     apiClient.users.meAnswersGet()
   );
-
-  const reversedData = useMemo(() => data && [...data]?.reverse(), [data]);
 
   const { user } = useContext(UserContext);
 
@@ -50,7 +48,7 @@ const Answers = () => {
                   <p className="font-semibold text-center">You didn`t submit any responses yet.</p>
                 )}
                 {showFormEntries &&
-                  reversedData?.map((form) => {
+                  data?.map((form) => {
                     return (
                       <FormEntry
                         href={`answers/${form.post?.id}`}

@@ -2,10 +2,10 @@ import { useContext, useMemo } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import SVG from "react-inlinesvg";
 import { useMutation, useQuery, useQueryClient } from "react-query";
-import { useModals } from "@mantine/modals";
 import Head from "next/head";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import CustomConfirmModal from "src/components/CustomConfirmModal";
 import { AsyncReturnType } from "src/utils/misc";
 import { debounce } from "ts-debounce";
 
@@ -32,7 +32,7 @@ const useDeletePost = () => {
         // Snapshot the previous value
         const previousPosts = queryClient.getQueryData<MyPosts>("mePostsGet");
 
-        // Optimistically update
+        // update query data
         if (previousPosts) {
           queryClient.setQueryData<MyPosts>("mePostsGet", () =>
             previousPosts.filter((post) => post.id !== id)
@@ -46,11 +46,8 @@ const useDeletePost = () => {
 
 export default function Dashboard() {
   const t = useTranslations();
-  const modals = useModals();
   const { user } = useContext(UserContext);
-
   const { error, data, isLoading } = useQuery("mePostsGet", () => apiClient.users.mePostsGet());
-
   const { mutate: deletePost } = useDeletePost();
 
   const unpublishedPosts = useMemo(
@@ -62,49 +59,22 @@ export default function Dashboard() {
     [data]
   );
 
+  const debouncedHandleDelete = debounce((id: string) => {
+    deletePost(id);
+  }, 500);
+
+  const confirmDeleteModal = CustomConfirmModal({
+    title: "Please confirm your action",
+    bodyText: "Do you really want to delete this form?",
+    confirmButtonLabel: "Delete",
+    confirmCallback: debouncedHandleDelete
+  });
+
   if (error instanceof Error) return <p>{"An error has occurred: " + error.message}</p>;
 
   if (!user) {
     return <Unauthorized />;
   }
-
-  const debouncedHandleDelete = debounce((id: string) => {
-    deletePost(id);
-  }, 500);
-
-  const confirmDeleteModal = (id: string) =>
-    modals.openContextModal("publish", {
-      centered: true,
-      title: "Please confirm your action",
-      innerProps: {
-        modalBody: "Do you really want to delete this form?",
-        onConfirm: () => debouncedHandleDelete(id),
-        confirmLabel: "Delete"
-      },
-      styles: {
-        modal: {
-          borderRadius: "55px",
-          display: "flex",
-          flexDirection: "column",
-          flexBasis: " 750px"
-        },
-        header: {
-          paddingTop: "22px",
-          paddingLeft: "22px"
-        },
-        title: {
-          fontSize: "2rem"
-        },
-
-        body: {
-          padding: "22px",
-          paddingTop: "0px"
-        },
-        close: {
-          display: "none"
-        }
-      }
-    });
 
   return (
     <DefaultLayout>

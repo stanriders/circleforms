@@ -3,7 +3,6 @@ import { Controller, useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import Switch from "react-switch";
 import { DatePicker } from "@mantine/dates";
-import { useModals } from "@mantine/modals";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 import { apiClient } from "src/utils/apiClient";
@@ -12,6 +11,7 @@ import { debounce } from "ts-debounce";
 import { Accessibility, Gamemode, PostContractRequest } from "../../../openapi";
 import { AsyncReturnType, sleep } from "../../utils/misc";
 import Button from "../Button";
+import CustomConfirmModal from "../CustomConfirmModal";
 import DropdownSelect from "../DropdownSelect";
 import ErrorMessage from "../ErrorMessage";
 import { useFormData } from "../FormContext";
@@ -28,7 +28,6 @@ interface ITabOptions {
 const TabOptions = ({ post, isEdit }: ITabOptions) => {
   const t = useTranslations();
   const router = useRouter();
-  const modals = useModals();
   const { data, setValues } = useFormData();
   const [isLoading, setIsLoading] = useState(false);
   const { mutateAsync: submitPost } = useSubmitPost();
@@ -77,24 +76,33 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
 
     await submitPost(validatedData, {
       onSuccess: async (submitData) => {
-        toast.success(t("toast.success"));
+        const TOAST_DURATION = 600;
+        const toastId = toast.success(t("toast.success"), {
+          duration: TOAST_DURATION,
+          id: "success"
+        });
         if (data.icon) {
           try {
             await mutateImage({ postid: submitData.id!, file: data.icon, isIcon: true });
           } catch (err) {
-            toast.error("There was an error uploading your icon image");
-            await sleep(500);
+            toast.error("There was an error uploading your icon image", {
+              duration: TOAST_DURATION
+            });
+            await sleep(TOAST_DURATION);
           }
         }
         if (data.banner) {
           try {
             await mutateImage({ postid: submitData.id!, file: data.banner, isIcon: false });
           } catch (err) {
-            toast.error("There was an error uploading your banner image");
-            await sleep(500);
+            toast.error("There was an error uploading your banner image", {
+              duration: TOAST_DURATION
+            });
+            await sleep(TOAST_DURATION);
           }
         }
-        await sleep(600);
+        await sleep(TOAST_DURATION);
+        toast.remove(toastId);
         router.push("/dashboard");
       },
 
@@ -158,11 +166,11 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
       {
         onSuccess: async () => {
           toast.success("Post published");
-          await sleep(600);
+          await sleep(800);
           router.push("/dashboard");
         },
         onError: async () => {
-          toast.success("Failed to publish the post");
+          toast.error("Failed to publish the post");
         }
       }
     );
@@ -170,39 +178,13 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
 
   const debouncedHandlePublish = debounce(handlePublish, 500);
 
-  const confirmPublishModal = () =>
-    modals.openContextModal("publish", {
-      centered: true,
-      title: "Please confirm your action",
-      innerProps: {
-        modalBody: "You will not be able to edit the post after publishing it.",
-        onConfirm: debouncedHandlePublish,
-        confirmLabel: "Publish"
-      },
-      styles: {
-        modal: {
-          borderRadius: "55px",
-          display: "flex",
-          flexDirection: "column",
-          flexBasis: " 750px"
-        },
-        header: {
-          paddingTop: "22px",
-          paddingLeft: "22px"
-        },
-        title: {
-          fontSize: "2rem"
-        },
-
-        body: {
-          padding: "22px",
-          paddingTop: "0px"
-        },
-        close: {
-          display: "none"
-        }
-      }
-    });
+  const confirmPublishModal = CustomConfirmModal({
+    title: "Please confirm your action",
+    bodyText: "You will not be able to edit the post after publishing it.",
+    confirmButtonLabel: "Publish",
+    // idk how to fix types here
+    confirmCallback: debouncedHandlePublish as any
+  });
 
   return (
     <div className="flex flex-col gap-6">
