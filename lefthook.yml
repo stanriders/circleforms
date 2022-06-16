@@ -1,5 +1,9 @@
 pre-commit:
   commands:
+    linter:
+      root: "frontend/"
+      glob: "**/*.{js,ts,jsx,tsx}"
+      run: npm run eslint {staged_files}
     prettier:
       root: "frontend/"
       glob: "**/*.{js,ts,jsx,tsx}"
@@ -11,7 +15,7 @@ pre-push:
     linter:
       root: "frontend/"
       glob: "**/*.{js,ts,jsx,tsx}"
-      run: npm run eslint {staged_files} && npm run ts-lint
+      run: npm run lint && npm run ts-lint
 
     test:
       root: "frontend/"
