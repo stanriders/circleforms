@@ -176,6 +176,7 @@ public class PostsController : ControllerBase
     /// <summary>
     ///     Delete post if not published.
     /// </summary>
+    [Authorize]
     [HttpDelete(ApiEndpoints.PostsDetailedPost)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
