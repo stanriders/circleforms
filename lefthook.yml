@@ -6,6 +6,7 @@ pre-commit:
       run: npx prettier --write {staged_files} && git add {staged_files}
 
 pre-push:
+  parallel: true
   commands:
     linter:
       root: "frontend/"
