@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using CircleForms.Database.Models.Posts;
@@ -30,6 +31,7 @@ public class AnswerRepository : IAnswerRepository
     {
         var answer = new Answer
         {
+            AnswerTime = DateTime.UtcNow,
             Submissions = submissions,
             UserRelation = user,
             PostRelation = postId
