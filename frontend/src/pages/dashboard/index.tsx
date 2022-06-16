@@ -46,7 +46,6 @@ const useDeletePost = () => {
 
 export default function Dashboard() {
   const t = useTranslations();
-  const modals = useModals();
   const { user } = useContext(UserContext);
   const { error, data, isLoading } = useQuery("mePostsGet", () => apiClient.users.mePostsGet());
   const { mutate: deletePost } = useDeletePost();
@@ -83,39 +82,18 @@ export default function Dashboard() {
     deletePost(id);
   }, 500);
 
-  const confirmDeleteModal = (id: string) =>
-    modals.openContextModal("publish", {
-      centered: true,
-      title: "Please confirm your action",
-      innerProps: {
-        modalBody: "Do you really want to delete this form?",
-        onConfirm: () => debouncedHandleDelete(id),
-        confirmLabel: "Delete"
-      },
-      styles: {
-        modal: {
-          borderRadius: "55px",
-          display: "flex",
-          flexDirection: "column",
-          flexBasis: " 750px"
-        },
-        header: {
-          paddingTop: "22px",
-          paddingLeft: "22px"
-        },
-        title: {
-          fontSize: "2rem"
-        },
+  const confirmDeleteModal = CustomConfirmModal({
+    title: "Please confirm your action",
+    bodyText: "Do you really want to delete this form?",
+    confirmButtonLabel: "Delete",
+    confirmCallback: debouncedHandleDelete
+  });
 
-        body: {
-          padding: "22px",
-          paddingTop: "0px"
-        },
-        close: {
-          display: "none"
-        }
-      }
-    });
+  if (error instanceof Error) return <p>{"An error has occurred: " + error.message}</p>;
+
+  if (!user) {
+    return <Unauthorized />;
+  }
 
   return (
     <DefaultLayout>

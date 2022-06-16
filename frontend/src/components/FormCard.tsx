@@ -18,8 +18,6 @@ const FormCard = ({ post, previewIcon, onDelete, previewDescription, previewTitl
   const iconImg = getImage({ icon: post?.icon, type: "icon", id: post?.id });
   const imgRef = useRef<HTMLImageElement>(null);
 
-  console.log(post);
-
   const previewSrc = useMemo(() => {
     return previewIcon;
   }, [previewIcon]);
