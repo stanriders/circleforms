@@ -58,7 +58,7 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
         {/* <button onClick={onDuplicate} className="button--icon">
           <MdContentCopy className="h-8 w-8" />
         </button> */}
-        <button onClick={onRemove} className="mr-4 button--icon">
+        <button data-testid={`remove-button`} onClick={onRemove} className="mr-4 button--icon">
           <span className="sr-only">{t("removeQuestion")}</span>
           <MdDeleteOutline className="w-8 h-8" />
         </button>

@@ -34,7 +34,7 @@ const QuestionFieldArray = () => {
   return (
     <div>
       {showEmptyMessage && (
-        <p className="py-6 text-lg text-center">
+        <p data-testid="no-questions-text" className="py-6 text-lg text-center">
           No questions created yet. Press any button on the right to create a question.
         </p>
       )}
@@ -86,6 +86,7 @@ const QuestionFieldArray = () => {
               const Icon = QUESTIONS_ICONS[type];
               return (
                 <button
+                  data-testid={`questions-button-${type}`}
                   type="button"
                   key={type}
                   className="button--icon"
