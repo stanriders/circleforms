@@ -65,7 +65,7 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
           <span>Optional</span>
 
           <Controller
-            name={`questions.${nestIndex}.isOptional`}
+            name={`questions.${nestIndex}.is_optional`}
             control={control}
             render={({ field }) => (
               <Switch

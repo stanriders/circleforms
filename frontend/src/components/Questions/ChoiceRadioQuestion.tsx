@@ -10,14 +10,14 @@ const ChoiceRadioQuestion = ({ question, register, errors, disableEdit }: IQuest
     <div className="flex flex-col gap-2 bg-black-lighter px-8 py-5 rounded-3xl">
       <h2 className="text-3xl font-bold pb-6">
         {question.title}
-        {question.isOptional ? null : <span className="text-pink">*</span>}
+        {question.is_optional ? null : <span className="text-pink">*</span>}
       </h2>
       <div className="flex flex-col gap-4">
-        {question.questionInfo?.map((text) => {
-          const questionId = question.questionId;
+        {question.question_info?.map((text) => {
+          const questionId = question.question_id;
           const formProps = {
             ...register(String(questionId), {
-              required: !question.isOptional,
+              required: !question.is_optional,
               disabled: disableEdit
             })
           };
@@ -32,7 +32,7 @@ const ChoiceRadioQuestion = ({ question, register, errors, disableEdit }: IQuest
             />
           );
         })}
-        {errors[String(question.questionId)] &&
+        {errors[String(question.question_id)] &&
           ErrorMessage({ text: "This question is required*" })}
       </div>
     </div>

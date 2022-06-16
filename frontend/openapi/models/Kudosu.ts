@@ -17,39 +17,39 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Submission
+ * @interface Kudosu
  */
-export interface Submission {
+export interface Kudosu {
     /**
      * 
-     * @type {string}
-     * @memberof Submission
+     * @type {number}
+     * @memberof Kudosu
      */
-    question_id?: string | null;
+    total?: number;
     /**
      * 
-     * @type {Array<string>}
-     * @memberof Submission
+     * @type {number}
+     * @memberof Kudosu
      */
-    answers?: Array<string> | null;
+    available?: number;
 }
 
-export function SubmissionFromJSON(json: any): Submission {
-    return SubmissionFromJSONTyped(json, false);
+export function KudosuFromJSON(json: any): Kudosu {
+    return KudosuFromJSONTyped(json, false);
 }
 
-export function SubmissionFromJSONTyped(json: any, ignoreDiscriminator: boolean): Submission {
+export function KudosuFromJSONTyped(json: any, ignoreDiscriminator: boolean): Kudosu {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'question_id': !exists(json, 'question_id') ? undefined : json['question_id'],
-        'answers': !exists(json, 'answers') ? undefined : json['answers'],
+        'total': !exists(json, 'total') ? undefined : json['total'],
+        'available': !exists(json, 'available') ? undefined : json['available'],
     };
 }
 
-export function SubmissionToJSON(value?: Submission | null): any {
+export function KudosuToJSON(value?: Kudosu | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -58,7 +58,7 @@ export function SubmissionToJSON(value?: Submission | null): any {
     }
     return {
         
-        'question_id': value.question_id,
-        'answers': value.answers,
+        'total': value.total,
+        'available': value.available,
     };
 }

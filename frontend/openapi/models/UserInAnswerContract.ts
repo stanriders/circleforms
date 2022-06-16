@@ -15,11 +15,11 @@
 
 import { exists, mapValues } from '../runtime';
 import {
-    OsuAnswerContract,
-    OsuAnswerContractFromJSON,
-    OsuAnswerContractFromJSONTyped,
-    OsuAnswerContractToJSON,
-} from './OsuAnswerContract';
+    MinimalOsuUserContract,
+    MinimalOsuUserContractFromJSON,
+    MinimalOsuUserContractFromJSONTyped,
+    MinimalOsuUserContractToJSON,
+} from './MinimalOsuUserContract';
 
 /**
  * 
@@ -41,10 +41,10 @@ export interface UserInAnswerContract {
     discord?: string | null;
     /**
      * 
-     * @type {OsuAnswerContract}
+     * @type {MinimalOsuUserContract}
      * @memberof UserInAnswerContract
      */
-    osu?: OsuAnswerContract;
+    osu?: MinimalOsuUserContract;
 }
 
 export function UserInAnswerContractFromJSON(json: any): UserInAnswerContract {
@@ -59,7 +59,7 @@ export function UserInAnswerContractFromJSONTyped(json: any, ignoreDiscriminator
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'discord': !exists(json, 'discord') ? undefined : json['discord'],
-        'osu': !exists(json, 'osu') ? undefined : OsuAnswerContractFromJSON(json['osu']),
+        'osu': !exists(json, 'osu') ? undefined : MinimalOsuUserContractFromJSON(json['osu']),
     };
 }
 
@@ -74,6 +74,6 @@ export function UserInAnswerContractToJSON(value?: UserInAnswerContract | null):
         
         'id': value.id,
         'discord': value.discord,
-        'osu': OsuAnswerContractToJSON(value.osu),
+        'osu': MinimalOsuUserContractToJSON(value.osu),
     };
 }

@@ -50,19 +50,19 @@ export interface MinimalPostContract {
      * @type {string}
      * @memberof MinimalPostContract
      */
-    authorId?: string | null;
+    author_id?: string | null;
     /**
      * 
      * @type {boolean}
      * @memberof MinimalPostContract
      */
-    isActive?: boolean;
+    is_active?: boolean;
     /**
      * 
      * @type {Date}
      * @memberof MinimalPostContract
      */
-    activeTo?: Date;
+    active_to?: Date;
     /**
      * 
      * @type {string}
@@ -110,7 +110,7 @@ export interface MinimalPostContract {
      * @type {Date}
      * @memberof MinimalPostContract
      */
-    publishTime?: Date | null;
+    publish_time?: Date | null;
     /**
      * 
      * @type {Accessibility}
@@ -128,7 +128,7 @@ export interface MinimalPostContract {
      * @type {number}
      * @memberof MinimalPostContract
      */
-    answerCount?: number;
+    answer_count?: number;
 }
 
 export function MinimalPostContractFromJSON(json: any): MinimalPostContract {
@@ -142,9 +142,9 @@ export function MinimalPostContractFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'authorId': !exists(json, 'author_id') ? undefined : json['author_id'],
-        'isActive': !exists(json, 'is_active') ? undefined : json['is_active'],
-        'activeTo': !exists(json, 'active_to') ? undefined : (new Date(json['active_to'])),
+        'author_id': !exists(json, 'author_id') ? undefined : json['author_id'],
+        'is_active': !exists(json, 'is_active') ? undefined : json['is_active'],
+        'active_to': !exists(json, 'active_to') ? undefined : (new Date(json['active_to'])),
         'icon': !exists(json, 'icon') ? undefined : json['icon'],
         'banner': !exists(json, 'banner') ? undefined : json['banner'],
         'title': !exists(json, 'title') ? undefined : json['title'],
@@ -152,10 +152,10 @@ export function MinimalPostContractFromJSONTyped(json: any, ignoreDiscriminator:
         'excerpt': !exists(json, 'excerpt') ? undefined : json['excerpt'],
         'gamemode': !exists(json, 'gamemode') ? undefined : GamemodeFromJSON(json['gamemode']),
         'published': !exists(json, 'published') ? undefined : json['published'],
-        'publishTime': !exists(json, 'publish_time') ? undefined : (json['publish_time'] === null ? null : new Date(json['publish_time'])),
+        'publish_time': !exists(json, 'publish_time') ? undefined : (json['publish_time'] === null ? null : new Date(json['publish_time'])),
         'accessibility': !exists(json, 'accessibility') ? undefined : AccessibilityFromJSON(json['accessibility']),
         'limitations': !exists(json, 'limitations') ? undefined : LimitationsFromJSON(json['limitations']),
-        'answerCount': !exists(json, 'answer_count') ? undefined : json['answer_count'],
+        'answer_count': !exists(json, 'answer_count') ? undefined : json['answer_count'],
     };
 }
 
@@ -169,9 +169,9 @@ export function MinimalPostContractToJSON(value?: MinimalPostContract | null): a
     return {
         
         'id': value.id,
-        'author_id': value.authorId,
-        'is_active': value.isActive,
-        'active_to': value.activeTo === undefined ? undefined : (value.activeTo.toISOString()),
+        'author_id': value.author_id,
+        'is_active': value.is_active,
+        'active_to': value.active_to === undefined ? undefined : (value.active_to.toISOString()),
         'icon': value.icon,
         'banner': value.banner,
         'title': value.title,
@@ -179,9 +179,9 @@ export function MinimalPostContractToJSON(value?: MinimalPostContract | null): a
         'excerpt': value.excerpt,
         'gamemode': GamemodeToJSON(value.gamemode),
         'published': value.published,
-        'publish_time': value.publishTime === undefined ? undefined : (value.publishTime === null ? null : value.publishTime.toISOString()),
+        'publish_time': value.publish_time === undefined ? undefined : (value.publish_time === null ? null : value.publish_time.toISOString()),
         'accessibility': AccessibilityToJSON(value.accessibility),
         'limitations': LimitationsToJSON(value.limitations),
-        'answer_count': value.answerCount,
+        'answer_count': value.answer_count,
     };
 }

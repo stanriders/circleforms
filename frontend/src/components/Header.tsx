@@ -72,11 +72,12 @@ export default function Header() {
                 <img
                   className="h-9 w-9 rounded-70 m-1"
                   src={user?.osu?.avatar_url || ""}
-                  alt={user?.osu?.username}
+                  alt={user?.osu?.username!}
                 />
               </div>
             </MenuButton>
             <MenuList className="slide-down">
+              <MenuItem onSelect={() => router.push("/answers")}>Answers</MenuItem>
               <MenuItem onSelect={() => router.push("/dashboard")}>
                 {t("navbar.dashboard")}
               </MenuItem>

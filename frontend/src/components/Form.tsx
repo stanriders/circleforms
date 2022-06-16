@@ -3,13 +3,9 @@ import { useQuery } from "react-query";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@reach/tabs";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
+import { StatisticsRulesets } from "openapi";
+import { AsyncReturnType } from "src/utils/misc";
 
-import {
-  OsuAnswerContract,
-  PostWithQuestionsContract,
-  UserContract,
-  UserInAnswerContract
-} from "../../openapi";
 import UserContext from "../context/UserContext";
 import { apiClient } from "../utils/apiClient";
 import bbcode from "../utils/bbcode";
@@ -22,20 +18,13 @@ import InputRadio from "./InputRadio";
 import Player from "./Player";
 
 interface IFormProps {
-  post: PostWithQuestionsContract;
-  authorUser: UserContract | null | undefined;
+  postData: AsyncReturnType<typeof apiClient.posts.postsIdGet>;
+  authorUser: AsyncReturnType<typeof apiClient.users.usersIdGet>;
 }
 
-interface FullUserInAnswerContract extends UserInAnswerContract {
-  taiko?: OsuAnswerContract;
-  fruits?: OsuAnswerContract;
-  mania?: OsuAnswerContract;
-  none?: null;
-}
-
-export default function Form({ post, authorUser }: IFormProps) {
+export default function Form({ postData, authorUser }: IFormProps) {
   const { user } = useContext(UserContext);
-  const { description, id, banner, icon } = post;
+  const { description, id, banner, icon } = postData?.post!;
 
   const [showResponseButton, setShowResponseButton] = useState<boolean>();
 
@@ -80,7 +69,7 @@ export default function Form({ post, authorUser }: IFormProps) {
         }}
       />
 
-      <FormHeader post={post} authorUser={authorUser!} iconImg={iconImg || ""} />
+      <FormHeader post={postData?.post} authorUser={authorUser!} iconImg={iconImg || ""} />
 
       <Tabs className="mt-16 mb-4">
         <TabList>
@@ -117,13 +106,17 @@ export default function Form({ post, authorUser }: IFormProps) {
                 <p dangerouslySetInnerHTML={{ __html: t.raw("mistakeNotice") }} />
               </div>
               <div className="flex flex-col gap-1">
-                {sortedPlayers?.map((player: FullUserInAnswerContract) => {
-                  const postGameMode = post.gamemode?.toLowerCase();
+                {sortedPlayers?.map((player) => {
+                  const postGameMode = postData.post?.gamemode?.toLowerCase();
                   let country_rank = 0;
                   let global_rank = 0;
-                  if (player?.osu?.statistics !== undefined) {
-                    country_rank = player?.osu?.statistics[postGameMode!]?.country_rank;
-                    global_rank = player?.osu?.statistics[postGameMode!]?.global_rank;
+                  if (player?.osu?.statistics_ruleset !== undefined) {
+                    country_rank =
+                      player?.osu?.statistics_ruleset[postGameMode as keyof StatisticsRulesets]
+                        ?.country_rank!;
+                    global_rank =
+                      player?.osu?.statistics_ruleset[postGameMode as keyof StatisticsRulesets]
+                        ?.global_rank!;
                   }
 
                   return (
@@ -134,7 +127,7 @@ export default function Form({ post, authorUser }: IFormProps) {
                       discordTag={player.discord as string}
                       osuId={player.id!}
                       ranking={global_rank}
-                      country={player.osu?.countryCode}
+                      country={player.osu?.country_code!}
                       onClickHandler={() => {
                         router.push(window.location.href + `/${player.id}`);
                       }}

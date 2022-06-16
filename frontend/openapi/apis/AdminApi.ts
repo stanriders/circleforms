@@ -16,12 +16,12 @@
 
 import * as runtime from '../runtime';
 import {
-    FullPostContract,
-    FullPostContractFromJSON,
-    FullPostContractToJSON,
     MinimalPostContract,
     MinimalPostContractFromJSON,
     MinimalPostContractToJSON,
+    PostContract,
+    PostContractFromJSON,
+    PostContractToJSON,
     ProblemDetails,
     ProblemDetailsFromJSON,
     ProblemDetailsToJSON,
@@ -106,7 +106,7 @@ export class AdminApi extends runtime.BaseAPI {
     /**
      * Get all uncached posts. (Auth roles: SuperAdmin,Admin)
      */
-    async adminPostsMongoGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<FullPostContract>>> {
+    async adminPostsMongoGetRaw(initOverrides?: RequestInit): Promise<runtime.ApiResponse<Array<PostContract>>> {
         const queryParameters: any = {};
 
         const headerParameters: runtime.HTTPHeaders = {};
@@ -118,13 +118,13 @@ export class AdminApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(FullPostContractFromJSON));
+        return new runtime.JSONApiResponse(response, (jsonValue) => jsonValue.map(PostContractFromJSON));
     }
 
     /**
      * Get all uncached posts. (Auth roles: SuperAdmin,Admin)
      */
-    async adminPostsMongoGet(initOverrides?: RequestInit): Promise<Array<FullPostContract>> {
+    async adminPostsMongoGet(initOverrides?: RequestInit): Promise<Array<PostContract>> {
         const response = await this.adminPostsMongoGetRaw(initOverrides);
         return await response.value();
     }

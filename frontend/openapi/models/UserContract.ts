@@ -14,6 +14,13 @@
  */
 
 import { exists, mapValues } from '../runtime';
+import {
+    OsuUserContract,
+    OsuUserContractFromJSON,
+    OsuUserContractFromJSONTyped,
+    OsuUserContractToJSON,
+} from './OsuUserContract';
+
 /**
  * 
  * @export
@@ -34,10 +41,10 @@ export interface UserContract {
     discord?: string | null;
     /**
      * 
-     * @type {{ [key: string]: any; }}
+     * @type {OsuUserContract}
      * @memberof UserContract
      */
-    osu?: { [key: string]: any; } | null;
+    osu?: OsuUserContract;
 }
 
 export function UserContractFromJSON(json: any): UserContract {
@@ -52,7 +59,7 @@ export function UserContractFromJSONTyped(json: any, ignoreDiscriminator: boolea
         
         'id': !exists(json, 'id') ? undefined : json['id'],
         'discord': !exists(json, 'discord') ? undefined : json['discord'],
-        'osu': !exists(json, 'osu') ? undefined : json['osu'],
+        'osu': !exists(json, 'osu') ? undefined : OsuUserContractFromJSON(json['osu']),
     };
 }
 
@@ -67,6 +74,6 @@ export function UserContractToJSON(value?: UserContract | null): any {
         
         'id': value.id,
         'discord': value.discord,
-        'osu': value.osu,
+        'osu': OsuUserContractToJSON(value.osu),
     };
 }

@@ -1,4 +1,5 @@
 // @ts-nocheck
+// @ts-nocheck
 /* tslint:disable */
 /* eslint-disable */
 /**
@@ -28,12 +29,6 @@ import {
   LimitationsToJSON
 } from "./Limitations";
 import { Question, QuestionFromJSON, QuestionFromJSONTyped, QuestionToJSON } from "./Question";
-import {
-  Submission,
-  SubmissionFromJSON,
-  SubmissionFromJSONTyped,
-  SubmissionToJSON
-} from "./Submission";
 
 /**
  *
@@ -46,103 +41,97 @@ export interface PostWithQuestionsContract {
    * @type {boolean}
    * @memberof PostWithQuestionsContract
    */
-  allowAnswerEdit?: boolean;
+
   /**
    *
    * @type {Array<Question>}
    * @memberof PostWithQuestionsContract
    */
-  questions?: Array<Question> | null;
-  /**
-   *
-   * @type {Array<Submission>}
-   * @memberof PostWithQuestionsContract
-   */
-  answer?: Array<Submission> | null;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  id?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  authorId?: string | null;
+
   /**
    *
    * @type {boolean}
    * @memberof PostWithQuestionsContract
    */
-  isActive?: boolean;
+
   /**
    *
    * @type {Date}
    * @memberof PostWithQuestionsContract
    */
-  activeTo?: Date;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  icon?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  banner?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  title?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  description?: string | null;
+
   /**
    *
    * @type {string}
    * @memberof PostWithQuestionsContract
    */
-  excerpt?: string | null;
+ 
   /**
    *
    * @type {Gamemode}
    * @memberof PostWithQuestionsContract
    */
-  gamemode?: Gamemode;
+
   /**
    *
    * @type {boolean}
    * @memberof PostWithQuestionsContract
    */
-  published?: boolean;
+
   /**
    *
    * @type {Date}
    * @memberof PostWithQuestionsContract
    */
-  publishTime?: Date | null;
+
   /**
    *
    * @type {Accessibility}
    * @memberof PostWithQuestionsContract
    */
-  accessibility?: Accessibility;
+
   /**
    *
    * @type {Limitations}
    * @memberof PostWithQuestionsContract
    */
-  limitations?: Limitations;
+
   /**
    *
    * @type {number}
@@ -169,11 +158,6 @@ export function PostWithQuestionsContractFromJSONTyped(
       : json["questions"] === null
       ? null
       : (json["questions"] as Array<any>).map(QuestionFromJSON),
-    answer: !exists(json, "answer")
-      ? undefined
-      : json["answer"] === null
-      ? null
-      : (json["answer"] as Array<any>).map(SubmissionFromJSON),
     id: !exists(json, "id") ? undefined : json["id"],
     authorId: !exists(json, "author_id") ? undefined : json["author_id"],
     isActive: !exists(json, "is_active") ? undefined : json["is_active"],
@@ -215,12 +199,6 @@ export function PostWithQuestionsContractToJSON(value?: PostWithQuestionsContrac
         : value.questions === null
         ? null
         : (value.questions as Array<any>).map(QuestionToJSON),
-    answer:
-      value.answer === undefined
-        ? undefined
-        : value.answer === null
-        ? null
-        : (value.answer as Array<any>).map(SubmissionToJSON),
     id: value.id,
     author_id: value.authorId,
     is_active: value.isActive,

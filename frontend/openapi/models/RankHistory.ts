@@ -17,39 +17,39 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Submission
+ * @interface RankHistory
  */
-export interface Submission {
+export interface RankHistory {
     /**
      * 
      * @type {string}
-     * @memberof Submission
+     * @memberof RankHistory
      */
-    question_id?: string | null;
+    mode?: string | null;
     /**
      * 
-     * @type {Array<string>}
-     * @memberof Submission
+     * @type {Array<number>}
+     * @memberof RankHistory
      */
-    answers?: Array<string> | null;
+    data?: Array<number> | null;
 }
 
-export function SubmissionFromJSON(json: any): Submission {
-    return SubmissionFromJSONTyped(json, false);
+export function RankHistoryFromJSON(json: any): RankHistory {
+    return RankHistoryFromJSONTyped(json, false);
 }
 
-export function SubmissionFromJSONTyped(json: any, ignoreDiscriminator: boolean): Submission {
+export function RankHistoryFromJSONTyped(json: any, ignoreDiscriminator: boolean): RankHistory {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'question_id': !exists(json, 'question_id') ? undefined : json['question_id'],
-        'answers': !exists(json, 'answers') ? undefined : json['answers'],
+        'mode': !exists(json, 'mode') ? undefined : json['mode'],
+        'data': !exists(json, 'data') ? undefined : json['data'],
     };
 }
 
-export function SubmissionToJSON(value?: Submission | null): any {
+export function RankHistoryToJSON(value?: RankHistory | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -58,7 +58,7 @@ export function SubmissionToJSON(value?: Submission | null): any {
     }
     return {
         
-        'question_id': value.question_id,
-        'answers': value.answers,
+        'mode': value.mode,
+        'data': value.data,
     };
 }

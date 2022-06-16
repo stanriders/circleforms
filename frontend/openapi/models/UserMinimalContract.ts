@@ -31,7 +31,7 @@ export interface UserMinimalContract {
      * @type {string}
      * @memberof UserMinimalContract
      */
-    avatarUrl?: string | null;
+    avatar_url?: string | null;
     /**
      * 
      * @type {string}
@@ -57,7 +57,7 @@ export function UserMinimalContractFromJSONTyped(json: any, ignoreDiscriminator:
     return {
         
         'id': !exists(json, 'id') ? undefined : json['id'],
-        'avatarUrl': !exists(json, 'avatar_url') ? undefined : json['avatar_url'],
+        'avatar_url': !exists(json, 'avatar_url') ? undefined : json['avatar_url'],
         'discord': !exists(json, 'discord') ? undefined : json['discord'],
         'username': !exists(json, 'username') ? undefined : json['username'],
     };
@@ -73,7 +73,7 @@ export function UserMinimalContractToJSON(value?: UserMinimalContract | null): a
     return {
         
         'id': value.id,
-        'avatar_url': value.avatarUrl,
+        'avatar_url': value.avatar_url,
         'discord': value.discord,
         'username': value.username,
     };

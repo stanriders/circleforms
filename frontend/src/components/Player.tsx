@@ -21,6 +21,9 @@ export default function Player({
 }: IPlayerProps) {
   const t = useTranslations("Player");
 
+  const showRanking = Boolean(ranking);
+  const showCountryRanking = Boolean(countryRanking);
+
   return (
     <div
       onClick={onClickHandler}
@@ -37,22 +40,24 @@ export default function Player({
       </div>
 
       <div className="flex">
-        {ranking !== 0 && (
+        {showRanking && (
           <p className="flex flex-col items-end">
             <span className="text-xs">{t("globalRanking")}</span>
             <span className="text-2xl font-bold">{ranking}</span>
           </p>
         )}
-        {countryRanking !== 0 && (
+        {showCountryRanking && (
           <p className="flex flex-col items-end lg:ml-6">
             <span className="text-xs">{t("countryRanking")}</span>
             <span className="text-2xl font-bold">{countryRanking}</span>
           </p>
         )}
-        <p className="flex flex-col items-end lg:ml-20">
-          <span className="text-xs">Discord</span>
-          <span className="text-2xl font-bold">{discordTag}</span>
-        </p>
+        {discordTag && (
+          <p className="flex flex-col items-end lg:ml-20">
+            <span className="text-xs">Discord</span>
+            <span className="text-2xl font-bold">{discordTag}</span>
+          </p>
+        )}
       </div>
     </div>
   );

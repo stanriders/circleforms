@@ -17,39 +17,39 @@ import { exists, mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface Submission
+ * @interface Level
  */
-export interface Submission {
+export interface Level {
     /**
      * 
-     * @type {string}
-     * @memberof Submission
+     * @type {number}
+     * @memberof Level
      */
-    question_id?: string | null;
+    current?: number;
     /**
      * 
-     * @type {Array<string>}
-     * @memberof Submission
+     * @type {number}
+     * @memberof Level
      */
-    answers?: Array<string> | null;
+    progress?: number;
 }
 
-export function SubmissionFromJSON(json: any): Submission {
-    return SubmissionFromJSONTyped(json, false);
+export function LevelFromJSON(json: any): Level {
+    return LevelFromJSONTyped(json, false);
 }
 
-export function SubmissionFromJSONTyped(json: any, ignoreDiscriminator: boolean): Submission {
+export function LevelFromJSONTyped(json: any, ignoreDiscriminator: boolean): Level {
     if ((json === undefined) || (json === null)) {
         return json;
     }
     return {
         
-        'question_id': !exists(json, 'question_id') ? undefined : json['question_id'],
-        'answers': !exists(json, 'answers') ? undefined : json['answers'],
+        'current': !exists(json, 'current') ? undefined : json['current'],
+        'progress': !exists(json, 'progress') ? undefined : json['progress'],
     };
 }
 
-export function SubmissionToJSON(value?: Submission | null): any {
+export function LevelToJSON(value?: Level | null): any {
     if (value === undefined) {
         return undefined;
     }
@@ -58,7 +58,7 @@ export function SubmissionToJSON(value?: Submission | null): any {
     }
     return {
         
-        'question_id': value.question_id,
-        'answers': value.answers,
+        'current': value.current,
+        'progress': value.progress,
     };
 }

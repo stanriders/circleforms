@@ -144,16 +144,17 @@ export default function FormsList() {
                   <SubTitle>{t("pinnedForms")}</SubTitle>
                   <div className="flex flex-col gap-y-3">
                     {pinnedForms?.posts?.map((form) => {
-                      const user = pinnedForms?.users?.find((user) => user.id === form.authorId);
+                      const user = pinnedForms?.users?.find((user) => user.id === form.author_id);
                       return (
                         <FormEntry
+                          href={`/form/${form.id}`}
                           key={form.id}
                           user={user}
                           id={form.id}
                           banner={form.banner}
                           title={form.title}
                           excerpt={form.excerpt}
-                          publishTime={form.publishTime}
+                          publish_time={form.publish_time}
                         />
                       );
                     })}
@@ -167,16 +168,17 @@ export default function FormsList() {
                 {!showFormEntries && <p className="font-semibold text-center">{t("noForms")}</p>}
                 {showFormEntries &&
                   data?.posts?.map((form) => {
-                    const user = data?.users?.find((user) => user.id === form.authorId);
+                    const user = data?.users?.find((user) => user.id === form.author_id);
                     return (
                       <FormEntry
+                        href={`/form/${form.id}`}
                         key={form.id}
                         user={user}
                         id={form.id}
                         banner={form.banner}
                         title={form.title}
                         excerpt={form.excerpt}
-                        publishTime={form.publishTime}
+                        publish_time={form.publish_time}
                       />
                     );
                   })}

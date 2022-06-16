@@ -32,7 +32,7 @@ export interface Question {
      * @type {string}
      * @memberof Question
      */
-    readonly questionId?: string | null;
+    readonly question_id?: string | null;
     /**
      * 
      * @type {number}
@@ -56,13 +56,13 @@ export interface Question {
      * @type {boolean}
      * @memberof Question
      */
-    isOptional?: boolean;
+    is_optional?: boolean;
     /**
      * 
      * @type {Array<string>}
      * @memberof Question
      */
-    questionInfo?: Array<string> | null;
+    question_info?: Array<string> | null;
 }
 
 export function QuestionFromJSON(json: any): Question {
@@ -75,12 +75,12 @@ export function QuestionFromJSONTyped(json: any, ignoreDiscriminator: boolean): 
     }
     return {
         
-        'questionId': !exists(json, 'question_id') ? undefined : json['question_id'],
+        'question_id': !exists(json, 'question_id') ? undefined : json['question_id'],
         'order': !exists(json, 'order') ? undefined : json['order'],
         'type': QuestionTypeFromJSON(json['type']),
         'title': json['title'],
-        'isOptional': !exists(json, 'is_optional') ? undefined : json['is_optional'],
-        'questionInfo': !exists(json, 'question_info') ? undefined : json['question_info'],
+        'is_optional': !exists(json, 'is_optional') ? undefined : json['is_optional'],
+        'question_info': !exists(json, 'question_info') ? undefined : json['question_info'],
     };
 }
 
@@ -96,7 +96,7 @@ export function QuestionToJSON(value?: Question | null): any {
         'order': value.order,
         'type': QuestionTypeToJSON(value.type),
         'title': value.title,
-        'is_optional': value.isOptional,
-        'question_info': value.questionInfo,
+        'is_optional': value.is_optional,
+        'question_info': value.question_info,
     };
 }

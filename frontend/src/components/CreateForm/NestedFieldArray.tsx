@@ -12,7 +12,7 @@ const NestedOptionFieldArray = ({ nestIndex }: INestedOptionFieldArray) => {
   const { control } = useFormContext();
   const { fields, remove, append } = useFieldArray({
     control: control,
-    name: `questions.${nestIndex}.questionInfo`
+    name: `questions.${nestIndex}.question_info`
   });
 
   const questionType = useWatch({

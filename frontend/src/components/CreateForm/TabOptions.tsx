@@ -1,23 +1,27 @@
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
+import Switch from "react-switch";
 import { DatePicker } from "@mantine/dates";
 import { useModals } from "@mantine/modals";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
+import { apiClient } from "src/utils/apiClient";
 import { debounce } from "ts-debounce";
 
-import { Accessibility, Gamemode, PostContract, PostWithQuestionsContract } from "../../../openapi";
-import { sleep } from "../../utils/misc";
+import { Accessibility, Gamemode, PostContractRequest } from "../../../openapi";
+import { AsyncReturnType, sleep } from "../../utils/misc";
 import Button from "../Button";
 import DropdownSelect from "../DropdownSelect";
 import ErrorMessage from "../ErrorMessage";
 import { useFormData } from "../FormContext";
 
+import OptionTabEntry from "./OptionTabEntry";
 import { usePatchPost, usePublishPost, useSubmitImage, useSubmitPost } from "./TabOptions.hooks";
 import { ACCESSABILITY_OPTIONS, answerSchema, GAMEMODE_OPTIONS } from "./TabOptions.utils";
+
 interface ITabOptions {
-  post?: PostWithQuestionsContract;
+  post?: AsyncReturnType<typeof apiClient.posts.postsIdGet>["post"];
   isEdit?: boolean;
 }
 
@@ -33,10 +37,12 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
   const { mutateAsync: postPUT } = usePatchPost();
 
   // init form state (if editing)
+
   const defaultValues = {
     accessibility: post?.accessibility || Accessibility.Public,
     gamemode: post?.gamemode || Gamemode.None,
-    activeTo: post?.activeTo
+    active_to: post?.active_to,
+    allow_answer_edit: post?.allow_answer_edit || false
   };
   const methods = useForm({
     defaultValues,
@@ -44,14 +50,18 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
   });
 
   const getValidatedData = async () => {
-    let resObj = { ...data, questions: data?.questions?.questions };
+    const resObj = {
+      ...data,
+      questions: data?.questions?.questions,
+      allow_answer_edit: methods.getValues().allow_answer_edit
+    };
     let validatedData;
 
     // show error to user
     try {
       validatedData = await answerSchema.validate(resObj);
       return validatedData;
-    } catch (err: unknown) {
+    } catch (err) {
       if (err instanceof Error) {
         toast.error(err.message || "Something went wrong");
       }
@@ -59,9 +69,10 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
     }
   };
 
-  const handleFormSubmit = async () => {
+  const handleSubmit = async () => {
     const validatedData = await getValidatedData();
     if (!validatedData) return;
+
     setIsLoading(true);
 
     await submitPost(validatedData, {
@@ -99,7 +110,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
     if (!validatedData) return false;
 
     await postPUT(
-      { postid: data.id as string, data: validatedData as PostContract },
+      { postid: data.id as string, data: validatedData as PostContractRequest },
       {
         onSuccess: async () => {
           if (typeof data.icon !== "string") {
@@ -199,16 +210,11 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
 
       <form
         className="flex flex-col gap-y-16 rounded-35 bg-black-lighter p-9 py-14 relative overflow-clip"
-        onSubmit={methods.handleSubmit(handleFormSubmit)}
+        onSubmit={methods.handleSubmit(handleSubmit)}
       >
         <h2 className="text-4xl font-bold -my-8 ">Settings</h2>
         <hr className="border-t-2 border-t-grey-border" />
-
-        <div className="flex flex-row justify-between items-center">
-          <div className="flex flex-col">
-            <p className="text-3xl">Form Privacy Level</p>
-            <p className="text-2xl text-grey-secondary">Manage who sees the form</p>
-          </div>
+        <OptionTabEntry mainHeading="Form Privacy Level" subText="Manage who sees the form">
           <Controller
             name={`accessibility`}
             control={methods.control}
@@ -231,16 +237,12 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
               </div>
             )}
           />
-        </div>
-        <hr className="border-t-2 border-t-grey-border" />
+        </OptionTabEntry>
 
-        <div className="flex flex-row justify-between items-center">
-          <div className="flex flex-col">
-            <p className="text-3xl">Select Game Mode</p>
-            <p className="text-2xl text-grey-secondary">
-              Leave it as None if it applies to all game modes
-            </p>
-          </div>
+        <OptionTabEntry
+          mainHeading="Select Game Mode"
+          subText="Leave it as None if it applies to all game modes"
+        >
           <Controller
             name={`gamemode`}
             control={methods.control}
@@ -263,18 +265,14 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
               </div>
             )}
           />
-        </div>
-        <hr className="border-t-2 border-t-grey-border" />
+        </OptionTabEntry>
 
-        <div className="flex flex-row justify-between items-center">
-          <div className="flex flex-col">
-            <p className="text-3xl">Select end date</p>
-            <p className="text-2xl text-grey-secondary">
-              No new submissions can be made afterwards
-            </p>
-          </div>
+        <OptionTabEntry
+          mainHeading="Select end date"
+          subText=" No new submissions can be made afterwards"
+        >
           <Controller
-            name={`activeTo`}
+            name={`active_to`}
             control={methods.control}
             rules={{ required: "Please pick post end date" }}
             render={({ field, fieldState: { error } }) => (
@@ -284,7 +282,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
                   placeholder="Pick a date"
                   required
                   {...field}
-                  onBlur={() => setValues({ activeTo: field.value })}
+                  onBlur={() => setValues({ active_to: field.value })}
                   radius={"lg"}
                   size={"md"}
                   styles={{
@@ -296,15 +294,36 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
               </div>
             )}
           />
-        </div>
-        <hr className="border-t-2 border-t-grey-border" />
+        </OptionTabEntry>
+
+        <OptionTabEntry mainHeading="Answer editing" subText="Allow users to edit their answers">
+          <Controller
+            name={`allow_answer_edit`}
+            control={methods.control}
+            render={({ field }) => (
+              <Switch
+                onChange={field.onChange}
+                checked={field.value || false}
+                offColor="#0c0c0c"
+                onColor="#0c0c0c"
+                onHandleColor="#FF66AA"
+                handleDiameter={26}
+                uncheckedIcon={false}
+                checkedIcon={false}
+                boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                height={32}
+                width={58}
+              />
+            )}
+          />
+        </OptionTabEntry>
 
         {!isEdit && (
           <Button classname="w-fit self-center" {...{ type: "submit", disabled: isLoading }}>
             Create draft
           </Button>
         )}
-
         <div className="flex flex-row justify-between">
           {isEdit && (
             <Button

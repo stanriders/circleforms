@@ -57,14 +57,7 @@ export default function Dashboard() {
               </a>
             </Link>
             {unpublishedPosts?.map((form, index) => (
-              <FormCard
-                key={form?.id ? form.id : index}
-                id={form.id}
-                icon={form.icon}
-                published={form.published}
-                title={form.title}
-                excerpt={form.excerpt}
-              />
+              <FormCard key={form?.id ? form.id : index} post={form} />
             ))}
           </div>
         </section>
@@ -75,17 +68,18 @@ export default function Dashboard() {
             publishedPosts?.map((form) => {
               return (
                 <FormEntry
+                  href={`/form/${form.id}`}
                   key={form.id}
                   user={{
                     username: user.osu?.username,
-                    avatarUrl: "/images/avatar-guest.png",
+                    avatar_url: "/images/avatar-guest.png",
                     id: user.id
                   }}
                   id={form.id}
                   banner={form.banner}
                   title={form.title}
                   excerpt={form.excerpt}
-                  publishTime={form.publishTime}
+                  publish_time={form.publish_time}
                 />
               );
             })}

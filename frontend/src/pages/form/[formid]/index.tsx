@@ -11,11 +11,11 @@ const SingleForm: NextPage<ServerSideProps> = (props) => {
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - {props.post.title}</title>
+        <title>CircleForms - {props.postData.post?.title}</title>
       </Head>
 
       <section className="container mb-12">
-        <Form post={props.post} authorUser={props.authorUser} />
+        <Form postData={props.postData} authorUser={props.authorUser} />
       </section>
     </DefaultLayout>
   );
@@ -26,13 +26,13 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const formid = context.params?.formid || "";
   const apiClient = getApiClient(context.req.headers.cookie);
 
-  const [translations, global, post] = await Promise.all([
+  const [translations, global, postData] = await Promise.all([
     import(`../../../messages/single-form/${context.locale}.json`),
     import(`../../../messages/global/${context.locale}.json`),
     apiClient.posts.postsIdGet({ id: formid as string })
   ]);
 
-  const authorUser = await apiClient.users.usersIdGet({ id: post.authorId as string });
+  const authorUser = await apiClient.users.usersIdGet({ id: postData.post?.author_id as string });
 
   const messages = {
     ...translations,
@@ -41,7 +41,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
   return {
     props: {
-      post,
+      postData,
       authorUser,
       messages
     }

@@ -1,9 +1,13 @@
 import Link from "next/link";
 
-import { PostWithQuestionsContract } from "../../openapi";
 import getImage from "../utils/getImage";
 
-export default function FormThumbnail({ id, icon, title }: PostWithQuestionsContract) {
+interface IFormThumbnail {
+  id: string;
+  icon: string;
+  title: string;
+}
+export default function FormThumbnail({ id, icon, title }: IFormThumbnail) {
   const iconImg = getImage({ id, icon, type: "icon" });
 
   return (

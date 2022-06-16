@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import SVG from "react-inlinesvg";
 import Head from "next/head";
 import { useTranslations } from "next-intl";
@@ -7,21 +7,12 @@ import Button from "../components/Button";
 import Title from "../components/Title";
 import Unauthorized from "../components/Unauthorized";
 import UserContext from "../context/UserContext";
-import useAuth from "../hooks/useAuth";
 import DefaultLayout from "../layouts";
 import { Locales } from "../types/common-types";
 
 export default function Settings() {
   const t = useTranslations();
   const { user } = useContext(UserContext);
-  const { invalidateUserCache } = useAuth();
-
-  useEffect(() => {
-    invalidateUserCache();
-
-    //TODO fixme
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   if (!user) {
     return <Unauthorized />;
@@ -44,10 +35,8 @@ export default function Settings() {
             <div className="flex items-center">
               <img
                 className="h-28 w-28 rounded-full"
-                // TODO fixme, should be avatarUrl but it breaks for some reason
-                // @ts-ignore
-                src={user.osu?.avatar_url}
-                alt={user.osu?.username}
+                src={user.osu?.avatar_url!}
+                alt={user.osu?.username!}
               />
               <div className="pl-3">
                 <h2 className="font-bold text-3xl">osu!</h2>

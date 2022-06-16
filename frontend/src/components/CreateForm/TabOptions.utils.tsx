@@ -13,7 +13,7 @@ export const answerSchema = object({
     .oneOf([...ACCESSABILITY_OPTIONS])
     .required("Active to date is required")
     .default(Accessibility.Public),
-  activeTo: date().required("Active to date is required").min(new Date()),
+  active_to: date().required("Active to date is required").min(new Date()),
   gamemode: mixed<Gamemode>()
     .oneOf([...GAMEMODE_OPTIONS])
     .required("Game mode is required")
@@ -22,14 +22,14 @@ export const answerSchema = object({
     .of(
       mixed<Question>()
         .transform((currentValue) => {
-          // we need to transform questionInfo
+          // we need to transform question_info
           // from being an array of object: [{value: string1}, {value:string2}]
           // to just array of strings
-          const flattenedQuestions = currentValue?.questionInfo?.map(
+          const flattenedQuestions = currentValue?.question_info?.map(
             (obj: Record<"value", string>) => obj.value
           );
           const filteredQuestionInfo = flattenedQuestions.length > 0 ? flattenedQuestions : [];
-          return { ...currentValue, questionInfo: filteredQuestionInfo };
+          return { ...currentValue, question_info: filteredQuestionInfo };
         })
         .test(
           "title",
@@ -42,8 +42,8 @@ export const answerSchema = object({
           "checkbox-answers",
           () => "Checkbox question must have one or more options",
           (value) => {
-            if (value?.type === "Checkbox" && value?.questionInfo) {
-              return value?.questionInfo?.length >= 1;
+            if (value?.type === "Checkbox" && value?.question_info) {
+              return value?.question_info?.length >= 1;
             }
             return true;
           }
@@ -52,8 +52,8 @@ export const answerSchema = object({
           "choice-answers",
           () => "Radio choice question must have two or more options",
           (value) => {
-            if (value?.type === "Choice" && value?.questionInfo) {
-              return value?.questionInfo?.length >= 2;
+            if (value?.type === "Choice" && value?.question_info) {
+              return value?.question_info?.length >= 2;
             }
             return true;
           }
@@ -62,7 +62,7 @@ export const answerSchema = object({
           "question-info",
           () => "Question cannot have empty options",
           (value) => {
-            return !value?.questionInfo?.includes("")!;
+            return !value?.question_info?.includes("")!;
           }
         )
     )

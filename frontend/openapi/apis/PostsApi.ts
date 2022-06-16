@@ -16,12 +16,12 @@
 
 import * as runtime from '../runtime';
 import {
+    AnswerPostContract,
+    AnswerPostContractFromJSON,
+    AnswerPostContractToJSON,
     AnswersUsersContract,
     AnswersUsersContractFromJSON,
     AnswersUsersContractToJSON,
-    FullPostContract,
-    FullPostContractFromJSON,
-    FullPostContractToJSON,
     ImageQuery,
     ImageQueryFromJSON,
     ImageQueryToJSON,
@@ -31,9 +31,9 @@ import {
     PostContract,
     PostContractFromJSON,
     PostContractToJSON,
-    PostWithQuestionsContract,
-    PostWithQuestionsContractFromJSON,
-    PostWithQuestionsContractToJSON,
+    PostContractRequest,
+    PostContractRequestFromJSON,
+    PostContractRequestToJSON,
     ProblemDetails,
     ProblemDetailsFromJSON,
     ProblemDetailsToJSON,
@@ -42,6 +42,10 @@ import {
     SubmissionContractToJSON,
 } from '../models';
 
+export interface PostsIdAnswersDeleteRequest {
+    id: string;
+}
+
 export interface PostsIdAnswersGetRequest {
     id: string;
 }
@@ -49,6 +53,10 @@ export interface PostsIdAnswersGetRequest {
 export interface PostsIdAnswersPostRequest {
     id: string;
     submissionContract?: Array<SubmissionContract>;
+}
+
+export interface PostsIdDeleteRequest {
+    id: string;
 }
 
 export interface PostsIdFilesPutRequest {
@@ -68,7 +76,7 @@ export interface PostsIdPublishPostRequest {
 
 export interface PostsIdPutRequest {
     id: string;
-    postContract?: PostContract;
+    postContractRequest?: PostContractRequest;
 }
 
 export interface PostsIdUnpublishPostRequest {
@@ -76,7 +84,7 @@ export interface PostsIdUnpublishPostRequest {
 }
 
 export interface PostsPostRequest {
-    postContract?: PostContract;
+    postContractRequest?: PostContractRequest;
 }
 
 /**
@@ -108,6 +116,35 @@ export class PostsApi extends runtime.BaseAPI {
     async postsAllGet(initOverrides?: RequestInit): Promise<Array<string>> {
         const response = await this.postsAllGetRaw(initOverrides);
         return await response.value();
+    }
+
+    /**
+     * Delete user\'s answer from a post (Auth)
+     */
+    async postsIdAnswersDeleteRaw(requestParameters: PostsIdAnswersDeleteRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling postsIdAnswersDelete.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/posts/{id}/answers`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Delete user\'s answer from a post (Auth)
+     */
+    async postsIdAnswersDelete(requestParameters: PostsIdAnswersDeleteRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.postsIdAnswersDeleteRaw(requestParameters, initOverrides);
     }
 
     /**
@@ -173,6 +210,35 @@ export class PostsApi extends runtime.BaseAPI {
     }
 
     /**
+     * Delete post if not published.
+     */
+    async postsIdDeleteRaw(requestParameters: PostsIdDeleteRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
+        if (requestParameters.id === null || requestParameters.id === undefined) {
+            throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling postsIdDelete.');
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/posts/{id}`.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters.id))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.VoidApiResponse(response);
+    }
+
+    /**
+     * Delete post if not published.
+     */
+    async postsIdDelete(requestParameters: PostsIdDeleteRequest, initOverrides?: RequestInit): Promise<void> {
+        await this.postsIdDeleteRaw(requestParameters, initOverrides);
+    }
+
+    /**
      * Upload an image. (Auth)
      */
     async postsIdFilesPutRaw(requestParameters: PostsIdFilesPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<void>> {
@@ -229,7 +295,7 @@ export class PostsApi extends runtime.BaseAPI {
     /**
      * Get full info about a page if you are the creator of the page, otherwise return cached version.
      */
-    async postsIdGetRaw(requestParameters: PostsIdGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<PostWithQuestionsContract>> {
+    async postsIdGetRaw(requestParameters: PostsIdGetRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<AnswerPostContract>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
             throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling postsIdGet.');
         }
@@ -249,13 +315,13 @@ export class PostsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => PostWithQuestionsContractFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => AnswerPostContractFromJSON(jsonValue));
     }
 
     /**
      * Get full info about a page if you are the creator of the page, otherwise return cached version.
      */
-    async postsIdGet(requestParameters: PostsIdGetRequest, initOverrides?: RequestInit): Promise<PostWithQuestionsContract> {
+    async postsIdGet(requestParameters: PostsIdGetRequest, initOverrides?: RequestInit): Promise<AnswerPostContract> {
         const response = await this.postsIdGetRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -263,7 +329,7 @@ export class PostsApi extends runtime.BaseAPI {
     /**
      * Publish a post. (Auth)
      */
-    async postsIdPublishPostRaw(requestParameters: PostsIdPublishPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<FullPostContract>> {
+    async postsIdPublishPostRaw(requestParameters: PostsIdPublishPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<PostContract>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
             throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling postsIdPublishPost.');
         }
@@ -279,13 +345,13 @@ export class PostsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => FullPostContractFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PostContractFromJSON(jsonValue));
     }
 
     /**
      * Publish a post. (Auth)
      */
-    async postsIdPublishPost(requestParameters: PostsIdPublishPostRequest, initOverrides?: RequestInit): Promise<FullPostContract> {
+    async postsIdPublishPost(requestParameters: PostsIdPublishPostRequest, initOverrides?: RequestInit): Promise<PostContract> {
         const response = await this.postsIdPublishPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -293,7 +359,7 @@ export class PostsApi extends runtime.BaseAPI {
     /**
      * Update post. (Auth)
      */
-    async postsIdPutRaw(requestParameters: PostsIdPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<FullPostContract>> {
+    async postsIdPutRaw(requestParameters: PostsIdPutRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<PostContract>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
             throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling postsIdPut.');
         }
@@ -309,16 +375,16 @@ export class PostsApi extends runtime.BaseAPI {
             method: 'PUT',
             headers: headerParameters,
             query: queryParameters,
-            body: PostContractToJSON(requestParameters.postContract),
+            body: PostContractRequestToJSON(requestParameters.postContractRequest),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => FullPostContractFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PostContractFromJSON(jsonValue));
     }
 
     /**
      * Update post. (Auth)
      */
-    async postsIdPut(requestParameters: PostsIdPutRequest, initOverrides?: RequestInit): Promise<FullPostContract> {
+    async postsIdPut(requestParameters: PostsIdPutRequest, initOverrides?: RequestInit): Promise<PostContract> {
         const response = await this.postsIdPutRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -326,7 +392,7 @@ export class PostsApi extends runtime.BaseAPI {
     /**
      * Unpublish a post. (Auth roles: Admin,Moderator)
      */
-    async postsIdUnpublishPostRaw(requestParameters: PostsIdUnpublishPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<FullPostContract>> {
+    async postsIdUnpublishPostRaw(requestParameters: PostsIdUnpublishPostRequest, initOverrides?: RequestInit): Promise<runtime.ApiResponse<PostContract>> {
         if (requestParameters.id === null || requestParameters.id === undefined) {
             throw new runtime.RequiredError('id','Required parameter requestParameters.id was null or undefined when calling postsIdUnpublishPost.');
         }
@@ -342,13 +408,13 @@ export class PostsApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => FullPostContractFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => PostContractFromJSON(jsonValue));
     }
 
     /**
      * Unpublish a post. (Auth roles: Admin,Moderator)
      */
-    async postsIdUnpublishPost(requestParameters: PostsIdUnpublishPostRequest, initOverrides?: RequestInit): Promise<FullPostContract> {
+    async postsIdUnpublishPost(requestParameters: PostsIdUnpublishPostRequest, initOverrides?: RequestInit): Promise<PostContract> {
         const response = await this.postsIdUnpublishPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
@@ -368,7 +434,7 @@ export class PostsApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: PostContractToJSON(requestParameters.postContract),
+            body: PostContractRequestToJSON(requestParameters.postContractRequest),
         }, initOverrides);
 
         return new runtime.JSONApiResponse(response, (jsonValue) => MinimalPostContractFromJSON(jsonValue));
