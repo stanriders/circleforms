@@ -12,9 +12,9 @@ pre-commit:
 pre-push:
   parallel: true
   commands:
-    linter:
+    lint_all:
+      skip_empty: false
       root: "frontend/"
-      glob: "**/*.{js,ts,jsx,tsx}"
       run: npm run lint && npm run ts-lint
 
 pre-push:
