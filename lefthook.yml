@@ -13,7 +13,6 @@ pre-push:
   parallel: true
   commands:
     lint_all:
-      skip_empty: false
       root: "frontend/"
       run: npm run lint && npm run ts-lint
 
