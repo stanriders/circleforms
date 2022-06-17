@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using CircleForms.Database.Models.Posts.Questions.Submissions;
 using CircleForms.Database.Models.Users;
 using MongoDB.Entities;
@@ -10,6 +11,9 @@ public class Answer : Entity
 {
     [Field("answers")]
     public List<Submission> Submissions { get; set; }
+
+    [Field("answer_time")]
+    public DateTime AnswerTime { get; set; }
 
     [Field("user")]
     public One<User> UserRelation { get; set; }
