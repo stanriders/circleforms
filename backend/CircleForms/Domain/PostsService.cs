@@ -342,4 +342,9 @@ public class PostsService
         await post.DeleteAsync();
         return Maybe<Error>.None();
     }
+
+    public async Task<long> GetAllCachedCount()
+    {
+        return await _cache.GetCount();
+    }
 }

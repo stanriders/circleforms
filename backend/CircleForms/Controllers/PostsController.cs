@@ -233,4 +233,14 @@ public class PostsController : ControllerBase
     {
         return await _posts.GetAllCachedIds();
     }
+
+    /// <summary>
+    ///     Get amount of cached posts
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet(ApiEndpoints.PostsPublishedCount)]
+    public async Task<long> GetPublishedCount()
+    {
+        return await _posts.GetAllCachedCount();
+    }
 }
