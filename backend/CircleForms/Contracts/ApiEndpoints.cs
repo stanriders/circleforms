@@ -25,6 +25,7 @@ public static class ApiEndpoints
     public const string PostPublish = "{id}/publish";
     public const string PostUnpublish = "{id}/unpublish";
     public const string PostsPublishedIds = "all";
+    public const string PostsPublishedCount = "all/count";
     #endregion
 
     #region Users

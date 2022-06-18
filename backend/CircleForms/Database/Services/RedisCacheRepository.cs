@@ -244,6 +244,11 @@ public class RedisCacheRepository : ICacheRepository
         //      5                     24
         return ids.Select(x => x.ToString().Substring(5, 24)).ToArray();
     }
+
+    public async Task<long> GetCount()
+    {
+        return await _redis.SortedSetLengthAsync(_postsSet);
+    }
     #endregion
 
     #region Pages
