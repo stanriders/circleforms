@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useMemo } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import SVG from "react-inlinesvg";
 import { useMutation, useQuery, useQueryClient } from "react-query";
@@ -6,6 +6,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import CustomConfirmModal from "src/components/CustomConfirmModal";
+import useAuth from "src/hooks/useAuth";
 import { AsyncReturnType } from "src/utils/misc";
 import { debounce } from "ts-debounce";
 
@@ -14,7 +15,6 @@ import FormEntry from "../../components/FormEntry";
 import FormEntrySkeletonList from "../../components/FormEntrySkeletonList";
 import Title from "../../components/Title";
 import Unauthorized from "../../components/Unauthorized";
-import UserContext from "../../context/UserContext";
 import DefaultLayout from "../../layouts";
 import { Locales } from "../../types/common-types";
 import { apiClient } from "../../utils/apiClient";
@@ -44,9 +44,9 @@ const useDeletePost = () => {
   );
 };
 
-export default function Dashboard() {
+const Dashboard = () => {
   const t = useTranslations();
-  const { user } = useContext(UserContext);
+  const { data: user } = useAuth();
   const { error, data, isLoading } = useQuery("mePostsGet", () => apiClient.users.mePostsGet());
   const { mutate: deletePost } = useDeletePost();
 
@@ -83,7 +83,7 @@ export default function Dashboard() {
       </Head>
       <Toaster />
 
-      <Title title={t("subtitle")}>{t("description")}</Title>
+      <Title title={t("subtitle")} description={t("description")} />
 
       <div className="container flex flex-col gap-8 py-5 px-8 bg-black-dark2 rounded-40">
         <p className="text-xl text-center">Unpublished</p>
@@ -117,9 +117,9 @@ export default function Dashboard() {
                   href={`/form/${form.id}`}
                   key={form.id}
                   user={{
-                    username: user.osu?.username,
+                    username: user?.osu?.username,
                     avatar_url: "/images/avatar-guest.png",
-                    id: user.id
+                    id: user?.id
                   }}
                   id={form.id}
                   banner={form.banner}
@@ -133,7 +133,7 @@ export default function Dashboard() {
       </div>
     </DefaultLayout>
   );
-}
+};
 
 export async function getStaticProps({ locale }: { locale: Locales }) {
   const [translations, global] = await Promise.all([
@@ -152,3 +152,5 @@ export async function getStaticProps({ locale }: { locale: Locales }) {
     }
   };
 }
+
+export default Dashboard;

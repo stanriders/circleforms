@@ -1,18 +1,17 @@
-import { useContext } from "react";
 import SVG from "react-inlinesvg";
 import Head from "next/head";
 import { useTranslations } from "next-intl";
+import Unauthorized from "src/components/Unauthorized";
+import useAuth from "src/hooks/useAuth";
 
 import Button from "../components/Button";
 import Title from "../components/Title";
-import Unauthorized from "../components/Unauthorized";
-import UserContext from "../context/UserContext";
 import DefaultLayout from "../layouts";
 import { Locales } from "../types/common-types";
 
-export default function Settings() {
+const Settings = () => {
   const t = useTranslations();
-  const { user } = useContext(UserContext);
+  const { data: user } = useAuth();
 
   if (!user) {
     return <Unauthorized />;
@@ -24,9 +23,7 @@ export default function Settings() {
         <title>CircleForms - {t("title")}</title>
       </Head>
 
-      <Title title={t("subtitle")}>
-        <p className="mt-2 text-2xl">{t("description")}</p>
-      </Title>
+      <Title title={t("subtitle")} description={t("description")} />
 
       <section className="container py-8 px-10 bg-black-dark2 rounded-70">
         <div className="space-y-8">
@@ -35,8 +32,8 @@ export default function Settings() {
             <div className="flex items-center">
               <img
                 className="w-28 h-28 rounded-full"
-                src={user.osu?.avatar_url!}
-                alt={user.osu?.username!}
+                src={user?.osu?.avatar_url!}
+                alt={user?.osu?.username!}
               />
               <div className="pl-3">
                 <h2 className="text-3xl font-bold">osu!</h2>
@@ -45,13 +42,8 @@ export default function Settings() {
             </div>
             <div className="flex flex-col justify-center text-lg text-right text-white text-opacity-50">
               <p>
-                {t("integrations.osu.connectedTo")} {user.id} ({user.osu?.username})
+                {t("integrations.osu.connectedTo")} {user?.id} ({user?.osu?.username})
               </p>
-              {/* <p>
-                { t('integrations.osu.withForms', {
-                  count: user.posts.length
-                }) }
-              </p> */}
             </div>
           </div>
 
@@ -83,7 +75,7 @@ export default function Settings() {
       </section>
     </DefaultLayout>
   );
-}
+};
 
 export async function getStaticProps({ locale }: { locale: Locales }) {
   const [translations, global] = await Promise.all([
@@ -102,3 +94,5 @@ export async function getStaticProps({ locale }: { locale: Locales }) {
     }
   };
 }
+
+export default Settings;

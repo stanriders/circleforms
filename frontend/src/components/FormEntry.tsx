@@ -40,7 +40,7 @@ export default function FormEntry({
           className="flex-1 bg-cover"
           style={{
             backgroundImage: `
-              linear-gradient(270deg, #131313 2.39%, rgba(17, 17, 17, 0) 98.16%),
+              linear-gradient(270deg, #131313 7.39%, rgba(17, 17, 17, 0) 98.16%),
              ${img ? `url(${img})` : undefined}
             
             `,

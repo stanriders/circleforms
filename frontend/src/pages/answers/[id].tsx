@@ -1,9 +1,10 @@
-import React, { useContext } from "react";
+import React from "react";
 import InferNextPropsType from "infer-next-props-type";
 import { GetServerSidePropsContext } from "next";
 import Head from "next/head";
 import ResponseSubmission from "src/components/ResponseSubmission";
-import UserContext from "src/context/UserContext";
+import Unauthorized from "src/components/Unauthorized";
+import useAuth from "src/hooks/useAuth";
 import DefaultLayout from "src/layouts";
 import { getApiClient } from "src/utils/getApiClient";
 import { AsyncReturnType } from "src/utils/misc";
@@ -15,7 +16,11 @@ type ServerSideProps = InferNextPropsType<typeof getServerSideProps>;
 
 // TODO fixme
 const AnswerPage = (props: ServerSideProps) => {
-  const { user } = useContext(UserContext);
+  const { data: user } = useAuth();
+
+  if (!user) {
+    return <Unauthorized />;
+  }
 
   return (
     <DefaultLayout>

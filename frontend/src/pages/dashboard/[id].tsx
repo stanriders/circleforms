@@ -1,18 +1,18 @@
-import React, { useContext } from "react";
+import React from "react";
 import InferNextPropsType from "infer-next-props-type";
 import { GetServerSidePropsContext } from "next";
+import useAuth from "src/hooks/useAuth";
 import { AsyncReturnType } from "src/utils/misc";
 
 import CreateForm from "../../components/CreateForm/CreateForm";
 import Unauthorized from "../../components/Unauthorized";
-import UserContext from "../../context/UserContext";
 import { getApiClient } from "../../utils/getApiClient";
 
 // https://github.com/vercel/next.js/issues/15913#issuecomment-950330472
 type ServerSideProps = InferNextPropsType<typeof getServerSideProps>;
 
 const EditForm = (props: ServerSideProps) => {
-  const { user } = useContext(UserContext);
+  const { data: user } = useAuth();
 
   if (!user) {
     return <Unauthorized />;
