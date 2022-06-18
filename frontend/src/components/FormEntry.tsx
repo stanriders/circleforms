@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import Link from "next/link";
 import * as timeago from "timeago.js";
 
@@ -23,13 +22,16 @@ export default function FormEntry({
 }: IFormEntry) {
   const bannerImg = getImage({ banner, id, type: "banner" });
 
-  useEffect(() => {
-    return () => {
-      if (previewBanner) {
-        URL.revokeObjectURL(previewBanner);
-      }
-    };
-  }, [previewBanner]);
+  const getImagePreview = () => {
+    if (previewBanner) {
+      return previewBanner;
+    }
+    if (bannerImg) {
+      return bannerImg;
+    }
+  };
+
+  const img = getImagePreview();
 
   return (
     <Link href={href}>
@@ -39,7 +41,8 @@ export default function FormEntry({
           style={{
             backgroundImage: `
               linear-gradient(270deg, #131313 2.39%, rgba(17, 17, 17, 0) 98.16%),
-              url('${previewBanner ? previewBanner : bannerImg}')
+             ${img ? `url(${img})` : undefined}
+            
             `,
             backgroundPosition: "center"
           }}
