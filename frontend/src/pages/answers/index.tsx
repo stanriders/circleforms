@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { useQuery } from "react-query";
 import Head from "next/head";
 import FormEntry from "src/components/FormEntry";
@@ -14,8 +14,15 @@ const Answers = () => {
   const { isLoading: isLoadingPosts, data } = useQuery(["meAnswersGet"], () =>
     apiClient.users.meAnswersGet()
   );
-
   const { user } = useContext(UserContext);
+
+  const sortedData = useMemo(() => {
+    if (!data) return;
+
+    return [...data].sort(
+      (a, b) => b.answer?.answer_time?.getTime()! - a.answer?.answer_time?.getTime()!
+    );
+  }, [data]);
 
   const formUser = {
     id: user?.id,
@@ -48,7 +55,7 @@ const Answers = () => {
                   <p className="font-semibold text-center">You didn`t submit any responses yet.</p>
                 )}
                 {showFormEntries &&
-                  data?.map((form) => {
+                  sortedData?.map((form) => {
                     return (
                       <FormEntry
                         href={`answers/${form.post?.id}`}
