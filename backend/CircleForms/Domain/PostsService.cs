@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using CircleForms.Contracts.Request;
+using CircleForms.Contracts.Response;
 using CircleForms.Contracts.Response.Compound;
 using CircleForms.Contracts.Response.Posts;
 using CircleForms.Database.Models.Posts;
@@ -12,6 +13,7 @@ using CircleForms.Database.Models.Posts.Enums;
 using CircleForms.Database.Models.Posts.Questions;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.IO.FileIO.Abstract;
+using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -188,7 +190,7 @@ public class PostsService
         {
             return new Result<AnswerPostContract>(new AnswerPostContract
             {
-                Answer = answer?.Submissions,
+                Answer = answer?.Adapt<AnswerContract>(),
                 Post = _mapper.Map<PostContract>(post)
             });
         }
@@ -200,7 +202,7 @@ public class PostsService
 
         var response = new AnswerPostContract
         {
-            Answer = answer?.Submissions,
+            Answer = answer?.Adapt<AnswerContract>(),
             Post = _mapper.Map<PostContract>(post)
         };
 

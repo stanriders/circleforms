@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using CircleForms.Contracts.Response.Posts;
-using CircleForms.Database.Models.Posts.Questions.Submissions;
+﻿using CircleForms.Contracts.Response.Posts;
 using Newtonsoft.Json;
 
 namespace CircleForms.Contracts.Response.Compound;
@@ -8,7 +6,7 @@ namespace CircleForms.Contracts.Response.Compound;
 public class AnswerPostContract
 {
     [JsonProperty("answer")]
-    public List<Submission> Answer { get; set; }
+    public AnswerContract Answer { get; set; }
 
     [JsonProperty("post")]
     public PostContract Post { get; set; }
