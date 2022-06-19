@@ -50,8 +50,6 @@ export default function Dashboard() {
   const { error, data, isLoading } = useQuery("mePostsGet", () => apiClient.users.mePostsGet());
   const { mutate: deletePost } = useDeletePost();
 
-  const { mutate: deletePost } = useDeletePost();
-
   const unpublishedPosts = useMemo(
     () => data?.filter((val) => val.published === false).reverse(),
     [data]
@@ -60,23 +58,6 @@ export default function Dashboard() {
     () => data?.filter((val) => val.published === true).reverse(),
     [data]
   );
-
-  const debouncedHandleDelete = debounce((id: string) => {
-    deletePost(id);
-  }, 500);
-
-  const confirmDeleteModal = CustomConfirmModal({
-    title: "Please confirm your action",
-    bodyText: "Do you really want to delete this form?",
-    confirmButtonLabel: "Delete",
-    confirmCallback: debouncedHandleDelete
-  });
-
-  if (error instanceof Error) return <p>{"An error has occurred: " + error.message}</p>;
-
-  if (!user) {
-    return <Unauthorized />;
-  }
 
   const debouncedHandleDelete = debounce((id: string) => {
     deletePost(id);
