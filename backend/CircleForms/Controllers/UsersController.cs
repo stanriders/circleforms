@@ -3,11 +3,13 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using CircleForms.Contracts;
+using CircleForms.Contracts.Response;
 using CircleForms.Contracts.Response.Compound;
 using CircleForms.Contracts.Response.Posts;
 using CircleForms.Contracts.Response.Users;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.Domain;
+using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -113,7 +115,7 @@ public class UsersController : ControllerBase
         var result = posts.Select(post =>
             new AnswerPostContract
             {
-                Answer = answers.FirstOrDefault(x => x.PostRelation.ID == post.ID)?.Submissions,
+                Answer = answers.First(x => x.PostRelation.ID == post.ID).Adapt<AnswerContract>(),
                 Post = post
             }
         );
