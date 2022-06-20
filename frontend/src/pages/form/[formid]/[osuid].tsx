@@ -40,7 +40,6 @@ export const convertServerAnswerStateToLocal = (
   const questionInfoById: Record<string, string[]> = Object.fromEntries(
     questions.map((q) => [q.question_id, q.question_info])
   );
-  console.log(submissions);
 
   return Object.fromEntries(
     Object.entries(submissions).map(([question_id, answers]) => {

@@ -80,8 +80,8 @@ const ImageDropzone = ({
 
   const ImageSelectText = () => (
     <>
-      <p className="font-semibold text-xl mb-1 select-none">{t("file.dragImageHere")}</p>
-      <p className="font-medium text-xs text-white text-opacity-20 select-none">
+      <p className="mb-1 text-xl font-semibold select-none">{t("file.dragImageHere")}</p>
+      <p className="text-xs font-medium text-white select-none text-opacity-20">
         {t("file.orPressButton")}
       </p>
       <Button theme="secondary" classname="my-2 pointer-events-none">
@@ -107,7 +107,7 @@ const ImageDropzone = ({
       >
         {showDefaultPreview && (
           <img
-            className="h-56 object-contain"
+            className="object-contain h-56"
             src={defaultPreview}
             alt={"Image preview"}
             key={defaultPreview}
@@ -120,7 +120,7 @@ const ImageDropzone = ({
         {file && (
           <div>
             <img
-              className="h-56 object-contain"
+              className="object-contain h-56"
               src={imgSrc}
               alt={file.name}
               key={file.name}

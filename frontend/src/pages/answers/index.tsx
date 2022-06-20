@@ -14,10 +14,15 @@ const Answers = () => {
   const { isLoading: isLoadingPosts, data } = useQuery(["meAnswersGet"], () =>
     apiClient.users.meAnswersGet()
   );
-
-  const reversedData = useMemo(() => data && [...data]?.reverse(), [data]);
-
   const { user } = useContext(UserContext);
+
+  const sortedData = useMemo(() => {
+    if (!data) return;
+
+    return [...data].sort(
+      (a, b) => b.answer?.answer_time?.getTime()! - a.answer?.answer_time?.getTime()!
+    );
+  }, [data]);
 
   const formUser = {
     id: user?.id,
@@ -41,16 +46,16 @@ const Answers = () => {
       <Title title="Submissions">You can edit your answers</Title>
 
       <section className="container max-height">
-        <div className="flex flex-col justify-between mb-12 bg-black-dark2 rounded-70 h-full">
+        <div className="flex flex-col justify-between mb-12 h-full bg-black-dark2 rounded-70">
           <div className="h-full">
-            <div className="mt-6 px-7">
-              <div className="flex flex-col gap-y-3 relative">
+            <div className="px-7 mt-6">
+              <div className="flex relative flex-col gap-y-3">
                 {!data && isLoadingPosts && <FormEntrySkeletonList length={10} />}
                 {!showFormEntries && (
                   <p className="font-semibold text-center">You didn`t submit any responses yet.</p>
                 )}
                 {showFormEntries &&
-                  reversedData?.map((form) => {
+                  sortedData?.map((form) => {
                     return (
                       <FormEntry
                         href={`answers/${form.post?.id}`}

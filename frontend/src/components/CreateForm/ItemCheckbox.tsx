@@ -11,9 +11,9 @@ const ItemCheckbox = ({ inputProps, onDelete }: IITemCheckbox) => {
   const t = useTranslations();
   return (
     <div className="flex gap-x-2 items-center">
-      <div className="h-6 w-6 border-2" />
+      <div className="w-6 h-6 border-2" />
       <input
-        className="input--inline bg-transparent text-2xl font-medium  border-b border-dotted border-white border-opacity-20 p-2 relative transition-colors"
+        className="relative p-2 text-2xl font-medium  bg-transparent border-b border-white/20 border-dotted transition-colors input--inline"
         autoComplete="off"
         {...inputProps}
       />

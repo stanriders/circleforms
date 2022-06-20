@@ -34,7 +34,7 @@ const QuestionFieldArray = () => {
   return (
     <div>
       {showEmptyMessage && (
-        <p className="text-center py-6 text-lg">
+        <p className="py-6 text-lg text-center">
           No questions created yet. Press any button on the right to create a question.
         </p>
       )}
@@ -42,8 +42,8 @@ const QuestionFieldArray = () => {
         <ul className="flex flex-col gap-6">
           {fields.map((item, index) => (
             <li key={item.id}>
-              <div className="flex flex-col gap-y-4 rounded-35 bg-black-lighter pt-4 pb-6 px-14 relative overflow-clip min-h-[360px]">
-                <div className="absolute left-0 top-0 bg-pink h-full w-2" />
+              <div className="flex relative flex-col gap-y-4 px-14 pt-4 pb-6 min-h-[360px] text-clip bg-black-lighter rounded-35">
+                <div className="absolute top-0 left-0 w-2 h-full bg-pink" />
                 {/* wysiwyg acts as input for question title */}
                 <div>
                   <Controller
@@ -80,8 +80,8 @@ const QuestionFieldArray = () => {
           ))}
         </ul>
         {/* sidebar for adding questions  */}
-        <div className="absolute -right-28 top-0 h-full">
-          <div className="sticky top-72 flex flex-col items-center rounded-35 bg-black-lightest py-8 px-2">
+        <div className="absolute top-0 -right-28 h-full">
+          <div className="flex sticky top-72 flex-col items-center py-8 px-2 bg-black-lightest rounded-35">
             {QUESTIONS_TYPES.map((type) => {
               const Icon = QUESTIONS_ICONS[type];
               return (

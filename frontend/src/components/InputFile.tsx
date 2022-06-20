@@ -50,7 +50,7 @@ export default function InputFile({ label, name, value, classname, onChange }: I
       onDragLeave={handleDragExit}
       onDrop={handleDrop}
     >
-      <p className="font-medium text-3xl">{label}</p>
+      <p className="text-3xl font-medium">{label}</p>
       <div
         className={classNames(
           "flex flex-col items-center justify-center bg-black-lighter h-full w-full rounded-20 border-4 border-dashed border-grey-border mt-1 py-10 transition hover:brightness-110 focus:brightness-150",
@@ -70,8 +70,8 @@ export default function InputFile({ label, name, value, classname, onChange }: I
           </div>
         )) || (
           <>
-            <p className="font-semibold text-xl mb-1 select-none">{t("file.dragImageHere")}</p>
-            <p className="font-medium text-xs text-white text-opacity-20 select-none">
+            <p className="mb-1 text-xl font-semibold select-none">{t("file.dragImageHere")}</p>
+            <p className="text-xs font-medium text-white select-none text-opacity-20">
               {t("file.orPressButton")}
             </p>
 

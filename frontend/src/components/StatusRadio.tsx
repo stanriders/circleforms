@@ -26,7 +26,7 @@ export default function StatusRadio({
         )}
       >
         <div className={classNames("w-4 h-4 rounded-full", color ? color : "bg-white")}></div>
-        <span className="font-medium text-xl">{children}</span>
+        <span className="text-xl font-medium">{children}</span>
       </label>
       <input
         type="radio"

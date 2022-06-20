@@ -7,7 +7,7 @@ import { NextIntlProvider } from "next-intl";
 import ErrorFallback from "src/components/ErrorFallback";
 import { FormDataProvider } from "src/components/FormContext";
 import { MantineStyles } from "src/components/MantineStyles";
-import PublishModal from "src/components/PublishModal";
+import PublishModalBody from "src/components/PublishModalBody";
 
 // should probably import all messages somehow
 // or manually import correct messages for each test
@@ -29,7 +29,7 @@ export const AllTheProviders: React.FC<{
         <QueryClientProvider client={queryClient} contextSharing={true}>
           <FormDataProvider>
             <MantineStyles>
-              <ModalsProvider modals={{ publish: PublishModal }}>{children}</ModalsProvider>
+              <ModalsProvider modals={{ publish: PublishModalBody }}>{children}</ModalsProvider>
             </MantineStyles>
           </FormDataProvider>
         </QueryClientProvider>

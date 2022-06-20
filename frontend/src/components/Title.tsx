@@ -8,11 +8,11 @@ interface ITitleProps {
 
 export default function Title({ title, children, Decoration }: ITitleProps) {
   return (
-    <div className="flex justify-center relative py-6">
+    <div className="flex relative justify-center py-6">
       {(Decoration && <Decoration />) || <DefaultDecoration />}
       <div className="z-10 text-center">
-        <h1 className="text-6xl lg:text-8xl font-bold z-10 mt-4">{title}</h1>
-        {children && <p className="text-2xl mt-2">{children}</p>}
+        <h1 className="z-10 mt-4 text-6xl font-bold lg:text-8xl">{title}</h1>
+        {children && <p className="mt-2 text-2xl">{children}</p>}
       </div>
     </div>
   );

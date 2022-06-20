@@ -65,7 +65,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
 
   // Try to get user`s post answers
   let mappedAnswers: Record<string, string[]> = {};
-  typedPost.answer?.forEach((submission) => {
+
+  typedPost.answer.submissions?.forEach((submission) => {
     if (submission.question_id) {
       mappedAnswers[submission.question_id] = submission.answers || [];
     }

@@ -4,7 +4,7 @@ import { ContextModalProps } from "@mantine/modals";
 import Button from "./Button";
 import ErrorMessage from "./ErrorMessage";
 
-const PublishModal = ({
+const PublishModalBody = ({
   context,
   id,
   innerProps
@@ -35,4 +35,4 @@ const PublishModal = ({
   );
 };
 
-export default PublishModal;
+export default PublishModalBody;

@@ -51,7 +51,7 @@ const CreateForm = ({ postData }: ICreateForm) => {
 
       <Toaster />
 
-      <section className="container space-y-8 mb-12 ">
+      <section className="container mb-12 space-y-8 ">
         <Tabs>
           <TabList>
             <Tab>{t("tabs.design")}</Tab>
@@ -60,7 +60,7 @@ const CreateForm = ({ postData }: ICreateForm) => {
             <Tab>{t("tabs.options")}</Tab>
           </TabList>
 
-          <TabPanels className="bg-black-lightest px-8 py-5 rounded-b-3xl">
+          <TabPanels className="py-5 px-8 bg-black-lightest rounded-b-3xl">
             <TabPanel>
               <TabDesign post={post} />
             </TabPanel>

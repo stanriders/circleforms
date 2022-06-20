@@ -19,9 +19,9 @@ export default function Error404() {
 
       <Hero>
         <div className="flex flex-col justify-center items-center py-16 md:py-32 lg:pt-52 lg:pb-72">
-          <h3 className="text-4xl lg:-mt-10 text-center">{t("subtitle")}</h3>
-          <code className="mt-2 p-2 bg-black-lightest">{router.asPath}</code>
-          <div className="flex flex-col lg:flex-row mt-14 gap-8 pb-2 lg:pb-0">
+          <h3 className="text-4xl text-center lg:-mt-10">{t("subtitle")}</h3>
+          <code className="p-2 mt-2 bg-black-lightest">{router.asPath}</code>
+          <div className="flex flex-col gap-8 pb-2 mt-14 lg:flex-row lg:pb-0">
             <Button theme="secondary" large href="/">
               {t("goBack")}
             </Button>

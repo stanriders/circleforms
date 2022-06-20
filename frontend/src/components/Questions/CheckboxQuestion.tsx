@@ -10,8 +10,8 @@ const CheckboxQuestion = ({ question, register, errors, disableEdit }: IQuestion
   const questionIsRequired = !question.is_optional;
 
   return (
-    <div className="flex flex-col gap-2 bg-black-lighter px-8 py-5 rounded-3xl">
-      <h2 className="text-3xl font-bold pb-6">
+    <div className="flex flex-col gap-2 py-5 px-8 bg-black-lighter rounded-3xl">
+      <h2 className="pb-6 text-3xl font-bold">
         {question.title} {question.is_optional ? null : <span className="text-pink">*</span>}
       </h2>
       <div className="flex flex-col gap-4">

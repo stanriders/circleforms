@@ -9,10 +9,10 @@ const ItemCheckboxPlaceholder = ({ onClick }: IItemCheckboxPlaceholder) => {
   const t = useTranslations();
   return (
     <div onClick={onClick} className="flex gap-x-2 items-center">
-      <div className="h-6 w-6 border-2 border-grey" />
+      <div className="w-6 h-6 border-2 border-grey" />
       <input
         defaultValue={t("addChoice")}
-        className="input--inline bg-transparent text-2xl font-medium  border-b border-dotted border-white border-opacity-20 p-2 relative transition-colors text-grey"
+        className="relative p-2 text-2xl font-medium text-grey bg-transparent border-b border-white/20 border-dotted transition-colors input--inline"
         type="text"
         readOnly
       />

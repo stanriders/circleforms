@@ -16,24 +16,24 @@ const FormHeader = ({ iconImg, post, authorUser }: IFormHeader) => {
   const t = useTranslations();
 
   return (
-    <div className="bg-black-dark2 p-16 relative rounded-b-70">
-      <div className="absolute top-0 left-16 right-16 flex items-start justify-between">
-        <div className="flex items-center gap-x-3">
+    <div className="relative p-16 bg-black-dark2 rounded-b-70">
+      <div className="flex absolute inset-x-16 top-0 justify-between items-start">
+        <div className="flex gap-x-3 items-center">
           <div className="relative shrink-0 min-w-fit">
             <img
-              className="h-20 w-20 rounded-full object-cover"
+              className="object-cover w-20 h-20 rounded-full"
               src={iconImg}
               alt={`${post?.title} thumbnail`}
             />
             <img
-              className="h-10 w-10 rounded-full absolute bottom-0 right-0"
+              className="absolute right-0 bottom-0 w-10 h-10 rounded-full"
               src={authorUser?.osu?.avatar_url!}
               alt={`${authorUser.osu?.username}'s avatar`}
             />
           </div>
           <div>
             <h1 className="text-4xl font-bold">{post?.title}</h1>
-            <p className="text-white text-opacity-50 text-2xl">
+            <p className="text-2xl text-white text-opacity-50">
               {post?.answer_count ?? post?.answer_count} {t("answersCount")}
             </p>
           </div>
