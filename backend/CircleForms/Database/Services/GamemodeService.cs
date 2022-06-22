@@ -32,6 +32,11 @@ public class GamemodeService : IGamemodeService
             return Result<Statistics>.NotFound(userId);
         }
 
+        if (user.Osu?.Statistics is null)
+        {
+            return Result<Statistics>.Error("This user does not have statistics!");
+        }
+
         var statistics = mode switch
         {
             Gamemode.Osu => user.Osu.Statistics.Osu,
