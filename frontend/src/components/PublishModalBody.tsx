@@ -22,6 +22,7 @@ const PublishModalBody = ({
           Back
         </Button>
         <Button
+          data-testid="confirmButton"
           theme="secondary"
           onClick={() => {
             context.closeModal(id);

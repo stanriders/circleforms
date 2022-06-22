@@ -66,7 +66,7 @@ export default function Header() {
       <div className="flex gap-x-3 items-center">
         {(user && (
           <Menu>
-            <MenuButton>
+            <MenuButton data-testid="profileButton">
               <div className="flex gap-x-2 items-center pl-4 font-bold bg-black rounded-70 border-2 border-pink">
                 <span>{user?.osu?.username}</span>
                 <img
@@ -77,12 +77,16 @@ export default function Header() {
               </div>
             </MenuButton>
             <MenuList className="slide-down">
-              <MenuItem onSelect={() => router.push("/answers")}>Answers</MenuItem>
-              <MenuItem onSelect={() => router.push("/dashboard")}>
+              <MenuItem data-testid="manageAnswers" onSelect={() => router.push("/answers")}>
+                Answers
+              </MenuItem>
+              <MenuItem data-testid="manageForms" onSelect={() => router.push("/dashboard")}>
                 {t("navbar.dashboard")}
               </MenuItem>
-              <MenuItem onSelect={() => router.push("/settings")}>{t("navbar.settings")}</MenuItem>
-              <MenuItem className="danger" onSelect={logout}>
+              <MenuItem data-testid="settingsButton" onSelect={() => router.push("/settings")}>
+                {t("navbar.settings")}
+              </MenuItem>
+              <MenuItem data-testid="logoutButton" className="danger" onSelect={logout}>
                 {t("navbar.logout")}
               </MenuItem>
             </MenuList>

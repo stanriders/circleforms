@@ -41,6 +41,7 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
         control={control}
         render={({ field }) => (
           <DropdownSelect
+            data-testid="selectQuestionType"
             icon={getIconFromType(field.value)}
             aria-label="Select question type"
             value={field.value || QUESTIONS_TYPES[0]}
@@ -75,6 +76,7 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
             control={control}
             render={({ field }) => (
               <Switch
+                data-testid="makeQuestionOptionalButton"
                 onChange={field.onChange}
                 checked={field.value}
                 offColor="#0c0c0c"
@@ -91,7 +93,7 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
             )}
           />
         </label>
-        <button type="button" className="button--icon">
+        <button data-testid="showMoreButton" type="button" className="button--icon">
           <VisuallyHidden>Show more</VisuallyHidden>
           <MdMoreVert className="w-8 h-8" />
         </button>

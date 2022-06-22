@@ -91,6 +91,7 @@ export default function Dashboard() {
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
             <Link href="/create-new-form" passHref>
               <a
+                data-testid="createNewFormButton"
                 className="flex justify-center items-center h-[88px] bg-pink rounded-20  transition-transform hover:scale-99 ease-out-cubic"
                 title="Create your form"
               >

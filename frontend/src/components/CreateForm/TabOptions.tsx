@@ -232,6 +232,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
             render={({ field, fieldState: { error } }) => (
               <div>
                 <DropdownSelect
+                  data-testid="gameModeSelect"
                   aria-label="Select game mode"
                   required={true}
                   {...field}
@@ -279,26 +280,30 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
         </OptionTabEntry>
 
         <OptionTabEntry mainHeading="Answer editing" subText="Allow users to edit their answers">
-          <Controller
-            name={`allow_answer_edit`}
-            control={methods.control}
-            render={({ field }) => (
-              <Switch
-                onChange={field.onChange}
-                checked={field.value || false}
-                offColor="#0c0c0c"
-                onColor="#0c0c0c"
-                onHandleColor="#FF66AA"
-                handleDiameter={26}
-                uncheckedIcon={false}
-                checkedIcon={false}
-                boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-                height={32}
-                width={58}
-              />
-            )}
-          />
+          {/* testid gets propogated to the invisible input element, and as a result cant be clicked in e2e test, so we unfortunately need a wrapper div */}
+          <div data-testid="allowAnswerEdit">
+            <Controller
+              name={`allow_answer_edit`}
+              control={methods.control}
+              render={({ field }) => (
+                <Switch
+                  data-testid="allowAnswerHiddenInput"
+                  onChange={field.onChange}
+                  checked={field.value || false}
+                  offColor="#0c0c0c"
+                  onColor="#0c0c0c"
+                  onHandleColor="#FF66AA"
+                  handleDiameter={26}
+                  uncheckedIcon={false}
+                  checkedIcon={false}
+                  boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                  activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                  height={32}
+                  width={58}
+                />
+              )}
+            />
+          </div>
         </OptionTabEntry>
 
         {!isEdit && (
@@ -323,6 +328,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
           )}
           {isEdit && (
             <Button
+              data-testid="publishButton"
               classname="w-fit"
               theme="secondary"
               {...{ type: "button", disabled: isLoading }}

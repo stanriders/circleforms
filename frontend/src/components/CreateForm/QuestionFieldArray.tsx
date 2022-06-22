@@ -53,6 +53,7 @@ const QuestionFieldArray = () => {
                     render={({ field, fieldState }) => (
                       <div>
                         <Wysiwyg
+                          data-testid={`questionInput${index}`}
                           placeholder="Write your question here"
                           value={field.value}
                           onTextAreaChange={field.onChange}

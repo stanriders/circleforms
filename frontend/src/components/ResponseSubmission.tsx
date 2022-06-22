@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { useMutation } from "react-query";
-import { DevTool } from "@hookform/devtools";
+// import { DevTool } from "@hookform/devtools";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 import UserContext from "src/context/UserContext";
@@ -43,7 +43,7 @@ const ResponseSubmission = ({
   // Form settings
   const {
     register,
-    control,
+    // control,
     handleSubmit,
     formState: { errors }
   } = useForm<FormData>({ mode: "onBlur", defaultValues: initialUserAnswers });
@@ -135,7 +135,7 @@ const ResponseSubmission = ({
             </button>
             {/* dont show submit button when looking at results */}
             {showSubmitButton && (
-              <button type="submit" className="button secondary">
+              <button data-testid="submitResponseButton" type="submit" className="button secondary">
                 Submit response
               </button>
             )}
@@ -157,7 +157,7 @@ const ResponseSubmission = ({
             )}
           </div>
         </form>
-        <DevTool control={control} /> {/* set up the dev tool */}
+        {/* <DevTool control={control} />  */}
       </section>
     </>
   );

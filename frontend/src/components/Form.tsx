@@ -73,8 +73,8 @@ export default function Form({ postData, authorUser }: IFormProps) {
 
       <Tabs className="mt-16 mb-4">
         <TabList>
-          <Tab>{t("tabs.info.title")}</Tab>
-          {usersAndAnswers?.users && <Tab>{t("tabs.answers.title")}</Tab>}
+          <Tab data-testid="infoTab">{t("tabs.info.title")}</Tab>
+          {usersAndAnswers?.users && <Tab data-testid="answersTab">{t("tabs.answers.title")}</Tab>}
         </TabList>
 
         <TabPanels className="py-5 px-8 bg-black-lightest rounded-b-3xl">
@@ -147,6 +147,7 @@ export default function Form({ postData, authorUser }: IFormProps) {
 
         {showResponseButton && (
           <Button
+            data-testid="respondButton"
             onClick={() => {
               router.push(`/questions/${id}`);
             }}

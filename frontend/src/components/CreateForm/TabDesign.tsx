@@ -20,7 +20,7 @@ interface ITabDesign {
 
 const TabDesign = ({ post }: ITabDesign) => {
   const initialTitle = post?.title;
-  const initialDescription = post?.description;
+  const initialDescription = post?.excerpt;
   const initialPostid = post?.id;
   const initialBanner = post?.banner;
   const initialIcon = post?.icon;

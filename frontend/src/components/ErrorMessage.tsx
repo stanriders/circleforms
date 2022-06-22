@@ -10,7 +10,7 @@ const ErrorMessage = ({
   classname?: string;
 }) => {
   return (
-    <p className={`text-pink ${classname}`} role="alert">
+    <p data-testid="errorMessage" className={`text-pink ${classname}`} role="alert">
       {text}
       {children}
     </p>
