@@ -115,7 +115,7 @@ test.describe("CreateForm", async () => {
       await page.keyboard.press("Enter");
     }
 
-    await page.locator("text=19").first().click();
+    await page.locator("text=19").last().click();
 
     // Click allow answers toggle
     await page.locator('[data-testid="allowAnswerEdit"]').click();
