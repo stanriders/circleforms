@@ -48,3 +48,5 @@ Then you need to run `npm run e2e:dev`, which will fail, but you will get an ema
 Running `npm run e2e:dev` should now work.
 
 To debug, run:`PWDEBUG=1 npm run e2e:dev`
+
+If the amount of forms grows too large, you can delete `db` and `redis` folders to reset the database. Run `docker-compose build backend` command afterwards.

@@ -21,7 +21,6 @@ test.describe("CreateForm", async () => {
   test("create a form -> edit -> publish -> answer", async () => {
     await page.locator('[data-testid="profileButton"]').click();
 
-    // Click [data-testid="manageForms"]
     await Promise.all([
       page.waitForNavigation(/*{ url: 'http://localhost:3000/dashboard' }*/),
       page.locator('[data-testid="manageForms"]').click()
@@ -220,9 +219,6 @@ test.describe("CreateForm", async () => {
 
     await expect(page.locator('[data-testid="allowAnswerHiddenInput"]')).toBeChecked();
 
-    await page.locator('[data-testid="gameModeSelect"]').click();
-    await page.locator('text="Osu"').click();
-
     await page.locator('[data-testid="publishButton"]').click();
 
     await Promise.all([
@@ -233,7 +229,6 @@ test.describe("CreateForm", async () => {
     // check that form was published
     await page.goto("localhost:3000/forms");
     expect(await page.locator(`text=Myepictestform-EDIT-${dateString}`)).toBeVisible();
-    await page.screenshot({ path: `./e2e_screenshots/TEST.png` });
 
     await Promise.all([
       page.waitForNavigation(/*{ url: 'http://localhost:3000/dashboard' }*/),
@@ -267,5 +262,75 @@ test.describe("CreateForm", async () => {
     await page.keyboard.type("TExtquestionanswer");
 
     await page.locator("text=radd22-EDIT").click();
+
+    await Promise.all([
+      page.locator('[data-testid="submitResponseButton"]').click(),
+      page.waitForNavigation()
+    ]);
+
+    await page.goto("localhost:3000/answers");
+    await page.waitForLoadState("networkidle");
+    // check if answer was actually submitted
+    expect(await page.locator(`text=Myepictestform-EDIT-${dateString}`)).toBeVisible();
+
+    await Promise.all([
+      page.waitForNavigation(/*{ url: 'http://localhost:3000/dashboard' }*/),
+      page.locator(`text=Myepictestform-EDIT-${dateString}`).click()
+    ]);
+    // answers are rendered correctly
+    expect(page.locator("text=myfirstcheckboxquestion-EDIT")).toBeVisible();
+    expect(page.locator("text=my check 1 EDIT")).toBeVisible();
+    expect(page.locator("text=my check 2 EDIT")).toBeVisible();
+    await expect(page.locator("text=my check 1 EDIT")).toBeChecked();
+    await expect(page.locator("text=my check 2 EDIT")).toBeChecked();
+
+    expect(page.locator("text=textqqq-EDIT")).toBeVisible();
+    const freeformAnswerText = await page.inputValue(
+      'form div:has-text("textqqq-EDIT*") input[type="text"]'
+    );
+    expect(
+      freeformAnswerText.includes("TExtquestionanswer"),
+      "first option for third question exists"
+    ).toBeTruthy();
+
+    expect(page.locator("text=radio third lol EDIT")).toBeVisible();
+    expect(page.locator("text=radd11-EDIT")).toBeVisible();
+    expect(page.locator("text=radd22-EDIT")).toBeVisible();
+    await expect(page.locator("text=radd22-EDIT")).toBeChecked();
+
+    await page.locator("text=radd11-EDIT").click();
+
+    await page
+      .locator('form div:has-text("NEW optional text") input[type="text"]')
+      .fill("OptionalTextFilled");
+
+    await Promise.all([
+      page.waitForNavigation(),
+      page.locator('[data-testid="editSubmissionButton"]').click()
+    ]);
+
+    await page.goBack();
+
+    // check that changes were saved
+
+    await expect(page.locator("text=radd11-EDIT")).toBeChecked();
+
+    const newOptionalAnswer = await page.inputValue(
+      'form div:has-text("NEW optional text") input[type="text"]'
+    );
+    expect(
+      newOptionalAnswer.includes("OptionalTextFilled"),
+      "new optional answer was updated"
+    ).toBeTruthy();
+
+    await page.locator('[data-testid="deleteSubmissionButton"]').click();
+
+    await Promise.all([
+      page.waitForNavigation(),
+      page.locator('[data-testid="confirmButton"]').click()
+    ]);
+
+    const locator = await page.locator(`text=Myepictestform-EDIT-${dateString}`).isVisible();
+    expect(locator, "the answer should NOT exist").toBeTruthy();
   });
 });

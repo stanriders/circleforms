@@ -142,6 +142,7 @@ const ResponseSubmission = ({
 
             {showEditSubmission && (
               <button
+                data-testid="deleteSubmissionButton"
                 type="button"
                 className="button primary"
                 onClick={() => confirmDeleteModal(post.id)}
@@ -151,7 +152,7 @@ const ResponseSubmission = ({
             )}
 
             {showEditSubmission && (
-              <button type="submit" className="button secondary">
+              <button data-testid="editSubmissionButton" type="submit" className="button secondary">
                 Edit submission
               </button>
             )}
