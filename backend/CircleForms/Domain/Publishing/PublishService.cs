@@ -52,13 +52,12 @@ public class PublishService : IPublishService
 
     public async Task<Result<PostContract>> Unpublish(string id, string claim)
     {
-        var postResult = await GetAndValidate(id, claim);
-        if (postResult.IsError)
+        var post = await _postRepository.Get(id);
+        if (post is null)
         {
-            return Result<PostContract>.Error(postResult.Errors);
+            return Result<PostContract>.NotFound(id);
         }
 
-        var post = postResult.Value;
         if (!post.Published)
         {
             return new Result<PostContract>(_mapper.Map<PostContract>(post));
