@@ -27,14 +27,7 @@ const PublishModalBody = ({
         <Button theme="dark" onClick={onBackClickCallback}>
           Back
         </Button>
-        <Button
-          data-testid="confirmButton"
-          theme="secondary"
-          onClick={() => {
-            context.closeModal(id);
-            innerProps.onConfirm();
-          }}
-        >
+        <Button data-testid="confirmButton" theme="secondary" onClick={onActionCallback}>
           {innerProps.confirmLabel}
         </Button>
       </div>

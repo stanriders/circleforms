@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useQuery } from "react-query";
 import Head from "next/head";
 import FormEntry from "src/components/FormEntry";

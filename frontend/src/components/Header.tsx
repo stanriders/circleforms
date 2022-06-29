@@ -83,7 +83,11 @@ export default function Header() {
               <MenuItem data-testid="settingsButton" onSelect={() => router.push("/settings")}>
                 {t("navbar.settings")}
               </MenuItem>
-              <MenuItem data-testid="logoutButton" className="danger" onSelect={logout}>
+              <MenuItem
+                data-testid="logoutButton"
+                className="danger"
+                onSelect={() => router.push("/api/OAuth/signout")}
+              >
                 {t("navbar.logout")}
               </MenuItem>
             </MenuList>
