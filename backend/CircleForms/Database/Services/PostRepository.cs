@@ -24,12 +24,12 @@ public class PostRepository : IPostRepository
     {
         post.AuthorRelation = userId;
 
-        _logger.LogInformation("User {Id} created a new post", userId);
-        _logger.LogDebug("User {Id} created a new post {@Post}", userId, post);
-
         await post.SaveAsync();
 
         await DB.Entity<User>(userId).PostsRelation.AddAsync(post);
+
+        _logger.LogInformation("User {Id} created a new post", userId);
+        _logger.LogDebug("User {Id} created a new post {@Post}", userId, post);
 
         return post;
     }
