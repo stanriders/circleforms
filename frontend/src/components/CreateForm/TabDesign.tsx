@@ -15,12 +15,12 @@ import {
 } from "./TabDesign.hooks";
 
 interface ITabDesign {
-  post: AsyncReturnType<typeof apiClient.posts.postsIdGet>["post"];
+  post?: AsyncReturnType<typeof apiClient.posts.postsIdGet>["post"];
 }
 
 const TabDesign = ({ post }: ITabDesign) => {
   const initialTitle = post?.title;
-  const initialDescription = post?.description;
+  const initialDescription = post?.excerpt;
   const initialPostid = post?.id;
   const initialBanner = post?.banner;
   const initialIcon = post?.icon;
@@ -43,6 +43,7 @@ const TabDesign = ({ post }: ITabDesign) => {
         <div className="absolute top-0 left-0 w-full h-2 bg-pink" />
         {/* post title */}
         <input
+          data-testid="title-input"
           className="relative p-2 text-2xl font-medium  bg-transparent border-b border-white/20  border-dotted transition-colors input--inline input--title"
           type="text"
           placeholder={t("placeholders.title")}
@@ -55,6 +56,7 @@ const TabDesign = ({ post }: ITabDesign) => {
         />
         {/* post description */}
         <input
+          data-testid="description-input"
           className="relative p-2 text-xl font-medium  bg-transparent border-b border-white/20  border-dotted transition-colors input--inline"
           type="text"
           placeholder={t("placeholders.excerpt")}

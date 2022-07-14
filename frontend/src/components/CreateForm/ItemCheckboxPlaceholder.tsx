@@ -11,6 +11,7 @@ const ItemCheckboxPlaceholder = ({ onClick }: IItemCheckboxPlaceholder) => {
     <div onClick={onClick} className="flex gap-x-2 items-center">
       <div className="w-6 h-6 border-2 border-grey" />
       <input
+        data-testid="checkboxPlaceholder"
         defaultValue={t("addChoice")}
         className="relative p-2 text-2xl font-medium text-grey bg-transparent border-b border-white/20 border-dotted transition-colors input--inline"
         type="text"

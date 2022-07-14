@@ -1,6 +1,6 @@
 import { FormProvider, useForm } from "react-hook-form";
-import { DevTool } from "@hookform/devtools";
 
+// import { DevTool } from "@hookform/devtools";
 import { QuestionType } from "../../../openapi";
 import { useFormData } from "../FormContext";
 
@@ -35,7 +35,7 @@ const TabQuestions = ({ defaultValues }: { defaultValues?: IFormValues }) => {
             <QuestionFieldArray />
             {/* Dev tools will lag with large amount of nested inputs */}
             {/* doesnt affect prod */}
-            <DevTool control={methods.control} />
+            {/* <DevTool control={methods.control} placement={"top-left"} /> */}
           </form>
         </FormProvider>
       </div>

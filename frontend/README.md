@@ -34,3 +34,19 @@
 
 1. `npm run generate-api-client`
 2. either manually add `// @ts-nocheck` at the top of new files, or use the script i wrote: `npm run tsignore-openapi`, that adds ts-nocheck to every file in `openapi` folder.
+
+## How to test
+
+Unit: `npm run test`
+
+### E2E
+
+You need to run `npm run e2e:codegen`, go to localhost:3000, authorize and close the window. This should generate `auth.json` with cookies data.
+
+Then you need to run `npm run e2e:dev`, which will fail, but you will get an email with code verification. Use the link to verify.
+
+Running `npm run e2e:dev` should now work.
+
+To debug, run:`PWDEBUG=1 npm run e2e:dev`
+
+If the amount of forms grows too large, you can delete `db` and `redis` folders to reset the database. Run `docker-compose build backend` command afterwards.

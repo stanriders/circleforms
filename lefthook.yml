@@ -3,9 +3,23 @@ pre-commit:
     linter:
       root: "frontend/"
       glob: "**/*.{js,ts,jsx,tsx}"
-      run: npm run eslint {staged_files} && npm run ts-lint
-
+      run: npm run eslint {staged_files}
     prettier:
       root: "frontend/"
       glob: "**/*.{js,ts,jsx,tsx}"
       run: npx prettier --write {staged_files} && git add {staged_files}
+
+pre-push:
+  parallel: true
+  commands:
+    lint_all:
+      root: "frontend/"
+      run: npm run lint && npm run ts-lint
+
+    test:
+      root: "frontend/"
+      run: npm run test:ci
+
+    build:
+      root: "frontend/"
+      run: npm run build
