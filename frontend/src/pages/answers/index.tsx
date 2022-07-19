@@ -1,11 +1,11 @@
-import React, { useContext, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useQuery } from "react-query";
 import Head from "next/head";
 import FormEntry from "src/components/FormEntry";
 import FormEntrySkeletonList from "src/components/FormEntrySkeletonList";
 import Title from "src/components/Title";
 import Unauthorized from "src/components/Unauthorized";
-import UserContext from "src/context/UserContext";
+import useAuth from "src/hooks/useAuth";
 import DefaultLayout from "src/layouts";
 import { Locales } from "src/types/common-types";
 import { apiClient } from "src/utils/apiClient";
@@ -14,7 +14,7 @@ const Answers = () => {
   const { isLoading: isLoadingPosts, data } = useQuery(["meAnswersGet"], () =>
     apiClient.users.meAnswersGet()
   );
-  const { user } = useContext(UserContext);
+  const { data: user } = useAuth();
 
   const sortedData = useMemo(() => {
     if (!data) return;
@@ -31,11 +31,11 @@ const Answers = () => {
     username: user?.osu?.username
   };
 
+  const showFormEntries = data && data?.length! > 0;
+
   if (!user) {
     return <Unauthorized />;
   }
-
-  const showFormEntries = data && data?.length! > 0;
 
   return (
     <DefaultLayout>
@@ -43,7 +43,7 @@ const Answers = () => {
         <title>CircleForms - Answers</title>
       </Head>
 
-      <Title title="Submissions">You can edit your answers</Title>
+      <Title title="Submissions" description="You can edit your answers" />
 
       <section className="container max-height">
         <div className="flex flex-col justify-between mb-12 h-full bg-black-dark2 rounded-70">

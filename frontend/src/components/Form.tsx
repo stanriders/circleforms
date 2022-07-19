@@ -1,12 +1,12 @@
-import { ChangeEvent, useContext, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@reach/tabs";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 import { StatisticsRulesets } from "openapi";
+import useAuth from "src/hooks/useAuth";
 import { AsyncReturnType } from "src/utils/misc";
 
-import UserContext from "../context/UserContext";
 import { apiClient } from "../utils/apiClient";
 import bbcode from "../utils/bbcode";
 import getImage from "../utils/getImage";
@@ -23,7 +23,7 @@ interface IFormProps {
 }
 
 export default function Form({ postData, authorUser }: IFormProps) {
-  const { user } = useContext(UserContext);
+  const { data: user } = useAuth();
   const { description, id, banner, icon } = postData?.post!;
 
   const [showResponseButton, setShowResponseButton] = useState<boolean>();
@@ -35,7 +35,7 @@ export default function Form({ postData, authorUser }: IFormProps) {
   const { data: usersAndAnswers } = useQuery(
     ["postsIdAnswersGet", id],
     () => apiClient.posts.postsIdAnswersGet({ id: id as string }),
-    { retry: 0 }
+    { enabled: user?.id === postData.post?.author_id }
   );
 
   const [sort, setSort] = useState("rank");

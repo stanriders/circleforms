@@ -12,13 +12,14 @@ test.describe("CreateForm", async () => {
   test.beforeAll(async ({ browser }) => {
     page = await browser.newPage();
     await page.goto("localhost:3000");
-    await page.click("text=Log In");
-    await page.waitForLoadState("networkidle");
-    await page.goto("localhost:3000");
-    // await page.screenshot({ path: `./e2e_screenshots/login-state.png` });
+    // await page.screenshot({ path: `./e2e_screenshots/TEST.png` });
+    // await page.click("text=Log In");
+    // await page.waitForLoadState("networkidle");
+    // await page.goto("localhost:3000");
   });
 
   test("create a form -> edit -> publish -> answer", async () => {
+    // await page.screenshot({ path: `./e2e_screenshots/TEST.png` });
     await page.locator('[data-testid="profileButton"]').click();
 
     await Promise.all([
@@ -330,6 +331,7 @@ test.describe("CreateForm", async () => {
       page.locator('[data-testid="confirmButton"]').click()
     ]);
 
+    // await page.screenshot({ path: `./e2e_screenshots/TEST.png` });
     const locator = await page.locator(`text=Myepictestform-EDIT-${dateString}`).isVisible();
     expect(locator, "the answer should NOT exist").toBeTruthy();
   });

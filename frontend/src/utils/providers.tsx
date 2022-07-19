@@ -13,16 +13,16 @@ import PublishModalBody from "src/components/PublishModalBody";
 // or manually import correct messages for each test
 import messages from "../messages/global/en-US.json";
 
+const queryClient = new QueryClient({
+  queryCache: new QueryCache({
+    onError: (error) =>
+      error instanceof Error && toast.error(`Something went wrong: ${error.message}`)
+  })
+});
+
 export const AllTheProviders: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const queryClient = new QueryClient({
-    queryCache: new QueryCache({
-      onError: (error) =>
-        error instanceof Error && toast.error(`Something went wrong: ${error.message}`)
-    })
-  });
-
   return (
     <NextIntlProvider locale="en" messages={messages}>
       <ErrorBoundary FallbackComponent={ErrorFallback}>

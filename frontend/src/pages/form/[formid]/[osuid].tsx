@@ -81,13 +81,36 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const promises = await Promise.allSettled([
     import(`../../../messages/single-form/${context.locale}.json`),
     import(`../../../messages/global/${context.locale}.json`),
-    apiClient.posts.postsIdGet({ id: formid as string }),
-    apiClient.posts.postsIdAnswersGet({ id: formid as string })
+    apiClient.posts.postsIdGet({ id: formid as string })
   ]);
-
-  const [translations, global, postData, usersAndAnswers] = promises.map((p) =>
+  const [translations, global, postData] = promises.map((p) =>
     p.status === "fulfilled" ? p?.value : null
   );
+  const messages = {
+    ...translations,
+    ...global
+  };
+
+  // typescript doesnt infer these types :(
+  const typedPost = postData as AsyncReturnType<typeof apiClient.posts.postsIdGet>;
+
+  // fetch author info
+  const authorUser = await apiClient.users.usersIdGet({
+    id: typedPost.post?.author_id as string
+  });
+
+  if (osuid !== typedPost.post?.author_id) {
+    return {
+      props: {
+        postData,
+        authorUser,
+        messages,
+        osuid
+      }
+    };
+  }
+
+  const usersAndAnswers = await apiClient.posts.postsIdAnswersGet({ id: formid as string });
 
   // if there are no answers, you are unauthorized, so go look at not found screen
   if (!usersAndAnswers) {
@@ -96,21 +119,9 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     };
   }
 
-  // typescript doesnt infer these types :(
-  const typedPost = postData as AsyncReturnType<typeof apiClient.posts.postsIdGet>;
-
-  const typedUsersAndAnswers = usersAndAnswers as AsyncReturnType<
-    typeof apiClient.posts.postsIdAnswersGet
-  >;
-
-  // fetch author info
-  const authorUser = await apiClient.users.usersIdGet({
-    id: typedPost.post?.author_id as string
-  });
-
   // Try to get user`s post answers
   let defaultUserAnswers: Record<string, string[]> = {};
-  const userAnswer = typedUsersAndAnswers.answers?.filter((answer) => answer.user === osuid)[0];
+  const userAnswer = usersAndAnswers?.answers?.filter((answer) => answer.user === osuid)[0];
 
   userAnswer?.submissions?.forEach((submission) => {
     if (submission.question_id) {
@@ -129,11 +140,6 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
       notFound: true
     };
   }
-
-  const messages = {
-    ...translations,
-    ...global
-  };
 
   return {
     props: {

@@ -1,19 +1,18 @@
-import { useContext } from "react";
 import { GetStaticPropsContext, InferGetStaticPropsType, NextPage } from "next";
 import Head from "next/head";
+import useAuth from "src/hooks/useAuth";
 
 import ResponseSubmission from "../../components/ResponseSubmission";
 import Unauthorized from "../../components/Unauthorized";
-import UserContext from "../../context/UserContext";
 import DefaultLayout from "../../layouts";
 import { apiClient } from "../../utils/apiClient";
 
-type StaticSideProps = InferGetStaticPropsType<typeof getStaticProps>;
+export type StaticSideProps = InferGetStaticPropsType<typeof getStaticProps>;
 
 const Questions: NextPage<StaticSideProps> = (props) => {
   const { postData, authorUser } = props;
 
-  const { user } = useContext(UserContext);
+  const { data: user } = useAuth();
   if (!user) {
     return <Unauthorized />;
   }

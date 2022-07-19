@@ -1,11 +1,10 @@
-import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import { useMutation } from "react-query";
 // import { DevTool } from "@hookform/devtools";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
-import UserContext from "src/context/UserContext";
+import useAuth from "src/hooks/useAuth";
 import { AsyncReturnType, sleep } from "src/utils/misc";
 import { debounce } from "ts-debounce";
 
@@ -38,7 +37,7 @@ const ResponseSubmission = ({
 }: IResponseSubmission) => {
   const t = useTranslations();
   const router = useRouter();
-  const { user } = useContext(UserContext);
+  const { data: user } = useAuth();
 
   // Form settings
   const {

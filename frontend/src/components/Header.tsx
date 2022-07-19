@@ -1,4 +1,3 @@
-import { useContext } from "react";
 import SVG from "react-inlinesvg";
 import { Menu, MenuButton, MenuItem, MenuList } from "@reach/menu-button";
 import VisuallyHidden from "@reach/visually-hidden";
@@ -9,7 +8,6 @@ import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
 
 import { navLinks } from "../constants";
-import UserContext from "../context/UserContext";
 import useAuth from "../hooks/useAuth";
 import { Locales } from "../types/common-types";
 import i18n from "../utils/i18n";
@@ -22,8 +20,7 @@ const languages = Object.values(i18n);
 export default function Header() {
   const t = useTranslations("global");
   const router = useRouter();
-  const { user } = useContext(UserContext);
-  const { logout } = useAuth();
+  const { data: user } = useAuth();
 
   function changeLocale(locale: Locales) {
     router.push(
@@ -86,7 +83,11 @@ export default function Header() {
               <MenuItem data-testid="settingsButton" onSelect={() => router.push("/settings")}>
                 {t("navbar.settings")}
               </MenuItem>
-              <MenuItem data-testid="logoutButton" className="danger" onSelect={logout}>
+              <MenuItem
+                data-testid="logoutButton"
+                className="danger"
+                onSelect={() => router.push("/api/OAuth/signout")}
+              >
                 {t("navbar.logout")}
               </MenuItem>
             </MenuList>
