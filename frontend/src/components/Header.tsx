@@ -14,6 +14,7 @@ import i18n from "../utils/i18n";
 
 import Button from "./Button";
 import Flag from "./Flag";
+import SkipNavButton from "./SkipNavButton";
 
 const languages = Object.values(i18n);
 
@@ -39,6 +40,9 @@ export default function Header() {
 
   return (
     <header className="flex fixed top-0 z-navbar justify-between items-center py-3 px-4 w-full text-white bg-black md:px-16 lg:px-32">
+      <SkipNavButton>
+        <button type="button">Skip Navigation Links</button>
+      </SkipNavButton>
       <div className="flex items-center">
         <Link href="/" passHref>
           <a>
