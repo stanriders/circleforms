@@ -264,3 +264,17 @@ svg {
   transform: translateZ(0);
   backface-visibility: hidden;
 }
+
+.skip-link {
+  margin-right: 1rem;
+  padding: 2rem;
+  background: black;
+  color: white;
+  position: absolute;
+  transform: translateX(-200%);
+  transition: transform 0.2s;
+
+  &:focus {
+    transform: translateX(0);
+  }
+}
