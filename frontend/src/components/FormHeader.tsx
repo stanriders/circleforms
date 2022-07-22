@@ -28,7 +28,7 @@ const FormHeader = ({ iconImg, post, authorUser }: IFormHeader) => {
             <img
               className="absolute right-0 bottom-0 w-10 h-10 rounded-full"
               src={authorUser?.osu?.avatar_url!}
-              alt={`${authorUser.osu?.username}'s avatar`}
+              alt={`${authorUser?.osu?.username}'s avatar`}
             />
           </div>
           <div>
