@@ -21,7 +21,11 @@ const ResultStatistics = ({ postData }: IResultStatistics) => {
   const router = useRouter();
   const { formid } = router.query;
 
-  const { data: answers } = useQuery(
+  const {
+    data: answers,
+    isLoading,
+    isError
+  } = useQuery(
     ["postsIdAnswersGet", formid],
     () => apiClient.posts.postsIdAnswersGet({ id: formid as string }),
     {
@@ -74,6 +78,14 @@ const ResultStatistics = ({ postData }: IResultStatistics) => {
         return null;
     }
   };
+
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
+
+  if (isError) {
+    return <p>Something went wrong!</p>;
+  }
 
   return <div>{postData && postData?.post?.questions?.map((q) => getStatsComponentByType(q))}</div>;
 };
