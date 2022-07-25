@@ -14,6 +14,7 @@ import { dynamicSort } from "../utils/objectSort";
 
 import Button from "./Button";
 import FormHeader from "./FormHeader";
+import ResultStatistics from "./FormStatistics";
 import InputRadio from "./InputRadio";
 import Player from "./Player";
 
@@ -23,8 +24,13 @@ interface IFormProps {
 }
 
 export default function Form({ postData, authorUser }: IFormProps) {
+  const t = useTranslations();
+  const router = useRouter();
+  const [sort, setSort] = useState("rank");
   const { data: user } = useAuth();
   const { description, id, banner, icon } = postData?.post!;
+
+  const showResults = postData.post?.author_id === user?.id;
 
   const [showResponseButton, setShowResponseButton] = useState<boolean>();
 
@@ -38,11 +44,7 @@ export default function Form({ postData, authorUser }: IFormProps) {
     { enabled: user?.id === postData.post?.author_id }
   );
 
-  const [sort, setSort] = useState("rank");
   const [sortedPlayers, setSortedPlayers] = useState(usersAndAnswers?.users);
-
-  const t = useTranslations();
-  const router = useRouter();
 
   const bannerImg = getImage({ id, banner, type: "banner" });
   const iconImg = getImage({ id, icon, type: "icon" });
@@ -75,6 +77,7 @@ export default function Form({ postData, authorUser }: IFormProps) {
         <TabList>
           <Tab data-testid="infoTab">{t("tabs.info.title")}</Tab>
           {usersAndAnswers?.users && <Tab data-testid="answersTab">{t("tabs.answers.title")}</Tab>}
+          {showResults && <Tab>Results</Tab>}
         </TabList>
 
         <TabPanels className="py-5 px-8 bg-black-lightest rounded-b-3xl">
@@ -135,6 +138,11 @@ export default function Form({ postData, authorUser }: IFormProps) {
                   );
                 })}
               </div>
+            </TabPanel>
+          )}
+          {showResults && (
+            <TabPanel>
+              <ResultStatistics postData={postData} />
             </TabPanel>
           )}
         </TabPanels>
