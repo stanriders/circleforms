@@ -10,7 +10,6 @@ import PieChartCard from "./PieChartCard";
 export const getColorByIndex = (index: number) => {
   // return color from palette else return random color
   const COLORS = ["#FF66AA", "#C270D4", "#FFE4F5", "#5C7EE4", "#007DA5", "#00716B"];
-
   return COLORS?.[index] || "#" + Math.floor(Math.random() * 16777215).toString(16);
 };
 

@@ -19,8 +19,6 @@ const defaultLabelStyle = {
 };
 
 const PieChartCard = ({ heading, data }: IPieChartCard) => {
-  console.log("data:", data);
-
   return (
     <div className="flex relative flex-col gap-y-6 justify-center px-14 pt-4 pb-6 min-h-[360px] text-clip bg-black-lighter rounded-35">
       <h2 className="text-2xl font-bold">{heading}</h2>
