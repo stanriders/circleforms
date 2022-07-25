@@ -5,6 +5,7 @@ import { Question } from "openapi";
 import { apiClient } from "src/utils/apiClient";
 import { AsyncReturnType } from "src/utils/misc";
 
+import BarChartCard from "./BarChartCard";
 import PieChartCard from "./PieChartCard";
 
 export const getColorByIndex = (index: number) => {
@@ -43,10 +44,8 @@ const ResultStatistics = ({ postData }: IResultStatistics) => {
                 continue;
               }
               const currentVotes = answersCount.get(answer);
-
               answersCount.set(answer, currentVotes + 1);
             }
-
             result.set(submission.question_id!, answersCount);
           }
         }
@@ -56,12 +55,12 @@ const ResultStatistics = ({ postData }: IResultStatistics) => {
   );
 
   const getStatsComponentByType = (question: Question) => {
+    const answerCounts = answers?.get(question.question_id!);
     switch (question.type) {
       case "Freeform":
         return null;
 
       case "Choice":
-        const answerCounts = answers?.get(question.question_id!);
         const resData = question.question_info?.map((questionText, index) => ({
           title: questionText,
           value: answerCounts?.get(String(index)) || 0,
@@ -71,7 +70,13 @@ const ResultStatistics = ({ postData }: IResultStatistics) => {
         return <PieChartCard heading={question.title} data={resData!} />;
 
       case "Checkbox":
-        return null;
+        const barData = question.question_info?.map((questionText, index) => ({
+          questionText: questionText,
+          count: answerCounts?.get(String(index)) || 0,
+          questionIndex: String(index)
+        }));
+
+        return <BarChartCard heading={question.title} data={barData!} />;
 
       default:
         console.error("Unknown question type: ", question.type);
@@ -87,7 +92,11 @@ const ResultStatistics = ({ postData }: IResultStatistics) => {
     return <p>Something went wrong!</p>;
   }
 
-  return <div>{postData && postData?.post?.questions?.map((q) => getStatsComponentByType(q))}</div>;
+  return (
+    <div className="flex flex-col gap-6">
+      {postData && postData?.post?.questions?.map((q) => getStatsComponentByType(q))}
+    </div>
+  );
 };
 
 export default ResultStatistics;

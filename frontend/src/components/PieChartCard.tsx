@@ -22,9 +22,9 @@ const PieChartCard = ({ heading, data }: IPieChartCard) => {
   return (
     <div className="flex relative flex-col gap-y-6 justify-center px-14 pt-4 pb-6 min-h-[360px] text-clip bg-black-lighter rounded-35">
       <h2 className="text-2xl font-bold">{heading}</h2>
-      <div className="flex gap-28">
+      <div className="flex gap-28 items-center m-auto">
         <PieChart
-          style={{ maxWidth: "250px" }}
+          style={{ maxWidth: "250px", minWidth: "250px" }}
           label={({ dataEntry }) =>
             dataEntry.percentage ? Math.round(dataEntry.percentage) + "%" : null
           }
@@ -36,10 +36,10 @@ const PieChartCard = ({ heading, data }: IPieChartCard) => {
 
         <div className="flex flex-col gap-4">
           {data.map((pieEntry, index) => (
-            <div key={pieEntry.title} className="flex gap-2">
+            <div key={pieEntry.title} className="flex gap-2 items-center">
               <span
                 style={{ backgroundColor: getColorByIndex(index) }}
-                className="inline-block w-6 h-6 rounded-5"
+                className="aspect-square inline-block w-6 h-6 rounded-5"
               />
               <p className="">{pieEntry.title}</p>
             </div>

@@ -27,6 +27,8 @@
     "@mantine/dates": "^4.2.7",
     "@mantine/hooks": "^4.2.7",
     "@mantine/modals": "^4.2.7",
+    "@nivo/bar": "^0.79.1",
+    "@nivo/core": "^0.79.0",
     "@reach/listbox": "^0.16.2",
     "@reach/menu-button": "^0.16.2",
     "@reach/tabs": "^0.16.4",
