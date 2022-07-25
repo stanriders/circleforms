@@ -14,7 +14,7 @@ import { dynamicSort } from "../utils/objectSort";
 
 import Button from "./Button";
 import FormHeader from "./FormHeader";
-import ResultStatistics from "./FormStatistics";
+import FormStatistics from "./FormStatistics";
 import InputRadio from "./InputRadio";
 import Player from "./Player";
 
@@ -142,7 +142,7 @@ export default function Form({ postData, authorUser }: IFormProps) {
           )}
           {showResults && (
             <TabPanel>
-              <ResultStatistics postData={postData} />
+              <FormStatistics postData={postData} />
             </TabPanel>
           )}
         </TabPanels>

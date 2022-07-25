@@ -18,7 +18,7 @@ interface IResultStatistics {
   postData: AsyncReturnType<typeof apiClient.posts.postsIdGet>;
 }
 
-const ResultStatistics = ({ postData }: IResultStatistics) => {
+const FormStatistics = ({ postData }: IResultStatistics) => {
   const router = useRouter();
   const { formid } = router.query;
 
@@ -67,7 +67,7 @@ const ResultStatistics = ({ postData }: IResultStatistics) => {
           color: getColorByIndex(index)
         }));
 
-        return <PieChartCard heading={question.title} data={resData!} />;
+        return <PieChartCard key={question.question_id} heading={question.title} data={resData!} />;
 
       case "Checkbox":
         const barData = question.question_info?.map((questionText, index) => ({
@@ -76,7 +76,7 @@ const ResultStatistics = ({ postData }: IResultStatistics) => {
           questionIndex: String(index)
         }));
 
-        return <BarChartCard heading={question.title} data={barData!} />;
+        return <BarChartCard key={question.question_id} heading={question.title} data={barData!} />;
 
       default:
         console.error("Unknown question type: ", question.type);
@@ -99,4 +99,4 @@ const ResultStatistics = ({ postData }: IResultStatistics) => {
   );
 };
 
-export default ResultStatistics;
+export default FormStatistics;
