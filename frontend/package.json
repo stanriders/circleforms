@@ -15,7 +15,7 @@
     "format": "prettier --write ./src/*",
     "generate-api-client": "openapi-generator-cli generate -i http://localhost/swagger/v1/swagger.json -o ./openapi -g typescript-fetch --additional-properties=supportsES6=true,modelPropertyNaming='original'",
     "tsignore-openapi": "bash ./tsignore.sh",
-    "eslint": "eslint",
+    "eslint": "eslint --fix .",
     "lefthook-install": "cd .. && npx @evilmartians/lefthook install -a"
   },
   "dependencies": {

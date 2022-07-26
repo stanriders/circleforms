@@ -45,14 +45,14 @@ const Answers = () => {
 
       <Title title="Submissions" description="You can edit your answers" />
 
-      <section className="container max-height">
-        <div className="flex flex-col justify-between mb-12 h-full bg-black-dark2 rounded-70">
+      <section className="max-height container">
+        <div className="mb-12 flex h-full flex-col justify-between rounded-70 bg-black-dark2">
           <div className="h-full">
-            <div className="px-7 mt-6">
-              <div className="flex relative flex-col gap-y-3">
+            <div className="mt-6 px-7">
+              <div className="relative flex flex-col gap-y-3">
                 {!data && isLoadingPosts && <FormEntrySkeletonList length={10} />}
                 {!showFormEntries && (
-                  <p className="font-semibold text-center">You didn`t submit any responses yet.</p>
+                  <p className="text-center font-semibold">You didn`t submit any responses yet.</p>
                 )}
                 {showFormEntries &&
                   sortedData?.map((form) => {

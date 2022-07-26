@@ -60,7 +60,7 @@ const CreateForm = ({ postData }: ICreateForm) => {
             <Tab>{t("tabs.options")}</Tab>
           </TabList>
 
-          <TabPanels className="py-5 px-8 bg-black-lightest rounded-b-3xl">
+          <TabPanels className="rounded-b-3xl  bg-black-lightest py-5 px-8">
             <TabPanel>
               <TabDesign post={post} />
             </TabPanel>

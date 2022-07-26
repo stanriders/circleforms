@@ -1,9 +1,9 @@
-import Head from "next/head";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-
 import classNames from "classnames";
+import Head from "next/head";
 import { useTranslations } from "next-intl";
+
+import Footer from "../components/Footer";
+import Header from "../components/Header";
 
 interface IDefaultLayout {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ export default function DefaultLayout({ children, classname = "mt-28" }: IDefaul
   const t = useTranslations("global");
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       <Head>
         <title>CircleForms</title>
         <meta name="description" content={t("meta.description")} />

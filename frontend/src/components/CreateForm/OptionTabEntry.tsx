@@ -8,7 +8,7 @@ interface IOptionTabEntry {
 const OptionTabEntry = ({ mainHeading, subText, children }: IOptionTabEntry) => {
   return (
     <>
-      <div className="flex flex-row justify-between items-center">
+      <div className="flex flex-row items-center justify-between">
         <div className="flex flex-col">
           <p className="text-3xl">{mainHeading}</p>
           <p className="text-2xl text-grey-secondary">{subText}</p>

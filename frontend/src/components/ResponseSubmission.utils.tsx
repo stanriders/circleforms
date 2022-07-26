@@ -1,4 +1,4 @@
-import { FieldError, FieldErrors, FieldValues, UseFormRegister } from "react-hook-form";
+import { DeepRequired, FieldErrorsImpl, FieldValues, UseFormRegister } from "react-hook-form";
 import { PostContract, Question, QuestionType, SubmissionContract } from "openapi";
 
 import CheckboxQuestion from "./Questions/CheckboxQuestion";
@@ -8,7 +8,7 @@ import FreeformInputQuestion from "./Questions/FreeformInputQuestion";
 export const switchQuestionType = (
   question: Question,
   register: UseFormRegister<FieldValues>,
-  errors: { [x: string]: FieldError | FieldErrors[] },
+  errors: FieldErrorsImpl<DeepRequired<FormData>>,
   disableEditCondition: boolean
 ) => {
   switch (question.type) {

@@ -34,7 +34,7 @@ const QuestionFieldArray = () => {
   return (
     <div>
       {showEmptyMessage && (
-        <p data-testid="no-questions-text" className="py-6 text-lg text-center">
+        <p data-testid="no-questions-text" className="py-6 text-center text-lg">
           No questions created yet. Press any button on the right to create a question.
         </p>
       )}
@@ -42,8 +42,8 @@ const QuestionFieldArray = () => {
         <ul className="flex flex-col gap-6">
           {fields.map((item, index) => (
             <li key={item.id}>
-              <div className="flex relative flex-col gap-y-4 px-14 pt-4 pb-6 min-h-[360px] text-clip bg-black-lighter rounded-35">
-                <div className="absolute top-0 left-0 w-2 h-full bg-pink" />
+              <div className="relative flex min-h-[360px] flex-col gap-y-4 text-clip rounded-35 bg-black-lighter px-14 pt-4 pb-6">
+                <div className="absolute top-0 left-0 h-full w-2 bg-pink" />
                 {/* wysiwyg acts as input for question title */}
                 <div>
                   <Controller
@@ -82,7 +82,7 @@ const QuestionFieldArray = () => {
         </ul>
         {/* sidebar for adding questions  */}
         <div className="absolute top-0 -right-28 h-full">
-          <div className="flex sticky top-72 flex-col items-center py-8 px-2 bg-black-lightest rounded-35">
+          <div className="sticky top-72 flex flex-col items-center rounded-35 bg-black-lightest py-8 px-2">
             {QUESTIONS_TYPES.map((type) => {
               const Icon = QUESTIONS_ICONS[type];
               return (
@@ -98,7 +98,7 @@ const QuestionFieldArray = () => {
                   <span className="sr-only">
                     {t("add")} {t(`inputs.${type}`)}
                   </span>
-                  <Icon className="w-10 h-10" />
+                  <Icon className="h-10 w-10" />
                 </button>
               );
             })}

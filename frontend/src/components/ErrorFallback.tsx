@@ -10,7 +10,7 @@ const ErrorFallback = ({ error, resetErrorBoundary }: FallbackProps) => {
         <title>CircleForms - An error has occured</title>
       </Head>
 
-      <div role="alert" className="container p-4 text-center bg-black-light rounded-20">
+      <div role="alert" className="container rounded-20 bg-black-light p-4 text-center">
         <h2 className="text-xl text-red-300">Sorry, something went wrong:</h2>
         <pre>{error?.message}</pre>
         <button onClick={resetErrorBoundary}>Try again</button>

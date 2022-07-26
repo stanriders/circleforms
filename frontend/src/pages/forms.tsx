@@ -86,16 +86,16 @@ export default function FormsList() {
         </title>
       </Head>
 
-      <section className="container max-height">
-        <div className="flex flex-col justify-between mb-12 h-full bg-black-dark2 rounded-70">
+      <section className="max-height container">
+        <div className="mb-12 flex h-full flex-col justify-between rounded-70 bg-black-dark2">
           <div className="h-full">
-            <div className="flex flex-col justify-between bg-black-lighter rounded-full lg:flex-row">
+            <div className="flex flex-col justify-between rounded-full bg-black-lighter lg:flex-row">
               <div className="pt-7 pb-4 pl-20">
                 <h2 className="text-5xl font-bold uppercase">{t("subtitle")}</h2>
                 <p className="text-white text-opacity-50">{t("description")}</p>
               </div>
-              <div className="flex flex-col justify-center items-center px-8 h-auto bg-black-lightest rounded-full">
-                <h3 className="flex gap-x-2 mb-1 text-3xl font-medium">
+              <div className="flex h-auto flex-col items-center justify-center rounded-full bg-black-lightest px-8">
+                <h3 className="mb-1 flex gap-x-2 text-3xl font-medium">
                   {t("filters.title")}
                   <svg
                     width="145"
@@ -138,7 +138,7 @@ export default function FormsList() {
                 </div>
               </div>
             </div>
-            <div className="px-7 mt-6">
+            <div className="mt-6 px-7">
               {showPinnedPosts && (
                 <Fragment>
                   <SubTitle>{t("pinnedForms")}</SubTitle>
@@ -163,9 +163,9 @@ export default function FormsList() {
               )}
 
               <SubTitle>{t("title")}</SubTitle>
-              <div className="flex relative flex-col gap-y-3">
+              <div className="relative flex flex-col gap-y-3">
                 {!data && isLoadingPosts && <FormEntrySkeletonList length={10} />}
-                {!showFormEntries && <p className="font-semibold text-center">{t("noForms")}</p>}
+                {!showFormEntries && <p className="text-center font-semibold">{t("noForms")}</p>}
                 {showFormEntries &&
                   data?.posts?.map((form) => {
                     const user = data?.users?.find((user) => user.id === form.author_id);
@@ -185,7 +185,7 @@ export default function FormsList() {
               </div>
             </div>
           </div>
-          <div className="flex gap-x-6 justify-center py-8">
+          <div className="flex justify-center gap-x-6 py-8">
             <Button theme="grey" onClick={handlePrevClick}>
               {t("prev")}
             </Button>
