@@ -5,9 +5,8 @@ const nextConfig = {
     defaultLocale: "en-US"
   },
   reactStrictMode: true,
-  experimental: {
-    outputStandalone: true
-  },
+  output: "standalone",
+
   async rewrites() {
     return process.env.NODE_ENV === "development"
       ? [
