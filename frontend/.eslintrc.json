@@ -1,15 +1,8 @@
 {
   "root": true,
-  "plugins": ["tailwindcss", "testing-library", "simple-import-sort"],
-  "extends": ["next/core-web-vitals", "plugin:tailwindcss/recommended", "prettier"],
+  "plugins": ["testing-library", "simple-import-sort"],
+  "extends": ["next/core-web-vitals", "prettier"],
   "rules": {
-    "tailwindcss/no-custom-classname": "off",
-    "tailwindcss/classnames-order": "warn",
-    "tailwindcss/enforces-negative-arbitrary-values": "warn",
-    "tailwindcss/enforces-shorthand": "warn",
-    "tailwindcss/migration-from-tailwind-2": "warn",
-    "tailwindcss/no-arbitrary-value": "off",
-    "tailwindcss/no-contradicting-classname": "error",
     "react/no-unescaped-entities": "off",
     "@next/next/no-img-element": "off",
     "simple-import-sort/imports": "error",
