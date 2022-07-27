@@ -10,10 +10,10 @@ interface IITemRadio {
 const ItemRadio = ({ inputProps, onDelete }: IITemRadio) => {
   const t = useTranslations();
   return (
-    <div className="flex gap-x-2 items-center">
-      <div className="w-6 h-6 rounded-full border-2" />
+    <div className="flex items-center gap-x-2">
+      <div className="h-6 w-6 rounded-full border-2" />
       <input
-        className="relative p-2 text-2xl font-medium  bg-transparent border-b border-white/20  border-dotted transition-colors input--inline"
+        className="input--inline relative border-b border-dotted  border-white/20 bg-transparent p-2  text-2xl font-medium transition-colors"
         autoComplete="off"
         {...inputProps}
       />

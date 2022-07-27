@@ -62,7 +62,7 @@ export default function Form({ postData, authorUser }: IFormProps) {
   return (
     <div>
       <div
-        className="w-full h-60 bg-cover rounded-t-70"
+        className="h-60 w-full rounded-t-70 bg-cover"
         style={{
           backgroundImage: `
             linear-gradient(180deg, rgba(19, 19, 19, 0) -35.06%, #0F0F0F 100%),
@@ -80,7 +80,7 @@ export default function Form({ postData, authorUser }: IFormProps) {
           {showResults && <Tab>Results</Tab>}
         </TabList>
 
-        <TabPanels className="py-5 px-8 bg-black-lightest rounded-b-3xl">
+        <TabPanels className="rounded-b-3xl bg-black-lightest py-5 px-8">
           <TabPanel>
             <div
               className="bbcode"
@@ -105,7 +105,7 @@ export default function Form({ postData, authorUser }: IFormProps) {
                 />
               </div>
 
-              <div className="py-2 mt-11 mb-10 w-full text-center text-pink rounded-14 border-4 border-pink">
+              <div className="mt-11 mb-10 w-full rounded-14 border-4 border-pink py-2 text-center text-pink">
                 <p dangerouslySetInnerHTML={{ __html: t.raw("mistakeNotice") }} />
               </div>
               <div className="flex flex-col gap-1">

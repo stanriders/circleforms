@@ -6,7 +6,7 @@ interface ISubTitleProps {
 
 export default function SubTitle({ children }: ISubTitleProps) {
   return (
-    <p className="py-2 pl-10 mt-3 mb-4 ml-10 w-full text-xl bg-black-lighter rounded-full lg:w-96">
+    <p className="mt-3 mb-4 ml-10 w-full rounded-full bg-black-lighter py-2 pl-10 text-xl lg:w-96">
       {children}
     </p>
   );

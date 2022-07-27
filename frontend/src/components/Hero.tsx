@@ -5,7 +5,7 @@ interface IHero {
 
 export default function Hero({ title, children }: IHero) {
   return (
-    <section className="px-4 hero">
+    <section className="hero px-4">
       {title && <h2>{title}</h2>}
       {children}
     </section>

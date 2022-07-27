@@ -114,7 +114,7 @@ const ResponseSubmission = ({
       <section className="container mb-12">
         {/* background rounded image */}
         <div
-          className="w-full h-60 bg-cover rounded-t-70"
+          className="h-60 w-full rounded-t-70 bg-cover"
           style={{
             backgroundImage: `
               linear-gradient(180deg, rgba(19, 19, 19, 0) -35.06%, #0F0F0F 100%),
@@ -128,7 +128,7 @@ const ResponseSubmission = ({
           {post?.questions?.map((question) =>
             switchQuestionType(question, register, errors, isEditSubmissionDisabled)
           )}
-          <div className="flex justify-between mt-9">
+          <div className="mt-9 flex justify-between">
             <button type="button" className="button dark" onClick={() => router.back()}>
               Back
             </button>

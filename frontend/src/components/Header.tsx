@@ -39,7 +39,7 @@ export default function Header() {
   }
 
   return (
-    <header className="flex fixed top-0 z-navbar justify-between items-center py-3 px-4 w-full text-white bg-black md:px-16 lg:px-32">
+    <header className="fixed top-0 z-navbar flex w-full items-center justify-between bg-black py-3 px-4 text-white md:px-16 lg:px-32">
       <SkipNavButton>
         <button type="button">Skip Navigation Links</button>
       </SkipNavButton>
@@ -64,14 +64,14 @@ export default function Header() {
         </ul>
       </div>
 
-      <div className="flex gap-x-3 items-center">
+      <div className="flex items-center gap-x-3">
         {(user && (
           <Menu>
             <MenuButton data-testid="profileButton">
-              <div className="flex gap-x-2 items-center pl-4 font-bold bg-black rounded-70 border-2 border-pink">
+              <div className="flex items-center gap-x-2 rounded-70 border-2 border-pink bg-black pl-4 font-bold">
                 <span>{user?.osu?.username}</span>
                 <img
-                  className="m-1 w-9 h-9 rounded-70"
+                  className="m-1 h-9 w-9 rounded-70"
                   src={user?.osu?.avatar_url || ""}
                   alt={user?.osu?.username!}
                 />
@@ -104,7 +104,7 @@ export default function Header() {
 
         <Menu>
           <MenuButton>
-            <div className="flex justify-center items-center p-2 bg-black-lightest rounded-7">
+            <div className="flex items-center justify-center rounded-7 bg-black-lightest p-2">
               <Flag locale={router.locale as Locales} />
             </div>
           </MenuButton>

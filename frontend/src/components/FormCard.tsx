@@ -25,13 +25,13 @@ const FormCard = ({ post, previewIcon, onDelete, previewDescription, previewTitl
   return (
     <Link href={post?.published ? `/form/${post?.id}` : `/dashboard/${post?.id}`}>
       <a
-        className="group flex overflow-hidden justify-start items-center pl-[9px] h-[88px] bg-black-lighter rounded-9 transition-transform duration-150 hover:scale-[1.05] select-none ease-out-cubic fix-blurry-scale"
+        className="group fix-blurry-scale flex h-[88px] select-none items-center justify-start overflow-hidden rounded-9 bg-black-lighter pl-[9px] transition-transform duration-150 ease-out-cubic hover:scale-[1.05]"
         title={post?.title || ""}
       >
-        <div className="flex flex-row gap-5 items-center ">
+        <div className="flex flex-row items-center gap-5 ">
           <img
             ref={imgRef}
-            className="object-contain w-[70px] h-[70px] rounded-9"
+            className="h-[70px] w-[70px] rounded-9 object-contain"
             src={previewIcon ? previewSrc : iconImg}
             alt={post?.title || ""}
             onLoad={() => URL.revokeObjectURL(imgRef.current?.src!)}
@@ -44,13 +44,13 @@ const FormCard = ({ post, previewIcon, onDelete, previewDescription, previewTitl
           </div>
         </div>
         <button
-          className="ml-auto h-full bg-red-400 duration-150 ease-out translate-x-full group-hover:translate-x-0 group-focus:translate-x-0"
+          className="ml-auto h-full translate-x-full bg-red-400 duration-150 ease-out group-hover:translate-x-0 group-focus:translate-x-0"
           onClick={(e) => {
             e.preventDefault();
             onDelete && onDelete();
           }}
         >
-          <GrTrash className="mx-3 w-8 h-8" />
+          <GrTrash className="mx-3 h-8 w-8" />
           <VisuallyHidden>Delete form</VisuallyHidden>
         </button>
       </a>

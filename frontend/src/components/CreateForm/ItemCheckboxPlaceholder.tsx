@@ -8,12 +8,12 @@ interface IItemCheckboxPlaceholder {
 const ItemCheckboxPlaceholder = ({ onClick }: IItemCheckboxPlaceholder) => {
   const t = useTranslations();
   return (
-    <div onClick={onClick} className="flex gap-x-2 items-center">
-      <div className="w-6 h-6 border-2 border-grey" />
+    <div onClick={onClick} className="flex items-center gap-x-2">
+      <div className="h-6 w-6 border-2 border-grey" />
       <input
         data-testid="checkboxPlaceholder"
         defaultValue={t("addChoice")}
-        className="relative p-2 text-2xl font-medium text-grey bg-transparent border-b border-white/20 border-dotted transition-colors input--inline"
+        className="input--inline relative border-b border-dotted border-white/20 bg-transparent p-2 text-2xl font-medium text-grey transition-colors"
         type="text"
         readOnly
       />

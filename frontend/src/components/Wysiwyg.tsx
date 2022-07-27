@@ -83,15 +83,15 @@ const Wysiwyg = ({
   }, [hasPreview, value]);
 
   return (
-    <div className={`relative overflow-clip`}>
+    <div className={`relative text-clip`}>
       <button
         type="button"
         onClick={() => setHasPreview(!hasPreview)}
-        className="mb-2 button--icon"
+        className="button--icon mb-2"
         title={hasPreview ? t("write") : t("preview")}
       >
         <span className="sr-only">{hasPreview ? t("write") : t("preview")}</span>
-        {hasPreview ? <MdEdit className="w-8 h-8" /> : <MdPreview className="w-8 h-8" />}
+        {hasPreview ? <MdEdit className="h-8 w-8" /> : <MdPreview className="h-8 w-8" />}
       </button>
       {(!hasPreview && (
         <textarea
@@ -99,14 +99,14 @@ const Wysiwyg = ({
           value={value}
           onChange={withEvent(onTextAreaChange)}
           placeholder={placeholder}
-          className={`w-full bg-black-lightest border-b-2 border-white pl-3 pt-2 text-2xl font-medium`}
+          className={`w-full border-b-2 border-white bg-black-lightest pl-3 pt-2 text-2xl font-medium`}
           onBlur={onBlur}
           name={name}
           {...inputProps}
         ></textarea>
       )) || (
         <div
-          className="p-4 w-full bg-black-lightest border-b-2 border-white"
+          className="w-full border-b-2 border-white bg-black-lightest p-4"
           dangerouslySetInnerHTML={{ __html: preview }}
         ></div>
       )}
@@ -139,7 +139,7 @@ function ToolbarItem({ type, onClick }: IToolbarItem) {
 
   return (
     <button type="button" onClick={onClick} className="button--icon">
-      <Icon className="w-8 h-8" />
+      <Icon className="h-8 w-8" />
     </button>
   );
 }

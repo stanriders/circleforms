@@ -32,11 +32,11 @@ const Index: NextPage = () => {
         <title>CircleForms - {t("title")}</title>
       </Head>
 
-      <div className="flex flex-col justify-center items-center min-h-screen">
+      <div className="flex min-h-screen flex-col items-center justify-center">
         <VisuallyHidden>Circle Forms</VisuallyHidden>
         <SVG className="w-3/4 max-w-6xl" src="/svg/logo.svg" />
-        <p className="mt-4 font-museo text-center lg:text-4xl">{t("description")}</p>
-        <div className="flex flex-col gap-8 pb-2 mt-14 lg:flex-row lg:pb-0">
+        <p className="mt-4 text-center font-museo lg:text-4xl">{t("description")}</p>
+        <div className="mt-14 flex flex-col gap-8 pb-2 lg:flex-row lg:pb-0">
           <Button onClick={() => router.push("/dashboard")} theme="secondary" large>
             {t("createForm")}
           </Button>
@@ -46,9 +46,9 @@ const Index: NextPage = () => {
         </div>
       </div>
 
-      <div className="py-32 w-full bg-black-darker">
+      <div className="w-full bg-black-darker py-32">
         <section className="small-container">
-          <div className="flex flex-col justify-between items-center mb-8 lg:flex-row">
+          <div className="mb-8 flex flex-col items-center justify-between lg:flex-row">
             <h2 ref={scrollRef} className="text-6xl font-semibold uppercase">
               {t("about.title")}
             </h2>
@@ -62,29 +62,29 @@ const Index: NextPage = () => {
         </section>
       </div>
 
-      <div className="py-24 w-full bg-black">
+      <div className="w-full bg-black py-24">
         <section className="container">
           <div className="mb-8 text-center">
-            <h2 className="uppercase type-h1">{t("recentForms.title")}</h2>
+            <h2 className="type-h1 uppercase">{t("recentForms.title")}</h2>
             <p className="text-2xl text-white text-opacity-50">{t("recentForms.description")}</p>
           </div>
-          <div className="p-6 bg-black-darker rounded-3xl">
-            <div className="flex relative z-10 flex-col gap-y-2">
+          <div className="rounded-3xl bg-black-darker p-6">
+            <div className="relative z-10 flex flex-col gap-y-2">
               <div
-                className="absolute inset-0 z-20 pointer-events-none"
+                className="pointer-events-none absolute inset-0 z-20"
                 style={{
                   background: `linear-gradient(rgba(12, 12, 12, 0) 22%, rgb(12, 12, 12) 113.44%)`
                 }}
               ></div>
               <div className="relative space-y-3">
                 {isLoading && (
-                  <div className="flex absolute top-4 left-1/2 z-50 justify-center -translate-x-1/2">
+                  <div className="absolute top-4 left-1/2 z-50 flex -translate-x-1/2 justify-center">
                     <Loading />
                   </div>
                 )}
 
                 {data && data?.posts?.length === 0 && (
-                  <p className="font-semibold text-center">{t("noForms")}</p>
+                  <p className="text-center font-semibold">{t("noForms")}</p>
                 )}
 
                 {data &&
@@ -97,7 +97,7 @@ const Index: NextPage = () => {
                   })}
               </div>
             </div>
-            <div className="flex justify-center mt-4">
+            <div className="mt-4 flex justify-center">
               <Button href="/forms" theme="secondary">
                 {t("showMore")}
               </Button>

@@ -1,30 +1,82 @@
 import React from "react";
-import InferNextPropsType from "infer-next-props-type";
-import { GetServerSidePropsContext } from "next";
+import { useQuery } from "react-query";
+import { GetStaticPaths, NextPage } from "next";
 import Head from "next/head";
+import { useRouter } from "next/router";
+import { StaticSideProps } from "src/pages/questions/[id]";
+import { Locales } from "src/types/common-types";
+import { apiClient } from "src/utils/apiClient";
 import { AsyncReturnType } from "src/utils/misc";
 
 import { Question, QuestionType } from "../../../../openapi";
 import ResponseSubmission from "../../../components/ResponseSubmission";
 import DefaultLayout from "../../../layouts";
-import { getApiClient } from "../../../utils/getApiClient";
 
-// https://github.com/vercel/next.js/issues/15913#issuecomment-950330472
-type ServerSideProps = InferNextPropsType<typeof getServerSideProps>;
+const UserFormSubmission: NextPage<StaticSideProps> = (props) => {
+  const router = useRouter();
+  const { formid, osuid } = router.query;
 
-const UserFormSubmission = (props: ServerSideProps) => {
+  const { data: postData, isError: isNoPostError } = useQuery(["post", formid], () =>
+    apiClient.posts.postsIdGet({ id: formid as string })
+  );
+
+  const { data: answers } = useQuery(
+    ["answers", formid],
+    () => apiClient.posts.postsIdAnswersGet({ id: formid as string }),
+    {
+      select: React.useCallback(
+        (usersAndAnswers: AsyncReturnType<typeof apiClient.posts.postsIdAnswersGet>) => {
+          let defaultUserAnswers: Record<string, string[]> = {};
+          const userAnswer = usersAndAnswers?.answers?.filter((answer) => answer.user === osuid)[0];
+
+          userAnswer?.submissions?.forEach((submission) => {
+            if (submission.question_id) {
+              defaultUserAnswers[submission.question_id] = submission.answers || [];
+            }
+          });
+
+          return convertServerAnswerStateToLocal(defaultUserAnswers, postData?.post?.questions!);
+        },
+        [osuid, postData?.post?.questions]
+      ),
+      enabled: !!postData
+    }
+  );
+
+  const { data: authorUser } = useQuery(
+    ["usersIdGet", osuid],
+    () =>
+      apiClient.users.usersIdGet({
+        id: postData?.post?.author_id as string
+      }),
+    {
+      enabled: !!postData
+    }
+  );
+
+  if (isNoPostError) {
+    return (
+      <DefaultLayout>
+        <p className="text-center">Couldn't fetch post with id: {formid} </p>
+      </DefaultLayout>
+    );
+  }
+
+  const showResponse = postData && answers;
   return (
     <DefaultLayout>
       <Head>
-        <title>CircleForms - {props.postData.post.title}</title>
+        <title>CircleForms - {postData?.post?.title}</title>
       </Head>
 
-      <ResponseSubmission
-        post={props.postData.post}
-        authorUser={props.authorUser}
-        initialUserAnswers={props.filteredUserAnswers}
-        urlOsuId={props.osuid as string}
-      />
+      {showResponse && (
+        <ResponseSubmission
+          post={postData?.post}
+          authorUser={authorUser!}
+          initialUserAnswers={answers}
+          urlOsuId={osuid as string}
+        />
+      )}
     </DefaultLayout>
   );
 };
@@ -72,83 +124,31 @@ export const convertServerAnswerStateToLocal = (
   );
 };
 
-export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  // we need to create a new apiClient because cookies are not present on the server
-  const apiClient = getApiClient(context.req.headers.cookie);
-  const formid = context.params?.formid || "";
-  const osuid = context.params?.osuid || "";
-
+export async function getStaticProps({ locale }: { locale: Locales }) {
   const promises = await Promise.allSettled([
-    import(`../../../messages/single-form/${context.locale}.json`),
-    import(`../../../messages/global/${context.locale}.json`),
-    apiClient.posts.postsIdGet({ id: formid as string })
+    import(`../../../messages/single-form/${locale}.json`),
+    import(`../../../messages/global/${locale}.json`)
   ]);
-  const [translations, global, postData] = promises.map((p) =>
-    p.status === "fulfilled" ? p?.value : null
-  );
+
+  const [translations, global] = promises.map((p) => (p.status === "fulfilled" ? p?.value : null));
+
   const messages = {
     ...translations,
     ...global
   };
 
-  // typescript doesnt infer these types :(
-  const typedPost = postData as AsyncReturnType<typeof apiClient.posts.postsIdGet>;
-
-  // fetch author info
-  const authorUser = await apiClient.users.usersIdGet({
-    id: typedPost.post?.author_id as string
-  });
-
-  if (osuid !== typedPost.post?.author_id) {
-    return {
-      props: {
-        postData,
-        authorUser,
-        messages,
-        osuid
-      }
-    };
-  }
-
-  const usersAndAnswers = await apiClient.posts.postsIdAnswersGet({ id: formid as string });
-
-  // if there are no answers, you are unauthorized, so go look at not found screen
-  if (!usersAndAnswers) {
-    return {
-      notFound: true
-    };
-  }
-
-  // Try to get user`s post answers
-  let defaultUserAnswers: Record<string, string[]> = {};
-  const userAnswer = usersAndAnswers?.answers?.filter((answer) => answer.user === osuid)[0];
-
-  userAnswer?.submissions?.forEach((submission) => {
-    if (submission.question_id) {
-      defaultUserAnswers[submission.question_id] = submission.answers || [];
-    }
-  });
-
-  const filteredUserAnswers = convertServerAnswerStateToLocal(
-    defaultUserAnswers,
-    typedPost.post?.questions!
-  );
-
-  // if there are no answers from this osu id, return not found
-  if (Object.keys(filteredUserAnswers).length === 0) {
-    return {
-      notFound: true
-    };
-  }
-
   return {
     props: {
-      postData,
-      authorUser,
-      messages,
-      filteredUserAnswers,
-      osuid
+      messages
     }
   };
+}
+
+export const getStaticPaths: GetStaticPaths<{ slug: string }> = async () => {
+  return {
+    paths: [], //indicates that no page needs be created at build time
+    fallback: "blocking" //indicates the type of fallback
+  };
 };
+
 export default UserFormSubmission;
