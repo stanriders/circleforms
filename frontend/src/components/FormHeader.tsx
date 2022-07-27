@@ -16,17 +16,17 @@ const FormHeader = ({ iconImg, post, authorUser }: IFormHeader) => {
   const t = useTranslations();
 
   return (
-    <div className="relative p-16 bg-black-dark2 rounded-b-70">
-      <div className="flex absolute inset-x-16 top-0 justify-between items-start">
-        <div className="flex gap-x-3 items-center">
-          <div className="relative shrink-0 min-w-fit">
+    <div className="relative rounded-b-70 bg-black-dark2 p-16">
+      <div className="absolute inset-x-16 top-0 flex items-start justify-between">
+        <div className="flex items-center gap-x-3">
+          <div className="relative min-w-fit shrink-0">
             <img
-              className="object-cover w-20 h-20 rounded-full"
+              className="h-20 w-20 rounded-full object-cover"
               src={iconImg}
               alt={`${post?.title} thumbnail`}
             />
             <img
-              className="absolute right-0 bottom-0 w-10 h-10 rounded-full"
+              className="absolute right-0 bottom-0 h-10 w-10 rounded-full"
               src={authorUser?.osu?.avatar_url!}
               alt={`${authorUser.osu?.username}'s avatar`}
             />
@@ -38,7 +38,7 @@ const FormHeader = ({ iconImg, post, authorUser }: IFormHeader) => {
             </p>
           </div>
         </div>
-        <div className="p-4 pr-0 mt-[-6px]">
+        <div className="mt-[-6px] p-4 pr-0">
           <Tag
             label={post?.is_active ? t("active") : t("inactive")}
             theme={post?.is_active ? "success" : "stale"}

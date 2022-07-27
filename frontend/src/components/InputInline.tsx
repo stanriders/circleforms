@@ -9,7 +9,7 @@ const InputInline = ({
 }) => {
   return (
     <input
-      className={`input--inline bg-transparent text-2xl font-medium  border-b border-dotted border-white/20 p-2 relative transition-colors ${className}`}
+      className={`input--inline relative border-b border-dotted  border-white/20 bg-transparent p-2 text-2xl font-medium transition-colors ${className}`}
       {...inputProps}
     />
   );

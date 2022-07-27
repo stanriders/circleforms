@@ -85,14 +85,14 @@ const Dashboard = () => {
 
       <Title title={t("subtitle")} description={t("description")} />
 
-      <div className="container flex flex-col gap-8 py-5 px-8 bg-black-dark2 rounded-40">
-        <p className="text-xl text-center">Unpublished</p>
+      <div className="container flex flex-col gap-8 rounded-40 bg-black-dark2 py-5 px-8">
+        <p className="text-center text-xl">Unpublished</p>
         <section>
           <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
             <Link href="/create-new-form" passHref>
               <a
                 data-testid="createNewFormButton"
-                className="flex justify-center items-center h-[88px] bg-pink rounded-20  transition-transform hover:scale-99 ease-out-cubic"
+                className="flex h-[88px] items-center justify-center rounded-20 bg-pink  transition-transform ease-out-cubic hover:scale-99"
                 title="Create your form"
               >
                 <SVG src="/svg/plus.svg" />
@@ -107,8 +107,8 @@ const Dashboard = () => {
             ))}
           </div>
         </section>
-        {publishedPosts?.length !== 0 && <p className="text-xl text-center">Published</p>}
-        <section className="flex relative flex-col gap-y-3">
+        {publishedPosts?.length !== 0 && <p className="text-center text-xl">Published</p>}
+        <section className="relative flex flex-col gap-y-3">
           {!data && isLoading && <FormEntrySkeletonList length={10} />}
           {publishedPosts &&
             publishedPosts?.map((form) => {

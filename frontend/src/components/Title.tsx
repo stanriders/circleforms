@@ -8,7 +8,7 @@ interface ITitleProps {
 
 export default function Title({ title, Decoration, description }: ITitleProps) {
   return (
-    <div className="flex relative justify-center py-6">
+    <div className="relative flex justify-center py-6">
       {(Decoration && <Decoration />) || <DefaultDecoration />}
       <div className="z-10 text-center">
         <h1 className="z-10 mt-4 text-6xl font-bold lg:text-8xl">{title}</h1>

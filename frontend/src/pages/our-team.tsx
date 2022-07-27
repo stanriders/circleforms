@@ -21,15 +21,15 @@ export default function OurTeam() {
 
       <Title title={t("subtitle")} Decoration={Decoration} />
 
-      <div className="grid grid-cols-1 gap-y-4 m-4 lg:grid-cols-4 lg:gap-0 lg:m-0">
+      <div className="m-4 grid grid-cols-1 gap-y-4 lg:m-0 lg:grid-cols-4 lg:gap-0">
         {team.map((member, index) => {
           const MemberImage = () => (
             <a
               href={`https://osu.ppy.sh/users/${member.osuId}`}
-              className="relative col-span-2 h-64 text-clip rounded-20 hover:brightness-75 transition lg:col-span-1 lg:h-[211px] lg:rounded-none"
+              className="relative col-span-2 h-64 text-clip rounded-20 transition hover:brightness-75 lg:col-span-1 lg:h-[211px] lg:rounded-none"
             >
               <img
-                className="object-cover w-full h-full"
+                className="h-full w-full object-cover"
                 src={`/images/${member.name.toLowerCase()}.png`}
                 alt={member.name}
               />
@@ -78,7 +78,7 @@ export default function OurTeam() {
 
         <a
           href="https://discord.gg/rx9RKQsy9H"
-          className="flex col-span-2 justify-center items-center py-16 text-white bg-blue-discord rounded-20 hover:brightness-75 focus:brightness-90 transition lg:py-0 lg:rounded-none"
+          className="col-span-2 flex items-center justify-center rounded-20 bg-blue-discord py-16 text-white transition hover:brightness-75 focus:brightness-90 lg:rounded-none lg:py-0"
         >
           <VisuallyHidden>Join our Discord</VisuallyHidden>
           <SVG className="w-32" src="/svg/discord.svg" />

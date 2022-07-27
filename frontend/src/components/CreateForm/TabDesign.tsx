@@ -39,12 +39,12 @@ const TabDesign = ({ post }: ITabDesign) => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex relative flex-col gap-y-1 px-14 pt-5 pb-8 text-clip bg-black-lighter rounded-35">
-        <div className="absolute top-0 left-0 w-full h-2 bg-pink" />
+      <div className="relative flex flex-col gap-y-1 text-clip rounded-35 bg-black-lighter px-14 pt-5 pb-8">
+        <div className="absolute top-0 left-0 h-2 w-full bg-pink" />
         {/* post title */}
         <input
           data-testid="title-input"
-          className="relative p-2 text-2xl font-medium  bg-transparent border-b border-white/20  border-dotted transition-colors input--inline input--title"
+          className="input--inline input--title relative border-b  border-dotted border-white/20 bg-transparent  p-2 text-2xl font-medium transition-colors"
           type="text"
           placeholder={t("placeholders.title")}
           value={title}
@@ -57,7 +57,7 @@ const TabDesign = ({ post }: ITabDesign) => {
         {/* post description */}
         <input
           data-testid="description-input"
-          className="relative p-2 text-xl font-medium  bg-transparent border-b border-white/20  border-dotted transition-colors input--inline"
+          className="input--inline relative border-b border-dotted  border-white/20 bg-transparent p-2  text-xl font-medium transition-colors"
           type="text"
           placeholder={t("placeholders.excerpt")}
           required={true}
@@ -90,7 +90,7 @@ const TabDesign = ({ post }: ITabDesign) => {
         </div>
       </div>
 
-      <h2 className="text-lg text-center">Preview</h2>
+      <h2 className="text-center text-lg">Preview</h2>
       <FormEntry
         href="#"
         title={title}

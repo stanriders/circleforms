@@ -70,8 +70,8 @@ export default function InputFile({ label, name, value, classname, onChange }: I
           </div>
         )) || (
           <>
-            <p className="mb-1 text-xl font-semibold select-none">{t("file.dragImageHere")}</p>
-            <p className="text-xs font-medium text-white select-none text-opacity-20">
+            <p className="mb-1 select-none text-xl font-semibold">{t("file.dragImageHere")}</p>
+            <p className="select-none text-xs font-medium text-white text-opacity-20">
               {t("file.orPressButton")}
             </p>
 

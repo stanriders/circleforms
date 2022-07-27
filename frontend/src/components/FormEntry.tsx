@@ -35,7 +35,7 @@ export default function FormEntry({
 
   return (
     <Link href={href}>
-      <a className="flex z-0 hover:z-10 text-clip bg-black-light rounded-5 transition-transform hover:scale-99 ease-out-cubic">
+      <a className="z-0 flex text-clip rounded-5 bg-black-light transition-transform ease-out-cubic hover:z-10 hover:scale-99">
         <div
           className="flex-1 bg-cover"
           style={{
@@ -49,18 +49,18 @@ export default function FormEntry({
         />
         <div className="flex flex-1 justify-between py-5 pr-5">
           <div>
-            <h3 className="max-w-sm font-bold truncate text-m">{title}</h3>
-            <p className="-mt-1 max-w-sm text-xs text-white truncate text-opacity-50">{excerpt}</p>
+            <h3 className="text-m max-w-sm truncate font-bold">{title}</h3>
+            <p className="-mt-1 max-w-sm truncate text-xs text-white text-opacity-50">{excerpt}</p>
           </div>
           <div className="flex items-center">
-            <div className="flex flex-col mr-2 text-xs text-right">
+            <div className="mr-2 flex flex-col text-right text-xs">
               <span className="font-semibold">
                 posted by <span className="font-bold">{user?.username}</span>
               </span>
               <span className="text-green">{timeago.format(publish_time!)}</span>
             </div>
             <img
-              className="w-10 h-10 rounded-full"
+              className="h-10 w-10 rounded-full"
               src={user?.avatar_url || ""}
               alt="Profile user {name}"
             />

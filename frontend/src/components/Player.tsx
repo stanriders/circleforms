@@ -27,11 +27,11 @@ export default function Player({
   return (
     <div
       onClick={onClickHandler}
-      className="flex justify-between items-center pr-4 w-full rounded-14 bg-gradient"
+      className="bg-gradient flex w-full items-center justify-between rounded-14 pr-4"
     >
-      <div className="flex gap-x-3 items-center">
+      <div className="flex items-center gap-x-3">
         <img
-          className="w-14 h-14 rounded-14"
+          className="h-14 w-14 rounded-14"
           src={`http://s.ppy.sh/a/${osuId}`}
           alt="{player name}'s avatar"
         />

@@ -13,7 +13,7 @@ export default function FormThumbnail({ id, icon, title }: IFormThumbnail) {
   return (
     <Link href={`/form/${id}`}>
       <a
-        className="flex w-36 h-36 text-clip bg-black-lighter rounded-40 hover:rounded-14 transition-all hover:-translate-y-1 ease-out-cubic"
+        className="flex h-36 w-36 text-clip rounded-40 bg-black-lighter transition-all ease-out-cubic hover:-translate-y-1 hover:rounded-14"
         title={title || ""}
       >
         <img src={iconImg} alt={`${title}'s thumbnail`} />

@@ -25,13 +25,13 @@ const Settings = () => {
 
       <Title title={t("subtitle")} description={t("description")} />
 
-      <section className="container py-8 px-10 bg-black-dark2 rounded-70">
+      <section className="container rounded-70 bg-black-dark2 py-8 px-10">
         <div className="space-y-8">
           {/* osu! integration */}
-          <div className="flex justify-between py-4 px-6 bg-black-lightest rounded-40">
+          <div className="flex justify-between rounded-40 bg-black-lightest py-4 px-6">
             <div className="flex items-center">
               <img
-                className="w-28 h-28 rounded-full"
+                className="h-28 w-28 rounded-full"
                 src={user?.osu?.avatar_url!}
                 alt={user?.osu?.username!}
               />
@@ -40,7 +40,7 @@ const Settings = () => {
                 <p className="text-sm">{t("integrations.osu.description")}</p>
               </div>
             </div>
-            <div className="flex flex-col justify-center text-lg text-right text-white text-opacity-50">
+            <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
               <p>
                 {t("integrations.osu.connectedTo")} {user?.id} ({user?.osu?.username})
               </p>
@@ -48,17 +48,17 @@ const Settings = () => {
           </div>
 
           {/* Discord integration */}
-          <div className="flex justify-between py-4 px-6 bg-black-lightest rounded-40">
+          <div className="flex justify-between rounded-40 bg-black-lightest py-4 px-6">
             <div className="flex items-center">
-              <div className="flex justify-center items-center w-28 h-28">
-                <SVG className="p-4 w-full" src="/svg/discord.svg" />
+              <div className="flex h-28 w-28 items-center justify-center">
+                <SVG className="w-full p-4" src="/svg/discord.svg" />
               </div>
               <div className="pl-3">
                 <h2 className="text-3xl font-bold">Discord</h2>
                 <p className="text-sm">{t("integrations.discord.description")}</p>
               </div>
             </div>
-            <div className="flex flex-col justify-center text-lg text-right text-white text-opacity-50">
+            <div className="flex flex-col justify-center text-right text-lg text-white text-opacity-50">
               <Button
                 // @ts-ignore
                 disabled

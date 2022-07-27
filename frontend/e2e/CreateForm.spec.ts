@@ -35,13 +35,13 @@ test.describe("CreateForm", async () => {
 
     // Design tab
     await page.locator('[data-testid="title-input"]').click();
-    await page.locator('[data-testid="title-input"]').fill(`Myepictestform-${dateString}`);
+    await page.locator('[data-testid="title-input"]').fill(`tf-${dateString}`);
 
     await page.locator('[data-testid="description-input"]').click();
     await page.locator('[data-testid="description-input"]').fill("epicshortdescription");
 
     // test that title and description are listed 3 times on the page
-    const previewTitles = await page.locator(`text=Myepictestform-${dateString}`).count();
+    const previewTitles = await page.locator(`text=tf-${dateString}`).count();
     expect(previewTitles).toBe(2);
     const previewDescriptions = await page.locator(`text=epicshortdescription`);
     expect(await previewDescriptions.count()).toBe(2);
@@ -49,7 +49,7 @@ test.describe("CreateForm", async () => {
     // Post tab
     await page.locator('button[role="tab"]:has-text("Post")').click();
     await page.locator('textarea[name="postDescription"]').click();
-    await page.locator('textarea[name="postDescription"]').fill("mypostdescription");
+    await page.locator('textarea[name="postDescription"]').fill("pd");
 
     // Questions tab
     await page.locator('button[role="tab"]:has-text("Questions")').click();
@@ -130,28 +130,23 @@ test.describe("CreateForm", async () => {
     ///////////////////////////////////////////////////////
     // test that new form exists and has correct data
     // + test that it can be edited
-    const createdForm = page.locator(`a:has-text("Myepictestform-${dateString}")`).first();
+    const createdForm = page.locator(`a:has-text("tf-${dateString}")`).first();
     await expect(createdForm).toBeVisible();
 
-    await Promise.all([
-      page.locator(`text=Myepictestform-${dateString}`).click(),
-      page.waitForNavigation()
-    ]);
+    await Promise.all([page.locator(`text=tf-${dateString}`).click(), page.waitForNavigation()]);
 
-    const titles = await page.locator(`text=Myepictestform-${dateString}`).count();
+    const titles = await page.locator(`text=tf-${dateString}`).count();
     expect(titles).toBe(2);
     const descriptions = await page.locator(`text=epicshortdescription`);
     expect(await descriptions.count()).toBe(2);
 
     // Edit title and description
-    await page.locator('[data-testid="title-input"]').fill(`Myepictestform-EDIT-${dateString}`);
+    await page.locator('[data-testid="title-input"]').fill(`tf-EDIT-${dateString}`);
     await page.locator('[data-testid="description-input"]').fill(`epicshortdescription-EDIT`);
 
     await page.locator('button[role="tab"]:has-text("Post")').click();
-    expect(await page.locator('textarea[name="postDescription"]').textContent()).toBe(
-      "mypostdescription"
-    );
-    await page.locator('textarea[name="postDescription"]').fill(`mypostdescription-EDIT`);
+    expect(await page.locator('textarea[name="postDescription"]').textContent()).toBe("pd");
+    await page.locator('textarea[name="postDescription"]').fill(`pd-EDIT`);
 
     await page.locator('button[role="tab"]:has-text("Questions")').click();
     // Check that the values were restored correctly for future editing
@@ -229,16 +224,16 @@ test.describe("CreateForm", async () => {
 
     // check that form was published
     await page.goto("localhost:3000/forms");
-    expect(await page.locator(`text=Myepictestform-EDIT-${dateString}`)).toBeVisible();
+    expect(await page.locator(`text=tf-EDIT-${dateString}`)).toBeVisible();
 
     await Promise.all([
       page.waitForNavigation(/*{ url: 'http://localhost:3000/dashboard' }*/),
-      page.locator(`text=Myepictestform-EDIT-${dateString}`).click()
+      page.locator(`text=tf-EDIT-${dateString}`).click()
     ]);
 
     await page.locator("text=Info").click();
-    expect(page.locator(`text=Myepictestform-EDIT-${dateString}`)).toBeVisible();
-    expect(page.locator("text=mypostdescription-EDIT")).toBeVisible();
+    expect(page.locator(`text=tf-EDIT-${dateString}`).first()).toBeVisible();
+    expect(page.locator("text=pd-EDIT").first()).toBeVisible();
 
     await Promise.all([
       page.waitForNavigation(),
@@ -272,11 +267,11 @@ test.describe("CreateForm", async () => {
     await page.goto("localhost:3000/answers");
     await page.waitForLoadState("networkidle");
     // check if answer was actually submitted
-    expect(await page.locator(`text=Myepictestform-EDIT-${dateString}`)).toBeVisible();
+    expect(await page.locator(`text=tf-EDIT-${dateString}`)).toBeVisible();
 
     await Promise.all([
       page.waitForNavigation(/*{ url: 'http://localhost:3000/dashboard' }*/),
-      page.locator(`text=Myepictestform-EDIT-${dateString}`).click()
+      page.locator(`text=tf-EDIT-${dateString}`).click()
     ]);
     // answers are rendered correctly
     expect(page.locator("text=myfirstcheckboxquestion-EDIT")).toBeVisible();
@@ -331,8 +326,8 @@ test.describe("CreateForm", async () => {
       page.locator('[data-testid="confirmButton"]').click()
     ]);
 
-    // await page.screenshot({ path: `./e2e_screenshots/TEST.png` });
-    const locator = await page.locator(`text=Myepictestform-EDIT-${dateString}`).isVisible();
-    expect(locator, "the answer should NOT exist").toBeTruthy();
+    await page.screenshot({ path: `./e2e_screenshots/TEST.png` });
+    const locator = await page.locator(`text=tf-EDIT-${dateString}`).isVisible();
+    expect(locator, "the answer should NOT exist").toBeFalsy();
   });
 });

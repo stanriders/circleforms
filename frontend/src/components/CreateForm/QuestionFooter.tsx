@@ -35,7 +35,7 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
   };
 
   return (
-    <div className="flex justify-between pt-4 mt-auto border-t-2 border-white/5">
+    <div className="mt-auto flex justify-between border-t-2 border-white/5 pt-4">
       <Controller
         name={`questions.${nestIndex}.type`}
         control={control}
@@ -63,12 +63,12 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
           data-testid={`remove-button`}
           type="button"
           onClick={onRemove}
-          className="mr-4 button--icon"
+          className="button--icon mr-4"
         >
           <span className="sr-only">{t("removeQuestion")}</span>
-          <MdDeleteOutline className="w-8 h-8" />
+          <MdDeleteOutline className="h-8 w-8" />
         </button>
-        <label className="flex gap-x-4 items-center pl-8 text-2xl font-medium border-l-2 border-white/5">
+        <label className="flex items-center gap-x-4 border-l-2 border-white/5 pl-8 text-2xl font-medium">
           <span>Optional</span>
 
           <Controller
@@ -95,7 +95,7 @@ const QuestionFooter = ({ onRemove, nestIndex }: IQuestionFooter) => {
         </label>
         <button data-testid="showMoreButton" type="button" className="button--icon">
           <VisuallyHidden>Show more</VisuallyHidden>
-          <MdMoreVert className="w-8 h-8" />
+          <MdMoreVert className="h-8 w-8" />
         </button>
       </div>
     </div>
