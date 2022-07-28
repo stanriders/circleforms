@@ -12,7 +12,7 @@ import { Question, QuestionType } from "../../../../openapi";
 import ResponseSubmission from "../../../components/ResponseSubmission";
 import DefaultLayout from "../../../layouts";
 
-const UserFormSubmission: NextPage<StaticSideProps> = (props) => {
+const UserFormSubmission: NextPage<StaticSideProps> = () => {
   const router = useRouter();
   const { formid, osuid } = router.query;
 
