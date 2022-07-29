@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
 import Switch from "react-switch";
+import { NumberInput } from "@mantine/core";
 import { DatePicker } from "@mantine/dates";
 import { useRouter } from "next/router";
 import { useTranslations } from "next-intl";
@@ -44,12 +45,25 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
     accessibility: post?.accessibility || Accessibility.Public,
     gamemode: post?.gamemode || Gamemode.None,
     active_to: post?.active_to,
-    allow_answer_edit: post?.allow_answer_edit || false
+    allow_answer_edit: post?.allow_answer_edit || false,
+    limitations: {
+      pp: {
+        start: post?.limitations?.pp?.start,
+        end: post?.limitations?.pp?.end
+      },
+      rank: {
+        start: post?.limitations?.rank?.start,
+        end: post?.limitations?.rank?.end
+      }
+    }
   };
   const methods = useForm({
     defaultValues,
     mode: "onBlur"
   });
+
+  const gameMode = methods.watch("gamemode");
+  const showLimitations = gameMode !== "None";
 
   const getValidatedData = async () => {
     const resObj = {
@@ -59,7 +73,6 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
     };
     let validatedData;
 
-    // show error to user
     try {
       validatedData = await answerSchema.validate(resObj);
       return validatedData;
@@ -155,7 +168,6 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
   const handlePublish = async () => {
     if (!post?.id) {
       toast.error(t("toast.error"));
-
       return;
     }
 
@@ -223,7 +235,6 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
             )}
           />
         </OptionTabEntry>
-
         <OptionTabEntry
           mainHeading="Select Game Mode"
           subText="Leave it as None if it applies to all game modes"
@@ -252,7 +263,120 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
             )}
           />
         </OptionTabEntry>
+        {showLimitations && (
+          <OptionTabEntry mainHeading="PP restrictions" subText="Farmers not allowed">
+            <div className="flex basis-80 justify-between">
+              <Controller
+                name={`limitations.pp.start`}
+                control={methods.control}
+                render={({ field }) => (
+                  <NumberInput
+                    value={field.value}
+                    onChange={(e) => field.onChange(e)}
+                    onBlur={(e) =>
+                      setValues({
+                        limitations: {
+                          pp: { start: Number(e.target.value), end: data?.limitations?.pp?.end },
+                          rank: { ...data?.limitations?.rank }
+                        }
+                      })
+                    }
+                    label={"from"}
+                    hideControls
+                    styles={{
+                      root: { maxWidth: "70px" }
+                    }}
+                  />
+                )}
+              />
 
+              <Controller
+                name={`limitations.pp.end`}
+                control={methods.control}
+                render={({ field }) => (
+                  <NumberInput
+                    value={field.value}
+                    onChange={(e) => field.onChange(e)}
+                    onBlur={(e) =>
+                      setValues({
+                        limitations: {
+                          pp: { start: data?.limitations?.pp?.start, end: Number(e.target.value) },
+                          rank: { ...data?.limitations?.rank }
+                        }
+                      })
+                    }
+                    label={"to"}
+                    hideControls
+                    styles={{
+                      root: { maxWidth: "70px" }
+                    }}
+                  />
+                )}
+              />
+            </div>
+          </OptionTabEntry>
+        )}
+
+        {showLimitations && (
+          <OptionTabEntry mainHeading="Rank restrictions" subText="Derankers not allowed">
+            <div className="flex basis-80 justify-between">
+              <Controller
+                name={`limitations.rank.start`}
+                control={methods.control}
+                render={({ field }) => (
+                  <NumberInput
+                    value={field.value}
+                    onChange={(e) => field.onChange(e)}
+                    onBlur={(e) =>
+                      setValues({
+                        limitations: {
+                          rank: {
+                            start: Number(e.target.value),
+                            end: data?.limitations?.rank?.end
+                          },
+                          pp: { ...data?.limitations?.pp }
+                        }
+                      })
+                    }
+                    label={"from"}
+                    hideControls
+                    styles={{
+                      root: { maxWidth: "150px" }
+                    }}
+                  />
+                )}
+              />
+
+              <Controller
+                name={`limitations.rank.end`}
+                control={methods.control}
+                render={({ field }) => (
+                  <NumberInput
+                    value={field.value}
+                    onChange={(e) => field.onChange(e)}
+                    onBlur={(e) =>
+                      setValues({
+                        limitations: {
+                          rank: {
+                            start: data?.limitations?.rank?.start,
+                            end: Number(e.target.value)
+                          },
+                          pp: { ...data?.limitations?.pp }
+                        }
+                      })
+                    }
+                    //
+                    label={"to"}
+                    hideControls
+                    styles={{
+                      root: { maxWidth: "150px" }
+                    }}
+                  />
+                )}
+              />
+            </div>
+          </OptionTabEntry>
+        )}
         <OptionTabEntry
           mainHeading="Select end date"
           subText=" No new submissions can be made afterwards"
@@ -281,7 +405,6 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
             )}
           />
         </OptionTabEntry>
-
         <OptionTabEntry mainHeading="Answer editing" subText="Allow users to edit their answers">
           {/* testid gets propogated to the invisible input element, and as a result cant be clicked in e2e test, so we unfortunately need a wrapper div */}
           <div data-testid="allowAnswerEdit">
@@ -308,7 +431,6 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
             />
           </div>
         </OptionTabEntry>
-
         {!isEdit && (
           <Button classname="w-fit self-center" {...{ type: "submit", disabled: isLoading }}>
             Create draft
