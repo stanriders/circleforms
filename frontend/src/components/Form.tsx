@@ -1,4 +1,5 @@
 import { ChangeEvent, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useQuery } from "react-query";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@reach/tabs";
 import { useRouter } from "next/router";
@@ -24,14 +25,11 @@ interface IFormProps {
 }
 
 export default function Form({ postData, authorUser }: IFormProps) {
+  const { description, id, banner, icon, access_key } = postData?.post!;
   const t = useTranslations();
   const router = useRouter();
-  const [sort, setSort] = useState("rank");
   const { data: user } = useAuth();
-  const { description, id, banner, icon } = postData?.post!;
-
-  const showResults = postData.post?.author_id === user?.id;
-
+  const [sort, setSort] = useState("rank");
   const [showResponseButton, setShowResponseButton] = useState<boolean>();
 
   useEffect(() => {
@@ -46,9 +44,6 @@ export default function Form({ postData, authorUser }: IFormProps) {
 
   const [sortedPlayers, setSortedPlayers] = useState(usersAndAnswers?.users);
 
-  const bannerImg = getImage({ id, banner, type: "banner" });
-  const iconImg = getImage({ id, icon, type: "icon" });
-
   useEffect(() => {
     if (sort === "rank") {
       let sorted = [...(usersAndAnswers?.users || [])];
@@ -58,6 +53,11 @@ export default function Form({ postData, authorUser }: IFormProps) {
       setSortedPlayers(usersAndAnswers?.users);
     }
   }, [sort, usersAndAnswers?.users]);
+
+  const showResults = postData.post?.author_id === user?.id;
+  const showShareButton = access_key && postData.post?.author_id === user?.id;
+  const bannerImg = getImage({ id, banner, type: "banner" });
+  const iconImg = getImage({ id, icon, type: "icon" });
 
   return (
     <div>
@@ -153,17 +153,35 @@ export default function Form({ postData, authorUser }: IFormProps) {
           {t("back")}
         </Button>
 
-        {showResponseButton && (
-          <Button
-            data-testid="respondButton"
-            onClick={() => {
-              router.push(`/questions/${id}`);
-            }}
-            theme="secondary"
-          >
-            {t("answer")}
-          </Button>
-        )}
+        <div className="flex gap-8">
+          {showShareButton && (
+            <Button
+              onClick={async () => {
+                const sharedUrl = window.location.href + `?access_key=${access_key}`;
+                try {
+                  await navigator.clipboard.writeText(sharedUrl);
+                  toast.success("Link copied to clipboard");
+                } catch (err) {
+                  console.error("Async: Could not copy text: ", err);
+                  toast.error("Couldn't copy link to clipboard");
+                }
+              }}
+            >
+              Share link
+            </Button>
+          )}
+          {showResponseButton && (
+            <Button
+              data-testid="respondButton"
+              onClick={() => {
+                router.push(`/questions/${id}`);
+              }}
+              theme="secondary"
+            >
+              {t("answer")}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
