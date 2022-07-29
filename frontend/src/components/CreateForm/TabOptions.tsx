@@ -18,7 +18,10 @@ import { useFormData } from "../FormContext";
 
 import OptionTabEntry from "./OptionTabEntry";
 import { usePatchPost, usePublishPost, useSubmitImage, useSubmitPost } from "./TabOptions.hooks";
-import { ACCESSABILITY_OPTIONS, answerSchema, GAMEMODE_OPTIONS } from "./TabOptions.utils";
+import { answerSchema, GAMEMODE_OPTIONS } from "./TabOptions.utils";
+
+// TODO: add support for other types
+const SUPPORTED_ACCESSABILITY_OPTIONS = [Accessibility.Public, Accessibility.Link];
 
 interface ITabOptions {
   post?: AsyncReturnType<typeof apiClient.posts.postsIdGet>["post"];
@@ -208,7 +211,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
                   required={true}
                   {...field}
                   onBlur={() => setValues({ accessibility: field.value })}
-                  data={ACCESSABILITY_OPTIONS.map((type) => ({
+                  data={SUPPORTED_ACCESSABILITY_OPTIONS.map((type) => ({
                     value: type,
                     label: type
                   }))}
