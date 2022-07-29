@@ -26,13 +26,15 @@ const SingleForm: NextPage<ServerSideProps> = (props: ServerSideProps) => {
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
   // we need to create a new apiClient because cookies are not present on the server
-  const formid = context.params?.formid || "";
   const apiClient = getApiClient(context.req.headers.cookie);
+
+  const formid = context.params?.formid || "";
+  const accessKey = context.query?.access_key || "";
 
   const promises = await Promise.allSettled([
     import(`../../../messages/single-form/${context.locale}.json`),
     import(`../../../messages/global/${context.locale}.json`),
-    apiClient.posts.postsIdGet({ id: formid as string })
+    apiClient.posts.postsIdGet({ id: formid as string, key: accessKey as string })
   ]);
 
   const [translations, global, postData] = promises.map((p) =>
