@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo } from "react";
-import { Toaster } from "react-hot-toast";
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from "@reach/tabs";
 import Head from "next/head";
 import { useTranslations } from "next-intl";
@@ -48,8 +47,6 @@ const CreateForm = ({ postData }: ICreateForm) => {
       <Head>
         <title>CircleForms - {t("title")}</title>
       </Head>
-
-      <Toaster />
 
       <section className="container mb-12 space-y-8 ">
         <Tabs>

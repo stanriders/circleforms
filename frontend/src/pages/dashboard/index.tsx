@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import SVG from "react-inlinesvg";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import Head from "next/head";
@@ -81,7 +81,6 @@ const Dashboard = () => {
       <Head>
         <title>CircleForms - {t("title")}</title>
       </Head>
-      <Toaster />
 
       <Title title={t("subtitle")} description={t("description")} />
 

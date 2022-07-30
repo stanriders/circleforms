@@ -35,7 +35,7 @@ public class PostValidator : AbstractValidator<PostContractRequest>
             When(x => x.Limitations.Pp is not null, () =>
                 RuleFor(x => x.Limitations.Pp)
                     .Must(x => x.Start > 0 && x.End > 0).WithMessage("PP should be bigger than 0")
-                    .Must(x => x.End < x.Start).WithMessage("Start of the pp range should be bigger than end")
+                    .Must(x => x.End > x.Start).WithMessage("Start of the pp range should be bigger than end")
             );
 
             When(x => x.Limitations.Rank is not null, () =>

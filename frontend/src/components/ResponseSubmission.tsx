@@ -1,5 +1,5 @@
 import { useForm } from "react-hook-form";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useMutation } from "react-query";
 // import { DevTool } from "@hookform/devtools";
 import { useRouter } from "next/router";
@@ -110,7 +110,6 @@ const ResponseSubmission = ({
 
   return (
     <>
-      <Toaster />
       <section className="container mb-12">
         {/* background rounded image */}
         <div

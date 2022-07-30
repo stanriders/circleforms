@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import { ReactQueryDevtools } from "react-query/devtools";
 import type { AppProps } from "next/app";
 import { NextIntlProvider } from "next-intl";
@@ -17,6 +18,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <AllTheProviders>
       <NextIntlProvider messages={pageProps.messages}>
         <NextNProgress color="#FF66AA" />
+        <Toaster />
         <Component {...pageProps} />
         {isDevelopmentEnv && <ReactQueryDevtools initialIsOpen={false} />}
       </NextIntlProvider>
