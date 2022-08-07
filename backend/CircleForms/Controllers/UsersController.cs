@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using CircleForms.Contracts.Response;
 using CircleForms.Contracts.Response.Compound;
 using CircleForms.Contracts.Response.Posts;
 using CircleForms.Contracts.Response.Users;
+using CircleForms.Database.Models.Users;
 using CircleForms.Database.Services.Abstract;
 using CircleForms.Domain;
 using Mapster;
@@ -137,6 +139,11 @@ public class UsersController : ControllerBase
         if (user != null)
         {
             var result = _mapper.Map<UserContract>(user);
+            result.Roles = Enum.GetValues(typeof(Roles)) //C# flags are abominations
+                .Cast<Roles>()
+                .Where(x => (user.Roles & x) == x)
+                .Select(x => x.ToString())
+                .ToList();
 
             return Ok(result);
         }
