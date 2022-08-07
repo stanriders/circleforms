@@ -19,6 +19,7 @@ public class UserContractBase<T>
 
 public class UserContract : UserContractBase<OsuUserContract>
 {
+    public List<string> Roles { get; set; }
 }
 
 public class UserInAnswerContract : UserContractBase<MinimalOsuUserContract>
