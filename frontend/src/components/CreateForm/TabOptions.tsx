@@ -40,7 +40,6 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
   const { mutateAsync: postPUT } = usePatchPost();
 
   // init form state (if editing)
-
   const defaultValues = {
     accessibility: post?.accessibility || Accessibility.Public,
     gamemode: post?.gamemode || Gamemode.None,
@@ -97,6 +96,7 @@ const TabOptions = ({ post, isEdit }: ITabOptions) => {
           duration: TOAST_DURATION,
           id: "success"
         });
+        // submit image data
         if (data.icon) {
           try {
             await mutateImage({ postid: submitData.id!, file: data.icon, isIcon: true });
