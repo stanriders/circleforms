@@ -10,7 +10,7 @@ export default function Tag({ label, theme = "success", small }: ITagProps) {
     <div
       className={classNames(
         "",
-        !small ? "px-5 py-1 text-2xl font-medium rounded-7" : "",
+        !small ? "rounded-7 px-5 py-1 text-2xl font-medium" : "",
         theme === "success" ? "bg-green text-green-dark" : "",
         theme === "stale" ? "bg-black-light text-white text-opacity-40" : ""
       )}

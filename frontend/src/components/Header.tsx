@@ -112,7 +112,7 @@ export default function Header() {
             {languages.map((language) => {
               return (
                 <MenuItem
-                  className="group menu-language__item"
+                  className="menu-language__item group"
                   key={language.locale}
                   onSelect={() => changeLocale(language.locale as Locales)}
                 >

@@ -95,13 +95,13 @@ const ImageDropzone = ({
 
   return (
     <div
-      className={classNames("flex flex-col text-center w-full h-full cursor-pointer", classname)}
+      className={classNames("flex h-full w-full cursor-pointer flex-col text-center", classname)}
       {...getRootProps()}
     >
       <p className="text-2xl">{headingText}</p>
       <div
         className={classNames(
-          "flex flex-col items-center justify-center bg-black-lighter h-full w-full rounded-20 border-4 border-dashed border-grey-border mt-1 py-10 transition hover:brightness-110 focus:brightness-150",
+          "mt-1 flex h-full w-full flex-col items-center justify-center rounded-20 border-4 border-dashed border-grey-border bg-black-lighter py-10 transition hover:brightness-110 focus:brightness-150",
           isDragActive ? "brightness-150" : ""
         )}
       >

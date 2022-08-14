@@ -42,7 +42,7 @@ export default function OurTeam() {
 
               <div
                 className={classNames(
-                  "bg-black-lightest lg:hidden absolute bottom-0 left-0 right-0 p-4 rounded-t-14",
+                  "absolute bottom-0 left-0 right-0 rounded-t-14 bg-black-lightest p-4 lg:hidden",
                   member.name === "StanR"
                     ? "bg-pink text-pink-darker hover:bg-black-lightest hover:text-white"
                     : "bg-black-lightest text-white hover:bg-pink hover:text-pink-darker"

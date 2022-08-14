@@ -25,7 +25,7 @@ const FormCard = ({ post, previewIcon, onDelete, previewDescription, previewTitl
   return (
     <Link href={post?.published ? `/form/${post?.id}` : `/dashboard/${post?.id}`}>
       <a
-        className="group fix-blurry-scale flex h-[88px] select-none items-center justify-start overflow-hidden rounded-9 bg-black-lighter pl-[9px] transition-transform duration-150 ease-out-cubic hover:scale-[1.05]"
+        className="fix-blurry-scale group flex h-[88px] select-none items-center justify-start overflow-hidden rounded-9 bg-black-lighter pl-[9px] transition-transform duration-150 ease-out-cubic hover:scale-[1.05]"
         title={post?.title || ""}
       >
         <div className="flex flex-row items-center gap-5 ">

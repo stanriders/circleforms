@@ -8,7 +8,7 @@ label {
   }
 
   &:focus {
-    @apply outline-none border-solid border-opacity-75;
+    @apply border-solid border-opacity-75 outline-none;
   }
 
   &.input--title {

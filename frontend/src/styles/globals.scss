@@ -13,7 +13,7 @@
 
 html,
 body {
-  @apply p-0 m-0 bg-black text-white font-body h-full scroll-smooth;
+  @apply m-0 h-full scroll-smooth bg-black p-0 font-body text-white;
   background-image: url("/images/background-decorations.png");
   background-repeat: no-repeat;
   background-size: cover;
@@ -24,7 +24,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply outline-none bg-pink rounded-14;
+  @apply rounded-14 bg-pink outline-none;
 }
 
 :root {
@@ -42,11 +42,11 @@ body {
 }
 
 .link {
-  @apply font-museo font-medium relative px-5 py-3;
+  @apply relative px-5 py-3 font-museo font-medium;
 
   &::before {
     content: "";
-    @apply w-full h-full opacity-0 rounded-3xl transition-opacity ease-out-cubic absolute inset-0;
+    @apply absolute inset-0 h-full w-full rounded-3xl opacity-0 transition-opacity ease-out-cubic;
     background-color: rgba(255, 102, 170, 0.2);
   }
 
@@ -77,10 +77,10 @@ svg {
 }
 
 .button {
-  @apply font-body text-2xl font-bold rounded-3xl px-5 py-2 transition ease-out-cubic select-none;
+  @apply select-none rounded-3xl px-5 py-2 font-body text-2xl font-bold transition ease-out-cubic;
 
   &.primary {
-    @apply bg-black outline outline-3 outline-pink text-pink;
+    @apply bg-black text-pink outline outline-3 outline-pink;
   }
 
   &.secondary {
@@ -92,42 +92,42 @@ svg {
   }
 
   &.tertiary {
-    @apply outline-5 outline-dashed outline-pink;
+    @apply outline-dashed outline-5 outline-pink;
   }
 
   &.grey {
-    @apply font-body bg-grey-dark text-grey text-2xl font-semibold transition-colors ease-out-cubic;
+    @apply bg-grey-dark font-body text-2xl font-semibold text-grey transition-colors ease-out-cubic;
 
     &.active,
     &:hover {
-      @apply bg-pink text-black-lighter font-bold;
+      @apply bg-pink font-bold text-black-lighter;
     }
   }
 
   &.dark {
-    @apply font-body bg-black-lighter text-white font-semibold transition-colors ease-out-cubic;
+    @apply bg-black-lighter font-body font-semibold text-white transition-colors ease-out-cubic;
 
     &.active,
     &:hover {
-      @apply bg-pink text-black-lighter font-bold;
+      @apply bg-pink font-bold text-black-lighter;
     }
   }
 
   &.button--rounded {
-    @apply rounded-full w-12 h-12 flex justify-center items-center;
+    @apply flex h-12 w-12 items-center justify-center rounded-full;
   }
 
   &.button--large {
-    @apply text-2xl px-14 py-3;
+    @apply px-14 py-3 text-2xl;
   }
 
   &[disabled] {
-    @apply opacity-50 cursor-not-allowed;
+    @apply cursor-not-allowed opacity-50;
   }
 }
 
 .button--icon {
-  @apply inline-flex items-center gap-x-2 p-2 transition-colors ease-out-cubic rounded-full;
+  @apply inline-flex items-center gap-x-2 rounded-full p-2 transition-colors ease-out-cubic;
 
   &:hover {
     @apply bg-white bg-opacity-10;
@@ -135,7 +135,7 @@ svg {
 }
 
 .container {
-  @apply w-full mx-auto px-4;
+  @apply mx-auto w-full px-4;
   max-width: 1172px;
 
   &.max-height {
@@ -144,7 +144,7 @@ svg {
 }
 
 .small-container {
-  @apply w-full mx-auto px-4;
+  @apply mx-auto w-full px-4;
   max-width: 968px;
 }
 

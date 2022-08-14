@@ -16,9 +16,9 @@ interface IBarChartCardInterface {
 
 const BarChartCard = ({ data, heading }: IBarChartCardInterface) => {
   return (
-    <div className="flex relative flex-col gap-y-6 justify-center px-14 pt-4 pb-6  min-h-[360px] text-clip bg-black-lighter rounded-35">
+    <div className="relative flex min-h-[360px] flex-col justify-center gap-y-6 text-clip rounded-35  bg-black-lighter px-14 pt-4 pb-6">
       <h2 className="text-2xl font-bold">{heading}</h2>
-      <div className="flex flex-row items-center h-[360px]">
+      <div className="flex h-[360px] flex-row items-center">
         <ResponsiveBar
           data={data}
           groupMode={"grouped"}
@@ -78,10 +78,10 @@ const BarChartCard = ({ data, heading }: IBarChartCardInterface) => {
         />
         <div className="flex flex-col gap-4">
           {data.map((item, index) => (
-            <div key={item.questionIndex} className="flex gap-3 items-center">
+            <div key={item.questionIndex} className="flex items-center gap-3">
               <span
                 style={{ backgroundColor: getColorByIndex(index) }}
-                className="aspect-square inline-block w-6 h-6 rounded-5"
+                className="inline-block aspect-square h-6 w-6 rounded-5"
               />
               <p className="">
                 {item.questionIndex}. {item.questionText}

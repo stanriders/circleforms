@@ -21,11 +21,11 @@ export default function StatusRadio({
       <label
         htmlFor={value}
         className={classNames(
-          "inline-flex items-center gap-x-1 px-2 py-1 rounded-9 transition-colors ease-out-cubic cursor-pointer",
+          "inline-flex cursor-pointer items-center gap-x-1 rounded-9 px-2 py-1 transition-colors ease-out-cubic",
           active ? "bg-grey-dark" : ""
         )}
       >
-        <div className={classNames("w-4 h-4 rounded-full", color ? color : "bg-white")}></div>
+        <div className={classNames("h-4 w-4 rounded-full", color ? color : "bg-white")}></div>
         <span className="text-xl font-medium">{children}</span>
       </label>
       <input
