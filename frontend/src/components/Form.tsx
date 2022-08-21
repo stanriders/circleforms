@@ -14,6 +14,7 @@ import getImage from "../utils/getImage";
 import { dynamicSort } from "../utils/objectSort";
 
 import Button from "./Button";
+import CustomConfirmModal from "./CustomConfirmModal";
 import FormHeader from "./FormHeader";
 import FormStatistics from "./FormStatistics";
 import InputRadio from "./InputRadio";
@@ -59,6 +60,23 @@ export default function Form({ postData, authorUser }: IFormProps) {
   const bannerImg = getImage({ id, banner, type: "banner" });
   const iconImg = getImage({ id, icon, type: "icon" });
 
+  const showAdminPanel =
+    user?.roles?.includes("Admin") ||
+    user?.roles?.includes("SuperAdmin") ||
+    user?.roles?.includes("Moderator");
+
+  const handleOnUnpublish = async () => {
+    await apiClient.posts.postsIdUnpublishPost({ id: postData.post?.id! });
+    router.push("/forms");
+  };
+
+  const confirmUnpublishModal = CustomConfirmModal({
+    title: "Please confirm your action",
+    bodyText: "You will unpublish this post",
+    confirmButtonLabel: "Unpublish",
+    confirmCallback: handleOnUnpublish
+  });
+
   return (
     <div>
       <div
@@ -78,6 +96,7 @@ export default function Form({ postData, authorUser }: IFormProps) {
           <Tab data-testid="infoTab">{t("tabs.info.title")}</Tab>
           {usersAndAnswers?.users && <Tab data-testid="answersTab">{t("tabs.answers.title")}</Tab>}
           {showResults && <Tab>Results</Tab>}
+          {showAdminPanel && <Tab>Admin</Tab>}
         </TabList>
 
         <TabPanels className="rounded-b-3xl bg-black-lightest py-5 px-8">
@@ -143,6 +162,14 @@ export default function Form({ postData, authorUser }: IFormProps) {
           {showResults && (
             <TabPanel>
               <FormStatistics postData={postData} />
+            </TabPanel>
+          )}
+
+          {showAdminPanel && (
+            <TabPanel>
+              <button className="button secondary" onClick={confirmUnpublishModal}>
+                Unpublish form
+              </button>
             </TabPanel>
           )}
         </TabPanels>

@@ -20,9 +20,9 @@ const defaultLabelStyle = {
 
 const PieChartCard = ({ heading, data }: IPieChartCard) => {
   return (
-    <div className="flex relative flex-col gap-y-6 justify-center px-14 pt-4 pb-6 min-h-[360px] text-clip bg-black-lighter rounded-35">
+    <div className="relative flex min-h-[360px] flex-col justify-center gap-y-6 text-clip rounded-35 bg-black-lighter px-14 pt-4 pb-6">
       <h2 className="text-2xl font-bold">{heading}</h2>
-      <div className="flex gap-28 items-center m-auto">
+      <div className="m-auto flex items-center gap-28">
         <PieChart
           style={{ maxWidth: "250px", minWidth: "250px" }}
           label={({ dataEntry }) =>
@@ -36,10 +36,10 @@ const PieChartCard = ({ heading, data }: IPieChartCard) => {
 
         <div className="flex flex-col gap-4">
           {data.map((pieEntry, index) => (
-            <div key={pieEntry.title} className="flex gap-2 items-center">
+            <div key={pieEntry.title} className="flex items-center gap-2">
               <span
                 style={{ backgroundColor: getColorByIndex(index) }}
-                className="aspect-square inline-block w-6 h-6 rounded-5"
+                className="inline-block aspect-square h-6 w-6 rounded-5"
               />
               <p className="">{pieEntry.title}</p>
             </div>

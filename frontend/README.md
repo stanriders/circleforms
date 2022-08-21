@@ -35,6 +35,25 @@
 1. `npm run generate-api-client`
 2. either manually add `// @ts-nocheck` at the top of new files, or use the script i wrote: `npm run tsignore-openapi`, that adds ts-nocheck to every file in `openapi` folder.
 
+## How to make yourself admin on localhost
+
+Find `appsettings.Development.json`
+
+Add your osu id here:
+
+```csharp
+ "SuperAdmins": {
+    "Ids": [100, 101, 6348815, 30066448]
+  }
+```
+
+You should now be `SuperAdmin`. You can assign yourself an `Admin` role, by using swagger endpoint: patch `/admin/users`
+
+```
+id -> 6348815
+roles -> 1
+```
+
 ## How to test
 
 Unit: `npm run test`

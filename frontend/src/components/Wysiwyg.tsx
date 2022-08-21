@@ -113,7 +113,7 @@ const Wysiwyg = ({
 
       <div
         className={classNames(
-          "absolute -right-4 bottom-2 inline-flex items-center pl-6 pr-5 bg-white rounded-tl-35 text-black transition-opacity ease-out-cubic",
+          "absolute -right-4 bottom-2 inline-flex items-center rounded-tl-35 bg-white pl-6 pr-5 text-black transition-opacity ease-out-cubic",
           hasPreview ? "opacity-0" : "opacity-100"
         )}
       >
