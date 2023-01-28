@@ -11,8 +11,12 @@ public class User : IEntity
 {
     public User()
     {
-        this.InitOneToMany(() => PostsRelation);
-        this.InitOneToMany(() => Answers);
+        // DB inits can't be done in unit testing due to how MongoDB.Entities database initialization works
+        if (!UnitTestDetector.IsRunningFromXUnit)
+        {
+            this.InitOneToMany(() => PostsRelation);
+            this.InitOneToMany(() => Answers);
+        }
     }
 
     [Field("token")]
