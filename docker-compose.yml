@@ -25,6 +25,7 @@ services:
       - ./keys:/root/.aspnet/DataProtection-Keys
     networks:
       - main
+      - logs
 
   frontend:
     build: ./frontend/.
