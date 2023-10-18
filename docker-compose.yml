@@ -13,16 +13,18 @@ services:
       - "127.0.0.1:3001:3001"
     environment:
       - PathBase=/api
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT
       - ASPNETCORE_URLS=http://+:3001
       - ConnectionStrings__Database=mongodb://mongodb:mongodb@mongodb:27017
       - ConnectionStrings__Redis=redis:6379,allowAdmin=true
-      - osuApi__ClientId=
-      - osuApi__ClientSecret=
+      - osuApi__ClientId
+      - osuApi__ClientSecret
       - osuApi__CallbackUrl=/oauth/callback
+      - StaticFiles__VolumePath=./uploads
     volumes:
       - ./logs/backend:/app/logs
       - ./keys:/root/.aspnet/DataProtection-Keys
+      - ./uploads:/app/uploads
     networks:
       - main
       - logs
