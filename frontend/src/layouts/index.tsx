@@ -21,6 +21,11 @@ export default function DefaultLayout({ children, classname = "mt-28" }: IDefaul
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
+        <script
+          defer
+          src="https://umami.stanr.info/script.js"
+          data-website-id="3057c664-6ce5-4b09-a802-efe927c7d998"
+        ></script>
       </Head>
 
       <Header />
