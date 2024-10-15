@@ -16,7 +16,7 @@ const isDevelopmentEnv = process.env.NODE_ENV === "development";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <AllTheProviders>
-      <NextIntlProvider messages={pageProps.messages}>
+      <NextIntlProvider messages={(pageProps as any).messages}>
         <NextNProgress color="#FF66AA" />
         <Toaster />
         <Component {...pageProps} />
