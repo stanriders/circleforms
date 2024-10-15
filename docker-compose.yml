@@ -30,6 +30,8 @@ services:
     networks:
       - main
       - logs
+    restart: unless-stopped
+    pull_policy: build
 
   frontend:
     build: ./frontend/.
@@ -40,6 +42,8 @@ services:
       - ./logs/frontend/npm:/root/.npm/_logs
     networks:
       - main
+    restart: unless-stopped
+    pull_policy: build
 
   redis:
     image: redis
@@ -50,6 +54,7 @@ services:
       - ./logs/redis:/var/log/redis
     networks:
       - main
+    restart: unless-stopped
 
   mongodb:
     image: mongo:latest
@@ -64,3 +69,4 @@ services:
       - ./logs/mongo:/var/log/mongodb
     networks:
       - main
+    restart: unless-stopped
