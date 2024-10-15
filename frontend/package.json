@@ -39,7 +39,7 @@
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "flag-icons": "^6.6.4",
     "js-cookie": "^3.0.1",
-    "next": "^12.2.3",
+    "next": "^12.2.4",
     "next-intl": "^2.7.4",
     "next-superjson": "^0.0.4",
     "nextjs-progressbar": "^0.0.14",
