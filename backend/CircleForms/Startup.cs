@@ -17,9 +17,10 @@ using CircleForms.IO.FileIO;
 using CircleForms.IO.FileIO.Abstract;
 using CircleForms.IO.FileIO.Configuration;
 using FastExpressionCompiler;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Hangfire;
-using Hangfire.Redis;
+using Hangfire.Redis.StackExchange;
 using Mapster;
 using MapsterMapper;
 using Microsoft.AspNetCore.Authentication;
@@ -59,7 +60,9 @@ public class Startup
         services.Configure<SuperAdminsId>(Configuration.GetSection("SuperAdmins"));
         services.Configure<StaticFilesConfig>(Configuration.GetSection("StaticFiles"));
 
-        services.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
+        services.AddFluentValidationAutoValidation()
+            .AddFluentValidationClientsideAdapters()
+            .AddValidatorsFromAssemblyContaining<Startup>();
 
         TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetEntryAssembly()!);
         TypeAdapterConfig.GlobalSettings.Compiler = x => x.CompileFast();

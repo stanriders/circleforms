@@ -17,8 +17,7 @@ public class OsuApiProvider : IOsuApiProvider
     private const string _apiMeLink = "api/v2/me/";
     private const string _apiTokenLink = "oauth/token";
 
-    private readonly RestClient _client = new RestClient(_osuBase)
-        .UseNewtonsoftJson();
+    private readonly RestClient _client = new RestClient(_osuBase, configureSerialization: config => config.UseNewtonsoftJson());
 
     private readonly OsuApiConfig _config;
     private readonly ILogger<OsuApiProvider> _logger;
