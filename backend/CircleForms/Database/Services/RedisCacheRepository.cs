@@ -75,9 +75,16 @@ public class RedisCacheRepository : ICacheRepository
 
     public async Task AddUser(User user)
     {
-        await _redis.SetAddAsync(_userIds, user.ID);
+        if (!await _redis.SetAddAsync(_userIds, user.ID))
+        {
+            _logger.LogError("Could not post {@User} to the redis userid cache", user.ID);
+        }
+
         var cachedUser = _mapper.Map<UserMinimalRedis>(user);
-        await _redis.StringSetAsync(user.ID.ToUserId(), JsonConvert.SerializeObject(cachedUser, Formatting.None));
+        if (!await _redis.StringSetAsync(user.ID.ToUserId(), JsonConvert.SerializeObject(cachedUser, Formatting.None)))
+        {
+            _logger.LogError("Could not post {@User} to the redis user cache", user);
+        }
     }
 
     public async Task<UserMinimalRedis> GetMinimalUser(string id)
